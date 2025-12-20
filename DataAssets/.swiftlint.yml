@@ -38,7 +38,7 @@ disabled_rules:
   - superfluous_else
   - explicit_enum_raw_value
   - conditional_returns_on_newline
-  - redundant_self_in_closure
+  - redundant_self
   - pattern_matching_keywords
   - let_var_whitespace
   - unused_parameter

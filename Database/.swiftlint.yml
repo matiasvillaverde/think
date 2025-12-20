@@ -45,7 +45,7 @@ disabled_rules:
   - superfluous_else # 14 violations - Else after return
   - explicit_enum_raw_value # 24 violations - Enum raw values
   - conditional_returns_on_newline # 6 violations - Return placement
-  - redundant_self_in_closure # 6 violations - Self in closures
+  - redundant_self # 6 violations - Self in closures
   - pattern_matching_keywords # 4 violations - Pattern matching
   - let_var_whitespace # 36 violations - Variable spacing
   - unused_parameter # 202 violations - Unused parameters
