@@ -3,7 +3,7 @@ import Foundation
 
 /// Mock tooling that provides a weather tool for testing
 internal actor MockWeatherTooling: Tooling {
-    func configureTool(identifiers _: Set<ToolIdentifier>) async throws {
+    func configureTool(identifiers _: Set<ToolIdentifier>) async {
         await Task.yield()
     }
 
@@ -41,7 +41,7 @@ internal actor MockWeatherTooling: Tooling {
         return await getToolDefinitions(for: [.weather])
     }
 
-    func executeTools(toolRequests _: [ToolRequest]) async throws -> [ToolResponse] {
+    func executeTools(toolRequests _: [ToolRequest]) async -> [ToolResponse] {
         await Task.yield()
         return []
     }
@@ -50,7 +50,7 @@ internal actor MockWeatherTooling: Tooling {
         database _: DatabaseProtocol,
         chatId _: UUID,
         fileTitles _: [String]
-    ) async throws {
+    ) async {
         await Task.yield()
     }
 }

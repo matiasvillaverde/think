@@ -7,7 +7,7 @@ import Testing
 @Suite("CoreML File Size Bug")
 struct CoreMLFileSizeCalculationTests {
     @Test("CoreML model with multiple ZIP files should not sum all sizes")
-    internal func testCoreMLMultipleZipFiles() throws {
+    internal func testCoreMLMultipleZipFiles() {
         // Create a mock scenario similar to what happens in real CoreML repos
         // This simulates a model with both original and split-einsum variants
         let mockFiles: [ModelFile] = [
@@ -195,7 +195,7 @@ struct CoreMLFileSizeCalculationTests {
     }
 
     @Test("Debug file selection for coreml-stable-diffusion-2-1-base")
-    internal func testDebugFileSelection() async throws {
+    internal func testDebugFileSelection() async {
         // Test file selection directly
         let allFiles: [ModelFile] = [
             ModelFile(path: ".gitattributes", size: 1_024),

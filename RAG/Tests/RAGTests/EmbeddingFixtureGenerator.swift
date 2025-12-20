@@ -15,7 +15,7 @@ internal struct EmbeddingFixtureGenerator {
         let text: String = "The quick brown fox jumps over the lazy dog."
         let model: Bert.ModelBundle = try await Bert.loadModelBundle(from: TestHelpers.localModelURL)
         let tensor: MLTensor = try model.encode(text)
-        let embedding: [Float] = try await tensor.convertTensorToVector()
+        let embedding: [Float] = await tensor.convertTensorToVector()
 
         let fixture: EmbeddingFixture = EmbeddingFixture(
             model: "sentence-transformers/all-MiniLM-L6-v2",

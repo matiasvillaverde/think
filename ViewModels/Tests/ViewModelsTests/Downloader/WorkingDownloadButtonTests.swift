@@ -238,17 +238,17 @@ internal final class WorkingMockDownloader: @unchecked Sendable, ModelDownloader
     func cancelBackgroundDownload(_ handle: BackgroundDownloadHandle) {
         // Mock implementation - no operation
     }
-    func deleteModel(model: ModelLocation) throws {
+    func deleteModel(model: ModelLocation) {
         // Mock implementation - no operation
     }
-    func handleBackgroundDownloadCompletion(identifier: String, completionHandler: @escaping @Sendable () -> Void) {
+    func handleBackgroundDownloadCompletion(identifier: String, completionHandler: @Sendable () -> Void) {
         completionHandler()
     }
-    func resumeBackgroundDownloads() throws -> [BackgroundDownloadHandle] { [] }
+    func resumeBackgroundDownloads() -> [BackgroundDownloadHandle] { [] }
     func backgroundDownloadStatus() -> [BackgroundDownloadStatus] { [] }
 
     // MARK: - Model Management
-    func listDownloadedModels() throws -> [ModelInfo] { [] }
+    func listDownloadedModels() -> [ModelInfo] { [] }
     func modelExists(model: ModelLocation) -> Bool { false }
     func getModelSize(model: ModelLocation) -> Int64? { nil }
 
@@ -259,12 +259,12 @@ internal final class WorkingMockDownloader: @unchecked Sendable, ModelDownloader
     func getModelInfo(for model: ModelLocation) -> ModelInfo? { nil }
 
     // MARK: - Validation and Utilities
-    func validateModel(_ model: ModelLocation, backend: SendableModel.Backend) throws -> ValidationResult {
+    func validateModel(_ model: ModelLocation, backend: SendableModel.Backend) -> ValidationResult {
         ValidationResult(isValid: true, warnings: [])
     }
     func getRecommendedBackend(for model: ModelLocation) -> SendableModel.Backend { .mlx }
     func availableDiskSpace() -> Int64? { 1_000_000_000_000 }
-    func cleanupIncompleteDownloads() throws {
+    func cleanupIncompleteDownloads() {
         // Mock implementation - no cleanup needed
     }
 
@@ -278,7 +278,7 @@ internal final class WorkingMockCommunityExplorer: CommunityModelsExplorerProtoc
         // Mock cleanup
     }
 
-    func prepareForDownload(_ discovery: DiscoveredModel, preferredBackend: SendableModel.Backend?) async throws -> SendableModel {
+    func prepareForDownload(_ discovery: DiscoveredModel, preferredBackend: SendableModel.Backend?) async -> SendableModel {
         // Create a SendableModel with all required fields that will be used by CreateFromDiscovery command
         SendableModel(
             id: UUID(),
@@ -292,8 +292,17 @@ internal final class WorkingMockCommunityExplorer: CommunityModelsExplorerProtoc
 
     // MARK: - Required Protocol Methods (minimal implementations)
     func getDefaultCommunities() -> [ModelCommunity] { ModelCommunity.defaultCommunities }
-    func exploreCommunity(_ community: ModelCommunity, query: String?, sort: SortOption, direction: SortDirection, limit: Int) throws -> [DiscoveredModel] { [] }
-    func discoverModel(_ modelId: String) async throws -> DiscoveredModel {
+    func exploreCommunity(
+        _ community: ModelCommunity,
+        query: String?,
+        sort: SortOption,
+        direction: SortDirection,
+        limit: Int
+    ) async -> [DiscoveredModel] {
+        await Task.yield()
+        return []
+    }
+    func discoverModel(_ modelId: String) async -> DiscoveredModel {
         await DiscoveredModel(
             id: modelId,
             name: "test-model",
@@ -317,15 +326,33 @@ internal final class WorkingMockCommunityExplorer: CommunityModelsExplorerProtoc
         sort: SortOption = .downloads,
         direction: SortDirection = .descending,
         limit: Int = 30
-    ) throws -> ModelPage {
-        ModelPage(models: [], hasNextPage: false, nextPageToken: nil, totalCount: 0)
+    ) async -> ModelPage {
+        await Task.yield()
+        return ModelPage(models: [], hasNextPage: false, nextPageToken: nil, totalCount: 0)
     }
-    func searchByTags(_ tags: [String], community: ModelCommunity?, sort: SortOption, limit: Int) throws -> [DiscoveredModel] { [] }
+    func searchByTags(
+        _ tags: [String],
+        community: ModelCommunity?,
+        sort: SortOption,
+        limit: Int
+    ) async -> [DiscoveredModel] {
+        await Task.yield()
+        return []
+    }
     func getModelPreview(_ model: DiscoveredModel) async -> ModelInfo {
         ModelInfo(id: UUID(), name: await model.name, backend: .mlx, location: URL(fileURLWithPath: "/tmp/preview"), totalSize: 1_000_000, downloadDate: Date())
     }
-    func populateImages(for model: DiscoveredModel) throws -> DiscoveredModel { model }
-    func enrichModel(_ model: DiscoveredModel) throws -> DiscoveredModel { model }
-    func enrichModels(_ models: [DiscoveredModel]) -> [DiscoveredModel] { models }
+    func populateImages(for model: DiscoveredModel) async -> DiscoveredModel {
+        await Task.yield()
+        return model
+    }
+    func enrichModel(_ model: DiscoveredModel) async -> DiscoveredModel {
+        await Task.yield()
+        return model
+    }
+    func enrichModels(_ models: [DiscoveredModel]) async -> [DiscoveredModel] {
+        await Task.yield()
+        return models
+    }
 }
 // swiftlint:enable line_length file_length

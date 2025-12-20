@@ -5,7 +5,7 @@ import Testing
 // MARK: - Repository Tests
 
 @Test("Repository should parse repo ID correctly")
-internal func testRepositoryParsing() throws {
+internal func testRepositoryParsing() {
     // Test model repository
     let modelRepo: Repository = Repository(id: "facebook/opt-125m")
     #expect(modelRepo.namespace == "facebook")
@@ -32,7 +32,7 @@ internal func testRepositoryParsing() throws {
 }
 
 @Test("Repository should construct correct API URLs")
-internal func testRepositoryAPIURLs() throws {
+internal func testRepositoryAPIURLs() {
     let repo: Repository = Repository(id: "facebook/opt-125m")
 
     // Test files API URL
@@ -56,7 +56,7 @@ internal func testRepositoryAPIURLs() throws {
 }
 
 @Test("Repository should support custom endpoints")
-internal func testCustomEndpoint() throws {
+internal func testCustomEndpoint() {
     let repo: Repository = Repository(id: "mymodel", endpoint: "https://my-hub.com")
     #expect(repo.endpoint == "https://my-hub.com")
 
@@ -67,7 +67,7 @@ internal func testCustomEndpoint() throws {
 // MARK: - File Info Tests
 
 @Test("FileInfo should be created correctly")
-internal func testFileInfoCreation() throws {
+internal func testFileInfoCreation() {
     let fileInfo: FileInfo = FileInfo(
         path: "pytorch_model.bin",
         size: 1_024_000,
@@ -86,7 +86,7 @@ internal func testFileInfoCreation() throws {
 }
 
 @Test("FileInfo should parse from JSON correctly")
-internal func testFileInfoJSONParsing() throws {
+internal func testFileInfoJSONParsing() {
     let json: [String: Any] = [
         "path": "config.json",
         "size": 512,
@@ -108,7 +108,7 @@ internal func testFileInfoJSONParsing() throws {
 // MARK: - Hub API Tests
 
 @Test("HubAPI should initialize with default values")
-internal func testHubAPIInitialization() throws {
+internal func testHubAPIInitialization() {
     let mockFileManager: MockHFFileManager = MockHFFileManager()
     let mockHTTPClient: ConfigurableMockHTTPClient = ConfigurableMockHTTPClient()
 

@@ -6,7 +6,7 @@ import Testing
 @Suite("ToolManager Tests")
 internal struct ToolManagerTests {
     @Test("Initialize ToolManager")
-    func testInitialization() async throws {
+    func testInitialization() async {
         // Given
         let toolManager: ToolManager = ToolManager()
 
@@ -18,13 +18,13 @@ internal struct ToolManagerTests {
     }
 
     @Test("Configure single tool")
-    func testConfigureSingleTool() async throws {
+    func testConfigureSingleTool() async {
         // Given
         let toolManager: ToolManager = ToolManager()
         let identifiers: Set<ToolIdentifier> = [.browser]
 
         // When
-        try await toolManager.configureTool(identifiers: identifiers)
+        await toolManager.configureTool(identifiers: identifiers)
         let definitions: [ToolDefinition] = await toolManager.getAllToolDefinitions()
 
         // Then
@@ -34,13 +34,13 @@ internal struct ToolManagerTests {
     }
 
     @Test("Configure multiple tools")
-    func testConfigureMultipleTools() async throws {
+    func testConfigureMultipleTools() async {
         // Given
         let toolManager: ToolManager = ToolManager()
         let identifiers: Set<ToolIdentifier> = [.browser, .python, .functions]
 
         // When
-        try await toolManager.configureTool(identifiers: identifiers)
+        await toolManager.configureTool(identifiers: identifiers)
         let definitions: [ToolDefinition] = await toolManager.getAllToolDefinitions()
 
         // Then
@@ -53,10 +53,10 @@ internal struct ToolManagerTests {
     }
 
     @Test("Clear configured tools")
-    func testClearTools() async throws {
+    func testClearTools() async {
         // Given
         let toolManager: ToolManager = ToolManager()
-        try await toolManager.configureTool(identifiers: [.browser, .python])
+        await toolManager.configureTool(identifiers: [.browser, .python])
 
         // When
         await toolManager.clearTools()
@@ -67,11 +67,11 @@ internal struct ToolManagerTests {
     }
 
     @Test("Get tool definitions for specific identifiers")
-    func testGetToolDefinitionsForIdentifiers() async throws {
+    func testGetToolDefinitionsForIdentifiers() async {
         // Given
         let toolManager: ToolManager = ToolManager()
         let allIdentifiers: Set<ToolIdentifier> = [.browser, .python, .functions]
-        try await toolManager.configureTool(identifiers: allIdentifiers)
+        await toolManager.configureTool(identifiers: allIdentifiers)
 
         // When
         let requestedIdentifiers: Set<ToolIdentifier> = [.browser, .functions]
@@ -86,10 +86,10 @@ internal struct ToolManagerTests {
     }
 
     @Test("Execute tool request for configured tool")
-    func testExecuteConfiguredTool() async throws {
+    func testExecuteConfiguredTool() async {
         // Given
         let toolManager: ToolManager = ToolManager()
-        try await toolManager.configureTool(identifiers: [.functions])
+        await toolManager.configureTool(identifiers: [.functions])
 
         let request: ToolRequest = ToolRequest(
             name: "functions",
@@ -98,7 +98,7 @@ internal struct ToolManagerTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)
@@ -109,7 +109,7 @@ internal struct ToolManagerTests {
     }
 
     @Test("Execute tool request for unconfigured tool returns error")
-    func testExecuteUnconfiguredTool() async throws {
+    func testExecuteUnconfiguredTool() async {
         // Given
         let toolManager: ToolManager = ToolManager()
         // Not configuring any tools
@@ -121,7 +121,7 @@ internal struct ToolManagerTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)
@@ -130,10 +130,10 @@ internal struct ToolManagerTests {
     }
 
     @Test("Execute multiple tool requests")
-    func testExecuteMultipleToolRequests() async throws {
+    func testExecuteMultipleToolRequests() async {
         // Given
         let toolManager: ToolManager = ToolManager()
-        try await toolManager.configureTool(identifiers: [.browser, .python])
+        await toolManager.configureTool(identifiers: [.browser, .python])
 
         let request1: ToolRequest = ToolRequest(
             name: ToolIdentifier.browser.rawValue,
@@ -147,7 +147,7 @@ internal struct ToolManagerTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(
+        let responses: [ToolResponse] = await toolManager.executeTools(
             toolRequests: [request1, request2]
         )
 

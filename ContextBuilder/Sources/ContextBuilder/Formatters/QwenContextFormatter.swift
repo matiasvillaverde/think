@@ -46,7 +46,7 @@ internal struct QwenContextFormatter: ContextFormatter, DateFormatting, ToolForm
                     message.userInput != nil &&
                     context.toolResponses.isEmpty
                 do {
-                    let formatted: String = try formatAssistantMessageFromChannels(message)
+                    let formatted: String = formatAssistantMessageFromChannels(message)
                     if !formatted.isEmpty {
                         result += formatAssistantMessage(formatted, isLast: isLastCompleteMessage)
                     }
@@ -213,7 +213,7 @@ internal struct QwenContextFormatter: ContextFormatter, DateFormatting, ToolForm
     }
 
     /// Formats assistant message from channels
-    internal func formatAssistantMessageFromChannels(_ messageData: MessageData) throws -> String {
+    internal func formatAssistantMessageFromChannels(_ messageData: MessageData) -> String {
         guard !messageData.channels.isEmpty || !messageData.toolCalls.isEmpty else {
             return ""
         }

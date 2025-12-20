@@ -5,7 +5,7 @@ import Testing
 @Suite("File Extensions Tests")
 struct FileExtensionsTests {
     @Test("URL extensions work correctly")
-    func testURLExtensions() throws {
+    func testURLExtensions() {
         // Test file URL
         let fileURL: URL = URL(fileURLWithPath: "/tmp/test.txt")
         #expect(fileURL.normalizedPathExtension == "txt")
@@ -33,7 +33,7 @@ struct FileExtensionsTests {
     }
 
     @Test("FileManager extensions work correctly")
-    func testFileManagerExtensions() throws {
+    func testFileManagerExtensions() {
         let fileManager: FileManager = FileManager.default
         let tempDir: URL = fileManager.temporaryDirectory
 
@@ -46,7 +46,7 @@ struct FileExtensionsTests {
     }
 
     @Test("Int64 formatting extensions work correctly")
-    func testInt64FormattingExtensions() throws {
+    func testInt64FormattingExtensions() {
         let kilobyte: Int64 = 1_024
         let megabyte: Int64 = 1_024 * 1_024
         let gigabyte: Int64 = 1_024 * 1_024 * 1_024
@@ -66,7 +66,7 @@ struct FileExtensionsTests {
     }
 
     @Test("String extensions work correctly")
-    func testStringExtensions() throws {
+    func testStringExtensions() {
         // Test safe directory name
         #expect("user/model".safeDirectoryName == "user_model")
         #expect("path:with:colons".safeDirectoryName == "path_with_colons")

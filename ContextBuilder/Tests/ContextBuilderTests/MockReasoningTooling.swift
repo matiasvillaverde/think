@@ -2,7 +2,7 @@ import Abstractions
 import Foundation
 
 internal actor MockReasoningTooling: Tooling {
-    func configureTool(identifiers _: Set<ToolIdentifier>) async throws {
+    func configureTool(identifiers _: Set<ToolIdentifier>) async {
         await Task.yield()
     }
 
@@ -36,12 +36,12 @@ internal actor MockReasoningTooling: Tooling {
         ]
     }
 
-    func executeTools(toolRequests _: [ToolRequest]) async throws -> [ToolResponse] {
+    func executeTools(toolRequests _: [ToolRequest]) async -> [ToolResponse] {
         await Task.yield()
         return []
     }
 
-    func cleanupResources() async throws {
+    func cleanupResources() async {
         await Task.yield()
     }
 
@@ -49,7 +49,7 @@ internal actor MockReasoningTooling: Tooling {
         database _: DatabaseProtocol,
         chatId _: UUID,
         fileTitles _: [String]
-    ) async throws {
+    ) async {
         await Task.yield()
     }
 }

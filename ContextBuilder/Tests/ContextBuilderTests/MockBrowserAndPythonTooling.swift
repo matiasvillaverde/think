@@ -51,7 +51,7 @@ internal actor MockBrowserAndPythonTooling: Tooling {
     """
     // swiftlint:enable line_length
 
-    func configureTool(identifiers _: Set<ToolIdentifier>) async throws {
+    func configureTool(identifiers _: Set<ToolIdentifier>) async {
         await Task.yield()
     }
 
@@ -87,7 +87,7 @@ internal actor MockBrowserAndPythonTooling: Tooling {
         return await getToolDefinitions(for: [.browser, .python])
     }
 
-    func executeTools(toolRequests _: [ToolRequest]) async throws -> [ToolResponse] {
+    func executeTools(toolRequests _: [ToolRequest]) async -> [ToolResponse] {
         await Task.yield()
         return []
     }
@@ -96,7 +96,7 @@ internal actor MockBrowserAndPythonTooling: Tooling {
         database _: DatabaseProtocol,
         chatId _: UUID,
         fileTitles _: [String]
-    ) async throws {
+    ) async {
         await Task.yield()
     }
 }

@@ -58,7 +58,7 @@ public enum ModelCommands {
                 for dto in eligibleModels {
                     if let index = user.models.firstIndex(where: { $0.name == dto.name }) {
                         // Update existing model
-                        try update(model: user.models[index], from: dto)
+                        update(model: user.models[index], from: dto)
                         updatedCount += 1
                     } else {
                         // Add new model
@@ -87,7 +87,7 @@ public enum ModelCommands {
 
         // MARK: - Helper Methods
 
-        func update(model: Model, from dto: ModelDTO) throws {
+        func update(model: Model, from dto: ModelDTO) {
             model.type = dto.type
             model.name = dto.name
             model.displayName = dto.displayName

@@ -7,7 +7,7 @@ import Testing
 @Suite("TestHelpers Tests")
 internal struct TestHelpersTests {
     @Test("createCommentaryChannel creates correct channel type")
-    func testCreateCommentaryChannel() throws {
+    func testCreateCommentaryChannel() {
         // Given
         let content = "This is commentary"
         let order = 1
@@ -28,7 +28,7 @@ internal struct TestHelpersTests {
     }
 
     @Test("createFinalChannel creates correct channel type")
-    func testCreateFinalChannel() throws {
+    func testCreateFinalChannel() {
         // Given
         let content = "This is final content"
         let order = 2
@@ -47,7 +47,7 @@ internal struct TestHelpersTests {
     }
 
     @Test("createMessageDataWithChannels creates correct MessageData")
-    func testCreateMessageDataWithChannels() throws {
+    func testCreateMessageDataWithChannels() {
         // Given
         let userInput = "Test input"
         let channels = [
@@ -73,7 +73,7 @@ internal struct TestHelpersTests {
     }
 
     @Test("createMessageDataWithChannels works with defaults")
-    func testCreateMessageDataWithChannelsDefaults() throws {
+    func testCreateMessageDataWithChannelsDefaults() {
         // When
         let messageData = TestHelpers.createMessageDataWithChannels()
 
@@ -84,7 +84,7 @@ internal struct TestHelpersTests {
     }
 
     @Test("channel helpers work with formatting")
-    func testChannelHelpersWithFormatting() throws {
+    func testChannelHelpersWithFormatting() {
         // Given
         let formatter = ChatMLContextFormatter(labels: ChatMLLabels())
         let messageData = TestHelpers.createMessageDataWithChannels(
@@ -95,7 +95,7 @@ internal struct TestHelpersTests {
         )
 
         // When
-        let result = try formatter.formatAssistantMessageFromChannels(messageData)
+        let result = formatter.formatAssistantMessageFromChannels(messageData)
 
         // Then
         #expect(result.contains("<commentary>"))

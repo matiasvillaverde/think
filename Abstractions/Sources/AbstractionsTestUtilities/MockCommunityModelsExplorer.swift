@@ -8,6 +8,7 @@ public final class MockCommunityModelsExplorer: CommunityModelsExplorerProtocol,
     public var discoverModelCallCount = 0
     public var shouldThrowError: Set<String> = []
     public var prepareForDownloadResult: SendableModel?
+    public var searchPaginatedResponses: [SortOption: ModelPage] = [:]
 
     // New properties for progressive loading tests
     public var mockDefaultCommunities: [ModelCommunity] = ModelCommunity.defaultCommunities
@@ -19,8 +20,9 @@ public final class MockCommunityModelsExplorer: CommunityModelsExplorerProtocol,
         // Empty initializer for mock
     }
 
-    public func discoverModel(_ modelId: String) throws -> DiscoveredModel {
+    public func discoverModel(_ modelId: String) async throws -> DiscoveredModel {
         discoverModelCallCount += 1
+        try await Task.sleep(nanoseconds: 0)
 
         if shouldThrowError.contains(modelId) {
             throw ModelDownloadError.repositoryNotFound(modelId)
@@ -69,8 +71,12 @@ public final class MockCommunityModelsExplorer: CommunityModelsExplorerProtocol,
         sort: SortOption = .downloads,
         direction: SortDirection = .descending,
         limit: Int = 50
-    ) throws -> ModelPage {
-        ModelPage(models: [], hasNextPage: false, nextPageToken: nil, totalCount: 0)
+    ) async throws -> ModelPage {
+        try await Task.sleep(nanoseconds: 0)
+        if let response = searchPaginatedResponses[sort] {
+            return response
+        }
+        return ModelPage(models: [], hasNextPage: false, nextPageToken: nil, totalCount: 0)
     }
 
     public func searchByTags(
@@ -78,8 +84,9 @@ public final class MockCommunityModelsExplorer: CommunityModelsExplorerProtocol,
         community: ModelCommunity?,
         sort: SortOption = .downloads,
         limit: Int = 50
-    ) throws -> [DiscoveredModel] {
-        []
+    ) async throws -> [DiscoveredModel] {
+        try await Task.sleep(nanoseconds: 0)
+        return []
     }
 
     public func getDefaultCommunities() -> [ModelCommunity] {
@@ -91,7 +98,8 @@ public final class MockCommunityModelsExplorer: CommunityModelsExplorerProtocol,
     public func prepareForDownload(
         _ model: DiscoveredModel,
         preferredBackend: SendableModel.Backend?
-    ) throws -> SendableModel {
+    ) async throws -> SendableModel {
+        try await Task.sleep(nanoseconds: 0)
         guard let result = prepareForDownloadResult else {
             throw ModelDownloadError.repositoryNotFound(model.id)
         }
@@ -117,7 +125,8 @@ public final class MockCommunityModelsExplorer: CommunityModelsExplorerProtocol,
 
     @preconcurrency
     @MainActor
-    public func populateImages(for model: DiscoveredModel) throws -> DiscoveredModel {
+    public func populateImages(for model: DiscoveredModel) async throws -> DiscoveredModel {
+        try await Task.sleep(nanoseconds: 0)
         // Mock implementation that simulates image population
 
         // Check if this model should throw an error
@@ -160,7 +169,8 @@ public final class MockCommunityModelsExplorer: CommunityModelsExplorerProtocol,
 
     @preconcurrency
     @MainActor
-    public func enrichModel(_ model: DiscoveredModel) throws -> DiscoveredModel {
+    public func enrichModel(_ model: DiscoveredModel) async throws -> DiscoveredModel {
+        try await Task.sleep(nanoseconds: 0)
         // Mock implementation that simulates model enrichment
 
         // Check if this model should throw an error
@@ -204,6 +214,7 @@ public final class MockCommunityModelsExplorer: CommunityModelsExplorerProtocol,
     }
 
     public func enrichModels(_ models: [DiscoveredModel]) async -> [DiscoveredModel] {
+        await Task.yield()
         var enrichedModels: [DiscoveredModel] = []
 
         for model in models {

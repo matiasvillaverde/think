@@ -20,7 +20,7 @@ internal struct ChatMLOutputParser: OutputParser {
 
     // MARK: - Main Parse Method
 
-    internal func parse(_ output: String) async throws -> [ChannelMessage] {
+    internal func parse(_ output: String) async -> [ChannelMessage] {
         var channels: [ChannelMessage] = []
         var order: Int = 0
 

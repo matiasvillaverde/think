@@ -225,7 +225,7 @@ struct VRAMCalculatorTests {
     }
 
     @Test("Integer overflow protection")
-    func testIntegerOverflowProtection() throws {
+    func testIntegerOverflowProtection() {
         let calculator: VRAMCalculator = VRAMCalculator()
 
         // Test case that would overflow

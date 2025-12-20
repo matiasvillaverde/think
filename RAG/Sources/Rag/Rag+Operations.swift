@@ -34,7 +34,7 @@ extension Rag {
             logger.debug("Query encoded successfully")
 
             let vectorSearchState: OSSignpostIntervalState = tracing.beginInterval("VectorSearchEverywhere", id: signpostID)
-            let results: [SearchResult] = try await database.performVectorSearchEverywhere(
+            let results: [SearchResult] = await database.performVectorSearchEverywhere(
                 queryVector,
                 limit: numResults,
                 threshold: threshold
@@ -153,7 +153,7 @@ extension Rag {
         let fileProcessingState: OSSignpostIntervalState = tracing.beginInterval("FileProcessing", id: signpostID)
 
         // Process the file asynchronously, yielding progress for each chunk.
-        for try await chunk in try FileProcessor().processFile(
+        for try await chunk in FileProcessor().processFile(
             fileURL,
             fileType: fileType,
             tokenUnit: configuration.tokenUnit,

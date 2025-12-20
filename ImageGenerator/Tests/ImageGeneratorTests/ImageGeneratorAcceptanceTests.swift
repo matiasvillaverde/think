@@ -45,7 +45,7 @@ struct ImageGeneratorAcceptanceTests {
         try verifyGeneratedImage(actualImage, metrics: metrics)
 
         // Clean up
-        try await generator.unload(model: model.id)
+        await generator.unload(model: model.id)
     }
 
     /// Sets up ImageGenerator with test model from bundle

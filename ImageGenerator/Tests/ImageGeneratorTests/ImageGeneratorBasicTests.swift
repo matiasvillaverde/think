@@ -9,7 +9,7 @@ import Testing
 @Suite("ImageGenerator Basic Tests")
 internal struct ImageGeneratorBasicTests {
     @Test("Can create ImageGenerator instance")
-    func testCreateImageGenerator() throws {
+    func testCreateImageGenerator() {
         let mockDownloader = MockModelDownloader()
         let generator = ImageGenerator(modelDownloader: mockDownloader)
         // Simple test to ensure we can create an instance

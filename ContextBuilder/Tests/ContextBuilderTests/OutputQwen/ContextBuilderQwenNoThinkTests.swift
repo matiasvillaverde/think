@@ -10,7 +10,7 @@ internal struct ContextBuilderQwenNoThinkTests {
         let tooling = MockTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
 
-        let parameters = try createQwenNoThinkTestParameters()
+        let parameters = createQwenNoThinkTestParameters()
         let expectedOutput = try loadExpectedQwenNoThinkOutput()
 
         let result = try await contextBuilder.build(parameters: parameters)
@@ -23,7 +23,7 @@ internal struct ContextBuilderQwenNoThinkTests {
         #expect(areEquivalent, Comment(rawValue: detailedDiff))
     }
 
-    private func createQwenNoThinkTestParameters() throws -> BuildParameters {
+    private func createQwenNoThinkTestParameters() -> BuildParameters {
         let model = SendableModel(
             id: UUID(),
             ramNeeded: 1_000_000_000,

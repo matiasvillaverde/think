@@ -4,7 +4,7 @@ import Testing
 @Suite("CoreML File Selector Tests")
 internal struct CoreMLFileSelectorTests {
     @Test("Select optimal ZIP file from subdirectories")
-    func testSelectOptimalZipFromSubdirectories() async throws {
+    func testSelectOptimalZipFromSubdirectories() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         // Mock files representing typical CoreML repository structure
@@ -34,7 +34,7 @@ internal struct CoreMLFileSelectorTests {
     }
 
     @Test("Select compiled format for Swift usage")
-    func testSelectCompiledFormat() async throws {
+    func testSelectCompiledFormat() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         let files: [FileInfo] = [
@@ -61,7 +61,7 @@ internal struct CoreMLFileSelectorTests {
     }
 
     @Test("Handle multiple ZIP files in same variant - select only one")
-    func testMultipleZipSelection() async throws {
+    func testMultipleZipSelection() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         let files: [FileInfo] = [
@@ -81,7 +81,7 @@ internal struct CoreMLFileSelectorTests {
     }
 
     @Test("Handle legacy root-level files")
-    func testLegacyRootLevelFiles() async throws {
+    func testLegacyRootLevelFiles() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         let files: [FileInfo] = [
@@ -103,7 +103,7 @@ internal struct CoreMLFileSelectorTests {
     }
 
     @Test("Include essential metadata files")
-    func testMetadataInclusion() async throws {
+    func testMetadataInclusion() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         let files: [FileInfo] = [
@@ -135,7 +135,7 @@ internal struct CoreMLFileSelectorTests {
     }
 
     @Test("Handle empty file list")
-    func testEmptyFileList() async throws {
+    func testEmptyFileList() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         let selectedFiles: [FileInfo] = await selector.selectFiles(from: [])
@@ -144,7 +144,7 @@ internal struct CoreMLFileSelectorTests {
     }
 
     @Test("Handle files with no CoreML models")
-    func testNoCoreMLFiles() async throws {
+    func testNoCoreMLFiles() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         let files: [FileInfo] = [
@@ -159,7 +159,7 @@ internal struct CoreMLFileSelectorTests {
     }
 
     @Test("Prefer original when split_einsum not available")
-    func testFallbackToOriginal() async throws {
+    func testFallbackToOriginal() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         let files: [FileInfo] = [
@@ -176,7 +176,7 @@ internal struct CoreMLFileSelectorTests {
     }
 
     @Test("Select single ZIP for coreml-stable-diffusion repository")
-    func testCoreMLStableDiffusionRepoStructure() async throws {
+    func testCoreMLStableDiffusionRepoStructure() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         // Actual structure from coreml-community/coreml-stable-diffusion-v1-5
@@ -219,7 +219,7 @@ internal struct CoreMLFileSelectorTests {
     }
 
     @Test("Handle mixed subdirectory and root files")
-    func testMixedFileStructure() async throws {
+    func testMixedFileStructure() async {
         let selector: CoreMLFileSelector = CoreMLFileSelector()
 
         let files: [FileInfo] = [

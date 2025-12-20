@@ -143,9 +143,12 @@ public struct SafetyChecker: ResourceManaging {
         let arrayPFx3 = MLShapedArray<Float32>(repeating: 0.0, shape: [1, 3, width, height])
         for c in 0..<3 {
             arrayPFx3[0][c].withUnsafeShapedBufferPointer { ptr, _, strides in
-                let floatChannel = PixelBufferPFx1(data: .init(mutating: ptr.baseAddress!),
-                                                   width: width, height: height,
-                                                   byteCountPerRow: strides[0] * 4)
+                let floatChannel = PixelBufferPFx1(
+                    data: .init(mutating: ptr.baseAddress!),
+                    width: width,
+                    height: height,
+                    byteCountPerRow: strides[0] * 4
+                )
 
                 bufferP8x3.withUnsafePixelBuffer(at: c) { uint8Channel in
                     uint8Channel.convert(to: floatChannel) // maps [0 255] -> [0 1]

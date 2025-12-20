@@ -61,7 +61,7 @@ internal final class MockFileManager: ModelFileManagerProtocol, @unchecked Senda
         return URL(fileURLWithPath: "/mock/models/\(backend.rawValue)/\(safeRepoId)")
     }
 
-    internal func listDownloadedModels() throws -> [ModelInfo] {
+    internal func listDownloadedModels() -> [ModelInfo] {
         Array(models.values)
     }
 
@@ -69,7 +69,7 @@ internal final class MockFileManager: ModelFileManagerProtocol, @unchecked Senda
         models[repositoryId] != nil
     }
 
-    internal func deleteModel(repositoryId: String) throws {
+    internal func deleteModel(repositoryId: String) {
         models.removeValue(forKey: repositoryId)
 
         // Remove all directories for this model
@@ -82,7 +82,7 @@ internal final class MockFileManager: ModelFileManagerProtocol, @unchecked Senda
         }
     }
 
-    internal func moveModel(from sourceURL: URL, to destinationURL: URL) throws {
+    internal func moveModel(from sourceURL: URL, to destinationURL: URL) {
         directories.insert(destinationURL.path)
         movedFiles.append((from: sourceURL, to: destinationURL))
 
@@ -111,7 +111,7 @@ internal final class MockFileManager: ModelFileManagerProtocol, @unchecked Senda
         backend: SendableModel.Backend,
         from _: URL,
         totalSize: Int64
-    ) async throws -> ModelInfo {
+    ) async -> ModelInfo {
         // Generate deterministic UUID from repository ID for external compatibility
         let identityService: ModelIdentityService = ModelIdentityService()
         let modelId: UUID = await identityService.generateModelId(for: repositoryId)
@@ -136,7 +136,7 @@ internal final class MockFileManager: ModelFileManagerProtocol, @unchecked Senda
         return modelInfo
     }
 
-    internal func cleanupIncompleteDownloads() throws {
+    internal func cleanupIncompleteDownloads() {
         // Mock implementation - no-op
     }
 

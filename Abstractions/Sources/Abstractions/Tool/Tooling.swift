@@ -7,7 +7,7 @@ public protocol Tooling: Actor {
 
     /// Configure which tools should be available based on identifiers
     /// - Parameter identifiers: Set of tool identifiers to enable
-    func configureTool(identifiers: Set<ToolIdentifier>) async throws
+    func configureTool(identifiers: Set<ToolIdentifier>) async
 
     /// Clear all configured tools
     func clearTools() async
@@ -30,7 +30,7 @@ public protocol Tooling: Actor {
     /// - Returns: Array of tool responses
     func executeTools(
         toolRequests: [ToolRequest]
-    ) async throws -> [ToolResponse]
+    ) async -> [ToolResponse]
 
     // MARK: - Semantic Search (Special Case)
 
@@ -43,5 +43,5 @@ public protocol Tooling: Actor {
         database: DatabaseProtocol,
         chatId: UUID,
         fileTitles: [String]
-    ) async throws
+    ) async
 }

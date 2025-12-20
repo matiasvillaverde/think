@@ -5,7 +5,7 @@ import Testing
 
 extension AudioGenerationTests {
     @Test("Audio session not active on init")
-    func testAudioSessionNotActiveOnInit() throws {
+    func testAudioSessionNotActiveOnInit() {
         #if os(iOS)
         // Given
         let initialCategory: AVAudioSession.Category = AVAudioSession.sharedInstance().category
@@ -20,7 +20,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Audio session active during speech")
-    func testAudioSessionActiveDuringSpeech() async throws {
+    func testAudioSessionActiveDuringSpeech() async {
         #if os(iOS)
         // Given
         let engine: AudioEngine = AudioEngine()
@@ -67,7 +67,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Handle audio session activation failure gracefully")
-    func testAudioSessionErrorRecovery() async throws {
+    func testAudioSessionErrorRecovery() async {
         #if os(iOS)
         // This test verifies error handling exists
         // In practice, we'd need to simulate audio session failures

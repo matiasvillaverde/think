@@ -97,7 +97,7 @@ struct CriticalBugFixTests {
     // MARK: - Bug #1 & #87: UUID Consistency Tests
 
     @Test("Bug #1: UUID consistency across components")
-    func testUUIDConsistency() async throws {
+    func testUUIDConsistency() async {
         // Given - Shared identity service
         let sharedIdentityService: ModelIdentityService = ModelIdentityService()
         let testLocation: String = "test/consistency-model"

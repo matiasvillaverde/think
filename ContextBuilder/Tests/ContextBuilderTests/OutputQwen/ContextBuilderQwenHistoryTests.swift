@@ -10,7 +10,7 @@ internal struct ContextBuilderQwenHistoryTests {
         let tooling = MockReasoningTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
 
-        let parameters = try createQwenHistoryTestParameters()
+        let parameters = createQwenHistoryTestParameters()
         let expectedOutput = try loadExpectedQwenHistoryOutput()
 
         let result = try await contextBuilder.build(parameters: parameters)
@@ -23,7 +23,7 @@ internal struct ContextBuilderQwenHistoryTests {
         #expect(areEquivalent, Comment(rawValue: detailedDiff))
     }
 
-    private func createQwenHistoryTestParameters() throws -> BuildParameters {
+    private func createQwenHistoryTestParameters() -> BuildParameters {
         let model = SendableModel(
             id: UUID(),
             ramNeeded: 1_000_000_000,

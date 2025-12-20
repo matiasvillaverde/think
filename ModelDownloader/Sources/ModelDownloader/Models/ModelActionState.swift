@@ -53,6 +53,7 @@ public enum ModelActionState: Codable, Equatable, Sendable {
 
         case .loading:
             return nil // No primary action while loading
+
         case .ready:
             return .open
 

@@ -9,18 +9,18 @@ struct DiscoveryCarouselViewModelingTests {
         // Verify the protocol exists and conforms to Actor
         // by creating a minimal conforming type
         actor TestViewModel: DiscoveryCarouselViewModeling {
-            func recommendedLanguageModels() async throws -> [DiscoveredModel] {
-                try await Task.sleep(nanoseconds: 0)
+            func recommendedLanguageModels() async -> [DiscoveredModel] {
+                await Task.yield()
                 return []
             }
 
-            func recommendedAllModels() async throws -> [DiscoveredModel] {
-                try await Task.sleep(nanoseconds: 0)
+            func recommendedAllModels() async -> [DiscoveredModel] {
+                await Task.yield()
                 return []
             }
 
-            func latestModelsFromDefaultCommunities() async throws -> [ModelCommunity: [DiscoveredModel]] {
-                try await Task.sleep(nanoseconds: 0)
+            func latestModelsFromDefaultCommunities() async -> [ModelCommunity: [DiscoveredModel]] {
+                await Task.yield()
                 return [:]
             }
             func getDefaultCommunitiesFromProtocol() -> [ModelCommunity] { [] }
@@ -61,6 +61,36 @@ struct DiscoveryCarouselViewModelingTests {
                 try await Task.sleep(nanoseconds: 0)
                 return []
             }
+
+            func discoverModelById(_ modelId: String) async throws -> DiscoveredModel {
+                try await Task.sleep(nanoseconds: 0)
+                return await MainActor.run {
+                    DiscoveredModel(
+                        id: modelId,
+                        name: modelId,
+                        author: "test",
+                        downloads: 0,
+                        likes: 0,
+                        tags: [],
+                        lastModified: Date()
+                    )
+                }
+            }
+
+            func trendingModels(limit: Int) async throws -> [DiscoveredModel] {
+                try await Task.sleep(nanoseconds: 0)
+                return []
+            }
+
+            func latestModels(limit: Int) async throws -> [DiscoveredModel] {
+                try await Task.sleep(nanoseconds: 0)
+                return []
+            }
+
+            func bestModelForDevice() async -> DiscoveredModel? {
+                await Task.yield()
+                return nil
+            }
         }
 
         // If this compiles, the protocol exists and conforms to Actor
@@ -82,20 +112,20 @@ struct DiscoveryCarouselViewModelingTests {
             var searchModelsPaginatedCalled = false
             var searchAndEnrichModelsCalled = false
 
-            func recommendedLanguageModels() async throws -> [DiscoveredModel] {
-                try await Task.sleep(nanoseconds: 0)
+            func recommendedLanguageModels() async -> [DiscoveredModel] {
+                await Task.yield()
                 recommendedLanguageModelsCalled = true
                 return []
             }
 
-            func recommendedAllModels() async throws -> [DiscoveredModel] {
-                try await Task.sleep(nanoseconds: 0)
+            func recommendedAllModels() async -> [DiscoveredModel] {
+                await Task.yield()
                 recommendedAllModelsCalled = true
                 return []
             }
 
-            func latestModelsFromDefaultCommunities() async throws -> [ModelCommunity: [DiscoveredModel]] {
-                try await Task.sleep(nanoseconds: 0)
+            func latestModelsFromDefaultCommunities() async -> [ModelCommunity: [DiscoveredModel]] {
+                await Task.yield()
                 latestModelsCalled = true
                 return [:]
             }
@@ -147,22 +177,52 @@ struct DiscoveryCarouselViewModelingTests {
                 searchAndEnrichModelsCalled = true
                 return []
             }
+
+            func discoverModelById(_ modelId: String) async throws -> DiscoveredModel {
+                try await Task.sleep(nanoseconds: 0)
+                return await MainActor.run {
+                    DiscoveredModel(
+                        id: modelId,
+                        name: modelId,
+                        author: "test",
+                        downloads: 0,
+                        likes: 0,
+                        tags: [],
+                        lastModified: Date()
+                    )
+                }
+            }
+
+            func trendingModels(limit: Int) async throws -> [DiscoveredModel] {
+                try await Task.sleep(nanoseconds: 0)
+                return []
+            }
+
+            func latestModels(limit: Int) async throws -> [DiscoveredModel] {
+                try await Task.sleep(nanoseconds: 0)
+                return []
+            }
+
+            func bestModelForDevice() async -> DiscoveredModel? {
+                await Task.yield()
+                return nil
+            }
         }
 
         let viewModel = TestViewModel()
 
         // Test recommendedLanguageModels method
-        let languageModels = try await viewModel.recommendedLanguageModels()
+        let languageModels = await viewModel.recommendedLanguageModels()
         #expect(languageModels.isEmpty)
         #expect(await viewModel.recommendedLanguageModelsCalled)
 
         // Test recommendedAllModels method
-        let allModels = try await viewModel.recommendedAllModels()
+        let allModels = await viewModel.recommendedAllModels()
         #expect(allModels.isEmpty)
         #expect(await viewModel.recommendedAllModelsCalled)
 
         // Test latestModelsFromDefaultCommunities method
-        let communities = try await viewModel.latestModelsFromDefaultCommunities()
+        let communities = await viewModel.latestModelsFromDefaultCommunities()
         #expect(communities.isEmpty)
         #expect(await viewModel.latestModelsCalled)
 
@@ -203,5 +263,18 @@ struct DiscoveryCarouselViewModelingTests {
         let enrichedResults = try await viewModel.searchAndEnrichModels(query: nil, limit: 10)
         #expect(enrichedResults.isEmpty)
         #expect(await viewModel.searchAndEnrichModelsCalled)
+
+        let discovered = try await viewModel.discoverModelById("test/model")
+        let discoveredId = await MainActor.run { discovered.id }
+        #expect(discoveredId == "test/model")
+
+        let trending = try await viewModel.trendingModels(limit: 5)
+        #expect(trending.isEmpty)
+
+        let latest = try await viewModel.latestModels(limit: 5)
+        #expect(latest.isEmpty)
+
+        let best = await viewModel.bestModelForDevice()
+        #expect(best == nil)
     }
 }

@@ -7,7 +7,7 @@ import Testing
 @Suite("Message Formatting Tests")
 internal struct MessageFormattingTests {
     @Test("ChatML formatter should format channels correctly")
-    func testChatMLChannelFormatting() throws {
+    func testChatMLChannelFormatting() {
         // Given
         let formatter = ChatMLContextFormatter(labels: ChatMLLabels())
         let channels = [
@@ -23,7 +23,7 @@ internal struct MessageFormattingTests {
         )
 
         // When - This should fail initially since the method doesn't exist
-        let result = try formatter.formatAssistantMessageFromChannels(messageData)
+        let result = formatter.formatAssistantMessageFromChannels(messageData)
 
         // Then
         #expect(result.contains("<commentary>"))
@@ -33,7 +33,7 @@ internal struct MessageFormattingTests {
     }
 
     @Test("Formatter should handle empty channels array")
-    func testEmptyChannelsFormatting() throws {
+    func testEmptyChannelsFormatting() {
         // Given
         let formatter = ChatMLContextFormatter(labels: ChatMLLabels())
         let messageData = MessageData(
@@ -45,14 +45,14 @@ internal struct MessageFormattingTests {
         )
 
         // When
-        let result = try formatter.formatAssistantMessageFromChannels(messageData)
+        let result = formatter.formatAssistantMessageFromChannels(messageData)
 
         // Then
         #expect(result.isEmpty)
     }
 
     @Test("Formatter should respect channel ordering")
-    func testChannelOrdering() throws {
+    func testChannelOrdering() {
         // Given
         let formatter = ChatMLContextFormatter(labels: ChatMLLabels())
         let channels = [
@@ -68,7 +68,7 @@ internal struct MessageFormattingTests {
         )
 
         // When
-        let result = try formatter.formatAssistantMessageFromChannels(messageData)
+        let result = formatter.formatAssistantMessageFromChannels(messageData)
 
         // Then - Commentary (order 0) should appear before final (order 1)
         let commentaryIndex = result.firstIndex(of: "F") ?? result.endIndex // "First content"

@@ -102,7 +102,7 @@ extension APITests {
 
     @Test("ModelDownloader integration: Explorer creation and download")
     @MainActor
-    func testModelDownloaderIntegration() throws {
+    func testModelDownloaderIntegration() {
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
 
         // Setup basic model response
@@ -147,7 +147,7 @@ extension APITests {
 
     @Test("Search and download helper method")
     @MainActor
-    func testSearchAndDownloadHelper() async throws {
+    func testSearchAndDownloadHelper() async {
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
 
         // Mock model discovery
@@ -369,7 +369,7 @@ extension APITests {
     }
 
     @Test("Error handling: Model not found")
-    func testModelNotFoundError() async throws {
+    func testModelNotFoundError() async {
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
 
         // Mock 404 response

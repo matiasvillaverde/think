@@ -194,7 +194,7 @@ internal struct LazyLoadingTests {
     // MARK: - Error Handling Tests
 
     @Test("Model loading errors are propagated correctly")
-    func testModelLoadingErrorHandling() async throws {
+    func testModelLoadingErrorHandling() async {
         // Test with invalid hub repo ID to trigger loading error
         do {
             let rag: any Ragging = try await TestHelpers.createTestRag(

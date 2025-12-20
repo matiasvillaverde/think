@@ -208,7 +208,7 @@ struct ValidateStateCommand: ReadCommand {
         in context: ModelContext,
         userId: PersistentIdentifier?,
         rag: Ragging?
-    ) throws {
+    ) {
         Thread.sleep(forTimeInterval: 0.01) // Exactly 0.01 seconds
     }
 }
@@ -253,7 +253,7 @@ struct NoopWriteCommand: ReadCommand {
         in context: ModelContext,
         userId: PersistentIdentifier?,
         rag: Ragging?
-    ) throws {
+    ) {
         Thread.sleep(forTimeInterval: 0.01) // Exactly 0.01 seconds
     }
 }

@@ -60,8 +60,9 @@ internal struct DiscoveryCarouselViewModelTests {
             modelIndex += 1
         }
     }
+
     @Test("Should filter models based on device memory")
-    func testMemoryBasedFiltering() async throws {
+    func testMemoryBasedFiltering() async {
         // Create mock dependencies
         let mockExplorer: MockCommunityModelsExplorer = MockCommunityModelsExplorer()
         let mockChecker: MockDeviceCompatibilityChecker = MockDeviceCompatibilityChecker()
@@ -94,7 +95,7 @@ internal struct DiscoveryCarouselViewModelTests {
         )
 
         // Get recommended models
-        let models: [DiscoveredModel] = try await viewModel.recommendedLanguageModels()
+        let models: [DiscoveredModel] = await viewModel.recommendedLanguageModels()
 
         // Verify we only get models appropriate for 8GB devices
         #expect(models.count <= expectedModelIds.count)
@@ -121,7 +122,7 @@ internal struct DiscoveryCarouselViewModelTests {
     }
 
     @Test("Should handle low memory devices")
-    func testLowMemoryDevices() async throws {
+    func testLowMemoryDevices() async {
         // Create mock dependencies
         let mockExplorer: MockCommunityModelsExplorer = MockCommunityModelsExplorer()
         let mockChecker: MockDeviceCompatibilityChecker = MockDeviceCompatibilityChecker()
@@ -152,7 +153,7 @@ internal struct DiscoveryCarouselViewModelTests {
         )
 
         // Get recommended models
-        let models: [DiscoveredModel] = try await viewModel.recommendedLanguageModels()
+        let models: [DiscoveredModel] = await viewModel.recommendedLanguageModels()
 
         // Verify we only get 4GB tier models
         #expect(models.count == 9) // 4GB tier has 9 models (includes always-include model)
@@ -171,7 +172,7 @@ internal struct DiscoveryCarouselViewModelTests {
     }
 
     @Test("Should handle high memory devices")
-    func testHighMemoryDevices() async throws {
+    func testHighMemoryDevices() async {
         // Create mock dependencies
         let mockExplorer: MockCommunityModelsExplorer = MockCommunityModelsExplorer()
         let mockChecker: MockDeviceCompatibilityChecker = MockDeviceCompatibilityChecker()
@@ -201,14 +202,14 @@ internal struct DiscoveryCarouselViewModelTests {
         )
 
         // Get recommended models
-        let models: [DiscoveredModel] = try await viewModel.recommendedLanguageModels()
+        let models: [DiscoveredModel] = await viewModel.recommendedLanguageModels()
 
         // Verify we get only 128GB+ tier models plus always-include for high memory devices
         #expect(models.count == 12) // 11 from 128GB+ tier + 1 always-include
     }
 
     @Test("Should place recommended model at the top of the list")
-    func testRecommendedModelIsFirst() async throws {
+    func testRecommendedModelIsFirst() async {
         // Create mock dependencies
         let mockExplorer: MockCommunityModelsExplorer = MockCommunityModelsExplorer()
         let mockChecker: MockDeviceCompatibilityChecker = MockDeviceCompatibilityChecker()
@@ -238,7 +239,7 @@ internal struct DiscoveryCarouselViewModelTests {
         )
 
         // Get recommended models
-        let models: [DiscoveredModel] = try await viewModel.recommendedLanguageModels()
+        let models: [DiscoveredModel] = await viewModel.recommendedLanguageModels()
 
         // Models with recommendation types are sorted first, then by memory requirement
         // Both Qwen3-0.6B-4bit (fast) and Qwen3-14B-4bit (complexTasks) have recommendation types

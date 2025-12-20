@@ -80,7 +80,7 @@ internal struct YourAppRatingProvider: AppRatingProviding {
         static let reviewRatingBad: Int = 4
     }
 
-    func fetch() throws -> AppRatingResponse {
+    func fetch() -> AppRatingResponse {
         AppRatingResponse(
             averageRating: Constants.averageRating,
             totalRatings: Constants.totalRatings,

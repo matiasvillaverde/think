@@ -5,7 +5,7 @@ import Testing
 @Suite("CoreML Integration Tests")
 struct CoreMLIntegrationTests {
     @Test("CoreML file selection for animagine-xl-3.1 repository structure")
-    func testAnimagineXL31Structure() async throws {
+    func testAnimagineXL31Structure() async {
         // Mock files representing the structure from issue #9
         let files: [FileInfo] = [
             FileInfo(path: ".gitattributes", size: 1_519),
@@ -45,7 +45,7 @@ struct CoreMLIntegrationTests {
     }
 
     @Test("CoreML file selection for stable-diffusion-2-1-base repository structure")
-    func testStableDiffusion21BaseStructure() async throws {
+    func testStableDiffusion21BaseStructure() async {
         // Mock files representing the structure from issue #9
         let files: [FileInfo] = [
             FileInfo(path: ".gitattributes", size: 1_477),
@@ -80,7 +80,7 @@ struct CoreMLIntegrationTests {
     }
 
     @Test("Verify fnmatch pattern matching behavior with subdirectories")
-    func testFnmatchBehavior() throws {
+    func testFnmatchBehavior() {
         // This test demonstrates the fnmatch behavior that necessitated our fix
         let files: [FileInfo] = [
             FileInfo(path: "model.zip", size: 1_000),
@@ -115,7 +115,7 @@ struct CoreMLIntegrationTests {
     }
 
     @Test("CoreML file selection for stable-diffusion-v1-5 repository structure")
-    func testStableDiffusionV15Structure() async throws {
+    func testStableDiffusionV15Structure() async {
         // Mock files representing the stable-diffusion-v1-5 structure
         let files: [FileInfo] = [
             FileInfo(path: ".gitattributes", size: 1_519),
@@ -145,11 +145,11 @@ struct CoreMLIntegrationTests {
     }
 
     @Test("Bandwidth savings calculation")
-    func testBandwidthSavings() throws {
+    func testBandwidthSavings() {
         // Calculate bandwidth savings for animagine-xl-3.1
         let allFileSizes: Int64 = 2_789_247_305 + 2_789_247_645 + 2_789_247_091 + 2_789_246_898
         let selectedFileSize: Int64 = 2_789_246_898
-         let savingsPercent: Double = Double(allFileSizes - selectedFileSize) / Double(allFileSizes) * 100
+        let savingsPercent: Double = Double(allFileSizes - selectedFileSize) / Double(allFileSizes) * 100
 
         print("Animagine XL 3.1 bandwidth savings:")
         print("  Total size if downloading all: \(allFileSizes / 1_000_000_000) GB")
@@ -172,7 +172,7 @@ struct CoreMLIntegrationTests {
     }
 
     @Test("HuggingFaceDownloader filterFilesForFormat uses CoreMLFileSelector")
-    func testFilterFilesIntegration() async throws {
+    func testFilterFilesIntegration() async {
         // Create a minimal HuggingFaceDownloader
         let fileManager: MockFileManager = MockFileManager()
         _ = HuggingFaceDownloader(

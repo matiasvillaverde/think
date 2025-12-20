@@ -10,7 +10,7 @@ internal struct ContextBuilderChatMLThinkTests {
         let tooling = MockReasoningTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
 
-        let parameters = try createChatMLThinkTestParameters()
+        let parameters = createChatMLThinkTestParameters()
         let expectedOutput = try loadExpectedChatMLThinkOutput()
 
         let result = try await contextBuilder.build(parameters: parameters)
@@ -23,7 +23,7 @@ internal struct ContextBuilderChatMLThinkTests {
         #expect(areEquivalent, Comment(rawValue: detailedDiff))
     }
 
-    private func createChatMLThinkTestParameters() throws -> BuildParameters {
+    private func createChatMLThinkTestParameters() -> BuildParameters {
         let model = SendableModel(
             id: UUID(),
             ramNeeded: 1_000_000_000,

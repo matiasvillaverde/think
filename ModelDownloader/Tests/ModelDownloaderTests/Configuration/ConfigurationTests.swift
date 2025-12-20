@@ -111,7 +111,7 @@ internal func testLoadConfigurationFromHub() async throws {
 }
 
 @Test("LanguageModelConfigurationFromHub should handle missing config.json")
-internal func testMissingConfiguration() async throws {
+internal func testMissingConfiguration() async {
     let mockHTTPClient: ConfigurableMockHTTPClient = ConfigurableMockHTTPClient()
     let mockTokenManager: HFTokenManager = HFTokenManager(httpClient: mockHTTPClient)
     let hubAPI: HubAPI = HubAPI(

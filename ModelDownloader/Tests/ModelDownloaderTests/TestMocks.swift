@@ -10,8 +10,8 @@ internal actor MockStreamingDownloader: StreamingDownloaderProtocol {
         from _: URL,
         to destination: URL,
         headers _: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
-    ) throws -> URL {
+        progressHandler: @Sendable (Double) -> Void
+    ) -> URL {
         progressHandler(1.0)
         return destination
     }
@@ -20,9 +20,16 @@ internal actor MockStreamingDownloader: StreamingDownloaderProtocol {
         from url: URL,
         to destination: URL,
         headers: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
-        try await download(from: url, to: destination, headers: headers, progressHandler: progressHandler)
+        await Task.yield()
+        try Task.checkCancellation()
+        return download(
+            from: url,
+            to: destination,
+            headers: headers,
+            progressHandler: progressHandler
+        )
     }
 
     func cancel(url _: URL) {}
@@ -36,7 +43,7 @@ internal actor MockStreamingDownloader: StreamingDownloaderProtocol {
 // MARK: - Mock HTTP Client
 
 internal struct MockHTTPClient: HTTPClientProtocol {
-    func get(url _: URL, headers _: [String: String]) throws -> HTTPClientResponse {
+    func get(url _: URL, headers _: [String: String]) -> HTTPClientResponse {
         // Return a mock file list for HuggingFace API
         let mockFiles: String = """
         [
@@ -60,7 +67,7 @@ internal struct MockHTTPClient: HTTPClientProtocol {
         return HTTPClientResponse(data: data, statusCode: 200)
     }
 
-    func head(url _: URL, headers _: [String: String]) throws -> HTTPClientResponse {
+    func head(url _: URL, headers _: [String: String]) -> HTTPClientResponse {
         HTTPClientResponse(data: Data(), statusCode: 200)
     }
 }

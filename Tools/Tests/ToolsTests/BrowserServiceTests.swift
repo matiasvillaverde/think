@@ -8,7 +8,7 @@ import Testing
 @Suite("BrowserService Tests")
 internal struct BrowserServiceTests {
     @Test("BrowserService registers search tool")
-    func testBrowserServiceRegistersSearchTool() async throws {
+    func testBrowserServiceRegistersSearchTool() async {
         // Given
         let service: BrowserService = BrowserService()
         let toolManager: ToolManager = ToolManager()
@@ -25,7 +25,7 @@ internal struct BrowserServiceTests {
     }
 
     @Test("BrowserService handles invalid arguments")
-    func testBrowserServiceHandlesInvalidArguments() async throws {
+    func testBrowserServiceHandlesInvalidArguments() async {
         // Given
         let service: BrowserService = BrowserService()
         let toolManager: ToolManager = ToolManager()
@@ -38,7 +38,7 @@ internal struct BrowserServiceTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)
@@ -68,7 +68,7 @@ internal struct BrowserServiceAcceptanceTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)
@@ -95,7 +95,7 @@ internal struct BrowserServiceAcceptanceTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)

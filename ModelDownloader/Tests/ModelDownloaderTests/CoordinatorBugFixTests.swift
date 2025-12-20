@@ -27,17 +27,17 @@ struct CoordinatorBugFixTests {
             return URL(fileURLWithPath: "/mock/\(backend.rawValue)/\(safeName)")
         }
 
-        func listDownloadedModels() throws -> [ModelInfo] { [] }
+        func listDownloadedModels() -> [ModelInfo] { [] }
         func modelExists(repositoryId _: String) -> Bool { false }
-        func deleteModel(repositoryId _: String) throws {}
-        func moveModel(from _: URL, to _: URL) throws {}
+        func deleteModel(repositoryId _: String) {}
+        func moveModel(from _: URL, to _: URL) {}
         func getModelSize(repositoryId _: String) -> Int64? { nil }
         func hasEnoughSpace(for _: Int64) -> Bool { true }
         nonisolated func temporaryDirectory(for repositoryId: String) -> URL {
             let safeDirName: String = repositoryId.replacingOccurrences(of: "/", with: "_")
             return URL(fileURLWithPath: "/tmp/\(safeDirName)")
         }
-        func cleanupIncompleteDownloads() throws {}
+        func cleanupIncompleteDownloads() {}
         func availableDiskSpace() -> Int64? { 1_000_000 }
 
         // MARK: - The Critical Methods We're Testing
@@ -48,7 +48,7 @@ struct CoordinatorBugFixTests {
             backend: SendableModel.Backend,
             from tempURL: URL,
             totalSize: Int64
-        ) async throws -> ModelInfo {
+        ) async -> ModelInfo {
             finalizeCallCount += 1
             lastFinalizedRepositoryId = repositoryId
 
@@ -78,7 +78,7 @@ struct CoordinatorBugFixTests {
             from _: URL,
             to destination: URL,
             headers _: [String: String],
-            progressHandler: @escaping @Sendable (Double) -> Void
+            progressHandler: @Sendable (Double) -> Void
         ) async throws -> URL {
             // Simulate progress
             progressHandler(0.5)
@@ -99,7 +99,7 @@ struct CoordinatorBugFixTests {
             from url: URL,
             to destination: URL,
             headers: [String: String],
-            progressHandler: @escaping @Sendable (Double) -> Void
+            progressHandler: @Sendable (Double) -> Void
         ) async throws -> URL {
             try await download(from: url, to: destination, headers: headers, progressHandler: progressHandler)
         }

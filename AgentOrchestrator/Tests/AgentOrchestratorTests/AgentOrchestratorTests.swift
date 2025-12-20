@@ -10,7 +10,7 @@ import Tools
 @Suite("AgentOrchestrator Module Tests")
 internal struct AgentOrchestratorTests {
     @Test("ModelStateCoordinator is available")
-    internal func testModelStateCoordinatorAvailable() throws {
+    internal func testModelStateCoordinatorAvailable() {
         // Verify that the main public type is accessible
         // This test ensures the module exports its public API correctly
         let coordinatorType: ModelStateCoordinator.Type = ModelStateCoordinator.self

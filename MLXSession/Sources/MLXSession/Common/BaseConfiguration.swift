@@ -30,6 +30,26 @@ internal struct BaseConfiguration: Codable, Sendable {
             case quantMethod = "quant_method"
             case linearClass = "linear_class"
             case quantizationMode = "quantization_mode"
+            case mode = "mode"
+        }
+
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.groupSize = try container.decode(Int.self, forKey: .groupSize)
+            self.bits = try container.decode(Int.self, forKey: .bits)
+            self.quantMethod = try container.decodeIfPresent(String.self, forKey: .quantMethod)
+            self.linearClass = try container.decodeIfPresent(String.self, forKey: .linearClass)
+            self.quantizationMode = try container.decodeIfPresent(String.self, forKey: .quantizationMode)
+                ?? container.decodeIfPresent(String.self, forKey: .mode)
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(groupSize, forKey: .groupSize)
+            try container.encode(bits, forKey: .bits)
+            try container.encodeIfPresent(quantMethod, forKey: .quantMethod)
+            try container.encodeIfPresent(linearClass, forKey: .linearClass)
+            try container.encodeIfPresent(quantizationMode, forKey: .quantizationMode)
         }
     }
 
@@ -116,6 +136,7 @@ internal struct BaseConfiguration: Codable, Sendable {
                 case Quantization.CodingKeys.quantMethod.rawValue: continue
                 case Quantization.CodingKeys.linearClass.rawValue: continue
                 case Quantization.CodingKeys.quantizationMode.rawValue: continue
+                case Quantization.CodingKeys.mode.rawValue: continue
 
                 default:
                     if let f = try? container.decode(Bool.self, forKey: key) {
@@ -161,5 +182,26 @@ internal struct BaseConfiguration: Codable, Sendable {
     enum CodingKeys: String, CodingKey {
         case modelType = "model_type"
         case quantizationContainer = "quantization"
+        case quantizationConfig = "quantization_config"
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.modelType = try container.decode(String.self, forKey: .modelType)
+        if let quantization = try container.decodeIfPresent(
+            QuantizationContainer.self, forKey: .quantizationContainer
+        ) {
+            self.quantizationContainer = quantization
+        } else {
+            self.quantizationContainer = try container.decodeIfPresent(
+                QuantizationContainer.self, forKey: .quantizationConfig
+            )
+        }
+    }
+    
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(modelType, forKey: .modelType)
+        try container.encodeIfPresent(quantizationContainer, forKey: .quantizationContainer)
     }
 }

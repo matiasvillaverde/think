@@ -202,19 +202,23 @@ internal actor ModelConverter {
         switch model.inferredModelType {
         case .diffusion, .diffusionXL:
             multiplier = 1.5 // Image generation needs more overhead
+
         case .visualLanguage:
             multiplier = 1.4 // Vision models need extra buffers
+
         case .deepLanguage, .flexibleThinker:
             multiplier = 1.3 // Large language models
+
         case .language:
             multiplier = 1.2 // Standard language models
+
         case .none:
             multiplier = 1.2
         }
 
         // Check for quantization hints in filename
         let hasQuantization: Bool = model.files.contains { file in
-             let name: String = file.filename.lowercased()
+            let name: String = file.filename.lowercased()
             return name.contains("q4") || name.contains("q5") ||
                    name.contains("q8") || name.contains("4bit") ||
                    name.contains("8bit")

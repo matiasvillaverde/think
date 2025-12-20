@@ -9,7 +9,7 @@ internal struct ChannelViewTests {
     // MARK: - Single Channel Display Tests
 
     @Test("ChannelView displays final channel content")
-    internal func displaysFinalChannelContent() throws {
+    internal func displaysFinalChannelContent() {
         let channel: Channel = Channel(
             type: .final,
             content: "This is the final response",
@@ -25,7 +25,7 @@ internal struct ChannelViewTests {
     }
 
     @Test("ChannelView displays analysis channel content")
-    internal func displaysAnalysisChannelContent() throws {
+    internal func displaysAnalysisChannelContent() {
         let channel: Channel = Channel(
             type: .analysis,
             content: "Let me think about this...",
@@ -40,7 +40,7 @@ internal struct ChannelViewTests {
     }
 
     @Test("ChannelView displays commentary channel content")
-    internal func displaysCommentaryChannelContent() throws {
+    internal func displaysCommentaryChannelContent() {
         let channel: Channel = Channel(
             type: .commentary,
             content: "Here's some additional context",
@@ -59,7 +59,7 @@ internal struct ChannelViewTests {
     // MARK: - Streaming State Tests
 
     @Test("ChannelView shows loading state for incomplete channel")
-    internal func showsLoadingStateForIncompleteChannel() throws {
+    internal func showsLoadingStateForIncompleteChannel() {
         let channel: Channel = Channel(
             type: .final,
             content: "Partial response...",
@@ -75,7 +75,7 @@ internal struct ChannelViewTests {
     }
 
     @Test("ChannelView hides loading state for complete channel")
-    internal func hidesLoadingStateForCompleteChannel() throws {
+    internal func hidesLoadingStateForCompleteChannel() {
         let channel: Channel = Channel(
             type: .final,
             content: "Complete response",
@@ -92,7 +92,7 @@ internal struct ChannelViewTests {
     // MARK: - Multiple Channels Display Tests
 
     @Test("ChannelListView displays multiple channels in order")
-    internal func displaysMultipleChannelsInOrder() throws {
+    internal func displaysMultipleChannelsInOrder() {
         let channels: [Channel] = [
             Channel(type: .analysis, content: "Thinking...", order: 0, isComplete: true),
             Channel(type: .commentary, content: "Note: ", order: 1, isComplete: true),
@@ -108,7 +108,7 @@ internal struct ChannelViewTests {
     }
 
     @Test("ChannelListView filters channels by type")
-    internal func filtersChannelsByType() throws {
+    internal func filtersChannelsByType() {
         let channels: [Channel] = [
             Channel(type: .analysis, content: "Thinking 1", order: 0, isComplete: true),
             Channel(type: .final, content: "Response 1", order: 1, isComplete: true),
@@ -129,7 +129,7 @@ internal struct ChannelViewTests {
     // MARK: - Edge Cases
 
     @Test("ChannelView handles empty content gracefully")
-    internal func handlesEmptyContent() throws {
+    internal func handlesEmptyContent() {
         let channel: Channel = Channel(
             type: .final,
             content: "",
@@ -144,7 +144,7 @@ internal struct ChannelViewTests {
     }
 
     @Test("ChannelView handles very long content")
-    internal func handlesLongContent() throws {
+    internal func handlesLongContent() {
         let longContent: String = String(repeating: "Lorem ipsum ", count: 500)
         let channel: Channel = Channel(
             type: .final,
@@ -160,7 +160,7 @@ internal struct ChannelViewTests {
     }
 
     @Test("ChannelListView handles empty channel list")
-    internal func handlesEmptyChannelList() throws {
+    internal func handlesEmptyChannelList() {
         let channels: [Channel] = []
 
         let view: ChannelListView = ChannelListView(channels: channels)

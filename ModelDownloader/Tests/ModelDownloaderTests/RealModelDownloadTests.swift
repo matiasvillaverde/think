@@ -245,7 +245,7 @@ internal func testDownloadRealMLXModel() async throws {
 }
 
 @Test("Debug CoreML repository files")
-internal func testDebugCoreMLRepoFiles() async throws {
+internal func testDebugCoreMLRepoFiles() async {
     // Test different CoreML repositories
     let repos: [String] = [
         "apple/coreml-stable-diffusion-v1-4",
@@ -595,7 +595,7 @@ extension HuggingFaceDownloader {
         from repoId: String,
         backend: SendableModel.Backend,
         variant _: String? = nil,
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> ModelInfo {
         // For testing purposes, we'll use the standard download method
         // In a real implementation, variant selection would be handled

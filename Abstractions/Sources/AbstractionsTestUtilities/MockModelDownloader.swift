@@ -206,7 +206,7 @@ public final class MockModelDownloader: ModelDownloaderProtocol, @unchecked Send
         continuation.finish()
     }
 
-    public func resumeBackgroundDownloads() throws -> [BackgroundDownloadHandle] {
+    public func resumeBackgroundDownloads() -> [BackgroundDownloadHandle] {
         trackCall("resumeBackgroundDownloads")
         lock.lock()
         defer { lock.unlock() }
@@ -242,7 +242,7 @@ public final class MockModelDownloader: ModelDownloaderProtocol, @unchecked Send
 
     // MARK: - Model Management
 
-    public func listDownloadedModels() throws -> [ModelInfo] {
+    public func listDownloadedModels() -> [ModelInfo] {
         trackCall("listDownloadedModels")
         lock.lock()
         defer { lock.unlock() }
@@ -266,7 +266,7 @@ public final class MockModelDownloader: ModelDownloaderProtocol, @unchecked Send
         return modelConfigs[model]?.exists ?? false
     }
 
-    public func deleteModel(model: ModelLocation) throws {
+    public func deleteModel(model: ModelLocation) {
         trackCall("deleteModel", parameters: ["model": model])
         lock.lock()
         defer { lock.unlock() }
@@ -339,7 +339,7 @@ public final class MockModelDownloader: ModelDownloaderProtocol, @unchecked Send
     public func validateModel(
         _ model: ModelLocation,
         backend: SendableModel.Backend
-    ) throws -> ValidationResult {
+    ) -> ValidationResult {
         trackCall("validateModel", parameters: [
             "model": model,
             "backend": String(describing: backend)
@@ -362,7 +362,7 @@ public final class MockModelDownloader: ModelDownloaderProtocol, @unchecked Send
         return availableDiskSpaceValue
     }
 
-    public func cleanupIncompleteDownloads() throws {
+    public func cleanupIncompleteDownloads() {
         trackCall("cleanupIncompleteDownloads")
         // No-op for mock
     }
@@ -377,7 +377,7 @@ public final class MockModelDownloader: ModelDownloaderProtocol, @unchecked Send
     @preconcurrency
     public func handleBackgroundDownloadCompletion(
         identifier: String,
-        completionHandler: @escaping @Sendable () -> Void
+        completionHandler: @Sendable () -> Void
     ) {
         trackCall("handleBackgroundDownloadCompletion", parameters: ["identifier": identifier])
 

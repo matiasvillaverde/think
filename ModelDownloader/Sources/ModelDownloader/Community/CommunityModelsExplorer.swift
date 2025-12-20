@@ -159,7 +159,7 @@ public actor CommunityModelsExplorer: CommunityModelsExplorerProtocol {
         let modelCard: String? = try await hubAPI.getModelCard(modelId: modelId)
 
         // Create discovered model using the detailed API response
-        let discoveredModel: DiscoveredModel = try await convertDetailedResponseToDiscoveredModel(
+        let discoveredModel: DiscoveredModel = await convertDetailedResponseToDiscoveredModel(
             modelId: modelId,
             author: author,
             name: name,
@@ -570,7 +570,7 @@ public actor CommunityModelsExplorer: CommunityModelsExplorerProtocol {
         name: String,
         detailedInfo: HFDetailedModelResponse,
         modelCard: String?
-    ) async throws -> DiscoveredModel {
+    ) async -> DiscoveredModel {
         await logger.debug("Converting detailed response to DiscoveredModel", metadata: ["modelId": modelId])
 
         // Get file information from siblings
@@ -690,7 +690,7 @@ public actor CommunityModelsExplorer: CommunityModelsExplorerProtocol {
     /// - Returns: Enhanced model with complete data
     @preconcurrency
     @MainActor
-    public func enrichModel(_ model: DiscoveredModel) async throws -> DiscoveredModel {
+    public func enrichModel(_ model: DiscoveredModel) async -> DiscoveredModel {
         await logger.info("Enriching model with detailed data", metadata: ["modelId": model.id])
 
         // If model already has complete data, return as-is
@@ -705,7 +705,7 @@ public actor CommunityModelsExplorer: CommunityModelsExplorerProtocol {
             let enrichedModel: DiscoveredModel = try await discoverModel(model.id)
 
             // Also populate images using ImageExtractor
-            let fullyEnrichedModel: DiscoveredModel = try await populateImages(for: enrichedModel)
+            let fullyEnrichedModel: DiscoveredModel = await populateImages(for: enrichedModel)
 
             await logger.info("Successfully enriched model", metadata: [
                 "modelId": model.id,
@@ -737,15 +737,7 @@ public actor CommunityModelsExplorer: CommunityModelsExplorerProtocol {
             // Add enrichment tasks for each model
             for model in models {
                 group.addTask {
-                    do {
-                        return try await self.enrichModel(model)
-                    } catch {
-                        await self.logger.error("Failed to enrich model in batch", metadata: [
-                            "modelId": model.id,
-                            "error": String(describing: error)
-                        ])
-                        return model // Return original on failure
-                    }
+                    await self.enrichModel(model)
                 }
             }
 
@@ -770,7 +762,7 @@ public actor CommunityModelsExplorer: CommunityModelsExplorerProtocol {
     /// Populate image URLs for a discovered model with lazy loading
     @preconcurrency
     @MainActor
-    public func populateImages(for model: DiscoveredModel) async throws -> DiscoveredModel {
+    public func populateImages(for model: DiscoveredModel) async -> DiscoveredModel {
         await logger.info("Populating images for model", metadata: ["modelId": model.id])
 
         do {

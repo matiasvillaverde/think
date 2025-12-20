@@ -148,7 +148,7 @@ public actor DefaultDownloadCoordinator: DownloadCoordinating {
         }
     }
 
-    public func cancel(repositoryId: String) async throws {
+    public func cancel(repositoryId: String) async {
         await logger.info("Canceling download for repository: \(repositoryId)")
 
         // Cancel the task

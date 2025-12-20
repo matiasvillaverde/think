@@ -72,7 +72,7 @@ internal struct FileProcessorTests {
         let fileURL: URL = try TestHelpers.createTempFile(content: "[\"a\", \"b\"]", fileExtension: "json")
         defer { try? FileManager.default.removeItem(at: fileURL) }
 
-        let stream: AsyncThrowingStream<([ChunkData], Progress), Error> = try FileProcessor().processFile(
+        let stream: AsyncThrowingStream<([ChunkData], Progress), Error> = FileProcessor().processFile(
             fileURL,
             fileType: .json,
             tokenUnit: .word,
@@ -99,7 +99,7 @@ internal struct FileProcessorTests {
         let fileURL: URL = try TestHelpers.createTempFile(content: csvContent, fileExtension: "csv")
         defer { try? FileManager.default.removeItem(at: fileURL) }
 
-        let stream: AsyncThrowingStream<([ChunkData], Progress), Error> = try FileProcessor().processFile(
+        let stream: AsyncThrowingStream<([ChunkData], Progress), Error> = FileProcessor().processFile(
             fileURL,
             fileType: .csv,
             tokenUnit: .word,

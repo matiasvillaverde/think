@@ -115,7 +115,7 @@ struct ZipExtractionTests {
     }
 
     @Test("Simulate CoreML ZIP extraction workflow")
-    func testCoreMLZipWorkflow() throws {
+    func testCoreMLZipWorkflow() {
         print("\n🔄 Simulating CoreML ZIP extraction workflow...")
 
         // This test demonstrates the expected behavior:

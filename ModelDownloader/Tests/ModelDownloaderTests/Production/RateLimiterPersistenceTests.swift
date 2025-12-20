@@ -48,7 +48,7 @@ internal func testRateLimiterStatePersistence() async throws {
 }
 
 @Test("RateLimiter should handle missing persisted state")
-internal func testRateLimiterMissingState() async throws {
+internal func testRateLimiterMissingState() async {
     let suiteName: String = "com.test.ratelimiter.missing"
     let testDefaults: UserDefaults = UserDefaults(suiteName: suiteName)!
     defer {

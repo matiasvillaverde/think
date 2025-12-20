@@ -65,7 +65,7 @@ extension APITests {
 
     @Test("Download discovered model with no backends fails")
     @MainActor
-    func testDownloadModelWithNoBackends() async throws {
+    func testDownloadModelWithNoBackends() async {
         let downloader: ModelDownloader = ModelDownloader()
 
         // Model with no detected backends
@@ -143,7 +143,7 @@ extension APITests {
 
     @Test("CommunityModelsExplorer.searchAndDownload integration")
     @MainActor
-    func testSearchAndDownloadIntegration() async throws {
+    func testSearchAndDownloadIntegration() async {
         // Create mock HTTP client
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
 
@@ -193,7 +193,7 @@ extension APITests {
     }
 
     @Test("SearchAndDownload with invalid model ID")
-    func testSearchAndDownloadInvalidModel() async throws {
+    func testSearchAndDownloadInvalidModel() async {
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
 
         // Mock 404 response
@@ -286,7 +286,7 @@ extension APITests {
 
     @Test("Download progress tracking simulation")
     @MainActor
-    func testDownloadProgressEvents() async throws {
+    func testDownloadProgressEvents() async {
         let downloader: ModelDownloader = ModelDownloader()
 
         let discovered: DiscoveredModel = DiscoveredModel(

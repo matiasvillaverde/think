@@ -4,18 +4,15 @@ import Foundation
 public protocol DiscoveryCarouselViewModeling: Actor {
     /// Returns language models compatible with the current device for full GPU offload
     /// - Returns: Array of discovered language models that can run smoothly on the device
-    /// - Throws: Error if discovery fails
-    func recommendedLanguageModels() async throws -> [DiscoveredModel]
+    func recommendedLanguageModels() async -> [DiscoveredModel]
 
     /// Returns all models (language + image) compatible with the current device
     /// - Returns: Array of all discovered models that can run smoothly on the device
-    /// - Throws: Error if discovery fails
-    func recommendedAllModels() async throws -> [DiscoveredModel]
+    func recommendedAllModels() async -> [DiscoveredModel]
 
     /// Returns latest models from all default communities, grouped by community
     /// - Returns: Dictionary mapping communities to their latest models
-    /// - Throws: Error if fetching community models fails
-    func latestModelsFromDefaultCommunities() async throws -> [ModelCommunity: [DiscoveredModel]]
+    func latestModelsFromDefaultCommunities() async -> [ModelCommunity: [DiscoveredModel]]
 
     /// Returns default communities from the protocol method instead of static property
     /// - Returns: Array of default communities for progressive loading
@@ -77,4 +74,27 @@ public protocol DiscoveryCarouselViewModeling: Actor {
         query: String?,
         limit: Int
     ) async throws -> [DiscoveredModel]
+
+    // MARK: - Direct Model Discovery
+
+    /// Discover a model directly by its HuggingFace ID
+    /// - Parameter modelId: Model identifier (e.g., "owner/model-name")
+    /// - Returns: Discovered model with full metadata
+    func discoverModelById(_ modelId: String) async throws -> DiscoveredModel
+
+    // MARK: - Trending and Best For Device
+
+    /// Fetch trending models from HuggingFace, filtered to supported backends
+    /// - Parameter limit: Maximum results to return
+    /// - Returns: Array of trending models compatible with MLX or GGUF
+    func trendingModels(limit: Int) async throws -> [DiscoveredModel]
+
+    /// Fetch latest models from HuggingFace, filtered to supported backends
+    /// - Parameter limit: Maximum results to return
+    /// - Returns: Array of recently updated models compatible with MLX or GGUF
+    func latestModels(limit: Int) async throws -> [DiscoveredModel]
+
+    /// Determine the single best model for the current device
+    /// - Returns: Best compatible model, or nil if none found
+    func bestModelForDevice() async -> DiscoveredModel?
 }

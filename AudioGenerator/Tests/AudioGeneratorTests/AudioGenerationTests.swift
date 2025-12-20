@@ -6,7 +6,7 @@ import Testing
 @Suite("Audio Generation Tests", .serialized)
 internal struct AudioGenerationTests {
     @Test("Generate audio for valid text")
-    func testGenerateAudioValidText() async throws {
+    func testGenerateAudioValidText() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Hello world"
@@ -22,7 +22,7 @@ internal struct AudioGenerationTests {
     }
 
     @Test("Handle empty text in audio generation")
-    func testGenerateAudioEmptyText() async throws {
+    func testGenerateAudioEmptyText() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = ""
@@ -36,7 +36,7 @@ internal struct AudioGenerationTests {
     }
 
     @Test("Process single character text")
-    func testGenerateAudioSingleCharacter() async throws {
+    func testGenerateAudioSingleCharacter() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "A"
@@ -51,7 +51,7 @@ internal struct AudioGenerationTests {
     }
 
     @Test("Generate audio for long text")
-    func testGenerateAudioLongText() async throws {
+    func testGenerateAudioLongText() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "This is a longer piece of text that should generate a longer audio sample. " +
@@ -67,7 +67,7 @@ internal struct AudioGenerationTests {
     }
 
     @Test("Handle special characters in audio generation")
-    func testGenerateAudioSpecialCharacters() async throws {
+    func testGenerateAudioSpecialCharacters() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Hello! How are you? 123."
@@ -82,7 +82,7 @@ internal struct AudioGenerationTests {
     }
 
     @Test("Verify audio data validity")
-    func testAudioDataValidity() async throws {
+    func testAudioDataValidity() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Test audio generation"

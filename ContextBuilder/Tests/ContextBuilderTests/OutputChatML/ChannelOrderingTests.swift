@@ -7,7 +7,7 @@ import Testing
 @Suite("Channel Ordering Tests")
 internal struct ChannelOrderingTests {
     @Test("Commentary associated with tool should appear before the tool")
-    func testToolAssociatedCommentary() throws {
+    func testToolAssociatedCommentary() {
         // Given
         let formatter = ChatMLContextFormatter(labels: ChatMLLabels())
         let toolId = UUID()
@@ -29,7 +29,7 @@ internal struct ChannelOrderingTests {
         )
 
         // When
-        let result = try formatter.formatAssistantMessageFromChannels(messageData)
+        let result = formatter.formatAssistantMessageFromChannels(messageData)
 
         // Then - Commentary should appear before its associated tool
         let commentaryRange = result.range(of: "I'll find for that")
@@ -42,7 +42,7 @@ internal struct ChannelOrderingTests {
     }
 
     @Test("Multiple tools with associated commentary maintain proper order")
-    func testMultipleToolsWithCommentary() throws {
+    func testMultipleToolsWithCommentary() {
         // Given
         let formatter = ChatMLContextFormatter(labels: ChatMLLabels())
         let searchToolId = UUID()
@@ -72,7 +72,7 @@ internal struct ChannelOrderingTests {
         )
 
         // When
-        let result = try formatter.formatAssistantMessageFromChannels(messageData)
+        let result = formatter.formatAssistantMessageFromChannels(messageData)
 
         // Then - Each commentary appears before its tool
         // "First"
@@ -91,7 +91,7 @@ internal struct ChannelOrderingTests {
     }
 
     @Test("Mixed associated and non-associated channels preserve order")
-    func testMixedChannelAssociation() throws {
+    func testMixedChannelAssociation() {
         // Given
         let formatter = ChatMLContextFormatter(labels: ChatMLLabels())
         let toolId = UUID()
@@ -118,7 +118,7 @@ internal struct ChannelOrderingTests {
         )
 
         // When
-        let result = try formatter.formatAssistantMessageFromChannels(messageData)
+        let result = formatter.formatAssistantMessageFromChannels(messageData)
 
         // Then
         let generalIndex = result.range(of: "General commentary")?.lowerBound
@@ -137,7 +137,7 @@ internal struct ChannelOrderingTests {
     }
 
     @Test("Tool calls without channels still format correctly")
-    func testToolCallsWithoutChannels() throws {
+    func testToolCallsWithoutChannels() {
         // Given
         let formatter = ChatMLContextFormatter(labels: ChatMLLabels())
         let messageData = TestHelpers.createMessageDataWithChannels(
@@ -148,7 +148,7 @@ internal struct ChannelOrderingTests {
         )
 
         // When
-        let result = try formatter.formatAssistantMessageFromChannels(messageData)
+        let result = formatter.formatAssistantMessageFromChannels(messageData)
 
         // Then
         #expect(result.contains("<tool_call>"))
@@ -157,20 +157,20 @@ internal struct ChannelOrderingTests {
     }
 
     @Test("Empty message returns empty string")
-    func testEmptyMessage() throws {
+    func testEmptyMessage() {
         // Given
         let formatter = ChatMLContextFormatter(labels: ChatMLLabels())
         let messageData = TestHelpers.createMessageDataWithChannels()
 
         // When
-        let result = try formatter.formatAssistantMessageFromChannels(messageData)
+        let result = formatter.formatAssistantMessageFromChannels(messageData)
 
         // Then
         #expect(result.isEmpty)
     }
 
     @Test("OrderedItem enum properly orders channels and tools")
-    func testOrderedItemEnum() throws {
+    func testOrderedItemEnum() {
         // Given
         let channel = TestHelpers.createCommentaryChannel(content: "Test", order: 5)
         let toolCall = ToolCall(name: "test", arguments: "{}", id: UUID().uuidString)

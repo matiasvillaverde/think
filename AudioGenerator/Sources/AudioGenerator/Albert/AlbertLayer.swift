@@ -10,16 +10,31 @@ internal class AlbertLayer {
     let ffn: Linear
     let ffnOutput: Linear
 
-    init(weights: [String: MLXArray], config: AlbertModelArgs, layerNum: Int, innerGroupNum: Int) {
-        attention = AlbertSelfAttention(weights: weights, config: config, layerNum: layerNum, innerGroupNum: innerGroupNum)
-        ffn = Linear(weight: weights["bert.encoder.albert_layer_groups.\(layerNum).albert_layers.\(innerGroupNum).ffn.weight"]!,
-                        bias: weights["bert.encoder.albert_layer_groups.\(layerNum).albert_layers.\(innerGroupNum).ffn.bias"]!)
-        ffnOutput = Linear(weight: weights["bert.encoder.albert_layer_groups.\(layerNum).albert_layers.\(innerGroupNum).ffn_output.weight"]!,
-                            bias: weights["bert.encoder.albert_layer_groups.\(layerNum).albert_layers.\(innerGroupNum).ffn_output.bias"]!)
+    init(
+        weights: [String: MLXArray],
+        config: AlbertModelArgs,
+        layerNum: Int,
+        innerGroupNum: Int
+    ) {
+        let layerPrefix: String = "bert.encoder.albert_layer_groups.\(layerNum).albert_layers.\(innerGroupNum)"
+        attention = AlbertSelfAttention(
+            weights: weights,
+            config: config,
+            layerNum: layerNum,
+            innerGroupNum: innerGroupNum
+        )
+        ffn = Linear(
+            weight: weights["\(layerPrefix).ffn.weight"]!,
+            bias: weights["\(layerPrefix).ffn.bias"]!
+        )
+        ffnOutput = Linear(
+            weight: weights["\(layerPrefix).ffn_output.weight"]!,
+            bias: weights["\(layerPrefix).ffn_output.bias"]!
+        )
         fullLayerLayerNorm = LayerNorm(dimensions: config.hiddenSize, eps: config.layerNormEps)
 
-        let fullLayerLayerNormWeights: MLXArray = weights["bert.encoder.albert_layer_groups.\(layerNum).albert_layers.\(innerGroupNum).full_layer_layer_norm.weight"]!
-        let fullLayerLayerNormBiases: MLXArray = weights["bert.encoder.albert_layer_groups.\(layerNum).albert_layers.\(innerGroupNum).full_layer_layer_norm.bias"]!
+        let fullLayerLayerNormWeights: MLXArray = weights["\(layerPrefix).full_layer_layer_norm.weight"]!
+        let fullLayerLayerNormBiases: MLXArray = weights["\(layerPrefix).full_layer_layer_norm.bias"]!
 
         guard fullLayerLayerNormWeights.count == config.hiddenSize, fullLayerLayerNormBiases.count == config.hiddenSize else {
             fatalError("Wrong shape for AlbertLayer FullLayerLayerNorm bias or weights!")

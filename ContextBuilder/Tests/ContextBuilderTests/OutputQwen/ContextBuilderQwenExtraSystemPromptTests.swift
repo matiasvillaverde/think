@@ -10,7 +10,7 @@ internal struct ContextBuilderQwenExtraSystemPromptTests {
         let tooling = MockTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
 
-        let parameters = try createQwenExtraSystemPromptTestParameters()
+        let parameters = createQwenExtraSystemPromptTestParameters()
         let expectedOutput = try loadExpectedQwenExtraSystemPromptOutput()
 
         let result = try await contextBuilder.build(parameters: parameters)
@@ -23,7 +23,7 @@ internal struct ContextBuilderQwenExtraSystemPromptTests {
         #expect(areEquivalent, Comment(rawValue: detailedDiff))
     }
 
-    private func createQwenExtraSystemPromptTestParameters() throws -> BuildParameters {
+    private func createQwenExtraSystemPromptTestParameters() -> BuildParameters {
         let model = SendableModel(
             id: UUID(),
             ramNeeded: 1_000_000_000,

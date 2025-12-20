@@ -223,7 +223,7 @@ internal actor HuggingFaceDownloader: HuggingFaceDownloaderProtocol {
 
     internal func cancelDownload(for modelId: String) async {
         await logger.info("Cancelling download for model: \(modelId)")
-        try? await downloadCoordinator.cancel(repositoryId: modelId)
+        await downloadCoordinator.cancel(repositoryId: modelId)
     }
 
     internal func pauseDownload(for modelId: String) async {

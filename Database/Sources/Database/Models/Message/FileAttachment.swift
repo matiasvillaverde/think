@@ -54,7 +54,7 @@ public final class FileAttachment: Identifiable, Equatable, ObservableObject {
         chat: Chat,
         fileURL: URL,
         ragState: State = .saving
-    ) throws {
+    ) {
         self.file = data
         self.name = fileURL.lastPathComponent
         self.type = fileURL.pathExtension
@@ -76,7 +76,7 @@ public final class FileAttachment: Identifiable, Equatable, ObservableObject {
         // 2. Read data from the file and convert into a String.
         let data = try Data(contentsOf: url)
 
-        try self.init(data: data, chat: chat, fileURL: url)
+        self.init(data: data, chat: chat, fileURL: url)
     }
 }
 
@@ -97,8 +97,7 @@ extension FileAttachment {
 #if DEBUG
 extension FileAttachment {
     @MainActor public static let preview: FileAttachment = {
-        // swiftlint:disable:next force_try
-        try! FileAttachment( // Preview data - error handling not needed in DEBUG
+        FileAttachment( // Preview data - error handling not needed in DEBUG
             data: Data(),
             chat: .preview,
             fileURL: URL(string: "Attention is all you need.pdf")!,
@@ -107,29 +106,25 @@ extension FileAttachment {
     }()
 
     @MainActor public static let previewsAllStates: [FileAttachment] = [
-        // swiftlint:disable:next force_try
-        try! FileAttachment( // Preview data - error handling not needed in DEBUG
+        FileAttachment( // Preview data - error handling not needed in DEBUG
             data: Data(),
             chat: .preview,
             fileURL: URL(string: "Attention is all you need.pdf")!,
             ragState: .saving
         ),
-        // swiftlint:disable:next force_try
-        try! FileAttachment( // Preview data - error handling not needed in DEBUG
+        FileAttachment( // Preview data - error handling not needed in DEBUG
             data: Data(),
             chat: .preview,
             fileURL: URL(string: "Attention is all you need.pdf")!,
             ragState: .notStarted
         ),
-        // swiftlint:disable:next force_try
-        try! FileAttachment( // Preview data - error handling not needed in DEBUG
+        FileAttachment( // Preview data - error handling not needed in DEBUG
             data: Data(),
             chat: .preview,
             fileURL: URL(string: "Attention is all you need.pdf")!,
             ragState: .saved
         ),
-        // swiftlint:disable:next force_try
-        try! FileAttachment( // Preview data - error handling not needed in DEBUG
+        FileAttachment( // Preview data - error handling not needed in DEBUG
             data: Data(),
             chat: .preview,
             fileURL: URL(string: "Attention is all you need.pdf")!,

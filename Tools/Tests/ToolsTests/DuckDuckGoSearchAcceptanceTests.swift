@@ -43,7 +43,7 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         // Given
         let toolManager: ToolManager = ToolManager()
 
-        try await toolManager.configureTool(identifiers: [.duckduckgo])
+        await toolManager.configureTool(identifiers: [.duckduckgo])
 
         let request: ToolRequest = ToolRequest(
             name: "duckduckgo_search",
@@ -57,7 +57,7 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)
@@ -82,7 +82,7 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         // Given
         let toolManager: ToolManager = ToolManager()
 
-        try await toolManager.configureTool(identifiers: [.browser])
+        await toolManager.configureTool(identifiers: [.browser])
 
         let request: ToolRequest = ToolRequest(
             name: "browser.search",
@@ -96,7 +96,7 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)
@@ -180,7 +180,7 @@ internal struct DuckDuckGoSearchAcceptanceTests {
 
         // Given
         let toolManager: ToolManager = ToolManager()
-        try await toolManager.configureTool(identifiers: [.browser])
+        await toolManager.configureTool(identifiers: [.browser])
 
         let request: ToolRequest = ToolRequest(
             name: "browser.search",
@@ -195,7 +195,7 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)
@@ -242,10 +242,10 @@ internal struct DuckDuckGoSearchAcceptanceTests {
 @Suite("DuckDuckGo Search Unit Tests")
 internal struct DuckDuckGoSearchUnitTests {
     @Test("DuckDuckGo search error handling")
-    internal func testDuckDuckGoSearchErrorHandling() async throws {
+    internal func testDuckDuckGoSearchErrorHandling() async {
         // Given
         let toolManager: ToolManager = ToolManager()
-        try await toolManager.configureTool(identifiers: [.duckduckgo])
+        await toolManager.configureTool(identifiers: [.duckduckgo])
 
         // When - Invalid request with missing query
         let request: ToolRequest = ToolRequest(
@@ -258,7 +258,7 @@ internal struct DuckDuckGoSearchUnitTests {
             id: UUID()
         )
 
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)

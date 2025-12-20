@@ -6,7 +6,7 @@ import Testing
 @Suite("CoreML End-to-End Verification")
 struct CoreMLEndToEndVerificationTest {
     @Test("Verify CoreML file selection reduces downloads by 75%")
-    func testCoreMLBandwidthSavings() async throws {
+    func testCoreMLBandwidthSavings() async {
         // This test verifies that we only download 1 file instead of 4
         let allFiles: [FileInfo] = [
             FileInfo(path: "coreml/split-einsum/model_split.zip", size: 2_000_000_000),
@@ -94,7 +94,7 @@ struct CoreMLEndToEndVerificationTest {
     }
 
     @Test("Verify complete CoreML download flow")
-    func testCompleteCoreMLFlow() async throws {
+    func testCompleteCoreMLFlow() async {
         // Step 1: File selection
         let files: [FileInfo] = [
             FileInfo(path: "coreml/split-einsum/model.zip", size: 2_147_483_648),

@@ -43,18 +43,18 @@ public actor DiscoveryCarouselViewModel: DiscoveryCarouselViewModeling {
         logger.info("DiscoveryCarouselViewModel initialized with \(memoryOverheadPercentage * 100)% memory overhead")
     }
 
-    public func recommendedLanguageModels() async throws -> [DiscoveredModel] {
+    public func recommendedLanguageModels() async -> [DiscoveredModel] {
         logger.debug("Fetching recommended language models")
 
-        let compatibleModels: [DiscoveredModel] = try await discoverCompatibleModels(modelType: .language)
+        let compatibleModels: [DiscoveredModel] = await discoverCompatibleModels(modelType: .language)
         logger.info("Found \(compatibleModels.count) compatible recommended language models")
         return compatibleModels
     }
 
-    public func recommendedAllModels() async throws -> [DiscoveredModel] {
+    public func recommendedAllModels() async -> [DiscoveredModel] {
         logger.debug("Fetching all recommended models")
 
-        let compatibleModels: [DiscoveredModel] = try await discoverCompatibleModels(modelType: .all)
+        let compatibleModels: [DiscoveredModel] = await discoverCompatibleModels(modelType: .all)
         logger.info("Found \(compatibleModels.count) compatible recommended models (all types)")
         return compatibleModels
     }
@@ -64,7 +64,7 @@ public actor DiscoveryCarouselViewModel: DiscoveryCarouselViewModeling {
         case all
     }
 
-    private func discoverCompatibleModels(modelType: ModelType) async throws -> [DiscoveredModel] {
+    private func discoverCompatibleModels(modelType: ModelType) async -> [DiscoveredModel] {
         logger.debug("Checking device memory availability")
         let deviceMemory: DeviceMemoryInfo = await deviceChecker.getDeviceMemoryInfo()
         cachedDeviceMemory = deviceMemory
@@ -91,7 +91,7 @@ public actor DiscoveryCarouselViewModel: DiscoveryCarouselViewModeling {
         var modelMemoryRequirements: [String: UInt64] = [:]
 
         for modelId in recommendedModelIds {
-            if let model = try await processModelForRecommendation(modelId) {
+            if let model = await processModelForRecommendation(modelId) {
                 compatibleModels.append(model)
 
                 // Store memory requirement for sorting
@@ -126,7 +126,7 @@ public actor DiscoveryCarouselViewModel: DiscoveryCarouselViewModeling {
         return compatibleModels
     }
 
-    private func processModelForRecommendation(_ modelId: String) async throws -> DiscoveredModel? {
+    private func processModelForRecommendation(_ modelId: String) async -> DiscoveredModel? {
         do {
             let model: DiscoveredModel = try await communityExplorer.discoverModel(modelId)
             let requirements: MemoryRequirements = try await calculateModelRequirements(model, modelId: modelId)
@@ -148,7 +148,7 @@ public actor DiscoveryCarouselViewModel: DiscoveryCarouselViewModeling {
         }
     }
 
-    private func calculateModelMemoryRequirement(_ model: DiscoveredModel, modelId: String) async throws -> UInt64 {
+    func calculateModelMemoryRequirement(_ model: DiscoveredModel, modelId: String) async throws -> UInt64 {
         let requirements: MemoryRequirements = try await MainActor.run {
             try calculateModelRequirements(model, modelId: modelId)
         }
@@ -192,7 +192,7 @@ public actor DiscoveryCarouselViewModel: DiscoveryCarouselViewModeling {
         }
     }
 
-    public func latestModelsFromDefaultCommunities() async throws -> [ModelCommunity: [DiscoveredModel]] {
+    public func latestModelsFromDefaultCommunities() async -> [ModelCommunity: [DiscoveredModel]] {
         logger.debug("Fetching latest models from default communities")
         var result: [ModelCommunity: [DiscoveredModel]] = [:]
         // Fetch models from each default community using protocol method
@@ -218,6 +218,7 @@ public actor DiscoveryCarouselViewModel: DiscoveryCarouselViewModeling {
         logger.info("Fetched \(totalModels) total models from \(result.keys.count) communities")
         return result
     }
+
     // MARK: - Private Methods
     nonisolated private func extractParameterCount(from modelCard: String?) -> UInt64? {
         guard let card = modelCard else {

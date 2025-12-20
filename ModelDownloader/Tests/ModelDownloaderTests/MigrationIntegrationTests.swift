@@ -32,7 +32,7 @@ struct MigrationIntegrationTests {
     }
 
     @Test("Both implementations handle download events consistently")
-    func testDownloadEventConsistency() async throws {
+    func testDownloadEventConsistency() async {
         let testModel: DiscoveredModel = createTestModel()
 
         // Create downloader instances
@@ -97,7 +97,7 @@ struct MigrationIntegrationTests {
     }
 
     @Test("Both implementations handle missing files consistently")
-    func testMissingFilesHandling() async throws {
+    func testMissingFilesHandling() async {
         // Create model with no files
         let emptyModel: DiscoveredModel = DiscoveredModel(
             id: "test/empty-model",
@@ -146,7 +146,7 @@ struct MigrationIntegrationTests {
     }
 
     @Test("Both implementations use same file manager")
-    func testFileManagerConsistency() async throws {
+    func testFileManagerConsistency() async {
         // Create both implementations with same directories
         let modelsDir: URL = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent("TestModels")
@@ -210,7 +210,7 @@ struct MigrationIntegrationTests {
     }
 
     @Test("Both implementations handle concurrent downloads")
-    func testConcurrentDownloads() throws {
+    func testConcurrentDownloads() {
         // Create test models
         let models: [DiscoveredModel] = [
             DiscoveredModel(
@@ -251,7 +251,7 @@ struct MigrationIntegrationTests {
     }
 
     @Test("Refactored implementation integrates new components")
-    func testRefactoredUsesNewComponents() async throws {
+    func testRefactoredUsesNewComponents() async {
         let testModel: DiscoveredModel = createTestModel()
 
         // Create refactored implementation

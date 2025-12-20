@@ -18,10 +18,13 @@ extension ModelStateCoordinator {
         switch totalMemory {
         case ..<eightGB:          // < 8GB
             return smallBatch
+
         case ..<sixteenGB:        // < 16GB
             return mediumBatch
+
         case ..<thirtyTwoGB:      // < 32GB
             return largeBatch
+
         default:                   // >= 32GB
             return extraLargeBatch
         }

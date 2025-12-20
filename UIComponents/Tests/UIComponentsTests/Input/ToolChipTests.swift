@@ -7,7 +7,7 @@ import Testing
 internal struct ToolChipTests {
     @Test("ToolChip displays correct icon for each tool type")
     @MainActor
-    internal func testToolChipIcons() throws {
+    internal func testToolChipIcons() {
         // Test that each ToolIdentifier has the correct icon
         let testCases: [(ToolIdentifier, String)] = [
             (.imageGeneration, "photo"),
@@ -30,7 +30,7 @@ internal struct ToolChipTests {
 
     @Test("ToolChip calls onRemove when remove button tapped")
     @MainActor
-    internal func testRemoveCallback() throws {
+    internal func testRemoveCallback() {
         var removeCalled: Bool = false
         let chip: ToolChip = ToolChip(tool: .imageGeneration) {
             removeCalled = true
@@ -43,7 +43,7 @@ internal struct ToolChipTests {
 
     @Test("ToolChip has correct accessibility label")
     @MainActor
-    internal func testAccessibilityLabel() throws {
+    internal func testAccessibilityLabel() {
         let chip: ToolChip = ToolChip(tool: .reasoning) {
             // Remove action
         }

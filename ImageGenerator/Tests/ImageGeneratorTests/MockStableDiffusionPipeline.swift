@@ -8,14 +8,14 @@ final class MockStableDiffusionPipeline: StableDiffusionPipelineProtocol {
     var lastConfiguration: StableDiffusionPipeline.Configuration?
     var shouldReturnImages = true
 
-    func loadResources() throws {
+    func loadResources() {
         // No-op for mock
     }
 
     func generateImages(
         configuration config: StableDiffusionPipeline.Configuration,
-        progressHandler: @escaping (StableDiffusionPipeline.Progress) -> Bool
-    ) throws -> [CGImage?] {
+        progressHandler: (StableDiffusionPipeline.Progress) -> Bool
+    ) -> [CGImage?] {
         generateImagesCallCount += 1
         lastConfiguration = config
 
@@ -60,7 +60,7 @@ final class MockStableDiffusionPipeline: StableDiffusionPipelineProtocol {
     func decodeToImages(
         _ latents: [MLShapedArray<Float32>],
         configuration config: StableDiffusionPipeline.Configuration
-    ) throws -> [CGImage?] {
+    ) -> [CGImage?] {
         []
     }
 

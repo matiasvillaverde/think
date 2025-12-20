@@ -91,7 +91,7 @@ internal struct ChatMLContextFormatter: ContextFormatter, DateFormatting, ToolFo
             // Use channels if available, otherwise fall back to assistant field
             if !message.channels.isEmpty {
                 do {
-                    let formatted: String = try formatAssistantMessageFromChannels(message)
+                    let formatted: String = formatAssistantMessageFromChannels(message)
                     if !formatted.isEmpty {
                         components.append(labels.assistantLabel)
                         components.append(formatted)
@@ -309,7 +309,7 @@ internal struct ChatMLContextFormatter: ContextFormatter, DateFormatting, ToolFo
     }
 
     /// Formats assistant message from channels
-    internal func formatAssistantMessageFromChannels(_ messageData: MessageData) throws -> String {
+    internal func formatAssistantMessageFromChannels(_ messageData: MessageData) -> String {
         guard !messageData.channels.isEmpty || !messageData.toolCalls.isEmpty else {
             return ""
         }

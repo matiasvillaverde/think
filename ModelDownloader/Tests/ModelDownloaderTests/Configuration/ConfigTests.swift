@@ -7,7 +7,7 @@ internal enum TestError: Error {
 }
 
 @Test("Config should support dynamic member lookup")
-internal func testDynamicMemberLookup() throws {
+internal func testDynamicMemberLookup() {
     let dictionary: [String: Any] = [
         "model_type": "gpt2",
         "vocab_size": 50_257,
@@ -22,7 +22,7 @@ internal func testDynamicMemberLookup() throws {
 }
 
 @Test("Config should convert camelCase to snake_case")
-internal func testCamelCaseConversion() throws {
+internal func testCamelCaseConversion() {
     let config: Config = Config([:])
 
     #expect(config.uncamelCase("modelType") == "model_type")
@@ -32,7 +32,7 @@ internal func testCamelCaseConversion() throws {
 }
 
 @Test("Config should convert snake_case to camelCase")
-internal func testSnakeCaseConversion() throws {
+internal func testSnakeCaseConversion() {
     let config: Config = Config([:])
 
     #expect(config.camelCase("model_type") == "modelType")
@@ -42,7 +42,7 @@ internal func testSnakeCaseConversion() throws {
 }
 
 @Test("Config should handle nested configurations")
-internal func testNestedConfiguration() throws {
+internal func testNestedConfiguration() {
     let dictionary: [String: Any] = [
         "tokenizer": [
             "class": "GPT2Tokenizer",
@@ -59,7 +59,7 @@ internal func testNestedConfiguration() throws {
 }
 
 @Test("Config should handle array values")
-internal func testArrayValues() throws {
+internal func testArrayValues() {
     let dictionary: [String: Any] = [
         "architectures": [
             ["name": "GPT2LMHeadModel"] as [String: Any],
@@ -77,7 +77,7 @@ internal func testArrayValues() throws {
 }
 
 @Test("Config should handle wrapped values correctly")
-internal func testConfigValueTypes() throws {
+internal func testConfigValueTypes() {
     // Test a Config that wraps a single value (like what dynamic member lookup creates)
     let stringConfig: Config = Config(["value": "test"])
     let intConfig: Config = Config(["value": 42])
@@ -91,7 +91,7 @@ internal func testConfigValueTypes() throws {
 }
 
 @Test("Config should return nil for non-existent keys")
-internal func testNonExistentKeys() throws {
+internal func testNonExistentKeys() {
     let config: Config = Config([:])
 
     #expect(config.nonExistentKey == nil)
@@ -99,7 +99,7 @@ internal func testNonExistentKeys() throws {
 }
 
 @Test("Config should handle token values as tuples")
-internal func testTokenValues() throws {
+internal func testTokenValues() {
     let dictionary: [String: Any] = [
         "special_token": (50_256 as UInt, "<|endoftext|>" as String)
     ]

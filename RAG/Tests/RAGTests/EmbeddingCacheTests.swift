@@ -35,7 +35,7 @@ internal struct EmbeddingCacheTests {
         let config: ModelConfiguration = ModelConfiguration(hubRepoId: "test/repo")
         let counter: CallCounter = CallCounter()
 
-        let compute: @Sendable ([String]) async throws -> [[Float]] = { texts in
+        let compute: @Sendable ([String]) async -> [[Float]] = { texts in
             _ = await counter.increment()
             return texts.map { [Float($0.count)] }
         }
@@ -64,7 +64,7 @@ internal struct EmbeddingCacheTests {
         let config: ModelConfiguration = ModelConfiguration(hubRepoId: "test/repo")
         let counter: CallCounter = CallCounter()
 
-        let compute: @Sendable ([String]) async throws -> [[Float]] = { texts in
+        let compute: @Sendable ([String]) async -> [[Float]] = { texts in
             _ = await counter.increment()
             return texts.map { [Float($0.count)] }
         }
@@ -109,7 +109,7 @@ internal struct EmbeddingCacheTests {
         let cache: EmbeddingCache = EmbeddingCache(maxEntries: 4)
         let counter: CallCounter = CallCounter()
 
-        let compute: @Sendable ([String]) async throws -> [[Float]] = { texts in
+        let compute: @Sendable ([String]) async -> [[Float]] = { texts in
             _ = await counter.increment()
             return texts.map { [Float($0.count)] }
         }
@@ -138,7 +138,7 @@ internal struct EmbeddingCacheTests {
         let capture: ComputeCapture = ComputeCapture()
         let config: ModelConfiguration = ModelConfiguration(hubRepoId: "test/repo")
 
-        let compute: @Sendable ([String]) async throws -> [[Float]] = { texts in
+        let compute: @Sendable ([String]) async -> [[Float]] = { texts in
             await capture.record(texts)
             return texts.map { [Float($0.count)] }
         }

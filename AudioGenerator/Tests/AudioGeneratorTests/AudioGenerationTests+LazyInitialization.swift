@@ -5,7 +5,7 @@ import Testing
 
 extension AudioGenerationTests {
     @Test("Resources not initialized on AudioEngine creation")
-    func testResourcesNotInitializedOnCreation() async throws {
+    func testResourcesNotInitializedOnCreation() async {
         // Given/When
         let engine: AudioEngine = AudioEngine()
 
@@ -17,7 +17,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Empty text doesn't trigger initialization")
-    func testEmptyTextDoesNotInitialize() async throws {
+    func testEmptyTextDoesNotInitialize() async {
         // Given
         let engine: AudioEngine = AudioEngine()
 

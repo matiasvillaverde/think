@@ -340,7 +340,7 @@ public struct AppInitializeCommand: AnonymousCommand {
             let existingSystemPersonalities = try context.fetch(systemPersonalitiesDescriptor)
 
             // SAFE: Create lookup with duplicate detection and cleanup
-            let (existingLookup, duplicatesFound) = try createSafePersonalityLookup(
+            let (existingLookup, duplicatesFound) = createSafePersonalityLookup(
                 from: existingSystemPersonalities,
                 in: context
             )
@@ -378,7 +378,7 @@ public struct AppInitializeCommand: AnonymousCommand {
         private func createSafePersonalityLookup(
             from personalities: [Personality],
             in context: ModelContext
-        ) throws -> ([SystemInstruction: Personality], Int) {
+        ) -> ([SystemInstruction: Personality], Int) {
             var lookup: [SystemInstruction: Personality] = [:]
             var duplicatesFound: [SystemInstruction] = []
             var duplicatePersonalities: [Personality] = []

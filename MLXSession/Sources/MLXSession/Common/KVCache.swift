@@ -300,7 +300,7 @@ internal class KVCacheSimple: BaseKVCache, CustomDebugStringConvertible {
     ///
     /// Use `updateQuantized()` and `quantizedScaledDotProductAttention()` for zero-overhead operation.
     internal func toQuantized(groupSize: Int = 64, bits: Int = 4) -> QuantizedKVCache {
-        let quantizedCache = QuantizedKVCache(groupSize: groupSize, bits: bits)
+        let quantizedCache = QuantizedKVCache(groupSize: groupSize, bits: bits, mode: .affine)
         quantizedCache.offset = self.offset
 
         if let keys = self.keys, let values = self.values {
@@ -308,13 +308,19 @@ internal class KVCacheSimple: BaseKVCache, CustomDebugStringConvertible {
             let currentKeys = keys[.ellipsis, ..<offset, 0...]
             let currentValues = values[.ellipsis, ..<offset, 0...]
 
-            let quantizedKeys = quantized(currentKeys, groupSize: groupSize, bits: bits)
-            let quantizedValues = quantized(currentValues, groupSize: groupSize, bits: bits)
+            let quantizedKeys = quantized(
+                currentKeys, groupSize: groupSize, bits: bits, mode: quantizedCache.mode)
+            let quantizedValues = quantized(
+                currentValues, groupSize: groupSize, bits: bits, mode: quantizedCache.mode)
+            guard let keyBiases = quantizedKeys.biases, let valueBiases = quantizedValues.biases
+            else {
+                fatalError("KVCacheSimple.toQuantized requires affine quantization biases")
+            }
 
             // Set the quantized state
             quantizedCache.state = [
-                quantizedKeys.wq, quantizedKeys.scales, quantizedKeys.biases,
-                quantizedValues.wq, quantizedValues.scales, quantizedValues.biases,
+                quantizedKeys.wq, quantizedKeys.scales, keyBiases,
+                quantizedValues.wq, quantizedValues.scales, valueBiases,
             ]
         }
 
@@ -561,10 +567,12 @@ internal class QuantizedKVCache: BaseKVCache, QuantizedKVCacheProtocol {
     private let step: Int
     internal let groupSize: Int
     internal let bits: Int
+    internal let mode: QuantizationMode
 
-    public init(groupSize: Int = 64, bits: Int = 8) {
+    public init(groupSize: Int = 64, bits: Int = 8, mode: QuantizationMode = .affine) {
         self.groupSize = groupSize
         self.bits = bits
+        self.mode = mode
         self.step = 256
         super.init()
     }
@@ -595,13 +603,32 @@ internal class QuantizedKVCache: BaseKVCache, QuantizedKVCacheProtocol {
         return (treeMap(transform, tuple1), treeMap(transform, tuple2))
     }
 
+    private func requireBiases(
+        _ biases: MLXArray?,
+        context: String,
+        scales: MLXArray
+    ) -> MLXArray {
+        guard let biases else {
+            fatalError("\(context): Expected quantization biases for mode \(mode)")
+        }
+        if biases.shape != scales.shape {
+            fatalError("\(context): Biases shape \(biases.shape) does not match scales \(scales.shape)")
+        }
+        return biases
+    }
+
     /// Create initial quantized tuples (like Python's init_quant)
     private func initQuant(dim: Int, shape: [Int], dtype: DType) -> (MLXArray, MLXArray, MLXArray) {
         // Create temporary zero arrays and quantize them using native MLX Swift
         let tempArray = MLXArray.zeros(shape + [dim], dtype: dtype)
-        let quantized = quantized(tempArray, groupSize: groupSize, bits: bits)
+        let quantized = quantized(tempArray, groupSize: groupSize, bits: bits, mode: mode)
+        let biases = requireBiases(
+            quantized.biases,
+            context: "QuantizedKVCache initQuant",
+            scales: quantized.scales
+        )
 
-        return (quantized.wq, quantized.scales, quantized.biases)
+        return (quantized.wq, quantized.scales, biases)
     }
 
     /// Expand quantized tuple
@@ -675,12 +702,22 @@ internal class QuantizedKVCache: BaseKVCache, QuantizedKVCacheProtocol {
 
         offset += numSteps
 
-        let quantizedKeys = quantized(keys, groupSize: groupSize, bits: bits)
-        let quantizedValues = quantized(values, groupSize: groupSize, bits: bits)
+        let quantizedKeys = quantized(keys, groupSize: groupSize, bits: bits, mode: mode)
+        let quantizedValues = quantized(values, groupSize: groupSize, bits: bits, mode: mode)
+        let keyBiases = requireBiases(
+            quantizedKeys.biases,
+            context: "QuantizedKVCache updateQuantized keys",
+            scales: quantizedKeys.scales
+        )
+        let valueBiases = requireBiases(
+            quantizedValues.biases,
+            context: "QuantizedKVCache updateQuantized values",
+            scales: quantizedValues.scales
+        )
 
         // Convert named tuples to positional tuples
-        let qKeys = (quantizedKeys.wq, quantizedKeys.scales, quantizedKeys.biases)
-        let qValues = (quantizedValues.wq, quantizedValues.scales, quantizedValues.biases)
+        let qKeys = (quantizedKeys.wq, quantizedKeys.scales, keyBiases)
+        let qValues = (quantizedValues.wq, quantizedValues.scales, valueBiases)
 
         // Assign to storage
         guard let currentKeys = self.keys, let currentValues = self.values else {
@@ -781,10 +818,10 @@ internal class QuantizedKVCache: BaseKVCache, QuantizedKVCacheProtocol {
 
             let dequantizedKeys = dequantized(
                 currentKeys.0, scales: currentKeys.1, biases: currentKeys.2,
-                groupSize: groupSize, bits: bits)
+                groupSize: groupSize, bits: bits, mode: mode)
             let dequantizedValues = dequantized(
                 currentValues.0, scales: currentValues.1, biases: currentValues.2,
-                groupSize: groupSize, bits: bits)
+                groupSize: groupSize, bits: bits, mode: mode)
 
             // Set the unquantized state
             simpleCache.state = [dequantizedKeys, dequantizedValues]
@@ -1280,7 +1317,8 @@ internal func quantizedScaledDotProductAttention(
     scale: Float,
     mask: MLXFast.ScaledDotProductAttentionMaskMode = .none,
     groupSize: Int = 64,
-    bits: Int = 8
+    bits: Int = 8,
+    mode: QuantizationMode = .affine
 ) -> MLXArray {
 
     let (B, nQHeads, L, D) = (queries.dim(0), queries.dim(1), queries.dim(2), queries.dim(3))
@@ -1310,7 +1348,7 @@ internal func quantizedScaledDotProductAttention(
     // Compute attention scores using quantized matmul
     var scores = quantizedMatmul(
         scaledQueries, qKeys.0, scales: qKeys.1, biases: qKeys.2,
-        transpose: true, groupSize: groupSize, bits: bits
+        transpose: true, groupSize: groupSize, bits: bits, mode: mode
     )
 
     // Apply mask
@@ -1349,7 +1387,7 @@ internal func quantizedScaledDotProductAttention(
     // Compute output using quantized matmul
     var output = quantizedMatmul(
         attentionWeights, qValues.0, scales: qValues.1, biases: qValues.2,
-        transpose: false, groupSize: groupSize, bits: bits
+        transpose: false, groupSize: groupSize, bits: bits, mode: mode
     )
 
     // Reshape output for GQA

@@ -102,15 +102,20 @@ internal final class MockNotificationCenter: NotificationCenterProtocol, @unchec
     internal var removedPendingIdentifiers: [String] = []
     internal var removedDeliveredIdentifiers: [String] = []
 
-    internal func requestAuthorization(options _: UNAuthorizationOptions) throws -> Bool {
-        authorizationGranted
+    internal func requestAuthorization(options _: UNAuthorizationOptions) async throws -> Bool {
+        await Task.yield()
+        try Task.checkCancellation()
+        return authorizationGranted
     }
 
-    internal func notificationSettings() -> NotificationSettings {
-        NotificationSettings(authorizationStatus: authorizationStatus)
+    internal func notificationSettings() async -> NotificationSettings {
+        await Task.yield()
+        return NotificationSettings(authorizationStatus: authorizationStatus)
     }
 
-    internal func add(_ request: UNNotificationRequest) throws {
+    internal func add(_ request: UNNotificationRequest) async throws {
+        await Task.yield()
+        try Task.checkCancellation()
         addedRequests.append(request)
     }
 
@@ -122,15 +127,17 @@ internal final class MockNotificationCenter: NotificationCenterProtocol, @unchec
         removedDeliveredIdentifiers.append(contentsOf: identifiers)
     }
 
-    internal func pendingNotificationRequests() -> [UNNotificationRequest] {
-        addedRequests.filter { request in
+    internal func pendingNotificationRequests() async -> [UNNotificationRequest] {
+        await Task.yield()
+        return addedRequests.filter { request in
             !removedPendingIdentifiers.contains(request.identifier)
         }
     }
 
-    internal func deliveredNotifications() -> [UNNotification] {
+    internal func deliveredNotifications() async -> [UNNotification] {
+        await Task.yield()
         // Return empty for mock - could be enhanced if needed
-        []
+        return []
     }
 
     // Helper methods for testing

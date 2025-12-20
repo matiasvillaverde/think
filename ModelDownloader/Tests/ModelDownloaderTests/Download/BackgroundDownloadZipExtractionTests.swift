@@ -7,7 +7,7 @@ import ZIPFoundation
 @Suite("Background Download ZIP Extraction Tests")
 struct BackgroundDownloadZipExtractionTests {
     @Test("Helper method detects ZIP files correctly")
-    func testZipFileDetection() throws {
+    func testZipFileDetection() {
         let mockZipURL: URL = URL(fileURLWithPath: "/tmp/model.zip")
         let mockNonZipURL: URL = URL(fileURLWithPath: "/tmp/model.bin")
         let mockUppercaseZipURL: URL = URL(fileURLWithPath: "/tmp/model.ZIP")

@@ -54,12 +54,12 @@ extension ChatMLToolsStreamingTests {
         accumulatedInput: String,
         streamState: inout StreamingState,
         position: Int
-    ) throws {
+    ) {
         let commentaryChannel = output.channels.first { $0.type == .commentary }
         let toolChannels = output.channels.filter { $0.type == .tool }
 
         // NEW: Verify all channels have valid UUIDs
-        try verifyChannelUUIDIdentities(
+        verifyChannelUUIDIdentities(
             channels: output.channels,
             streamState: &streamState,
             position: position
@@ -67,7 +67,7 @@ extension ChatMLToolsStreamingTests {
 
         if let commentary = commentaryChannel {
             streamState.hasSeenCommentaryChannel = true
-            try verifyCommentaryChannel(
+            verifyCommentaryChannel(
                 commentary: commentary,
                 accumulatedInput: accumulatedInput,
                 previousContent: streamState.previousCommentaryContent,
@@ -82,7 +82,7 @@ extension ChatMLToolsStreamingTests {
             streamState.toolChannelCount = toolChannels.count
 
             for toolChannel in toolChannels {
-                try verifyToolChannel(
+                verifyToolChannel(
                     tool: toolChannel,
                     hasSeenCommentary: streamState.hasSeenCommentaryChannel,
                     position: position
@@ -96,14 +96,14 @@ extension ChatMLToolsStreamingTests {
         accumulatedInput: String,
         previousContent: String,
         position: Int
-    ) throws {
+    ) {
         let hasCompleteCommentaryTag = accumulatedInput.contains("<commentary>")
         #expect(
             hasCompleteCommentaryTag,
             "Commentary channel should only appear after complete <commentary> tag at \(position)"
         )
 
-        try verifyProgressiveChannelContent(
+        verifyProgressiveChannelContent(
             current: commentary.content,
             previous: previousContent,
             channelType: "commentary",
@@ -121,7 +121,7 @@ extension ChatMLToolsStreamingTests {
         tool: ChannelMessage,
         hasSeenCommentary: Bool,
         position: Int
-    ) throws {
+    ) {
         // Commentary should appear before tool calls
         #expect(
             hasSeenCommentary,
@@ -145,7 +145,7 @@ extension ChatMLToolsStreamingTests {
         _ output: ProcessedOutput,
         accumulatedInput: String,
         position: Int
-    ) throws {
+    ) {
         // Check for partial commentary tag scenarios
         let hasPartialCommentaryTag = checkPartialCommentaryTag(accumulatedInput)
         let hasOpenCommentaryWithoutClose = accumulatedInput.contains("<commentary>") &&
@@ -231,7 +231,7 @@ extension ChatMLToolsStreamingTests {
         previous: String,
         channelType: String,
         position: Int
-    ) throws {
+    ) {
         // Content should either grow, stay the same, or be cleaned (partial tags removed)
         // When partial closing tags are excluded, content might shrink
         let isGrowing = current.hasPrefix(previous) ||
@@ -305,7 +305,7 @@ extension ChatMLToolsStreamingTests {
         channels: [ChannelMessage],
         streamState: inout StreamingState,
         position: Int
-    ) throws {
+    ) {
         for channel in channels {
             // Verify channel has a valid UUID (not nil/empty)
             let channelId = channel.id

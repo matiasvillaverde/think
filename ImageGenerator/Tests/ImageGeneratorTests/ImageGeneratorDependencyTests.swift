@@ -33,7 +33,7 @@ internal struct ImageGeneratorDependencyTests {
     }
 
     @Test("ImageGenerator throws error when model location not found")
-    func testLoadModelWithNilURL() async throws {
+    func testLoadModelWithNilURL() async {
         // Given
         let mockDownloader = MockModelDownloader(
             getModelLocationResult: nil

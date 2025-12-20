@@ -40,7 +40,7 @@ internal struct ToolAsyncSyncConversionTests {
     }
 
     @Test("Sync ToolStrategy methods work correctly with ToolExecutor")
-    func testSyncMethodsWithExecutor() async throws {
+    func testSyncMethodsWithExecutor() async {
         // Given
         let executor: ToolExecutor = ToolExecutor()
         await executor.registerStrategy(FunctionsStrategy())
@@ -60,7 +60,7 @@ internal struct ToolAsyncSyncConversionTests {
         )
 
         // When - Execute through ToolExecutor (which handles async/sync conversion)
-        let response: ToolResponse = try await executor.execute(request: request)
+        let response: ToolResponse = await executor.execute(request: request)
 
         // Then
         #expect(response.requestId == request.id)
@@ -70,7 +70,7 @@ internal struct ToolAsyncSyncConversionTests {
     }
 
     @Test("Mixed async and sync strategies work together in parallel execution")
-    func testMixedStrategiesParallelExecution() async throws {
+    func testMixedStrategiesParallelExecution() async {
         // Given
         let executor: ToolExecutor = ToolExecutor()
         await executor.registerStrategy(FunctionsStrategy()) // Sync strategy
@@ -96,7 +96,7 @@ internal struct ToolAsyncSyncConversionTests {
         )
 
         // When - Execute both requests in parallel
-        let responses: [ToolResponse] = try await executor.executeBatch(
+        let responses: [ToolResponse] = await executor.executeBatch(
             requests: [syncRequest, asyncRequest]
         )
 

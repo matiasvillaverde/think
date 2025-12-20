@@ -62,7 +62,8 @@ internal func attentionWithCacheUpdate(
             scale: scale,
             mask: mask,
             groupSize: quantizedKVCache.groupSize,
-            bits: quantizedKVCache.bits
+            bits: quantizedKVCache.bits,
+            mode: quantizedKVCache.mode
         )
     } else {
         let (cachedKeys, cachedValues) = cache.update(keys: keys, values: values)

@@ -38,7 +38,7 @@ extension MLTensor {
         return vectors
     }
 
-    func convertTensorToVector() async throws -> [Float] {
+    func convertTensorToVector() async -> [Float] {
         let shaped: MLShapedArray<Float> = await self.shapedArray(of: Float.self)
         return Array(shaped.scalars)
     }

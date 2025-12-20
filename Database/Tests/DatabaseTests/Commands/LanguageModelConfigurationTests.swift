@@ -129,7 +129,7 @@ struct LanguageModelConfigurationTests {
     struct CopyMethodTests {
         @Test("LLMConfiguration copy preserves all properties including personality")
         @MainActor
-        func copyPreservesAllProperties() throws {
+        func copyPreservesAllProperties() {
             // Given
             let personality = Personality(
                 systemInstruction: .philosopher,
@@ -174,7 +174,7 @@ struct LanguageModelConfigurationTests {
 
         @Test("LLMConfiguration copy works with nil personality")
         @MainActor
-        func copyWithNilPersonality() throws {
+        func copyWithNilPersonality() {
             // Given
             let original = LLMConfiguration(
                 systemInstruction: .englishAssistant,
@@ -200,7 +200,7 @@ struct LanguageModelConfigurationTests {
 
         @Test("LLMConfiguration copy creates independent instance")
         @MainActor
-        func copyCreatesIndependentInstance() throws {
+        func copyCreatesIndependentInstance() {
             // Given
             let original = LLMConfiguration.default
 

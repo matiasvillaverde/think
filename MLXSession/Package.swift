@@ -19,7 +19,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Abstractions"),
-        .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.25.5")),
+        .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.30.3")),
         .package(
             url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.22")
         ),

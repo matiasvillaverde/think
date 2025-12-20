@@ -7,7 +7,7 @@ import Foundation
 @Suite("ImageGenerator Metrics Tests")
 struct ImageGeneratorMetricsTests {
     @Test
-    func testImageMetricsCollectorIntegration() async throws {
+    func testImageMetricsCollectorIntegration() async {
         // Given
         let collector = await setupCollector()
 

@@ -7,7 +7,7 @@ internal protocol MessageFormatting {
     func formatSystemMessage(_ content: String, date: Date, knowledgeCutoff: String?) -> String
     func formatUserMessage(_ content: String) -> String
     func formatAssistantMessage(_ content: String) -> String
-    func formatAssistantMessageFromChannels(_ messageData: MessageData) throws -> String
+    func formatAssistantMessageFromChannels(_ messageData: MessageData) -> String
     func formatToolResponses(_ responses: [ToolResponse]) -> String
 }
 

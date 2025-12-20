@@ -4,7 +4,7 @@ import Testing
 @Suite("GGUF File Selector Tests")
 internal struct GGUFFileSelectorTests {
     @Test("Select optimal file based on device memory - high memory device")
-    func testOptimalSelectionHighMemory() async throws {
+    func testOptimalSelectionHighMemory() async {
         let selector: GGUFFileSelector = GGUFFileSelector()
 
         // Mock files representing different quantization levels
@@ -32,7 +32,7 @@ internal struct GGUFFileSelectorTests {
     }
 
     @Test("Select specified filename when provided")
-    func testSpecificFileSelection() async throws {
+    func testSpecificFileSelection() async {
         let selector: GGUFFileSelector = GGUFFileSelector()
 
         let files: [FileInfo] = [
@@ -52,7 +52,7 @@ internal struct GGUFFileSelectorTests {
     }
 
     @Test("Handle case when specified file not found")
-    func testSpecificFileNotFound() async throws {
+    func testSpecificFileNotFound() async {
         let selector: GGUFFileSelector = GGUFFileSelector()
 
         let files: [FileInfo] = [
@@ -70,7 +70,7 @@ internal struct GGUFFileSelectorTests {
     }
 
     @Test("Handle empty file list")
-    func testEmptyFileList() async throws {
+    func testEmptyFileList() async {
         let selector: GGUFFileSelector = GGUFFileSelector()
 
         let selectedFile: FileInfo? = await selector.selectOptimalFile(from: [])
@@ -79,7 +79,7 @@ internal struct GGUFFileSelectorTests {
     }
 
     @Test("Handle files with no GGUF files")
-    func testNoGGUFFiles() async throws {
+    func testNoGGUFFiles() async {
         let selector: GGUFFileSelector = GGUFFileSelector()
 
         let files: [FileInfo] = [
@@ -94,7 +94,7 @@ internal struct GGUFFileSelectorTests {
     }
 
     @Test("Select best available when preferred quantization not available")
-    func testFallbackSelection() async throws {
+    func testFallbackSelection() async {
         let selector: GGUFFileSelector = GGUFFileSelector()
 
         // Only provide lower-quality options
@@ -117,7 +117,7 @@ internal struct GGUFFileSelectorTests {
     }
 
     @Test("Quantization type parsing accuracy")
-    func testQuantizationTypeParsing() async throws {
+    func testQuantizationTypeParsing() async {
         let selector: GGUFFileSelector = GGUFFileSelector()
 
         let testCases: [(String, String)] = [

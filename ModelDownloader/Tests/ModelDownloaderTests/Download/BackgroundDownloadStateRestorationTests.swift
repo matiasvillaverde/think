@@ -81,7 +81,7 @@ struct BackgroundDownloadStateRestorationTests {
     }
 
     @Test("Persisted downloads restored on init")
-    func testPersistedDownloadsRestoredOnInit() async throws {
+    func testPersistedDownloadsRestoredOnInit() async {
         // Given
         let stateManager: DownloadStateManager = DownloadStateManager()
 
@@ -150,7 +150,7 @@ struct BackgroundDownloadStateRestorationTests {
     }
 
     @Test("Task mappings preserved across restoration")
-    func testTaskMappingsPreserved() throws {
+    func testTaskMappingsPreserved() {
         // Given
         let manager: BackgroundDownloadManager = BackgroundDownloadManager.shared
         let downloadId: UUID = UUID()

@@ -16,7 +16,7 @@ internal actor MockDecisionHandler: DecisionHandler {
     }
 
     // swiftlint:disable:next async_without_await
-    internal func decide(_: GenerationState) async throws -> GenerationDecision? {
+    internal func decide(_: GenerationState) async -> GenerationDecision? {
         wasCalled = true
         return returnDecision
     }

@@ -57,7 +57,7 @@ internal struct ViewModelIntegrationTests {
 
     /// Creates a fresh in-memory database for testing
     /// - Returns: A configured database instance with in-memory storage
-    private func createTestDatabase() throws -> DatabaseProtocol {
+    private func createTestDatabase() -> DatabaseProtocol {
         print("Creating fresh in-memory database for testing")
         let config: DatabaseConfiguration = DatabaseConfiguration.inMemoryOnly
         let database: DatabaseProtocol = Database.instance(configuration: config)
@@ -120,13 +120,13 @@ internal struct ViewModelIntegrationTests {
     // MARK: - Test Cases
 
     @Test("First install flow - onboarding state transitions")
-    func testFirstInstallOnboardingFlow() async throws {
+    func testFirstInstallOnboardingFlow() async {
         print("\nTEST: First Install Onboarding Flow")
         print("======================================")
 
         // Step 1: Initialize fresh database
         print("\nStep 1: Initialize fresh database")
-        let database: DatabaseProtocol = try createTestDatabase()
+        let database: DatabaseProtocol = createTestDatabase()
 
         // Step 2: Create ViewModels
         print("\nStep 2: Create ViewModels")
@@ -169,18 +169,18 @@ internal struct ViewModelIntegrationTests {
     }
 
     @Test("Model discovery - find recommended models")
-    func testModelDiscovery() async throws {
+    func testModelDiscovery() async {
         print("\nTEST: Model Discovery")
         print("========================")
 
         // Step 1: Create database and ViewModels
         print("\nStep 1: Setup test environment")
-        let database: DatabaseProtocol = try createTestDatabase()
+        let database: DatabaseProtocol = createTestDatabase()
         let viewModels: ViewModels = createAllViewModels(database: database)
 
         // Step 2: Discover recommended models
         print("\nStep 2: Discover recommended models")
-        let recommendedModels: [DiscoveredModel] = try await viewModels.discovery.recommendedAllModels()
+        let recommendedModels: [DiscoveredModel] = await viewModels.discovery.recommendedAllModels()
 
         // Assert: Should have recommended models
         #expect(
@@ -219,7 +219,7 @@ internal struct ViewModelIntegrationTests {
 
         // Step 1: Setup
         print("\nStep 1: Setup test environment")
-        let database: DatabaseProtocol = try createTestDatabase()
+        let database: DatabaseProtocol = createTestDatabase()
         let viewModels: ViewModels = createAllViewModels(database: database)
 
         // Initialize database
@@ -227,7 +227,7 @@ internal struct ViewModelIntegrationTests {
 
         // Step 2: Discover models
         print("\nStep 2: Discover recommended models")
-        let recommendedModels: [DiscoveredModel] = try await viewModels.discovery.recommendedAllModels()
+        let recommendedModels: [DiscoveredModel] = await viewModels.discovery.recommendedAllModels()
 
         guard let firstModel = recommendedModels.first else {
             throw TestError.missingData("No recommended models found")

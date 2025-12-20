@@ -40,8 +40,8 @@ internal final actor InternalPreviewAppViewModel: AppViewModeling {
         logger.warning("Default view model - ensureDefaultModelExists called")
     }
 
-    // swiftlint:disable:next async_without_await
-    func setupInitialChat(with modelId: UUID) async throws {
+    func setupInitialChat(with modelId: UUID) async {
+        await Task.yield()
         logger.warning("Default view model - setupInitialChat called with modelId: \(modelId)")
     }
 }

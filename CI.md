@@ -36,7 +36,7 @@ Run `make setup` to check and install all required dependencies.
 
 All modules have full CI/CD support with consistent Makefile patterns:
 
-- **Core**: Abstractions, Database, Context, Factories
+- **Core**: Abstractions, Database, ContextBuilder, Factories
 - **UI**: UIComponents, ViewModels
 - **AI/ML**: AgentOrchestrator, MLXSession, LLamaCPP, ImageGenerator, ModelDownloader, AudioGenerator, RAG
 - **Tools**: AppStoreConnectCLI

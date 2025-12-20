@@ -376,7 +376,7 @@ private actor MockURLSessionWithTransientFailures: StreamingDownloaderProtocol {
         from url: URL,
         to destination: URL,
         headers: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
         attemptCount += 1
         
@@ -392,7 +392,7 @@ private actor MockURLSessionWithTransientFailures: StreamingDownloaderProtocol {
         from url: URL,
         to destination: URL,
         headers: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
         try await download(from: url, to: destination, headers: headers, progressHandler: progressHandler)
     }

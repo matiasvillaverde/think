@@ -102,23 +102,76 @@ internal func loadWeights(
     // quantize if needed
     if quantization != nil || perLayerQuantization != nil {
         logger.debug("Applying quantization to model")
-        quantize(model: model) { path, module in
-            if weights["\(path).scales"] != nil {
-                if let perLayerQuantization {
-                    return perLayerQuantization.quantization(layer: path)?.asTuple
-                } else {
-                    return quantization?.asTuple
+        quantize(
+            model: model,
+            filter: { path, _ in
+                guard weights["\(path).scales"] != nil else { return nil }
+                if let perLayerQuantization, let perLayer = perLayerQuantization.quantization(layer: path)
+                {
+                    return (
+                        perLayer.groupSize,
+                        perLayer.bits,
+                        quantizationMode(for: perLayer)
+                    )
                 }
-            } else {
+                if let quantization {
+                    return (
+                        quantization.groupSize,
+                        quantization.bits,
+                        quantizationMode(for: quantization)
+                    )
+                }
                 return nil
             }
-        }
+        )
     }
 
     // apply the loaded weights
     let parameters = ModuleParameters.unflattened(weights)
-    try model.update(parameters: parameters, verify: [.all])
+    let verify: Module.VerifyUpdate
+    if containsNonAffineQuantization(
+        quantization: quantization,
+        perLayerQuantization: perLayerQuantization
+    ) {
+        logger.warning("Non-affine quantization detected; allowing missing parameters during update")
+        verify = [.noUnusedKeys, .shapeMismatch]
+    } else {
+        verify = [.all]
+    }
+    try model.update(parameters: parameters, verify: verify)
 
     eval(model)
     logger.info("Model weights loaded successfully")
+}
+
+private func quantizationMode(
+    for quantization: BaseConfiguration.Quantization
+) -> QuantizationMode {
+    guard let rawMode = quantization.quantizationMode?.lowercased(),
+        let mode = QuantizationMode(rawValue: rawMode) else {
+        return .affine
+    }
+    return mode
+}
+
+private func containsNonAffineQuantization(
+    quantization: BaseConfiguration.Quantization?,
+    perLayerQuantization: BaseConfiguration.PerLayerQuantization?
+) -> Bool {
+    if let quantization, quantizationMode(for: quantization) != .affine {
+        return true
+    }
+    guard let perLayerQuantization else { return false }
+    if let defaultQuantization = perLayerQuantization.quantization,
+        quantizationMode(for: defaultQuantization) != .affine {
+        return true
+    }
+    return perLayerQuantization.perLayerQuantization.values.contains { option in
+        switch option {
+        case .skip:
+            return false
+        case .quantize(let perLayer):
+            return quantizationMode(for: perLayer) != .affine
+        }
+    }
 }

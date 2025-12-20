@@ -291,7 +291,7 @@ internal actor ModelValidator {
     internal func validateModel(
         configuration: LanguageModelConfiguration,
         backend: SendableModel.Backend
-    ) throws -> ModelValidationResult {
+    ) -> ModelValidationResult {
         var errors: [String] = []
         var warnings: [String] = []
 
@@ -366,7 +366,7 @@ internal actor ModelMetadataExtractor {
         configuration: LanguageModelConfiguration,
         files: [FileInfo],
         modelId: String
-    ) throws -> ModelMetadata {
+    ) -> ModelMetadata {
         let modelType: String = configuration.modelType ?? "unknown"
         let architecture: String = configuration.architectures?.first ?? "unknown"
 

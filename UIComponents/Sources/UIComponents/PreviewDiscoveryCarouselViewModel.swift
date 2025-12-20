@@ -13,7 +13,7 @@ internal final actor PreviewDiscoveryCarouselViewModel: DiscoveryCarouselViewMod
         category: "UI"
     )
 
-    func recommendedLanguageModels() async throws -> [Abstractions.DiscoveredModel] {
+    func recommendedLanguageModels() async -> [Abstractions.DiscoveredModel] {
         logger.warning("Default view model - recommendedLanguageModels called")
         let model: DiscoveredModel = await MainActor.run {
             let model: DiscoveredModel = DiscoveredModel(
@@ -37,7 +37,7 @@ internal final actor PreviewDiscoveryCarouselViewModel: DiscoveryCarouselViewMod
         return [model]
     }
 
-    func recommendedAllModels() async throws -> [Abstractions.DiscoveredModel] {
+    func recommendedAllModels() async -> [Abstractions.DiscoveredModel] {
         logger.warning("Default view model - recommendedAllModels called")
         let languageModel: DiscoveredModel = await createPreviewLanguageModel()
         let imageModel: DiscoveredModel = await createPreviewImageModel()
@@ -87,7 +87,7 @@ internal final actor PreviewDiscoveryCarouselViewModel: DiscoveryCarouselViewMod
     }
 
     @MainActor
-    func latestModelsFromDefaultCommunities() throws -> [ModelCommunity: [DiscoveredModel]] {
+    func latestModelsFromDefaultCommunities() -> [ModelCommunity: [DiscoveredModel]] {
         logger.warning("Default view model - latestModelsFromDefaultCommunities called")
         let mlxCommunity: ModelCommunity = ModelCommunity.defaultCommunities[0]
         let model: DiscoveredModel = DiscoveredModel(
@@ -178,7 +178,7 @@ internal final actor PreviewDiscoveryCarouselViewModel: DiscoveryCarouselViewMod
         sort _: SortOption,
         direction _: SortDirection,
         limit: Int
-    ) async throws -> [DiscoveredModel] {
+    ) async -> [DiscoveredModel] {
         logger.warning("Preview view model - searchModels called")
         // Return preview search results
         return await createPreviewSearchResults(count: min(limit, Constants.maxPreviewResults))
@@ -193,7 +193,7 @@ internal final actor PreviewDiscoveryCarouselViewModel: DiscoveryCarouselViewMod
         sort _: SortOption,
         direction _: SortDirection,
         limit: Int
-    ) async throws -> ModelPage {
+    ) async -> ModelPage {
         logger.warning("Preview view model - searchModelsPaginated called")
         let models: [DiscoveredModel] = await createPreviewSearchResults(
             count: min(limit, Constants.maxPreviewResults)
@@ -209,9 +209,29 @@ internal final actor PreviewDiscoveryCarouselViewModel: DiscoveryCarouselViewMod
     func searchAndEnrichModels(
         query _: String?,
         limit: Int
-    ) async throws -> [DiscoveredModel] {
+    ) async -> [DiscoveredModel] {
         logger.warning("Preview view model - searchAndEnrichModels called")
         return await createPreviewSearchResults(count: min(limit, Constants.maxPreviewResults))
+    }
+
+    func discoverModelById(_ modelId: String) async -> DiscoveredModel {
+        logger.warning("Preview view model - discoverModelById called: \(modelId)")
+        return await createPreviewLanguageModel()
+    }
+
+    func trendingModels(limit: Int) async -> [DiscoveredModel] {
+        logger.warning("Preview view model - trendingModels called")
+        return await createPreviewSearchResults(count: min(limit, Constants.maxPreviewResults))
+    }
+
+    func latestModels(limit: Int) async -> [DiscoveredModel] {
+        logger.warning("Preview view model - latestModels called")
+        return await createPreviewSearchResults(count: min(limit, Constants.maxPreviewResults))
+    }
+
+    func bestModelForDevice() async -> DiscoveredModel? {
+        logger.warning("Preview view model - bestModelForDevice called")
+        return await createPreviewLanguageModel()
     }
 
     @MainActor

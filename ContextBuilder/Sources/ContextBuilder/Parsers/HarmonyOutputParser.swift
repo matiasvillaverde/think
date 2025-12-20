@@ -25,7 +25,7 @@ internal struct HarmonyOutputParser: OutputParser {
         self.cache = cache
     }
 
-    internal func parse(_ output: String) async throws -> [ChannelMessage] {
+    internal func parse(_ output: String) async -> [ChannelMessage] {
         // First try to parse complete channels
         var channels: [ChannelMessage] = await parseCompleteChannels(from: output)
 

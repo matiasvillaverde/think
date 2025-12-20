@@ -5,7 +5,7 @@ import Testing
 @Suite("Enhanced Tool Protocol Tests")
 struct EnhancedToolProtocolTests {
     @Test("ToolExample should be properly initialized")
-    func toolExampleInitialization() throws {
+    func toolExampleInitialization() {
         // Given
         let scenario = "User asks for weather"
         let input = "{\"location\": \"San Francisco\"}"

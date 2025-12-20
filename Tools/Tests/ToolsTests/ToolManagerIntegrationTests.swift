@@ -6,12 +6,12 @@ import Testing
 @Suite("ToolManager Integration Tests")
 internal struct ToolManagerIntegrationTests {
     @Test("ToolManager executes real tools through ToolExecutor")
-    func testToolManagerExecutesRealTools() async throws {
+    func testToolManagerExecutesRealTools() async {
         // Given
         let toolManager: ToolManager = ToolManager()
 
         // Configure a test tool
-        try await toolManager.configureTool(identifiers: [.functions])
+        await toolManager.configureTool(identifiers: [.functions])
 
         // Create a request
         let request: ToolRequest = ToolRequest(
@@ -21,7 +21,7 @@ internal struct ToolManagerIntegrationTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)
@@ -32,10 +32,10 @@ internal struct ToolManagerIntegrationTests {
     }
 
     @Test("ToolManager handles mixed valid and invalid tools")
-    func testMixedValidAndInvalidTools() async throws {
+    func testMixedValidAndInvalidTools() async {
         // Given
         let toolManager: ToolManager = ToolManager()
-        try await toolManager.configureTool(identifiers: [.functions])
+        await toolManager.configureTool(identifiers: [.functions])
 
         let validRequest: ToolRequest = ToolRequest(
             name: "functions",
@@ -50,7 +50,7 @@ internal struct ToolManagerIntegrationTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(
+        let responses: [ToolResponse] = await toolManager.executeTools(
             toolRequests: [validRequest, invalidRequest]
         )
 
@@ -70,13 +70,13 @@ internal struct ToolManagerIntegrationTests {
     }
 
     @Test("ToolManager properly delegates to ToolExecutor")
-    func testToolManagerDelegation() async throws {
+    func testToolManagerDelegation() async {
         // Given
         let toolManager: ToolManager = ToolManager()
 
         // Register a custom tool through future API
         // For now, we test with standard tools
-        try await toolManager.configureTool(identifiers: [.python])
+        await toolManager.configureTool(identifiers: [.python])
 
         let request: ToolRequest = ToolRequest(
             name: ToolIdentifier.python.rawValue,
@@ -85,7 +85,7 @@ internal struct ToolManagerIntegrationTests {
         )
 
         // When
-        let responses: [ToolResponse] = try await toolManager.executeTools(toolRequests: [request])
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
 
         // Then
         #expect(responses.count == 1)

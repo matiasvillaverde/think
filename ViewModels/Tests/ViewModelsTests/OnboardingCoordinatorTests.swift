@@ -131,27 +131,27 @@ private actor MockTrackingModelDownloaderViewModel: ModelDownloaderViewModeling 
         pauseActiveDownloadsCalled = true
     }
 
-    func downloadModel(_ discoveredModel: DiscoveredModel) throws {
+    func downloadModel(_ discoveredModel: DiscoveredModel) {
         // No-op
     }
 
-    func retryDownload(for modelId: UUID) throws {
+    func retryDownload(for modelId: UUID) {
         // No-op
     }
 
-    func pauseDownload(for modelId: UUID) throws {
+    func pauseDownload(for modelId: UUID) {
         // No-op
     }
 
-    func resumeDownload(for modelId: UUID) throws {
+    func resumeDownload(for modelId: UUID) {
         // No-op
     }
 
-    func cancelDownload(for modelId: UUID) throws {
+    func cancelDownload(for modelId: UUID) {
         // No-op
     }
 
-    func deleteModel(_ modelId: UUID) throws {
+    func deleteModel(_ modelId: UUID) {
         // No-op
     }
 
@@ -181,7 +181,7 @@ private actor MockTrackingModelDownloaderViewModel: ModelDownloaderViewModeling 
 
     func handleBackgroundDownloadCompletion(
         identifier: String,
-        completionHandler: @escaping @Sendable () -> Void
+        completionHandler: @Sendable () -> Void
     ) {
         completionHandler()
     }

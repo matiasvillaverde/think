@@ -136,7 +136,7 @@ extension LlamaCPPModelTestSuite {
     // MARK: - Additional error handling tests
 
     @Test("Consistent error types across module")
-    internal func testConsistentErrorTypes() throws {
+    internal func testConsistentErrorTypes() {
         // Verify that all errors are LLMError types
         var errors: [Error] = []
 

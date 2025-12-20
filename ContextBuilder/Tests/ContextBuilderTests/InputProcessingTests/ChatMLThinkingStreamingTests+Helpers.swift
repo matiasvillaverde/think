@@ -47,13 +47,13 @@ extension ChatMLThinkingStreamingTests {
         accumulatedInput: String,
         streamState: inout StreamingState,
         position: Int
-    ) throws {
+    ) {
         let analysisChannel = output.channels.first { $0.type == .analysis }
         let finalChannel = output.channels.first { $0.type == .final }
 
         if let analysis = analysisChannel {
             streamState.hasSeenAnalysisChannel = true
-            try verifyAnalysisChannel(
+            verifyAnalysisChannel(
                 analysis: analysis,
                 accumulatedInput: accumulatedInput,
                 previousContent: streamState.previousAnalysisContent,
@@ -64,7 +64,7 @@ extension ChatMLThinkingStreamingTests {
 
         if let final = finalChannel {
             streamState.hasSeenFinalChannel = true
-            try verifyFinalChannel(
+            verifyFinalChannel(
                 final: final,
                 previousContent: streamState.previousFinalContent,
                 position: position
@@ -78,7 +78,7 @@ extension ChatMLThinkingStreamingTests {
         accumulatedInput: String,
         previousContent: String,
         position: Int
-    ) throws {
+    ) {
         let hasCompleteThinkTag = accumulatedInput.contains("<think>")
         #expect(
             hasCompleteThinkTag,
@@ -86,7 +86,7 @@ extension ChatMLThinkingStreamingTests {
         )
 
         // For streaming, content should grow progressively even without closing tag
-        try verifyProgressiveChannelContent(
+        verifyProgressiveChannelContent(
             current: analysis.content,
             previous: previousContent,
             channelType: "analysis",
@@ -103,8 +103,8 @@ extension ChatMLThinkingStreamingTests {
         final: ChannelMessage,
         previousContent: String,
         position: Int
-    ) throws {
-        try verifyProgressiveChannelContent(
+    ) {
+        verifyProgressiveChannelContent(
             current: final.content,
             previous: previousContent,
             channelType: "final",
@@ -122,7 +122,7 @@ extension ChatMLThinkingStreamingTests {
         accumulatedInput: String,
         fullContent _: String,
         position: Int
-    ) throws {
+    ) {
         // Check for partial thinking tag scenarios
         let hasPartialThinkTag = accumulatedInput.hasSuffix("<") ||
             accumulatedInput.hasSuffix("<t") ||
@@ -168,7 +168,7 @@ extension ChatMLThinkingStreamingTests {
         previous: String,
         channelType: String,
         position: Int
-    ) throws {
+    ) {
         // Content should either grow, stay the same, or be a cleaned version when closing tag found
         // When closing tag is encountered, content might be cleaned (whitespace trimmed)
         let isGrowing = current.hasPrefix(previous) ||

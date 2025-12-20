@@ -109,7 +109,7 @@ internal final class PreviewModelActionsViewModel: ModelDownloaderViewModeling {
 
     func handleBackgroundDownloadCompletion(
         identifier _: String,
-        completionHandler: @escaping @Sendable () -> Void
+        completionHandler: @Sendable () -> Void
     ) async {
         await MainActor.run {
             logger.warning("Default view model - handleBackgroundDownloadCompletion called")

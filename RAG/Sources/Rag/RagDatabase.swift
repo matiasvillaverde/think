@@ -144,7 +144,7 @@ public final actor RagDatabase {
                 params: [queryVector, limit]
             )
 
-            let results: [SearchResult] = try processSearchResults(search, threshold: threshold)
+            let results: [SearchResult] = processSearchResults(search, threshold: threshold)
             logger.info("Vector search found \(results.count) results")
 
             tracing.endInterval("VectorSearch", searchState)
@@ -244,7 +244,7 @@ public final actor RagDatabase {
         _ rows: [[String: Any]],
         threshold: Double,
         logger: Logger? = nil
-    ) throws -> [SearchResult] {
+    ) -> [SearchResult] {
         let processState: OSSignpostIntervalState = tracing.beginInterval("ProcessSearchResults")
         logger?.debug("Processing \(rows.count) search results with threshold \(threshold)")
 

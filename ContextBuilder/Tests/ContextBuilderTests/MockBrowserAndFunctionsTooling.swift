@@ -56,7 +56,7 @@ internal actor MockBrowserAndFunctionsTooling: Tooling {
     } // namespace functions
     """
 
-    func configureTool(identifiers _: Set<ToolIdentifier>) async throws {
+    func configureTool(identifiers _: Set<ToolIdentifier>) async {
         await Task.yield()
     }
 
@@ -113,7 +113,7 @@ internal actor MockBrowserAndFunctionsTooling: Tooling {
         return await getToolDefinitions(for: [.browser, .functions])
     }
 
-    func executeTools(toolRequests _: [ToolRequest]) async throws -> [ToolResponse] {
+    func executeTools(toolRequests _: [ToolRequest]) async -> [ToolResponse] {
         await Task.yield()
         return []
     }
@@ -122,7 +122,7 @@ internal actor MockBrowserAndFunctionsTooling: Tooling {
         database _: DatabaseProtocol,
         chatId _: UUID,
         fileTitles _: [String]
-    ) async throws {
+    ) async {
         await Task.yield()
     }
 }

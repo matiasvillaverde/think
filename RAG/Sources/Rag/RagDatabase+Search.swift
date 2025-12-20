@@ -13,7 +13,7 @@ extension RagDatabase {
         _ queryVector: [Float],
         limit: Int,
         threshold: Double
-    ) async throws -> [SearchResult] {
+    ) async -> [SearchResult] {
         let searchState: OSSignpostIntervalState = tracing.beginInterval("VectorSearchEverywhere")
         logger.info("Performing vector search across all tables with limit \(limit) and threshold \(threshold)")
 

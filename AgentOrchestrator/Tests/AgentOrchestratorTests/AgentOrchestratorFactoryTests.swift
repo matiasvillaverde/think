@@ -89,14 +89,14 @@ internal struct AgentOrchestratorFactoryTests {
     }
 
     @Test("AgentOrchestrating protocol is accessible")
-    internal func testAgentOrchestratingProtocolIsAccessible() throws {
+    internal func testAgentOrchestratingProtocolIsAccessible() {
         // This test ensures the protocol is public and accessible
         // The fact that we can reference AgentOrchestrating proves it's public
         _ = AgentOrchestrating.self
     }
 
     @Test("ModelStateCoordinatorError is accessible")
-    internal func testModelStateCoordinatorErrorIsAccessible() throws {
+    internal func testModelStateCoordinatorErrorIsAccessible() {
         // This test ensures the error enum is public and accessible
         let error: ModelStateCoordinatorError = .noChatLoaded
         #expect(error.errorDescription != nil)

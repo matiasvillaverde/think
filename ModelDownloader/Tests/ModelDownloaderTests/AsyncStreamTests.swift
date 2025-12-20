@@ -97,7 +97,7 @@ struct AsyncStreamTests {
     }
 
     @Test("Stream properly handles Task cancellation")
-    func testTaskCancellationPropagation() async throws {
+    func testTaskCancellationPropagation() async {
         // Test that task cancellation is properly detected
         let expectation: AsyncExpectation = AsyncExpectation()
 
@@ -210,7 +210,7 @@ struct AsyncStreamTests {
     // MARK: - Error Propagation Tests
 
     @Test("Stream propagates download errors", .disabled())
-    func testStreamErrorPropagation() async throws {
+    func testStreamErrorPropagation() async {
         // Create a mock that will fail
         let mockFileManager: MockFileManager = MockFileManager()
         let _: HubAPI = createFailingMockHubAPI()
@@ -308,7 +308,7 @@ struct AsyncStreamTests {
     // MARK: - Backpressure Tests
 
     @Test("Stream handles slow consumer (backpressure)")
-    func testBackpressure() async throws {
+    func testBackpressure() async {
         // This test verifies that the stream doesn't accumulate unlimited events
         // when the consumer is slow
 

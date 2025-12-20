@@ -17,7 +17,7 @@ public actor PreviewAppViewModel: AppViewModeling {
         // Preview implementation - no-op
     }
 
-    public func setupInitialChat(with _: UUID) throws {
+    public func setupInitialChat(with _: UUID) {
         // Preview implementation - no-op
     }
 

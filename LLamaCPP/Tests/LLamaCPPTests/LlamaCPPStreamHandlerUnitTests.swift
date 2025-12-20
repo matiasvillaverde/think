@@ -7,7 +7,7 @@ import Testing
 @Suite("StreamHandler Stop Sequence Tests")
 internal struct LlamaCPPStreamHandlerUnitTests {
     @Test("Stop sequences prevent token emission")
-    internal func testStopSequencesPreventEmission() throws {
+    internal func testStopSequencesPreventEmission() {
         // Verify the fix: stop sequences checked BEFORE yielding
         let handler: StopSequenceTestHandler = StopSequenceTestHandler()
         let text1: String = "Hello"

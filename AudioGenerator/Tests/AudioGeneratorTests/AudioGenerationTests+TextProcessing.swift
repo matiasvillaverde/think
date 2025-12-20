@@ -5,7 +5,7 @@ import Testing
 
 extension AudioGenerationTests {
     @Test("Break single sentence correctly")
-    func testSingleSentence() async throws {
+    func testSingleSentence() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Hello world."
@@ -19,7 +19,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Handle multiple sentences with various punctuation")
-    func testMultipleSentences() async throws {
+    func testMultipleSentences() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Hello world. How are you? This is a test! Let's try this."
@@ -36,7 +36,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Process empty text gracefully")
-    func testEmptyText() async throws {
+    func testEmptyText() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = ""
@@ -49,7 +49,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Handle whitespace-only text")
-    func testWhitespaceOnlyText() async throws {
+    func testWhitespaceOnlyText() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "   \n\t   "
@@ -62,7 +62,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Process unicode and special characters")
-    func testUnicodeAndSpecialCharacters() async throws {
+    func testUnicodeAndSpecialCharacters() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Hello 世界! How are you? 🎉 This is great."
@@ -78,7 +78,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Handle very long text without errors")
-    func testVeryLongText() async throws {
+    func testVeryLongText() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let longSentence: String = String(repeating: "This is a test sentence. ", count: 100)
@@ -92,7 +92,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Handle sentences without final punctuation")
-    func testSentencesWithoutFinalPunctuation() async throws {
+    func testSentencesWithoutFinalPunctuation() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Hello world"
@@ -106,7 +106,7 @@ extension AudioGenerationTests {
     }
 
     @Test("Handle mixed newlines and punctuation")
-    func testMixedNewlinesAndPunctuation() async throws {
+    func testMixedNewlinesAndPunctuation() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "First sentence.\nSecond sentence!\n\nThird sentence?"

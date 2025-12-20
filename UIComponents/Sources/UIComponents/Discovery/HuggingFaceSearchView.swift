@@ -186,36 +186,59 @@ internal struct HuggingFaceSearchView: View {
         }
 
         Task {
+            await executeSearch(query: query)
+        }
+    }
+
+    private func executeSearch(query: String) async {
+        await MainActor.run {
+            isSearching = true
+            searchError = nil
+            searchResults = []
+            currentCursor = nil
+            hasMoreResults = false
+        }
+
+        do {
+            let page: ModelPage = try await viewModel.searchModelsPaginated(
+                query: query,
+                author: nil,
+                tags: [],
+                cursor: nil,
+                sort: selectedSort,
+                direction: selectedDirection,
+                limit: Constants.resultsPerPage
+            )
+
             await MainActor.run {
-                isSearching = true
-                searchError = nil
-                searchResults = []
+                searchResults = page.models
+                currentCursor = page.nextPageToken
+                hasMoreResults = page.hasNextPage
+                isSearching = false
+            }
+
+            if page.models.isEmpty, query.contains("/") {
+                await attemptDirectLookup(for: query)
+            }
+        } catch {
+            await MainActor.run {
+                searchError = error
+                isSearching = false
+            }
+        }
+    }
+
+    private func attemptDirectLookup(for modelId: String) async {
+        do {
+            let directModel: DiscoveredModel = try await viewModel.discoverModelById(modelId)
+            await MainActor.run {
+                searchResults = [directModel]
                 currentCursor = nil
                 hasMoreResults = false
             }
-
-            do {
-                let page: ModelPage = try await viewModel.searchModelsPaginated(
-                    query: query,
-                    author: nil,
-                    tags: [],
-                    cursor: nil,
-                    sort: selectedSort,
-                    direction: selectedDirection,
-                    limit: Constants.resultsPerPage
-                )
-
-                await MainActor.run {
-                    searchResults = page.models
-                    currentCursor = page.nextPageToken
-                    hasMoreResults = page.hasNextPage
-                    isSearching = false
-                }
-            } catch {
-                await MainActor.run {
-                    searchError = error
-                    isSearching = false
-                }
+        } catch {
+            await MainActor.run {
+                searchError = error
             }
         }
     }

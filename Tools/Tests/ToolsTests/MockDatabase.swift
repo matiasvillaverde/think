@@ -47,12 +47,12 @@ internal actor MockDatabase: DatabaseProtocol {
 
     /// Save database
     @MainActor
-    internal func save() throws {
+    internal func save() {
         // No-op for mock
     }
 
     /// Write in background
-    internal func writeInBackground<T: WriteCommand>(_: T) async throws {
+    internal func writeInBackground<T: WriteCommand>(_: T) async {
         // Mock implementation - simulate async work
         await Task.yield()
     }
@@ -70,7 +70,7 @@ internal actor MockDatabase: DatabaseProtocol {
         table: String,
         numResults: Int,
         threshold: Double
-    ) async throws -> [SearchResult] {
+    ) async -> [SearchResult] {
         // Simulate async work
         await Task.yield()
 

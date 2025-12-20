@@ -28,8 +28,8 @@ internal actor FileSelectorFactory {
             return GGUFFileSelectorAdapter()
 
         case .mlx:
-            await logger.debug("No file selector needed for MLX")
-            return nil // MLX doesn't need file selection
+            await logger.debug("Creating MLX file selector")
+            return MLXFileSelectorAdapter()
         }
     }
 }

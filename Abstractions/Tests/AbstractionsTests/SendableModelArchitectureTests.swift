@@ -6,7 +6,7 @@ import Testing
 @Suite("SendableModel Architecture Tests", .tags(.core))
 struct SendableModelArchitectureTests {
     @Test("Architecture is properly stored and accessible")
-    func testArchitectureProperty() throws {
+    func testArchitectureProperty() {
         // Test various architectures
         let testCases: [(Architecture, String)] = [
             (.llama, "llama"),
@@ -33,7 +33,7 @@ struct SendableModelArchitectureTests {
     }
 
     @Test("SendableModel equality includes architecture")
-    func testEqualityWithArchitecture() throws {
+    func testEqualityWithArchitecture() {
         let id = UUID()
 
         let model1 = SendableModel(
@@ -68,7 +68,7 @@ struct SendableModelArchitectureTests {
     }
 
     @Test("Debug description includes architecture")
-    func testDebugDescriptionIncludesArchitecture() throws {
+    func testDebugDescriptionIncludesArchitecture() {
         let model = SendableModel(
             id: UUID(),
             ramNeeded: 1_000_000_000,
@@ -83,7 +83,7 @@ struct SendableModelArchitectureTests {
     }
 
     @Test("Architecture affects model behavior in Context")
-    func testArchitectureAffectsContextBehavior() throws {
+    func testArchitectureAffectsContextBehavior() {
         // Test that different architectures result in different label constants
         let qwenModel = SendableModel(
             id: UUID(),
@@ -112,7 +112,7 @@ struct SendableModelArchitectureTests {
     }
 
     @Test("All architecture types can be used in SendableModel")
-    func testAllArchitectureTypes() throws {
+    func testAllArchitectureTypes() {
         // Test that all Architecture cases can be used
         for architecture in Architecture.allCases {
             let model = SendableModel(
@@ -130,7 +130,7 @@ struct SendableModelArchitectureTests {
     }
 
     @Test("SendableModel with metadata still works")
-    func testSendableModelWithMetadata() throws {
+    func testSendableModelWithMetadata() {
         let metadata = ModelMetadata(
             parameters: ModelParameters(count: 7_000_000_000, formatted: "7B"),
             architecture: .llama,  // Note: metadata also has architecture

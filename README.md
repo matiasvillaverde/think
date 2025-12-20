@@ -43,7 +43,7 @@ Think/
 ├── ModelDownloader/   # AI model downloading and management
 ├── AudioGenerator/    # Voice synthesis capabilities
 ├── ImageGenerator/    # Stable Diffusion image generation
-├── Context/          # AI context management
+├── ContextBuilder/  # AI context management
 ├── RAG/              # Document search implementation
 ├── Factories/        # Dependency injection and wiring
 └── Think/        # Main app target
@@ -82,16 +82,14 @@ SwiftUI Views → ViewModels (Actors) → Database Commands → SwiftData
 
 ```bash
 # Clone and setup
-git clone https://github.com/your-org/think.git
-cd think
+git clone https://github.com/matiasvillaverde/think-freely.git
+cd think-freely
 make setup
 
 # Build and run
 make build
 make run
 ```
-
-**Note**: Replace `your-org` with the actual GitHub organization or username where this repository is hosted.
 
 For detailed setup, CI/CD workflows, and deployment, see [CI.md](CI.md).
 

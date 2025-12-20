@@ -17,7 +17,7 @@ internal struct EmbeddingFixtureTests {
 
         let model: Bert.ModelBundle = try await Bert.loadModelBundle(from: TestHelpers.localModelURL)
         let tensor: MLTensor = try model.encode(fixture.text)
-        let embedding: [Float] = try await tensor.convertTensorToVector()
+        let embedding: [Float] = await tensor.convertTensorToVector()
 
         #expect(embedding.count == fixture.dimension)
         #expect(embedding.count == Abstractions.Constants.defaultEmbeddingDimension)

@@ -125,7 +125,7 @@ internal struct LLMInputBuilderTests {
 
     private func verifyArchitectureStopSequences(_ setup: BuilderSetup) async throws {
         let buildInput: (Architecture) async throws -> LLMInput = { arch in
-            let model: SendableModel = self.createTestModel(architecture: arch)
+            let model: SendableModel = createTestModel(architecture: arch)
             let builder: LLMInputBuilder = LLMInputBuilder(
                 chat: setup.chatId,
                 model: model,

@@ -193,7 +193,7 @@ extension StableDiffusionPipeline {
     /// Reports progress and returns whether to continue
     private func reportProgress(
         params: ProgressReportParams,
-        progressHandler: @escaping (Progress) -> Bool
+        progressHandler: (Progress) -> Bool
     ) -> Bool {
         let currentLatentSamples = params.config.useDenoisedIntermediates ? params.denoisedLatents : params.latents
         let progress = Progress(

@@ -343,7 +343,7 @@ extension APITests {
 
     /// Demonstrates how to delete a downloaded model.
     @Test("Delete downloaded model by ID")
-    func deleteModel() async throws {
+    func deleteModel() async {
         let downloader: ModelDownloader = ModelDownloader.shared
 
         // Note: In a real app, you'd have a model ID from previous downloads
@@ -687,7 +687,7 @@ extension APITests {
 
     /// Demonstrates format recommendation and validation
     @Test("Format recommendation and validation")
-    func formatRecommendationAndValidation() async throws {
+    func formatRecommendationAndValidation() async {
         print("\n🧠 Testing format recommendation and validation")
 
         let downloader: ModelDownloader = ModelDownloader.shared

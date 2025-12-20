@@ -606,7 +606,7 @@ internal actor ModelFileManager: ModelFileManagerProtocol {
                 }
 
                 // Handle naming conflicts
-                let finalDestination: URL = try resolveNamingConflict(for: destinationFile)
+                let finalDestination: URL = resolveNamingConflict(for: destinationFile)
 
                 try fileManager.moveItem(at: sourceFile, to: finalDestination)
                 movedCount += 1
@@ -699,7 +699,7 @@ internal actor ModelFileManager: ModelFileManagerProtocol {
     }
 
     /// Resolve naming conflicts by appending a number to the filename
-    private func resolveNamingConflict(for url: URL) throws -> URL {
+    private func resolveNamingConflict(for url: URL) -> URL {
         var finalURL: URL = url
         var counter: Int = 1
 

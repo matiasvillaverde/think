@@ -96,7 +96,7 @@ internal struct LlamaCPPTokenizer {
 
         var result: String = ""
         for token in tokens {
-            let piece: String = try tokenToString(token: token, vocab: vocab)
+            let piece: String = tokenToString(token: token, vocab: vocab)
             result += piece
         }
 
@@ -109,7 +109,7 @@ internal struct LlamaCPPTokenizer {
     ///   - vocab: The vocabulary pointer
     /// - Returns: String representation of the token
     /// - Throws: LlamaCPPError if conversion fails
-    internal func tokenToString(token: Int32, vocab: OpaquePointer) throws -> String {
+    internal func tokenToString(token: Int32, vocab: OpaquePointer) -> String {
         let bufferSize: Int = Self.pieceBufferSize
         var buffer: [CChar] = Array(repeating: 0, count: bufferSize)
 

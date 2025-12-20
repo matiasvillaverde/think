@@ -5,7 +5,7 @@ import Testing
 
 extension AudioGenerationTests {
     @Test("Test execution completes quickly")
-    func testExecutionSpeed() async throws {
+    func testExecutionSpeed() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Quick test."

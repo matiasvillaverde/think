@@ -72,9 +72,13 @@ public extension Scheduler {
                     assert(buffer.count == scalarCount)
                     // scalars[j] += w * values[i].scalars[j]
                     vDSP_vsma(
-                        buffer.baseAddress!, 1, [w],
-                        scalars.baseAddress!, 1,
-                        scalars.baseAddress!, 1,
+                        buffer.baseAddress!,
+                        1,
+                        [w],
+                        scalars.baseAddress!,
+                        1,
+                        scalars.baseAddress!,
+                        1,
                         vDSP_Length(scalarCount)
                     )
                 }

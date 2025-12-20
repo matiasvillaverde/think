@@ -23,7 +23,7 @@ public actor ToolManager: Tooling {
 
     // MARK: - Tool Configuration
 
-    public func configureTool(identifiers: Set<ToolIdentifier>) async throws {
+    public func configureTool(identifiers: Set<ToolIdentifier>) async {
         logger.info("Configuring tools with \(identifiers.count) identifiers")
         logger.debug("Tool identifiers: \(identifiers.map(\.rawValue).joined(separator: ", "))")
 
@@ -95,12 +95,12 @@ public actor ToolManager: Tooling {
 
     public func executeTools(
         toolRequests: [ToolRequest]
-    ) async throws -> [ToolResponse] {
+    ) async -> [ToolResponse] {
         logger.info("Executing \(toolRequests.count) tool request(s)")
         logger.debug("Tool requests: \(toolRequests.map(\.name).joined(separator: ", "))")
 
         // Delegate to executor for batch execution
-        let responses: [ToolResponse] = try await executor.executeBatch(requests: toolRequests)
+        let responses: [ToolResponse] = await executor.executeBatch(requests: toolRequests)
 
         let errorCount: Int = responses.count { $0.error != nil }
         let successCount: Int = responses.count - errorCount
@@ -115,7 +115,7 @@ public actor ToolManager: Tooling {
         database: DatabaseProtocol,
         chatId: UUID,
         fileTitles: [String]
-    ) async throws {
+    ) async {
         logger.info("Configuring semantic search for chat: \(chatId)")
         logger.debug("Semantic search files: \(fileTitles.count) file(s)")
 

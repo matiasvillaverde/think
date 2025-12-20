@@ -201,6 +201,9 @@ scripts/output/
 # ===========================
 # IDE and Editor Files
 # ===========================
+# Claude / Codex local settings
+.claude/
+
 # JetBrains IDEs
 .idea/
 *.iml

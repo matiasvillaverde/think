@@ -25,6 +25,23 @@ struct QwenModelTest {
         )
     }
 
+    @Test("Generate text with Qwen3-1.7B MXFP4 model")
+    func testQwen3MXFP4Generation() async throws {
+        guard let modelURL: URL = baseTest.getModelURLIfAvailable(
+            resourceName: "Qwen3-1.7B-MLX-MXFP4",
+            in: Bundle.module
+        ) else {
+            return
+        }
+
+        _ = try await baseTest.runGenerationForAssertion(
+            modelURL: modelURL,
+            modelName: "Qwen3-1.7B-MLX-MXFP4",
+            prompt: "Hello, can you introduce yourself?",
+            maxTokens: 20
+        )
+    }
+
     @Test("Generate text with Qwen1.5 model")
     func testQwen15Generation() async throws {
         guard let modelURL: URL = baseTest.getModelURLIfAvailable(

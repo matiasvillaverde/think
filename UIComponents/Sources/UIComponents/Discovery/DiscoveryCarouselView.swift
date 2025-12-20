@@ -1,34 +1,132 @@
 import Abstractions
 import SwiftUI
 
+// swiftlint:disable type_body_length
 /// A discovery view for browsing and filtering AI models with progressive loading
 internal struct DiscoveryCarouselView: View {
     // MARK: - Constants
 
-    private enum Constants {
+    enum Constants {
         static let animationDuration: Double = 0.3
         static let pickerWidth: CGFloat = 300
+        static let trendingLimit: Int = 12
+        static let latestLimit: Int = 12
     }
 
     // MARK: - Environment
 
     @Environment(\.discoveryCarousel)
-    private var viewModel: DiscoveryCarouselViewModeling
+    var viewModel: DiscoveryCarouselViewModeling
 
     // MARK: - State
 
-    @State private var recommendedModels: [DiscoveredModel] = []
-    @State private var communityModels: [ModelCommunity: [DiscoveredModel]] = [:]
-    @State private var communitiesLoadingStates: [ModelCommunity: Bool] = [:]
-    @State private var isLoadingRecommended: Bool = true
-    @State private var isLoadingCommunity: Bool = true
-    @State private var recommendedError: Error?
-    @State private var communityError: Error?
-    @State private var selectedFilter: ModelTypeFilter = .text
-    @State private var hasLoadedOnce: Bool = false
+    @State private var recommendedModelsState: [DiscoveredModel] = []
+    @State private var bestModelState: DiscoveredModel?
+    @State private var trendingModelsState: [DiscoveredModel] = []
+    @State private var latestModelsState: [DiscoveredModel] = []
+    @State private var communityModelsState: [ModelCommunity: [DiscoveredModel]] = [:]
+    @State private var communitiesLoadingStatesState: [ModelCommunity: Bool] = [:]
+    @State private var isLoadingRecommendedState: Bool = true
+    @State private var isLoadingBestState: Bool = true
+    @State private var isLoadingTrendingState: Bool = true
+    @State private var isLoadingLatestState: Bool = true
+    @State private var isLoadingCommunityState: Bool = true
+    @State private var recommendedErrorState: Error?
+    @State private var bestErrorState: Error?
+    @State private var trendingErrorState: Error?
+    @State private var latestErrorState: Error?
+    @State private var communityErrorState: Error?
+    @State private var selectedFilterState: ModelTypeFilter = .text
+    @State private var hasLoadedOnceState: Bool = false
 
-    internal init() {
-        // Initialize view with empty state
+    var recommendedModels: [DiscoveredModel] {
+        get { recommendedModelsState }
+        nonmutating set { recommendedModelsState = newValue }
+    }
+
+    var bestModel: DiscoveredModel? {
+        get { bestModelState }
+        nonmutating set { bestModelState = newValue }
+    }
+
+    var trendingModels: [DiscoveredModel] {
+        get { trendingModelsState }
+        nonmutating set { trendingModelsState = newValue }
+    }
+
+    var latestModels: [DiscoveredModel] {
+        get { latestModelsState }
+        nonmutating set { latestModelsState = newValue }
+    }
+
+    var communityModels: [ModelCommunity: [DiscoveredModel]] {
+        get { communityModelsState }
+        nonmutating set { communityModelsState = newValue }
+    }
+
+    var communitiesLoadingStates: [ModelCommunity: Bool] {
+        get { communitiesLoadingStatesState }
+        nonmutating set { communitiesLoadingStatesState = newValue }
+    }
+
+    var isLoadingRecommended: Bool {
+        get { isLoadingRecommendedState }
+        nonmutating set { isLoadingRecommendedState = newValue }
+    }
+
+    var isLoadingBest: Bool {
+        get { isLoadingBestState }
+        nonmutating set { isLoadingBestState = newValue }
+    }
+
+    var isLoadingTrending: Bool {
+        get { isLoadingTrendingState }
+        nonmutating set { isLoadingTrendingState = newValue }
+    }
+
+    var isLoadingLatest: Bool {
+        get { isLoadingLatestState }
+        nonmutating set { isLoadingLatestState = newValue }
+    }
+
+    var isLoadingCommunity: Bool {
+        get { isLoadingCommunityState }
+        nonmutating set { isLoadingCommunityState = newValue }
+    }
+
+    var recommendedError: Error? {
+        get { recommendedErrorState }
+        nonmutating set { recommendedErrorState = newValue }
+    }
+
+    var bestError: Error? {
+        get { bestErrorState }
+        nonmutating set { bestErrorState = newValue }
+    }
+
+    var trendingError: Error? {
+        get { trendingErrorState }
+        nonmutating set { trendingErrorState = newValue }
+    }
+
+    var latestError: Error? {
+        get { latestErrorState }
+        nonmutating set { latestErrorState = newValue }
+    }
+
+    var communityError: Error? {
+        get { communityErrorState }
+        nonmutating set { communityErrorState = newValue }
+    }
+
+    var selectedFilter: ModelTypeFilter {
+        get { selectedFilterState }
+        nonmutating set { selectedFilterState = newValue }
+    }
+
+    var hasLoadedOnce: Bool {
+        get { hasLoadedOnceState }
+        nonmutating set { hasLoadedOnceState = newValue }
     }
 
     // MARK: - Computed Properties
@@ -45,6 +143,10 @@ internal struct DiscoveryCarouselView: View {
             .filter { !$0.value.isEmpty }
     }
 
+    internal init() {
+        // Initialize view with empty state
+    }
+
     // MARK: - Body
 
     internal var body: some View {
@@ -55,7 +157,7 @@ internal struct DiscoveryCarouselView: View {
         #if os(macOS)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Picker("Model Type", selection: $selectedFilter) {
+                Picker("Model Type", selection: $selectedFilterState) {
                     ForEach(ModelTypeFilter.allCases) { filter in
                         Label(filter.displayName, systemImage: filter.iconName)
                             .tag(filter)
@@ -87,13 +189,18 @@ internal struct DiscoveryCarouselView: View {
 
             // Filter bar - only show on non-macOS platforms
             #if !os(macOS)
-            ModelTypeFilterBar(selection: $selectedFilter)
+            ModelTypeFilterBar(selection: $selectedFilterState)
             #endif
 
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(alignment: .leading, spacing: DesignConstants.Spacing.huge) {
+                    bestForDeviceSection
+
                     // Recommended models section - loads independently
                     recommendedSection
+
+                    trendingSection
+                    latestSection
 
                     // Community models section - loads independently
                     communitySection
@@ -139,7 +246,30 @@ internal struct DiscoveryCarouselView: View {
         }
     }
 
-    private func sectionErrorView(
+    // MARK: - Progressive Data Loading
+
+    private func loadModelsProgressive() async {
+        // Load sections independently
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask {
+                await loadRecommendedModels()
+            }
+            group.addTask {
+                await loadBestModel()
+            }
+            group.addTask {
+                await loadTrendingModels()
+            }
+            group.addTask {
+                await loadLatestModels()
+            }
+            group.addTask {
+                await loadCommunityModelsProgressive()
+            }
+        }
+    }
+
+    func sectionErrorView(
         _: Error,
         section: String,
         retry: @escaping () -> Void
@@ -169,29 +299,10 @@ internal struct DiscoveryCarouselView: View {
         }
     }
 
-    // MARK: - Progressive Data Loading
-
-    private func loadModelsProgressive() async {
-        // Load sections independently
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask {
-                await loadRecommendedModels()
-            }
-            group.addTask {
-                await loadCommunityModelsProgressive()
-            }
-        }
-    }
-
     private func loadRecommendedModels() async {
         isLoadingRecommended = true
         recommendedError = nil
-
-        do {
-            recommendedModels = try await viewModel.recommendedAllModels()
-        } catch {
-            recommendedError = error
-        }
+        recommendedModels = await viewModel.recommendedAllModels()
 
         isLoadingRecommended = false
     }
@@ -229,16 +340,12 @@ internal struct DiscoveryCarouselView: View {
     private func loadCommunityModels() async {
         isLoadingCommunity = true
         communityError = nil
-
-        do {
-            communityModels = try await viewModel.latestModelsFromDefaultCommunities()
-        } catch {
-            communityError = error
-        }
+        communityModels = await viewModel.latestModelsFromDefaultCommunities()
 
         isLoadingCommunity = false
     }
 }
+// swiftlint:enable type_body_length
 
 // MARK: - Previews
 

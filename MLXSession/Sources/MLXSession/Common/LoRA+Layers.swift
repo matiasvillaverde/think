@@ -128,7 +128,7 @@ internal class QLoRALinear: QuantizedLinear, LoRALayer {
 
         super.init(
             weight: linear.weight, bias: linear.bias, scales: linear.scales, biases: linear.biases,
-            groupSize: linear.groupSize, bits: linear.bits)
+            groupSize: linear.groupSize, bits: linear.bits, mode: linear.mode)
 
         // start frozen except for the lora keys
         freeze()
@@ -177,7 +177,8 @@ internal class QLoRALinear: QuantizedLinear, LoRALayer {
             weight: weight + matmul(loraB, loraA),
             bias: bias,
             groupSize: groupSize,
-            bits: bits
+            bits: bits,
+            mode: mode
         )
     }
 

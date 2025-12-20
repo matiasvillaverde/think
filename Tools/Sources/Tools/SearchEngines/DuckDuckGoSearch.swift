@@ -350,7 +350,7 @@ internal final actor DuckDuckGoSearch {
         for (index, result) in limitedResults.enumerated()
             where index < config.concurrentFetches {
             group.addTask {
-                try await self.extractContent(from: result.url, snippet: result.snippet)
+                await self.extractContent(from: result.url, snippet: result.snippet)
             }
         }
 
@@ -365,7 +365,7 @@ internal final actor DuckDuckGoSearch {
                     limitedResults.startIndex + processedCount
                 ]
                 group.addTask {
-                    try await self.extractContent(
+                    await self.extractContent(
                         from: nextResult.url,
                         snippet: nextResult.snippet
                     )
@@ -389,7 +389,7 @@ internal final actor DuckDuckGoSearch {
     }
 
     /// Extract content from a single URL
-    private func extractContent(from url: URL, snippet: String) async throws -> WebSearchResult? {
+    private func extractContent(from url: URL, snippet: String) async -> WebSearchResult? {
         do {
             // Fetch the webpage
             let html: String = try await fetchHTML(from: url)

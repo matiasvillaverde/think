@@ -47,12 +47,12 @@ internal struct ContextBuilderInputProcessingTests {
                 model: model
             )
 
-            try verifyChannelCount(processedOutput, accumulatedInput, inputContent)
+            verifyChannelCount(processedOutput, accumulatedInput, inputContent)
 
             if let channel = processedOutput.channels.first {
-                try verifyChannelProperties(channel, at: accumulatedInput.count)
+                verifyChannelProperties(channel, at: accumulatedInput.count)
                 let currentContent = channel.content
-                try verifyProgressiveContent(
+                verifyProgressiveContent(
                     current: currentContent,
                     previous: previousChannelContent,
                     position: accumulatedInput.count
@@ -71,7 +71,7 @@ internal struct ContextBuilderInputProcessingTests {
         _ output: ProcessedOutput,
         _ accumulated: String,
         _ full: String
-    ) throws {
+    ) {
         #expect(
             output.channels.count == 1,
             """
@@ -85,7 +85,7 @@ internal struct ContextBuilderInputProcessingTests {
     private func verifyChannelProperties(
         _ channel: ChannelMessage,
         at position: Int
-    ) throws {
+    ) {
         #expect(
             channel.type == .final,
             "Expected channel type .final, got \(channel.type) at position \(position)"
@@ -111,7 +111,7 @@ internal struct ContextBuilderInputProcessingTests {
         current: String,
         previous: String,
         position: Int
-    ) throws {
+    ) {
         #expect(
             current.hasPrefix(previous) || current == previous,
             """

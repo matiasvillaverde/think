@@ -236,7 +236,7 @@ private struct GetStartedButton: View {
             // Preview implementation - no-op
         }
 
-        func setupInitialChat(with _: UUID) throws {
+        func setupInitialChat(with _: UUID) {
             // Preview implementation - no-op
         }
 

@@ -45,7 +45,7 @@ internal struct ChatMLThinkingStreamingTests {
             )
 
             // Verify smart partial tag handling
-            try verifyPartialTagHandling(
+            verifyPartialTagHandling(
                 processedOutput,
                 accumulatedInput: accumulatedInput,
                 fullContent: inputContent,
@@ -53,7 +53,7 @@ internal struct ChatMLThinkingStreamingTests {
             )
 
             // Process and verify channels
-            try processChannels(
+            processChannels(
                 output: processedOutput,
                 accumulatedInput: accumulatedInput,
                 streamState: &streamState,

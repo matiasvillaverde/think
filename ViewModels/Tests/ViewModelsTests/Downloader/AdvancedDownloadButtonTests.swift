@@ -356,7 +356,7 @@ internal final class FailingMockDownloader: @unchecked Sendable, ModelDownloader
         }
     }
 
-    func resumeBackgroundDownloads() throws -> [BackgroundDownloadHandle] { [] }
+    func resumeBackgroundDownloads() -> [BackgroundDownloadHandle] { [] }
 
     func backgroundDownloadStatus() -> [BackgroundDownloadStatus] { [] }
 
@@ -365,11 +365,11 @@ internal final class FailingMockDownloader: @unchecked Sendable, ModelDownloader
     }
 
     // MARK: - Model Management
-    func listDownloadedModels() throws -> [ModelInfo] { [] }
+    func listDownloadedModels() -> [ModelInfo] { [] }
 
     func modelExists(model: ModelLocation) -> Bool { false }
 
-    func deleteModel(model: ModelLocation) throws {
+    func deleteModel(model: ModelLocation) {
         // Mock implementation - no operation
     }
 
@@ -385,7 +385,7 @@ internal final class FailingMockDownloader: @unchecked Sendable, ModelDownloader
     func getModelInfo(for model: ModelLocation) -> ModelInfo? { nil }
 
     // MARK: - Validation and Utilities
-    func validateModel(_ model: ModelLocation, backend: SendableModel.Backend) throws -> ValidationResult {
+    func validateModel(_ model: ModelLocation, backend: SendableModel.Backend) -> ValidationResult {
         ValidationResult(isValid: true, warnings: [])
     }
 
@@ -393,7 +393,7 @@ internal final class FailingMockDownloader: @unchecked Sendable, ModelDownloader
 
     func availableDiskSpace() -> Int64? { 1_000_000_000_000 }
 
-    func cleanupIncompleteDownloads() throws {
+    func cleanupIncompleteDownloads() {
         // Mock implementation - no cleanup needed
     }
 
@@ -402,7 +402,7 @@ internal final class FailingMockDownloader: @unchecked Sendable, ModelDownloader
 
     func handleBackgroundDownloadCompletion(
         identifier: String,
-        completionHandler: @escaping @Sendable () -> Void
+        completionHandler: @Sendable () -> Void
     ) {
         completionHandler()
     }

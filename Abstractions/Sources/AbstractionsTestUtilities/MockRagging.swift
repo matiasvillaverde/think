@@ -170,11 +170,11 @@ public final actor MockRagging: Ragging, @unchecked Sendable {
         }
     }
 
-    public func deleteAll() throws {
+    public func deleteAll() {
         // No-op for mock
     }
 
-    public func delete(id: UUID, table: String) throws {
+    public func delete(id: UUID, table: String) {
         deleteIDCalls.append(DeleteIDCall(table: table, id: id))
     }
 

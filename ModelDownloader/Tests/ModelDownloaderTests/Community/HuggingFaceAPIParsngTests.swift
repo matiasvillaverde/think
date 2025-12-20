@@ -375,7 +375,7 @@ extension HubAPIExtensionLicenseTests {
 
     @Test("Test JSON response conversion with edge cases")
     @MainActor
-    internal func testJSONResponseConversionEdgeCases() async throws {
+    internal func testJSONResponseConversionEdgeCases() async {
         // Test how the parsing handles models with missing or null fields
         // This tests the robustness of convertToDiscoveredModel
 

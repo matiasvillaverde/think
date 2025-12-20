@@ -10,7 +10,7 @@ import Testing
 @Suite("Say Method Integration Tests", .serialized, .disabled("Run manually to verify audio playback - requires human verification"))
 internal struct SayMethodIntegrationTests {
     @Test("Say single sentence successfully")
-    func testSaySingleSentence() async throws {
+    func testSaySingleSentence() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Hello world."
@@ -24,7 +24,7 @@ internal struct SayMethodIntegrationTests {
     }
 
     @Test("Orchestrate multiple sentences")
-    func testSayMultipleSentences() async throws {
+    func testSayMultipleSentences() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "First sentence. Second sentence. Third sentence."
@@ -38,7 +38,7 @@ internal struct SayMethodIntegrationTests {
     }
 
     @Test("Handle empty text in say method")
-    func testSayEmptyText() async throws {
+    func testSayEmptyText() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = ""
@@ -52,7 +52,7 @@ internal struct SayMethodIntegrationTests {
     }
 
     @Test("Process text with mixed content")
-    func testSayMixedContent() async throws {
+    func testSayMixedContent() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Hello! How are you? I'm fine, thanks. 123 test."
@@ -66,7 +66,7 @@ internal struct SayMethodIntegrationTests {
     }
 
     @Test("Handle single word without punctuation")
-    func testSaySingleWord() async throws {
+    func testSaySingleWord() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "Hello"
@@ -80,7 +80,7 @@ internal struct SayMethodIntegrationTests {
     }
 
     @Test("Process whitespace between sentences correctly")
-    func testSayWhitespaceBetweenSentences() async throws {
+    func testSayWhitespaceBetweenSentences() async {
         // Given
         let engine: AudioEngine = AudioEngine()
         let text: String = "First sentence.    \n\n   Second sentence."

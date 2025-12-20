@@ -34,7 +34,7 @@ actor ImageExtractor: ImageExtractorProtocol {
             var allImages: [String] = []
 
             // Step 1: Try to get structured metadata first (includes thumbnail and base model images)
-            if let structuredImages = try await extractFromStructuredMetadata(modelId: modelId) {
+            if let structuredImages = await extractFromStructuredMetadata(modelId: modelId) {
                 allImages.append(contentsOf: structuredImages)
                 await logger.info("Found images in structured metadata", metadata: [
                     "modelId": modelId,
@@ -61,7 +61,7 @@ actor ImageExtractor: ImageExtractorProtocol {
                     ])
 
                     // Get original model's structured metadata directly
-                    if let originalModelInfo = try await getModelInfo(modelId: originalModelId),
+                    if let originalModelInfo = await getModelInfo(modelId: originalModelId),
                        let originalThumbnail = originalModelInfo.thumbnail,
                        !originalThumbnail.isEmpty {
                         allImages.append(originalThumbnail)
@@ -146,7 +146,7 @@ actor ImageExtractor: ImageExtractorProtocol {
     /// Find original model reference using structured metadata first
     func findOriginalModelId(from modelId: String) async throws -> String? {
         // Step 1: Check structured metadata for source model references
-        if let structuredOriginal = try await findOriginalFromMetadata(modelId: modelId) {
+        if let structuredOriginal = await findOriginalFromMetadata(modelId: modelId) {
             return structuredOriginal
         }
 
@@ -223,9 +223,9 @@ actor ImageExtractor: ImageExtractorProtocol {
     // MARK: - Private Helper Methods
 
     /// Extract structured image references from metadata (config.json, cardData)
-    private func extractFromStructuredMetadata(modelId: String) async throws -> [String]? {
+    private func extractFromStructuredMetadata(modelId: String) async -> [String]? {
         // Get model information to access cardData
-        guard let modelInfo = try await getModelInfo(modelId: modelId) else {
+        guard let modelInfo = await getModelInfo(modelId: modelId) else {
             return nil
         }
 
@@ -250,7 +250,7 @@ actor ImageExtractor: ImageExtractorProtocol {
 
             // Check each base model's metadata directly (no recursion)
             for baseModelId in baseModels {
-                if let baseModelInfo = try await getModelInfo(modelId: baseModelId),
+                if let baseModelInfo = await getModelInfo(modelId: baseModelId),
                    let baseThumbnail = baseModelInfo.thumbnail,
                    !baseThumbnail.isEmpty {
                     structuredImages.append(baseThumbnail)
@@ -268,9 +268,9 @@ actor ImageExtractor: ImageExtractorProtocol {
     }
 
     /// Find original model from structured metadata
-    private func findOriginalFromMetadata(modelId: String) async throws -> String? {
+    private func findOriginalFromMetadata(modelId: String) async -> String? {
         // Get model information to access cardData
-        guard let modelInfo = try await getModelInfo(modelId: modelId) else {
+        guard let modelInfo = await getModelInfo(modelId: modelId) else {
             return nil
         }
 
@@ -288,7 +288,7 @@ actor ImageExtractor: ImageExtractorProtocol {
     }
 
     /// Get model information including cardData from HubAPI
-    private func getModelInfo(modelId: String) async throws -> ModelCardData? {
+    private func getModelInfo(modelId: String) async -> ModelCardData? {
         // For now, we need to make a direct API call to get the model info
         // In a future refactor, this could be cached or passed from the caller
         let url: URL = URL(string: "https://huggingface.co/api/models/\(modelId)")!

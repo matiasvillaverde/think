@@ -3,7 +3,7 @@ import Foundation
 
 /// Mock tooling that provides a browser tool for testing
 internal actor MockBrowserTooling: Tooling {
-    func configureTool(identifiers _: Set<ToolIdentifier>) async throws {
+    func configureTool(identifiers _: Set<ToolIdentifier>) async {
         await Task.yield()
     }
 
@@ -44,7 +44,7 @@ internal actor MockBrowserTooling: Tooling {
         return await getToolDefinitions(for: [.browser])
     }
 
-    func executeTools(toolRequests _: [ToolRequest]) async throws -> [ToolResponse] {
+    func executeTools(toolRequests _: [ToolRequest]) async -> [ToolResponse] {
         await Task.yield()
         return []
     }
@@ -53,7 +53,7 @@ internal actor MockBrowserTooling: Tooling {
         database _: DatabaseProtocol,
         chatId _: UUID,
         fileTitles _: [String]
-    ) async throws {
+    ) async {
         await Task.yield()
     }
 }

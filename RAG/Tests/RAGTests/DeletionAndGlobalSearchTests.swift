@@ -124,7 +124,7 @@ internal struct DeletionAndGlobalSearchTests {
     }
 
     @Test("Delete non-existent table")
-    func testDeleteNonExistentTable() async throws {
+    func testDeleteNonExistentTable() async {
         do {
             try await rag.deleteTable("non_existent_table")
         } catch {

@@ -112,7 +112,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
 
                 // Set up cleanup
                 continuation.onTermination = { @Sendable _ in
-                    Task { [logger = self.logger] in
+                    Task { [logger] in
                         await logger.debug("Download stream terminated", metadata: [
                             "sendableModelId": sendableModel.id.uuidString
                         ])
@@ -395,19 +395,14 @@ public struct ModelDownloader: ModelDownloaderProtocol {
     /// - Note: Only downloads in pending, downloading, or paused states will be resumed
     public func resumeBackgroundDownloads() async throws -> [BackgroundDownloadHandle] {
         await logger.info("Resuming background downloads")
+        try Task.checkCancellation()
+        let handles: [BackgroundDownloadHandle] = await BackgroundDownloadManager.shared.resumeAllDownloads()
 
-        do {
-            let handles: [BackgroundDownloadHandle] = try await BackgroundDownloadManager.shared.resumeAllDownloads()
+        await logger.info("Background downloads resumed", metadata: [
+            "count": handles.count
+        ])
 
-            await logger.info("Background downloads resumed", metadata: [
-                "count": handles.count
-            ])
-
-            return handles
-        } catch {
-            await logger.error("Failed to resume background downloads", error: error)
-            throw error
-        }
+        return handles
     }
 
     /// Handle background download completion events from the system.
@@ -837,7 +832,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
 
                 // Set up cleanup
                 continuation.onTermination = { @Sendable _ in
-                    Task { [logger = self.logger] in
+                    Task { [logger] in
                         await logger.debug("Background download stream terminated", metadata: [
                             "modelLocation": sendableModel
                         ])
@@ -901,7 +896,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
                         options: options
                     ) { progress in
                             // Log progress updates
-                            Task { [logger = self.logger] in
+                            Task { [logger] in
                                 await logger.debug("Background download progress", metadata: [
                                     "modelLocation": sendableModel,
                                     "bytesDownloaded": progress.bytesDownloaded,
@@ -968,7 +963,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
                     continuation.onTermination = { @Sendable termination in
                         switch termination {
                         case .cancelled:
-                            Task { [logger = self.logger] in
+                            Task { [logger] in
                                 await logger.debug("Background download cancelled", metadata: [
                                     "modelLocation": sendableModel,
                                     "downloadId": handle.id.uuidString
@@ -1066,7 +1061,17 @@ public struct ModelDownloader: ModelDownloaderProtocol {
     /// - Parameter model: Repository location to analyze (e.g., "owner/model-name")
     /// - Returns: Recommended Backend
     public func getRecommendedBackend(for model: ModelLocation) async -> SendableModel.Backend {
-        // Basic heuristics based on repository name patterns
+        if let detectedBackends = await detectAvailableBackends(for: model),
+           let preferred = choosePreferredBackend(from: detectedBackends) {
+            await logger.debug("Backend recommendation from detection", metadata: [
+                "modelLocation": model,
+                "detectedBackends": detectedBackends.map(\.rawValue).joined(separator: ", "),
+                "recommendedBackend": preferred.rawValue
+            ])
+            return preferred
+        }
+
+        // Fallback heuristics based on repository name patterns
         let modelLower: String = model.lowercased()
 
         let recommendedBackend: SendableModel.Backend
@@ -1087,6 +1092,29 @@ public struct ModelDownloader: ModelDownloaderProtocol {
         ])
 
         return recommendedBackend
+    }
+
+    private func detectAvailableBackends(for model: ModelLocation) async -> [SendableModel.Backend]? {
+        let explorer: CommunityModelsExplorer = CommunityModelsExplorer()
+        do {
+            let discovered: DiscoveredModel = try await explorer.discoverModel(model)
+            return await MainActor.run {
+                discovered.detectedBackends
+            }
+        } catch {
+            await logger.warning("Backend detection failed", metadata: [
+                "modelLocation": model,
+                "error": error.localizedDescription
+            ])
+            return nil
+        }
+    }
+
+    private func choosePreferredBackend(
+        from backends: [SendableModel.Backend]
+    ) -> SendableModel.Backend? {
+        let preferredOrder: [SendableModel.Backend] = [.mlx, .gguf, .coreml]
+        return preferredOrder.first { backends.contains($0) }
     }
 
     /// Validate and download a model with automatic backend selection
@@ -1133,7 +1161,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
 
                     // Set up cleanup
                     continuation.onTermination = { @Sendable _ in
-                        Task { [logger = self.logger] in
+                        Task { [logger] in
                             await logger.debug("Safe download stream terminated", metadata: [
                                 "modelLocation": model
                             ])

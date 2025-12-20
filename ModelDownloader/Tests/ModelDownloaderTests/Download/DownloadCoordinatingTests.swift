@@ -16,35 +16,37 @@ struct DownloadCoordinatingTests {
         var mockState: DownloadStatus = .notStarted
         var mockError: Error?
 
-        func start(model _: SendableModel) throws {
+        func start(model _: SendableModel) async throws {
+            await Task.yield()
             startCalled = true
             if let error = mockError {
                 throw error
             }
         }
 
-        func pause(repositoryId _: String) throws {
+        func pause(repositoryId _: String) async throws {
+            await Task.yield()
             pauseCalled = true
             if let error = mockError {
                 throw error
             }
         }
 
-        func resume(repositoryId _: String) throws {
+        func resume(repositoryId _: String) async throws {
+            await Task.yield()
             resumeCalled = true
             if let error = mockError {
                 throw error
             }
         }
 
-        func cancel(repositoryId _: String) throws {
+        func cancel(repositoryId _: String) async {
+            await Task.yield()
             cancelCalled = true
-            if let error = mockError {
-                throw error
-            }
         }
 
-        func state(for _: String) -> DownloadStatus {
+        func state(for _: String) async -> DownloadStatus {
+            await Task.yield()
             stateCalled = true
             return mockState
         }
@@ -97,11 +99,11 @@ struct DownloadCoordinatingTests {
     }
 
     @Test("Coordinator can cancel download")
-    func testCancelDownload() async throws {
+    func testCancelDownload() async {
         let coordinator: MockDownloadCoordinator = MockDownloadCoordinator()
         let repositoryId: String = "test/model"
 
-        try await coordinator.cancel(repositoryId: repositoryId)
+        await coordinator.cancel(repositoryId: repositoryId)
 
         #expect(await coordinator.cancelCalled == true)
     }
@@ -297,7 +299,7 @@ struct DefaultDownloadCoordinatorTests {
         try await Task.sleep(nanoseconds: 20_000_000) // 20ms
 
         // Cancel the download
-        try await coordinator.cancel(repositoryId: model.location)
+        await coordinator.cancel(repositoryId: model.location)
 
         // Wait longer for cancellation to complete and state to reset
         try await Task.sleep(nanoseconds: 100_000_000) // 100ms
@@ -341,7 +343,7 @@ actor MockStreamingDownloaderForCoordinator: StreamingDownloaderProtocol {
         from _: URL,
         to destination: URL,
         headers _: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
         // Simulate progress updates
         for progress in progressValues {
@@ -360,7 +362,7 @@ actor MockStreamingDownloaderForCoordinator: StreamingDownloaderProtocol {
         from url: URL,
         to destination: URL,
         headers: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
         try await download(from: url, to: destination, headers: headers, progressHandler: progressHandler)
     }
@@ -396,7 +398,7 @@ actor MockFileManagerForCoordinator: ModelFileManagerProtocol {
         return URL(fileURLWithPath: "/tmp/models/\(backend.rawValue)/\(safeRepoId)")
     }
 
-    func listDownloadedModels() throws -> [ModelInfo] {
+    func listDownloadedModels() -> [ModelInfo] {
         []
     }
 
@@ -404,11 +406,11 @@ actor MockFileManagerForCoordinator: ModelFileManagerProtocol {
         false
     }
 
-    func deleteModel(repositoryId _: String) throws {
+    func deleteModel(repositoryId _: String) {
         // No-op for tests
     }
 
-    func moveModel(from _: URL, to _: URL) throws {
+    func moveModel(from _: URL, to _: URL) {
         // No-op for tests
     }
 
@@ -431,7 +433,7 @@ actor MockFileManagerForCoordinator: ModelFileManagerProtocol {
         backend: SendableModel.Backend,
         from tempURL: URL,
         totalSize: Int64
-    ) async throws -> ModelInfo {
+    ) async -> ModelInfo {
         // Generate deterministic UUID from repository ID for external compatibility
         let identityService: ModelIdentityService = ModelIdentityService()
         let modelId: UUID = await identityService.generateModelId(for: repositoryId)
@@ -451,7 +453,7 @@ actor MockFileManagerForCoordinator: ModelFileManagerProtocol {
         )
     }
 
-    func cleanupIncompleteDownloads() throws {
+    func cleanupIncompleteDownloads() {
         // No-op for tests
     }
 

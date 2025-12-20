@@ -7,7 +7,7 @@ import UserNotifications
 @Suite("Per-Model Notification Tests")
 struct PerModelNotificationTests {
     @Test("Multiple model completion notifications")
-    func testMultipleModelCompletionNotifications() async throws {
+    func testMultipleModelCompletionNotifications() async {
         // Given
         let mockNotificationCenter: MockNotificationCenter = MockNotificationCenter()
         let notificationManager: DownloadNotificationManager = DownloadNotificationManager(
@@ -42,7 +42,7 @@ struct PerModelNotificationTests {
     }
 
     @Test("Notification includes model name and size")
-    func testNotificationContent() async throws {
+    func testNotificationContent() async {
         // Given
         let mockNotificationCenter: MockNotificationCenter = MockNotificationCenter()
         let notificationManager: DownloadNotificationManager = DownloadNotificationManager(

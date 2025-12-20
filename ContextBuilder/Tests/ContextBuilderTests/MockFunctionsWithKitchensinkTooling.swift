@@ -47,7 +47,7 @@ internal actor MockFunctionsWithKitchensinkTooling: Tooling {
     } // namespace functions
     """
 
-    func configureTool(identifiers _: Set<ToolIdentifier>) async throws {
+    func configureTool(identifiers _: Set<ToolIdentifier>) async {
         await Task.yield()
     }
 
@@ -75,7 +75,7 @@ internal actor MockFunctionsWithKitchensinkTooling: Tooling {
         return await getToolDefinitions(for: [.functions])
     }
 
-    func executeTools(toolRequests _: [ToolRequest]) async throws -> [ToolResponse] {
+    func executeTools(toolRequests _: [ToolRequest]) async -> [ToolResponse] {
         await Task.yield()
         return []
     }
@@ -84,7 +84,7 @@ internal actor MockFunctionsWithKitchensinkTooling: Tooling {
         database _: DatabaseProtocol,
         chatId _: UUID,
         fileTitles _: [String]
-    ) async throws {
+    ) async {
         await Task.yield()
     }
 }

@@ -61,7 +61,8 @@ extension LoRALayer where Self: Linear {
             return QuantizedLinear(
                 weight: quantized.weight, bias: quantized.bias,
                 scales: quantized.scales, biases: quantized.biases,
-                groupSize: quantized.groupSize, bits: quantized.bits
+                groupSize: quantized.groupSize, bits: quantized.bits,
+                mode: quantized.mode
             )
         } else {
             return Linear(weight: weight, bias: bias)
@@ -79,7 +80,8 @@ extension QuantizedLinear {
             scales: scales,
             biases: biases,
             groupSize: groupSize,
-            bits: bits
+            bits: bits,
+            mode: mode
         )
     }
 }

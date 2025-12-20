@@ -76,7 +76,7 @@ internal struct ModelDownloadAcceptanceTests {
         )
     )
     @MainActor
-    func testMultipleModelsHaveFileSizes() async throws {
+    func testMultipleModelsHaveFileSizes() async {
         // Create the community explorer
         let communityExplorer: CommunityModelsExplorer = CommunityModelsExplorer()
 

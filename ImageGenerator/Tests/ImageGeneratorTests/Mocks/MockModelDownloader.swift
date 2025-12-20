@@ -29,11 +29,11 @@ final class MockModelDownloader: ModelDownloaderProtocol {
         }
     }
 
-    func resumeBackgroundDownloads() throws -> [BackgroundDownloadHandle] { [] }
+    func resumeBackgroundDownloads() -> [BackgroundDownloadHandle] { [] }
     func backgroundDownloadStatus() -> [BackgroundDownloadStatus] { [] }
     func cancelBackgroundDownload(_: BackgroundDownloadHandle) {}
-    func listDownloadedModels() throws -> [ModelInfo] { [] }
-    func deleteModel(model _: ModelLocation) throws {}
+    func listDownloadedModels() -> [ModelInfo] { [] }
+    func deleteModel(model _: ModelLocation) {}
     func getModelSize(model _: ModelLocation) -> Int64? { nil }
     func getModelFileURL(for _: ModelLocation, fileName _: String) -> URL? { nil }
     func getModelFiles(for _: ModelLocation) -> [URL] { [] }
@@ -41,16 +41,16 @@ final class MockModelDownloader: ModelDownloaderProtocol {
     func validateModel(
         _: ModelLocation,
         backend _: SendableModel.Backend
-    ) throws -> ValidationResult {
+    ) -> ValidationResult {
         ValidationResult(isValid: true, warnings: [])
     }
     func getRecommendedBackend(for _: ModelLocation) -> SendableModel.Backend { .coreml }
     func availableDiskSpace() -> Int64? { nil }
-    func cleanupIncompleteDownloads() throws {}
+    func cleanupIncompleteDownloads() {}
     func requestNotificationPermission() -> Bool { false }
     func handleBackgroundDownloadCompletion(
         identifier _: String,
-        completionHandler: @escaping @Sendable () -> Void
+        completionHandler: @Sendable () -> Void
     ) {
         completionHandler()
     }

@@ -3,7 +3,7 @@ import Foundation
 import Testing
 
 @Test("HFTokenManager should discover token from HF_TOKEN environment variable")
-internal func testTokenDiscoveryFromHFTokenEnv() async throws {
+internal func testTokenDiscoveryFromHFTokenEnv() async {
     let mockEnvironment: [String: String] = ["HF_TOKEN": "test_token_hf"]
     let mockFileManager: MockHFFileManager = MockHFFileManager()
     let mockHTTPClient: MockHTTPClient = MockHTTPClient()
@@ -19,7 +19,7 @@ internal func testTokenDiscoveryFromHFTokenEnv() async throws {
 }
 
 @Test("HFTokenManager should return nil when no token found")
-internal func testNoTokenFound() async throws {
+internal func testNoTokenFound() async {
     let mockEnvironment: [String: String] = [:]
     let mockFileManager: MockHFFileManager = MockHFFileManager()
     let mockHTTPClient: MockHTTPClient = MockHTTPClient()

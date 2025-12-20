@@ -273,7 +273,7 @@ public final actor Rag: Ragging {
         do {
             let model: Bert.ModelBundle = try await getModel()
             let tensor: MLTensor = try model.encode(query)
-            let vector: [Float] = try await tensor.convertTensorToVector()
+            let vector: [Float] = await tensor.convertTensorToVector()
             logger.debug("Query encoded successfully with vector size: \(vector.count, privacy: .public)")
             return vector
         } catch {

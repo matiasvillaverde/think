@@ -7,7 +7,7 @@ import Testing
 @Suite("LlamaCPPFactory Tests")
 internal struct LlamaCPPFactoryTests {
     @Test("Factory is the only public interface")
-    internal func testOnlyFactoryIsPublic() throws {
+    internal func testOnlyFactoryIsPublic() {
         // This test verifies that LlamaCPPFactory is public
         // while other types like LlamaCPPSession are internal
         // The fact that we can't directly instantiate LlamaCPPSession

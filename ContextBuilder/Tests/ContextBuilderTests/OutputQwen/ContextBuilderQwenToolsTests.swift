@@ -10,7 +10,7 @@ internal struct ContextBuilderQwenToolsTests {
         let tooling = MockWeatherAndReasoningTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
 
-        let parameters = try createQwenToolsTestParametersWithReasoning()
+        let parameters = createQwenToolsTestParametersWithReasoning()
         let expectedOutput = try loadExpectedQwenToolsOutputWithThink()
 
         let result = try await contextBuilder.build(parameters: parameters)
@@ -28,7 +28,7 @@ internal struct ContextBuilderQwenToolsTests {
         let tooling = MockWeatherTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
 
-        let parameters = try createQwenToolsTestParametersWithoutReasoning()
+        let parameters = createQwenToolsTestParametersWithoutReasoning()
         let expectedOutput = try loadExpectedQwenToolsOutputWithNoThink()
 
         let result = try await contextBuilder.build(parameters: parameters)
@@ -41,7 +41,7 @@ internal struct ContextBuilderQwenToolsTests {
         #expect(areEquivalent, Comment(rawValue: detailedDiff))
     }
 
-    private func createQwenToolsTestParametersWithReasoning() throws -> BuildParameters {
+    private func createQwenToolsTestParametersWithReasoning() -> BuildParameters {
         let model = SendableModel(
             id: UUID(),
             ramNeeded: 1_000_000_000,
@@ -75,8 +75,7 @@ internal struct ContextBuilderQwenToolsTests {
         )
     }
 
-    private func createQwenToolsTestParametersWithoutReasoning()
-        throws -> BuildParameters {
+    private func createQwenToolsTestParametersWithoutReasoning() -> BuildParameters {
         let model = SendableModel(
             id: UUID(),
             ramNeeded: 1_000_000_000,

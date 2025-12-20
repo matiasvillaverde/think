@@ -221,7 +221,7 @@ struct HubAPIExtensionTests {
 
     @Test("Handle search API errors")
     @MainActor
-    func testSearchAPIErrors() async throws {
+    func testSearchAPIErrors() async {
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
 
         // Test 401 Unauthorized

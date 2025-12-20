@@ -162,7 +162,7 @@ extension APITests {
     // MARK: - Error Handling Tests
 
     @Test("Handle non-existent model gracefully")
-    func testHandleNonExistentModel() async throws {
+    func testHandleNonExistentModel() async {
         let extractor: ImageExtractor = ImageExtractor()
         let modelId: String = "non-existent/fake-model-12345"
 
@@ -179,7 +179,7 @@ extension APITests {
     // MARK: - Performance Tests
 
     @Test("Extract images from multiple models concurrently")
-    func testConcurrentImageExtraction() async throws {
+    func testConcurrentImageExtraction() async {
         let extractor: ImageExtractor = ImageExtractor()
         let modelIds: [String] = [
             "unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF",

@@ -87,7 +87,7 @@ internal struct ImageMetricsTests {
     }
 
     @Test("ImageMetrics conversion preserves essential data")
-    internal func imageMetricsConversionPreservesData() throws {
+    internal func imageMetricsConversionPreservesData() {
         // Given: Test image metrics
         let imageMetrics: ImageMetrics = ImageTestHelpers.createTestImageMetrics()
 

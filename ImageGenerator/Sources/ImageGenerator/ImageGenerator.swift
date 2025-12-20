@@ -56,7 +56,7 @@ public actor ImageGenerator: ImageGenerating {
     ///
     /// - Parameter model: The model to stop generation for
     /// - Throws: Any errors during task cancellation
-    public func stop(model: UUID) async throws {
+    public func stop(model: UUID) async {
         await withCheckedContinuation { continuation in
             if let task = currentTasks[model] {
                 task.cancel()
@@ -97,7 +97,7 @@ public actor ImageGenerator: ImageGenerating {
     ///
     /// - Parameter model: The model to unload
     /// - Throws: Any errors during unloading
-    public func unload(model: UUID) async throws {
+    public func unload(model: UUID) async {
         await withCheckedContinuation { continuation in
             pipelines[model] = nil
             currentTasks[model] = nil

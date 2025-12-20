@@ -9,7 +9,7 @@ import Tools
 internal enum ComplexOrchestratorFactory {
     internal static func createOrchestratorWithMocks(
         database: Database
-    ) async throws -> (AgentOrchestrator, MockLLMSession) {
+    ) async -> (AgentOrchestrator, MockLLMSession) {
         let mockSession: MockLLMSession = MockLLMSession()
         let toolManager: ToolManager = await createToolManager()
         let coordinator: ModelStateCoordinator = createModelCoordinator(

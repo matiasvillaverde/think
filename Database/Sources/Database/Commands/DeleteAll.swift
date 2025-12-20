@@ -8,7 +8,7 @@ extension AppCommands {
     public struct DeleteAll: WriteCommand & AnonymousCommand {
         public init() {}
 
-        public func execute(in context: ModelContext) throws -> UUID {
+        public func execute(in context: ModelContext) -> UUID {
             // Delete in reverse dependency order to avoid constraint violations
             try? context.delete(model: Tag.self)
             try? context.delete(model: Model.self)

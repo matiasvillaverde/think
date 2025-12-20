@@ -206,7 +206,7 @@ internal actor StreamingDownloader {
         from url: URL,
         to destination: URL,
         headers: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
         // Create request
         var request: URLRequest = URLRequest(url: url)
@@ -237,6 +237,7 @@ internal actor StreamingDownloader {
         switch httpResponse.statusCode {
         case 200...299:
             break // Success
+
         case 401:
             await logger.error("Authentication required", metadata: ["url": url.absoluteString])
             throw HuggingFaceError.authenticationRequired
@@ -391,7 +392,7 @@ internal actor BackgroundDownloader {
         from url: URL,
         to destination: URL,
         headers: [String: String]
-    ) throws -> String {
+    ) -> String {
         // Create request
         var request: URLRequest = URLRequest(url: url)
         for (key, value) in headers {

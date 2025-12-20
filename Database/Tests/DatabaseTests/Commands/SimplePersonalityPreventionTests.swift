@@ -5,7 +5,7 @@ import Foundation
 @Suite("Simple Personality Duplicate Prevention")
 struct SimplePersonalityPreventionTests {
     @Test("PersonalityFactory should not create internal duplicates")
-    func testFactoryCreatesNoDuplicates() throws {
+    func testFactoryCreatesNoDuplicates() {
         // When - Create personalities from factory
         let personalities = PersonalityFactory.createSystemPersonalities()
         

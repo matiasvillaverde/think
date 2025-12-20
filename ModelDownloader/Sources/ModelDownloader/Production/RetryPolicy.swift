@@ -81,6 +81,7 @@ internal actor ExponentialBackoffRetryPolicy: RetryPolicy {
                  .unsupportedFormat,
                  .configurationMissing:
                 return false
+
             case .downloadFailed,
                  .networkError,
                  .timeout:

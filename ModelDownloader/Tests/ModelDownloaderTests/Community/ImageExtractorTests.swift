@@ -175,9 +175,11 @@ struct ImageExtractorTests {
 
 /// Mock ImageExtractor for testing
 private struct MockImageExtractor: ImageExtractorProtocol {
-    func extractImageUrls(from _: String) throws -> [String] {
+    func extractImageUrls(from _: String) async throws -> [String] {
+        await Task.yield()
+        try Task.checkCancellation()
         // Mock implementation - will be replaced with real network calls in integration tests
-        []
+        return []
     }
 
     func extractImageUrls(from modelCard: String, modelId: String) -> [String] {
@@ -230,9 +232,11 @@ private struct MockImageExtractor: ImageExtractorProtocol {
         return imageUrls
     }
 
-    func findOriginalModelId(from _: String) throws -> String? {
+    func findOriginalModelId(from _: String) async throws -> String? {
+        await Task.yield()
+        try Task.checkCancellation()
         // Mock implementation for testing
-        nil
+        return nil
     }
 
     nonisolated func findOriginalModelId(from modelCard: String?) -> String? {

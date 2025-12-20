@@ -24,8 +24,7 @@ public protocol DownloadCoordinating: Actor {
 
     /// Cancels a download and removes associated resources
     /// - Parameter repositoryId: The repository ID of the model to cancel
-    /// - Throws: ModelDownloadError if download cannot be canceled
-    func cancel(repositoryId: String) async throws
+    func cancel(repositoryId: String) async
 
     /// Gets the current download state for a model
     /// - Parameter repositoryId: The repository ID of the model

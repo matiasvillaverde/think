@@ -14,7 +14,7 @@ internal enum AgenticLoopVerificationHelpers {
 
     // MARK: - Health Tool Verification
 
-    internal static func verifyHealthToolExecution(_ healthTool: TestHealthStrategy) throws {
+    internal static func verifyHealthToolExecution(_ healthTool: TestHealthStrategy) {
         let history: [TestHealthStrategy.HealthRecord] = healthTool.executionHistory
         let expected: Int = ExpectedValues.expectedToolExecutions
         #expect(history.count == expected, "Expected \(expected) health tool execution, got \(history.count)")
@@ -50,10 +50,10 @@ internal enum AgenticLoopVerificationHelpers {
         #expect(message.userInput == "How many steps did I walk yesterday?")
         #expect(message.response != nil, "Message should have a response")
 
-        try verifyChannelStructure(message)
+        verifyChannelStructure(message)
     }
 
-    private static func verifyChannelStructure(_ message: Message) throws {
+    private static func verifyChannelStructure(_ message: Message) {
         guard let channels = message.channels else {
             Issue.record("Message should have channels")
             return
@@ -72,9 +72,9 @@ internal enum AgenticLoopVerificationHelpers {
         #expect(toolChannels.count == 1, "Expected 1 tool channel")
         #expect(finalChannels.count == 1, "Expected 1 final channel")
 
-        try verifyToolChannel(toolChannels.first)
-        try verifyCommentaryChannel(commentaryChannels.first)
-        try verifyFinalChannel(finalChannels.first)
+        verifyToolChannel(toolChannels.first)
+        verifyCommentaryChannel(commentaryChannels.first)
+        verifyFinalChannel(finalChannels.first)
     }
 
     private static func debugPrintChannels(_ channels: [Channel]) {
@@ -88,7 +88,7 @@ internal enum AgenticLoopVerificationHelpers {
     }
 
     // MARK: - Channel Verification
-    private static func verifyToolChannel(_ channel: Channel?) throws {
+    private static func verifyToolChannel(_ channel: Channel?) {
         guard let channel else {
             Issue.record("Tool channel not found")
             return
@@ -113,7 +113,7 @@ internal enum AgenticLoopVerificationHelpers {
         #expect(response.result.contains("steps"))
     }
 
-    private static func verifyCommentaryChannel(_ channel: Channel?) throws {
+    private static func verifyCommentaryChannel(_ channel: Channel?) {
         guard let channel else {
             Issue.record("Commentary channel not found")
             return
@@ -123,7 +123,7 @@ internal enum AgenticLoopVerificationHelpers {
         #expect(channel.content.contains("step"))
     }
 
-    private static func verifyFinalChannel(_ channel: Channel?) throws {
+    private static func verifyFinalChannel(_ channel: Channel?) {
         guard let channel else {
             Issue.record("Final channel not found")
             return

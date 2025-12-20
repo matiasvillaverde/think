@@ -6,7 +6,7 @@ import Testing
 @Suite("ToolExecutor Tests")
 internal struct ToolExecutorTests {
     @Test("Execute single tool request successfully")
-    func testExecuteSingleToolRequest() async throws {
+    func testExecuteSingleToolRequest() async {
         // Given
         let executor: ToolExecutor = ToolExecutor()
         let request: ToolRequest = ToolRequest(
@@ -34,7 +34,7 @@ internal struct ToolExecutorTests {
         await executor.registerStrategy(TestStrategy())
 
         // When
-        let response: ToolResponse = try await executor.execute(request: request)
+        let response: ToolResponse = await executor.execute(request: request)
 
         // Then
         #expect(response.requestId == request.id)
@@ -44,7 +44,7 @@ internal struct ToolExecutorTests {
     }
 
     @Test("Execute request for non-existent tool returns error")
-    func testExecuteNonExistentTool() async throws {
+    func testExecuteNonExistentTool() async {
         // Given
         let executor: ToolExecutor = ToolExecutor()
         let request: ToolRequest = ToolRequest(
@@ -54,7 +54,7 @@ internal struct ToolExecutorTests {
         )
 
         // When
-        let response: ToolResponse = try await executor.execute(request: request)
+        let response: ToolResponse = await executor.execute(request: request)
 
         // Then
         #expect(response.requestId == request.id)
@@ -64,7 +64,7 @@ internal struct ToolExecutorTests {
     }
 
     @Test("Execute request with invalid JSON arguments returns error")
-    func testExecuteWithInvalidJSON() async throws {
+    func testExecuteWithInvalidJSON() async {
         // Given
         let executor: ToolExecutor = ToolExecutor()
         let request: ToolRequest = ToolRequest(
@@ -92,7 +92,7 @@ internal struct ToolExecutorTests {
         await executor.registerStrategy(TestStrategy())
 
         // When
-        let response: ToolResponse = try await executor.execute(request: request)
+        let response: ToolResponse = await executor.execute(request: request)
 
         // Then
         #expect(response.requestId == request.id)
@@ -101,7 +101,7 @@ internal struct ToolExecutorTests {
     }
 
     @Test("Execute multiple requests in parallel")
-    func testExecuteMultipleRequestsInParallel() async throws {
+    func testExecuteMultipleRequestsInParallel() async {
         // Given
         let executor: ToolExecutor = ToolExecutor()
         let request1: ToolRequest = ToolRequest(
@@ -152,7 +152,7 @@ internal struct ToolExecutorTests {
         await executor.registerStrategy(Tool2Strategy())
 
         // When
-        let responses: [ToolResponse] = try await executor.executeBatch(requests: [request1, request2])
+        let responses: [ToolResponse] = await executor.executeBatch(requests: [request1, request2])
 
         // Then
         #expect(responses.count == 2)

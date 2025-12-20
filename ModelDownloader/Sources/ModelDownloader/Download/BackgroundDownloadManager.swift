@@ -340,7 +340,7 @@ public final class BackgroundDownloadManager: @unchecked Sendable {
     }
 
     /// Resume persisted downloads
-    public func resumeAllDownloads() async throws -> [BackgroundDownloadHandle] {
+    public func resumeAllDownloads() async -> [BackgroundDownloadHandle] {
         logger.info("Resuming all persisted downloads")
 
         // Clean up stale downloads first

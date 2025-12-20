@@ -87,7 +87,7 @@ struct RefactoringIntegrationTests {
         }
 
         // 9. Cancel and cleanup
-        try await coordinator.cancel(repositoryId: location)
+        await coordinator.cancel(repositoryId: location)
 
         // Verify cleanup
         let finalStatus: DownloadStatus = await coordinator.state(for: location)

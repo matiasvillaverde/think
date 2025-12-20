@@ -25,38 +25,21 @@ internal class Decoder {
         genIstftNFft: Int,
         genIstftHopSize: Int
     ) {
-        encode = AdainResBlk1d(weights: weights, weightKeyPrefix: "decoder.encode", dimIn: dimIn + 2, dimOut: 1_024, styleDim: styleDim)
-
-        decode.append(AdainResBlk1d(weights: weights, weightKeyPrefix: "decoder.decode.0", dimIn: 1_024 + 2 + 64, dimOut: 1_024, styleDim: styleDim))
-        decode.append(AdainResBlk1d(weights: weights, weightKeyPrefix: "decoder.decode.1", dimIn: 1_024 + 2 + 64, dimOut: 1_024, styleDim: styleDim))
-        decode.append(AdainResBlk1d(weights: weights, weightKeyPrefix: "decoder.decode.2", dimIn: 1_024 + 2 + 64, dimOut: 1_024, styleDim: styleDim))
-        decode.append(AdainResBlk1d(weights: weights, weightKeyPrefix: "decoder.decode.3", dimIn: 1_024 + 2 + 64, dimOut: 512, styleDim: styleDim, upsample: "true"))
-
-        f0Conv = ConvWeighted(
-            weightG: weights["decoder.F0_conv.weight_g"]!,
-            weightV: weights["decoder.F0_conv.weight_v"]!,
-            bias: weights["decoder.F0_conv.bias"]!,
+        encode = Self.buildEncode(weights: weights, dimIn: dimIn, styleDim: styleDim)
+        decode = Self.buildDecode(weights: weights, styleDim: styleDim)
+        f0Conv = Self.buildConv(
+            weights: weights,
+            keyPrefix: "decoder.F0_conv",
             stride: 2,
-            padding: 1,
-            groups: 1
+            padding: 1
         )
-        noiseConv = ConvWeighted(
-            weightG: weights["decoder.N_conv.weight_g"]!,
-            weightV: weights["decoder.N_conv.weight_v"]!,
-            bias: weights["decoder.N_conv.bias"]!,
+        noiseConv = Self.buildConv(
+            weights: weights,
+            keyPrefix: "decoder.N_conv",
             stride: 2,
-            padding: 1,
-            groups: 1
+            padding: 1
         )
-
-        asrRes = [
-            ConvWeighted(
-                weightG: weights["decoder.asr_res.0.weight_g"]!,
-                weightV: weights["decoder.asr_res.0.weight_v"]!,
-                bias: weights["decoder.asr_res.0.bias"]!,
-                padding: 0
-            )
-        ]
+        asrRes = [Self.buildConv(weights: weights, keyPrefix: "decoder.asr_res.0")]
 
         generator = Generator(
             weights: weights,
@@ -68,6 +51,74 @@ internal class Decoder {
             upsampleKernelSizes: upsampleKernelSizes,
             genIstftNFft: genIstftNFft,
             genIstftHopSize: genIstftHopSize
+        )
+    }
+
+    private static func buildEncode(
+        weights: [String: MLXArray],
+        dimIn: Int,
+        styleDim: Int
+    ) -> AdainResBlk1d {
+        AdainResBlk1d(
+            weights: weights,
+            weightKeyPrefix: "decoder.encode",
+            dimIn: dimIn + 2,
+            dimOut: 1_024,
+            styleDim: styleDim
+        )
+    }
+
+    private static func buildDecode(
+        weights: [String: MLXArray],
+        styleDim: Int
+    ) -> [AdainResBlk1d] {
+        [
+            AdainResBlk1d(
+                weights: weights,
+                weightKeyPrefix: "decoder.decode.0",
+                dimIn: 1_024 + 2 + 64,
+                dimOut: 1_024,
+                styleDim: styleDim
+            ),
+            AdainResBlk1d(
+                weights: weights,
+                weightKeyPrefix: "decoder.decode.1",
+                dimIn: 1_024 + 2 + 64,
+                dimOut: 1_024,
+                styleDim: styleDim
+            ),
+            AdainResBlk1d(
+                weights: weights,
+                weightKeyPrefix: "decoder.decode.2",
+                dimIn: 1_024 + 2 + 64,
+                dimOut: 1_024,
+                styleDim: styleDim
+            ),
+            AdainResBlk1d(
+                weights: weights,
+                weightKeyPrefix: "decoder.decode.3",
+                dimIn: 1_024 + 2 + 64,
+                dimOut: 512,
+                styleDim: styleDim,
+                upsample: "true"
+            )
+        ]
+    }
+
+    private static func buildConv(
+        weights: [String: MLXArray],
+        keyPrefix: String,
+        stride: Int = 1,
+        padding: Int = 0,
+        groups: Int = 1
+    ) -> ConvWeighted {
+        ConvWeighted(
+            weightG: weights["\(keyPrefix).weight_g"]!,
+            weightV: weights["\(keyPrefix).weight_v"]!,
+            bias: weights["\(keyPrefix).bias"]!,
+            stride: stride,
+            padding: padding,
+            groups: groups
         )
     }
 

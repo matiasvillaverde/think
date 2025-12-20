@@ -6,7 +6,7 @@ import Testing
 // MARK: - Simple Integration Tests
 
 @Test("HuggingFaceDownloader initializes with production features")
-internal func testProductionDownloaderInitialization() throws {
+internal func testProductionDownloaderInitialization() {
     let mockFileManager: MockFileManager = MockFileManager()
 
     let _: HuggingFaceDownloader = HuggingFaceDownloader.createProductionDownloader(
@@ -153,8 +153,8 @@ internal func testDiskSpaceValidationIntegration() async throws {
 }
 
 @Test("Logger integration")
-internal func testLoggerIntegration() async throws {
-     let logger: ModelDownloaderLogger = ModelDownloaderLogger(
+internal func testLoggerIntegration() async {
+    let logger: ModelDownloaderLogger = ModelDownloaderLogger(
         subsystem: "test",
         category: "integration"
     )
@@ -202,7 +202,7 @@ private actor MockStreamingDownloaderSimple: StreamingDownloaderProtocol {
         from _: URL,
         to destination: URL,
         headers _: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
         // Simulate progress
         for step in 0...10 {
@@ -219,7 +219,7 @@ private actor MockStreamingDownloaderSimple: StreamingDownloaderProtocol {
         from url: URL,
         to destination: URL,
         headers: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
         try await download(from: url, to: destination, headers: headers, progressHandler: progressHandler)
     }

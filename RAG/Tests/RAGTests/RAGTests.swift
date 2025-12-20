@@ -304,7 +304,7 @@ internal struct RagTests {
         }
 
         @Test("Non-existent file handling")
-        func testNonExistentFile() async throws {
+        func testNonExistentFile() async {
             let nonExistentURL: URL = URL(fileURLWithPath: "/non/existent/path.txt")
 
             do {
@@ -317,7 +317,7 @@ internal struct RagTests {
         }
 
         @Test("Invalid chunk index handling")
-        func testInvalidChunkIndex() async throws {
+        func testInvalidChunkIndex() async {
             do {
                 _ = try await rag.getChunk(index: 999_999)
             } catch {
@@ -337,7 +337,7 @@ internal struct RagTests {
         }
 
         @Test("Table name consistency demonstration")
-        func testTableNameConsistency() throws {
+        func testTableNameConsistency() {
             // This test demonstrates that our fix worked:
             // Before: Configuration used "embeddings", tests used "chunks" → data mismatch
             // After: Both Configuration and tests use "embeddings" → data found consistently

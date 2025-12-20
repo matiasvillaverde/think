@@ -240,12 +240,7 @@ public struct WelcomeView: View {
         isLoadingRecommended = true
         recommendedError = nil
         loadAttempts += 1
-
-        do {
-            recommendedModels = try await viewModel.recommendedLanguageModels()
-        } catch {
-            recommendedError = error
-        }
+        recommendedModels = await viewModel.recommendedLanguageModels()
 
         isLoadingRecommended = false
     }

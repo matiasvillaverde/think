@@ -202,7 +202,7 @@ extension APITests {
     }
 
     @Test("Handle model not found")
-    func testModelNotFound() async throws {
+    func testModelNotFound() async {
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
         mockClient.responses["/nonexistent/model/api"] = HTTPClientResponse(
             data: Data(),

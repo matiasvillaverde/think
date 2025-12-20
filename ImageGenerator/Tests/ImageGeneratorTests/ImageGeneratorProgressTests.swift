@@ -152,7 +152,7 @@ struct ImageGeneratorProgressTests {
         for try await _ in await setup.generator.generate(model: setup.model, config: config) {
             updateCount += 1
             if updateCount == 1 {
-                try await setup.generator.stop(model: setup.model.id)
+                await setup.generator.stop(model: setup.model.id)
                 break // Exit the loop after cancelling
             }
         }
@@ -212,12 +212,12 @@ final class MockStableDiffusionPipelineEnhanced: StableDiffusionPipelineProtocol
     var yieldInterval = 5 // Yield every 5 steps
     var supportsCancellation = false
 
-    func loadResources() throws {}
+    func loadResources() {}
 
     func generateImages(
         configuration config: StableDiffusionPipeline.Configuration,
-        progressHandler: @escaping (StableDiffusionPipeline.Progress) -> Bool
-    ) throws -> [CGImage?] {
+        progressHandler: (StableDiffusionPipeline.Progress) -> Bool
+    ) -> [CGImage?] {
         // Simulate multiple progress callbacks
         for step in 0..<totalSteps {
             // Add a small sleep to simulate async pipeline work
@@ -244,7 +244,7 @@ final class MockStableDiffusionPipelineEnhanced: StableDiffusionPipelineProtocol
     func decodeToImages(
         _ latents: [MLShapedArray<Float32>],
         configuration config: StableDiffusionPipeline.Configuration
-    ) throws -> [CGImage?] {
+    ) -> [CGImage?] {
         return [createMockImage()]
     }
 

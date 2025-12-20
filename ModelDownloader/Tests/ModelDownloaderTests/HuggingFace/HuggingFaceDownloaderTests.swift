@@ -37,7 +37,7 @@ struct HuggingFaceDownloaderTests {
             URL(fileURLWithPath: "/models/\(repositoryId)")
         }
 
-        func moveModel(from _: URL, to _: URL) throws {
+        func moveModel(from _: URL, to _: URL) {
             // No-op for testing
         }
 
@@ -49,7 +49,7 @@ struct HuggingFaceDownloaderTests {
             true
         }
 
-        func cleanupIncompleteDownloads() throws {
+        func cleanupIncompleteDownloads() {
             // No-op for testing
         }
 
@@ -61,11 +61,11 @@ struct HuggingFaceDownloaderTests {
             modelExists
         }
 
-        func deleteModel(repositoryId _: String) throws {
+        func deleteModel(repositoryId _: String) {
             // No-op for testing
         }
 
-        func listDownloadedModels() throws -> [ModelInfo] {
+        func listDownloadedModels() -> [ModelInfo] {
             downloadedModels
         }
 
@@ -75,7 +75,7 @@ struct HuggingFaceDownloaderTests {
             backend: SendableModel.Backend,
             from tempDirectory: URL,
             totalSize: Int64
-        ) throws -> ModelInfo {
+        ) -> ModelInfo {
             let info: ModelInfo = ModelInfo(
                 id: UUID(),
                 name: name,
@@ -90,11 +90,11 @@ struct HuggingFaceDownloaderTests {
             return info
         }
 
-        func calculateDirectorySize(at _: URL) throws -> Int64 {
+        func calculateDirectorySize(at _: URL) -> Int64 {
             100_000_000
         }
 
-        func verifyModelIntegrity(modelId _: UUID) throws -> Bool {
+        func verifyModelIntegrity(modelId _: UUID) -> Bool {
             true
         }
 
@@ -277,27 +277,35 @@ actor MockDownloadCoordinator: DownloadCoordinating {
     private var progressSequence: [Double] = []
     private var currentProgressIndex: Int = 0
 
-    func start(model: SendableModel) throws {
+    func start(model: SendableModel) async throws {
+        await Task.yield()
+        try Task.checkCancellation()
         states[model.location] = .downloading(progress: 0.0)
     }
 
-    func pause(repositoryId: String) throws {
+    func pause(repositoryId: String) async throws {
+        await Task.yield()
+        try Task.checkCancellation()
         if case .downloading(let progress) = states[repositoryId] {
             states[repositoryId] = .paused(progress: progress)
         }
     }
 
-    func resume(repositoryId: String) throws {
+    func resume(repositoryId: String) async throws {
+        await Task.yield()
+        try Task.checkCancellation()
         if case .paused(let progress) = states[repositoryId] {
             states[repositoryId] = .downloading(progress: progress)
         }
     }
 
-    func cancel(repositoryId: String) throws {
+    func cancel(repositoryId: String) async {
+        await Task.yield()
         states[repositoryId] = .notStarted
     }
 
-    func state(for repositoryId: String) -> DownloadStatus {
+    func state(for repositoryId: String) async -> DownloadStatus {
+        await Task.yield()
         if let state = states[repositoryId] {
             return state
         }

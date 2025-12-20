@@ -60,7 +60,7 @@ struct ModelConverterTests {
 
     @Test("Throw error for unsupported model")
     @MainActor
-    func testUnsupportedModel() async throws {
+    func testUnsupportedModel() async {
         let converter: ModelConverter = ModelConverter()
 
         let discovered: DiscoveredModel = DiscoveredModel(

@@ -45,14 +45,14 @@ internal struct ChatMLToolsStreamingTests {
             )
 
             // Verify smart partial tag handling
-            try verifyPartialTagHandling(
+            verifyPartialTagHandling(
                 processedOutput,
                 accumulatedInput: accumulatedInput,
                 position: index
             )
 
             // Process and verify channels
-            try processChannels(
+            processChannels(
                 output: processedOutput,
                 accumulatedInput: accumulatedInput,
                 streamState: &streamState,
@@ -106,10 +106,10 @@ internal struct ChatMLToolsStreamingTests {
             model: model
         )
 
-        try verifyToolCommentaryOrder(processedOutput)
+        verifyToolCommentaryOrder(processedOutput)
     }
 
-    private func verifyToolCommentaryOrder(_ processedOutput: ProcessedOutput) throws {
+    private func verifyToolCommentaryOrder(_ processedOutput: ProcessedOutput) {
         // Should have exactly 2 channels
         #expect(
             processedOutput.channels.count == TestConstants.expectedToolChannelCount,

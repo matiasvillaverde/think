@@ -16,7 +16,7 @@ public struct BaseModelTest {
     /// Verifies that required model files exist at the specified path
     /// - Parameter modelPath: The path to the model directory
     /// - Throws: Assertion failures if required files are missing
-    public func verifyModelFiles(at modelPath: String) throws {
+    public func verifyModelFiles(at modelPath: String) {
         let requiredFiles = Self.requiredFiles
 
         var foundRequired = 0
@@ -149,7 +149,7 @@ public struct BaseModelTest {
         expectedTokens: [String] = ["paris"],
         maxTokens: Int = 5
     ) async throws {
-        try verifyModelFiles(at: modelURL.path)
+        verifyModelFiles(at: modelURL.path)
 
         let config = createConfig(modelURL: modelURL, modelName: modelName)
         let session = MLXSessionFactory.create()
@@ -182,7 +182,7 @@ public struct BaseModelTest {
         prompt: String,
         maxTokens: Int = 20
     ) async throws -> String {
-        try verifyModelFiles(at: modelURL.path)
+        verifyModelFiles(at: modelURL.path)
 
         let config = createConfig(modelURL: modelURL, modelName: modelName)
         let session = MLXSessionFactory.create()

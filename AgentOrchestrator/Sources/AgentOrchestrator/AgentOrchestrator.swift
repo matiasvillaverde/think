@@ -254,7 +254,7 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         Self.logger.debug("Found \(fileTitles.count) attached files: \(fileList)")
 
         // Configure semantic search tool with file context
-        try await tooling.configureSemanticSearch(
+        await tooling.configureSemanticSearch(
             database: database,
             chatId: chatId,
             fileTitles: fileTitles
@@ -436,7 +436,7 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
 
         do {
             Self.logger.debug("Invoking tooling.executeTools with \(toolCalls.count) requests")
-            return try await tooling.executeTools(toolRequests: toolCalls)
+            return await tooling.executeTools(toolRequests: toolCalls)
         } catch {
             Self.logger.error("Tool execution failed: \(error.localizedDescription)")
             return createErrorResults(for: toolCalls, error: error)

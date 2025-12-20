@@ -15,7 +15,7 @@ struct MultiQuantizationIntegrationTests {
 
     @Test("Detect multiple GGUF quantizations")
     @MainActor
-    func testMultipleGGUFQuantizations() async throws {
+    func testMultipleGGUFQuantizations() async {
         // Create a mock model with all GGUF files
         let allFiles: [ModelFile] = [
             ModelFile(path: "gemma-3n-E2B-it-Q4_K_M.gguf", size: 2_979_069_952),
@@ -161,7 +161,7 @@ struct MultiQuantizationIntegrationTests {
 
     @Test("Get best quantization for available memory")
     @MainActor
-    func testGetBestQuantization() async throws {
+    func testGetBestQuantization() async {
         // Create a model with all GGUF files
         let allFiles: [ModelFile] = [
             ModelFile(path: "model-Q4_K_M.gguf", size: 3_825_904_128),

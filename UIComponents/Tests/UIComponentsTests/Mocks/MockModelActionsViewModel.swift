@@ -114,7 +114,7 @@ internal final class MockModelActionsViewModel: ModelDownloaderViewModeling {
 
     func handleBackgroundDownloadCompletion(
         identifier _: String,
-        completionHandler: @escaping @Sendable () -> Void
+        completionHandler: @Sendable () -> Void
     ) {
         completionHandler()
     }

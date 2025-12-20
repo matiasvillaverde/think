@@ -15,7 +15,7 @@ public actor AudioEngine: AudioGenerating {
         let audioEngine: AVAudioEngine
         let playerNode: AVAudioPlayerNode
 
-        init() throws {
+        init() {
             AudioEngine.logger.info("Initializing audio resources")
             kokoroTTSEngine = KokoroTTS()
             audioEngine = AVAudioEngine()
@@ -52,20 +52,14 @@ public actor AudioEngine: AudioGenerating {
             Self.logger.info("Starting lazy initialization of audio resources")
             initializationCount += 1
 
-            do {
-                let resources: AudioResources = try AudioResources()
+            let resources: AudioResources = AudioResources()
 
-                // Cache the loaded resources and clear the loading task
-                self.audioResources = resources
-                self.initializationTask = nil
+            // Cache the loaded resources and clear the loading task
+            self.audioResources = resources
+            self.initializationTask = nil
 
-                Self.logger.notice("Lazy initialization completed successfully")
-                return resources
-            } catch {
-                Self.logger.error("Failed to initialize audio resources: \(error.localizedDescription, privacy: .public)")
-                self.initializationTask = nil
-                throw error
-            }
+            Self.logger.notice("Lazy initialization completed successfully")
+            return resources
         }
 
         self.initializationTask = loadingTask

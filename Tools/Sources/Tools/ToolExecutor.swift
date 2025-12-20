@@ -33,7 +33,7 @@ public actor ToolExecutor {
     }
 
     /// Execute a single tool request
-    public func execute(request: ToolRequest) async throws -> ToolResponse {
+    public func execute(request: ToolRequest) async -> ToolResponse {
         logger.debug("Executing tool request: \(request.name) (ID: \(request.id))")
 
         // Check if strategy exists
@@ -60,19 +60,14 @@ public actor ToolExecutor {
     }
 
     /// Execute multiple requests in parallel
-    public func executeBatch(requests: [ToolRequest]) async throws -> [ToolResponse] {
+    public func executeBatch(requests: [ToolRequest]) async -> [ToolResponse] {
         logger.info("Executing batch of \(requests.count) tool requests")
 
         // Execute all requests concurrently
         return await withTaskGroup(of: ToolResponse.self) { group in
             for request in requests {
                 group.addTask {
-                    (try? await self.execute(request: request)) ?? ToolResponse(
-                        requestId: request.id,
-                        toolName: request.name,
-                        result: "",
-                        error: "Execution failed"
-                    )
+                    await self.execute(request: request)
                 }
             }
 

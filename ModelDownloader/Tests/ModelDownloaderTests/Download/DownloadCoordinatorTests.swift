@@ -234,7 +234,7 @@ extension APITests {
             from url: URL,
             to destination: URL,
             headers _: [String: String],
-            progressHandler: @escaping @Sendable (Double) -> Void
+            progressHandler: @Sendable (Double) -> Void
         ) async throws -> URL {
             currentConcurrentDownloads += 1
             maxConcurrentDownloads = max(maxConcurrentDownloads, currentConcurrentDownloads)
@@ -265,7 +265,7 @@ extension APITests {
             from url: URL,
             to destination: URL,
             headers: [String: String],
-            progressHandler: @escaping @Sendable (Double) -> Void
+            progressHandler: @Sendable (Double) -> Void
         ) async throws -> URL {
             try await download(from: url, to: destination, headers: headers, progressHandler: progressHandler)
         }

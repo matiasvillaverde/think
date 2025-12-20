@@ -143,23 +143,34 @@ class SwitchLinear: Module, Quantizable {
     }
 
     func toQuantized(groupSize: Int = 64, bits: Int = 4) -> Module {
-        QuantizedSwitchLinear(self, groupSize: groupSize, bits: bits)
+        QuantizedSwitchLinear(self, groupSize: groupSize, bits: bits, mode: .affine)
+    }
+
+    func toQuantized(groupSize: Int, bits: Int, mode: QuantizationMode) -> Module {
+        QuantizedSwitchLinear(self, groupSize: groupSize, bits: bits, mode: mode)
     }
 }
 
 class QuantizedSwitchLinear: SwitchLinear, Quantized {
     @ModuleInfo(key: "scales") var scales: MLXArray
-    @ModuleInfo(key: "biases") var biases: MLXArray
+    @ModuleInfo(key: "biases") var biases: MLXArray?
 
     let groupSize: Int
     let bits: Int
+    let mode: QuantizationMode
 
-    init(_ other: SwitchLinear, groupSize: Int = 64, bits: Int = 4) {
+    init(
+        _ other: SwitchLinear,
+        groupSize: Int = 64,
+        bits: Int = 4,
+        mode: QuantizationMode = .affine
+    ) {
         self.groupSize = groupSize
         self.bits = bits
+        self.mode = mode
 
         let (quantizedWeight, scales, biases) = MLX.quantized(
-            other.weight, groupSize: groupSize, bits: bits)
+            other.weight, groupSize: groupSize, bits: bits, mode: mode)
 
         self._scales.wrappedValue = scales
         self._biases.wrappedValue = biases
@@ -183,6 +194,7 @@ class QuantizedSwitchLinear: SwitchLinear, Quantized {
             transpose: true,
             groupSize: self.groupSize,
             bits: self.bits,
+            mode: self.mode,
             sortedIndices: sortedIndices
         )
 

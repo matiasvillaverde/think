@@ -93,4 +93,10 @@ extension DiscoveryCarouselViewModel {
         logger.info("Search and enrichment completed with \(enrichedModels.count) models")
         return enrichedModels
     }
+
+    /// Discover a model directly by its HuggingFace ID
+    public func discoverModelById(_ modelId: String) async throws -> DiscoveredModel {
+        logger.info("Discovering model by ID: \(modelId)")
+        return try await communityExplorer.discoverModel(modelId)
+    }
 }

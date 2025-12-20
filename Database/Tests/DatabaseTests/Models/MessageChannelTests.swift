@@ -9,7 +9,7 @@ import AbstractionsTestUtilities
 @Suite("Message Channel Tests")
 struct MessageChannelTests {
     @Test("Message can store channel data")
-    func testMessageWithChannels() throws {
+    func testMessageWithChannels() {
         // When - Create message with channels using preview models
         let message = Message.customPreview(
             userInput: "Test question",
@@ -52,7 +52,7 @@ struct MessageChannelTests {
     }
     
     @Test("Message works without channels for backward compatibility")
-    func testMessageWithoutChannels() throws {
+    func testMessageWithoutChannels() {
         // When - Create message without channels using preview
         let message = Message.previewWithoutChannels
         
@@ -64,7 +64,7 @@ struct MessageChannelTests {
     }
     
     @Test("Message stores channels from ProcessedOutput")
-    func testMessageFromProcessedOutput() throws {
+    func testMessageFromProcessedOutput() {
         // Given - ProcessedOutput with channels including a tool channel
         let toolRequest = ToolRequest(
             name: "test_tool",
@@ -134,7 +134,7 @@ struct MessageChannelTests {
     }
     
     @Test("Channel entities preserve order")
-    func testChannelEntitiesOrder() throws {
+    func testChannelEntitiesOrder() {
         // Given - Channels in specific order
         let channels = [
             Channel(type: .commentary, content: "Commentary", order: 1),

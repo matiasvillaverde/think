@@ -120,7 +120,7 @@ public actor ContextBuilder: ContextBuilding {
         do {
             let toolNames: [String] = tools.map(\.rawValue).sorted()
             Self.logger.info("Configuring tools: \(toolNames.joined(separator: ", "))")
-            try await tooling.configureTool(identifiers: tools)
+            await tooling.configureTool(identifiers: tools)
             Self.logger.info("Tools configured successfully")
         } catch {
             Self.logger.error("Failed to configure tools: \(error.localizedDescription)")
@@ -265,7 +265,7 @@ public actor ContextBuilder: ContextBuilding {
         let parser: OutputParser = try ParserFactory.createParser(for: model, cache: cache)
 
         // Parse the output
-        let channels: [ChannelMessage] = try await parser.parse(output)
+        let channels: [ChannelMessage] = await parser.parse(output)
 
         // Update cache
         await cache.update(output, channels: channels)

@@ -6,7 +6,7 @@ import Testing
 /// Tests to ensure SendableModel ID is used consistently throughout the download process
 struct SendableModelIDConsistencyTests {
     @Test
-    func testModelInfoUsesSingleID() throws {
+    func testModelInfoUsesSingleID() {
         // Given
         let modelId: UUID = UUID()
 
@@ -27,7 +27,7 @@ struct SendableModelIDConsistencyTests {
     }
 
     @Test
-    func testDownloadWithSendableModelAPIExists() throws {
+    func testDownloadWithSendableModelAPIExists() {
         // Given
         let sendableModel: SendableModel = SendableModel(
             id: UUID(),
@@ -97,7 +97,7 @@ struct SendableModelIDConsistencyTests {
     }
 
     @Test
-    func testSendableModelBackendIntegration() throws {
+    func testSendableModelBackendIntegration() {
         // Given - Test that SendableModel uses Backend enum correctly
         let sendableModel: SendableModel = SendableModel(
             id: UUID(),

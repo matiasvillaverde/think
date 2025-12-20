@@ -10,7 +10,7 @@ internal struct FileProcessor {
         tokenUnit: NLTokenUnit,
         chunking: ChunkingConfiguration,
         strategy: FileProcessingStrategy
-    ) throws -> AsyncThrowingStream<([ChunkData], Progress), Error> {
+    ) -> AsyncThrowingStream<([ChunkData], Progress), Error> {
         switch fileType {
         case .pdf:
             return processPDFFileAsync(

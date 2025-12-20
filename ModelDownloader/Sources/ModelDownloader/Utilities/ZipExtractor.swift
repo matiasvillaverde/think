@@ -43,7 +43,7 @@ internal struct ZipExtractor: Sendable {
             let archive: Archive = try Archive(url: zipURL, accessMode: .read)
 
             // Analyze archive
-            let analysis: ArchiveAnalysis = try await analyzeArchive(archive, zipSize: zipSize)
+            let analysis: ArchiveAnalysis = await analyzeArchive(archive, zipSize: zipSize)
 
             // Extract all entries
             try await extractEntries(
@@ -244,7 +244,7 @@ internal struct ZipExtractor: Sendable {
     }
 
     /// Analyze archive contents
-    private func analyzeArchive(_ archive: Archive, zipSize: Int64) async throws -> ArchiveAnalysis {
+    private func analyzeArchive(_ archive: Archive, zipSize: Int64) async -> ArchiveAnalysis {
         var totalEntries: Int64 = 0
         var totalUncompressedSize: Int64 = 0
 

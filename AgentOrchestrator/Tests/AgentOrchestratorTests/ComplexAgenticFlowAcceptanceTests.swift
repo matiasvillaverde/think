@@ -40,14 +40,14 @@ internal struct ComplexAgenticFlowAcceptanceTests {
         let message: Message = messages[0]
         let channels: [Channel] = message.sortedChannels
 
-        try verifyChannelCounts(channels: channels)
-        try verifyToolUsage(channels: channels)
-        try verifyFinalResponse(channels: channels)
+        verifyChannelCounts(channels: channels)
+        verifyToolUsage(channels: channels)
+        verifyFinalResponse(channels: channels)
 
         print("✅ Complex flow completed with \(channels.count) channels")
     }
 
-    private func verifyChannelCounts(channels: [Channel]) throws {
+    private func verifyChannelCounts(channels: [Channel]) {
         print("DEBUG: Complex flow generated \(channels.count) channels:")
         for (index, channel) in channels.enumerated() {
             let toolInfo: String = channel.toolExecution?.request?.name ?? "no tool"
@@ -65,7 +65,7 @@ internal struct ComplexAgenticFlowAcceptanceTests {
         #expect(finalCount == 1, "Should have one final response")
     }
 
-    private func verifyToolUsage(channels: [Channel]) throws {
+    private func verifyToolUsage(channels: [Channel]) {
         let toolNames: [String] = channels.compactMap { $0.toolExecution?.request?.name }
         let expectedTools: [String] = ["weather", "location", "calculator", "calendar", "news"]
 
@@ -81,7 +81,7 @@ internal struct ComplexAgenticFlowAcceptanceTests {
         }
     }
 
-    private func verifyFinalResponse(channels: [Channel]) throws {
+    private func verifyFinalResponse(channels: [Channel]) {
         let finalChannel: Channel? = channels.first { $0.type == .final }
         guard let final = finalChannel else {
             #expect(Bool(false), "Should have final response")

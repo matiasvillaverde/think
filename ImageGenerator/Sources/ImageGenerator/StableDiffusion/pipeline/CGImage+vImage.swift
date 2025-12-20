@@ -33,9 +33,12 @@ extension CGImage {
 
             // Reference this channel in the array and normalize
             array[0][i].withUnsafeShapedBufferPointer { ptr, _, strides in
-                let cIn = PixelBufferPFx1(data: .init(mutating: ptr.baseAddress!),
-                                          width: width, height: height,
-                                          byteCountPerRow: strides[0] * 4)
+                let cIn = PixelBufferPFx1(
+                    data: .init(mutating: ptr.baseAddress!),
+                    width: width,
+                    height: height,
+                    byteCountPerRow: strides[0] * 4
+                )
                 // Map [-1.0 1.0] -> [0.0 1.0]
                 cIn.multiply(by: 0.5, preBias: 1.0, postBias: 0.0, destination: cOut)
             }
@@ -218,8 +221,7 @@ extension CGImage {
         (Float(pixel) / 127.5) - 1.0
     }
 
-    public func toRGBShapedArray(minValue: Float, maxValue _: Float)
-        throws -> MLShapedArray<Float32> {
+    public func toRGBShapedArray(minValue: Float, maxValue _: Float) -> MLShapedArray<Float32> {
         let width = self.width
         let height = self.height
 

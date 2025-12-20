@@ -5,7 +5,7 @@ import Testing
 // MARK: - Production Hardening Tests
 
 @Test("RetryPolicy should implement exponential backoff")
-internal func testExponentialBackoff() async throws {
+internal func testExponentialBackoff() async {
     let policy: ExponentialBackoffRetryPolicy = ExponentialBackoffRetryPolicy(
         maxRetries: 3,
         baseDelay: 1.0,
@@ -28,7 +28,7 @@ internal func testExponentialBackoff() async throws {
 }
 
 @Test("RetryPolicy should add jitter to delays")
-internal func testRetryWithJitter() async throws {
+internal func testRetryWithJitter() async {
     let policy: ExponentialBackoffRetryPolicy = ExponentialBackoffRetryPolicy(
         maxRetries: 3,
         baseDelay: 1.0,
@@ -92,7 +92,7 @@ internal func testRetryOnTransientErrors() async throws {
 }
 
 @Test("RetryableDownloader should not retry on non-transient errors")
-internal func testNoRetryOnNonTransientErrors() async throws {
+internal func testNoRetryOnNonTransientErrors() async {
     let mockDownloader: MockStreamingDownloaderWithFailures = MockStreamingDownloaderWithFailures()
     let retryPolicy: ExponentialBackoffRetryPolicy = ExponentialBackoffRetryPolicy(maxRetries: 3)
 
@@ -187,7 +187,7 @@ internal func testDownloadResumption() async throws {
 }
 
 @Test("Logger should format messages correctly")
-internal func testLoggingFormatting() async throws {
+internal func testLoggingFormatting() async {
     let logger: ModelDownloaderLogger = ModelDownloaderLogger(subsystem: "test", category: "download")
 
     // Test various log levels
@@ -228,7 +228,7 @@ internal func testRateLimiting() async throws {
 }
 
 @Test("TemporaryFileManager should clean up files")
-internal func testTemporaryFileCleanup() async throws {
+internal func testTemporaryFileCleanup() async {
     let manager: TemporaryFileManager = TemporaryFileManager()
 
     // Register temporary files
@@ -247,7 +247,7 @@ internal func testTemporaryFileCleanup() async throws {
 }
 
 @Test("RequestTimeout should cancel long-running requests")
-internal func testRequestTimeout() async throws {
+internal func testRequestTimeout() async {
     let mockSession: MockURLSessionWithDelay = MockURLSessionWithDelay()
     let timeoutSession: MockTimeoutSession = MockTimeoutSession(mockSession: mockSession)
     let timeoutWrapper: RequestTimeoutWrapper = RequestTimeoutWrapper(
@@ -291,7 +291,7 @@ private actor MockStreamingDownloaderWithFailures: StreamingDownloaderProtocol {
         from _: URL,
         to destination: URL,
         headers _: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) throws -> URL {
         attemptCount += 1
 
@@ -311,9 +311,14 @@ private actor MockStreamingDownloaderWithFailures: StreamingDownloaderProtocol {
         from url: URL,
         to destination: URL,
         headers: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
-        try await download(from: url, to: destination, headers: headers, progressHandler: progressHandler)
+        try await download(
+            from: url,
+            to: destination,
+            headers: headers,
+            progressHandler: progressHandler
+        )
     }
 
     func cancel(url _: URL) {}
@@ -331,8 +336,9 @@ private actor MockFileManagerWithSpace: FileSystemProtocol {
         freeSpace = bytes
     }
 
-    func getFreeSpace(forPath _: String) throws -> Int64? {
-        freeSpace
+    func getFreeSpace(forPath _: String) async -> Int64? {
+        await Task.yield()
+        return freeSpace
     }
 }
 
@@ -355,7 +361,7 @@ private actor MockStreamingDownloaderWithResume: StreamingDownloaderProtocol {
         from _: URL,
         to destination: URL,
         headers _: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
+        progressHandler: @Sendable (Double) -> Void
     ) throws -> URL {
         if shouldFailFirstAttempt {
             shouldFailFirstAttempt = false
@@ -372,8 +378,8 @@ private actor MockStreamingDownloaderWithResume: StreamingDownloaderProtocol {
         from url: URL,
         to destination: URL,
         headers: [String: String],
-        progressHandler: @escaping @Sendable (Double) -> Void
-    ) throws -> URL {
+        progressHandler: @Sendable (Double) -> Void
+    ) -> URL {
         var request: URLRequest = URLRequest(url: url)
         headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         request.setValue("bytes=\(partialSize)-", forHTTPHeaderField: "Range")

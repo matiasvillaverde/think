@@ -293,27 +293,27 @@ internal struct MockModelDownloaderViewModel: ModelDownloaderViewModeling {
         // No-op for tests
     }
 
-    func downloadModel(_ discoveredModel: DiscoveredModel) throws {
+    func downloadModel(_ discoveredModel: DiscoveredModel) {
         // No-op for tests
     }
 
-    func retryDownload(for modelId: UUID) throws {
+    func retryDownload(for modelId: UUID) {
         // No-op for tests
     }
 
-    func pauseDownload(for modelId: UUID) throws {
+    func pauseDownload(for modelId: UUID) {
         // No-op for tests
     }
 
-    func resumeDownload(for modelId: UUID) throws {
+    func resumeDownload(for modelId: UUID) {
         // No-op for tests
     }
 
-    func cancelDownload(for modelId: UUID) throws {
+    func cancelDownload(for modelId: UUID) {
         // No-op for tests
     }
 
-    func deleteModel(_ modelId: UUID) throws {
+    func deleteModel(_ modelId: UUID) {
         // No-op for tests
     }
 
@@ -344,7 +344,7 @@ internal struct MockModelDownloaderViewModel: ModelDownloaderViewModeling {
 
     func handleBackgroundDownloadCompletion(
         identifier: String,
-        completionHandler: @escaping @Sendable () -> Void
+        completionHandler: @Sendable () -> Void
     ) {
         // No-op for tests
         completionHandler()
