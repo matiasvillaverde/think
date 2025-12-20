@@ -19,12 +19,14 @@ public enum AgentOrchestratorFactory {
     ///   - database: The database to use for persistence
     ///   - mlxSession: The MLX session for language models
     ///   - ggufSession: The GGUF session for language models
+    ///   - remoteSession: Optional remote session for API-based models
     ///   - modelDownloader: The model downloader for resolving model paths
     /// - Returns: The shared AgentOrchestrating instance
     public static func shared(
         database: DatabaseProtocol,
         mlxSession: LLMSession,
         ggufSession: LLMSession,
+        remoteSession: LLMSession? = nil,
         modelDownloader: ModelDownloaderProtocol? = nil
     ) -> AgentOrchestrating {
         lock.lock()
@@ -38,6 +40,7 @@ public enum AgentOrchestratorFactory {
             database: database,
             mlxSession: mlxSession,
             ggufSession: ggufSession,
+            remoteSession: remoteSession,
             modelDownloader: modelDownloader ?? ModelDownloader.shared
         )
         sharedInstance = newInstance
@@ -50,6 +53,7 @@ public enum AgentOrchestratorFactory {
         database: DatabaseProtocol,
         mlxSession: LLMSession,
         ggufSession: LLMSession,
+        remoteSession: LLMSession?,
         modelDownloader: ModelDownloaderProtocol
     ) -> AgentOrchestrating {
         // Create image generator
@@ -63,7 +67,8 @@ public enum AgentOrchestratorFactory {
             mlxSession: mlxSession,
             ggufSession: ggufSession,
             imageGenerator: imageGenerator,
-            modelDownloader: modelDownloader
+            modelDownloader: modelDownloader,
+            remoteSession: remoteSession
         )
 
         // Create message persistor

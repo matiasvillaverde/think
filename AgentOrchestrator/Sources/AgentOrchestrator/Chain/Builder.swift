@@ -14,6 +14,10 @@ internal func buildDecisionChain() -> DecisionHandler {
         maxIterations: kDefaultMaxIterations,
         next: nil
     )
-    let completionHandler: CompletionDecisionHandler = CompletionDecisionHandler(next: safetyHandler)
+    let memoryFlushHandler: MemoryFlushDecisionHandler = MemoryFlushDecisionHandler(
+        next: safetyHandler
+    )
+
+    let completionHandler: CompletionDecisionHandler = CompletionDecisionHandler(next: memoryFlushHandler)
     return ToolCallDecisionHandler(next: completionHandler)
 }

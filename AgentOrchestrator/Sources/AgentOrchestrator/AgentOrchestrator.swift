@@ -14,6 +14,12 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         category: "AgentOrchestrator"
     )
 
+    /// Milliseconds per second for duration calculations
+    private static let millisecondsPerSecond: Int = 1_000
+
+    /// Attoseconds to milliseconds divisor
+    private static let attosecondsToMilliseconds: Int64 = 1_000_000_000_000_000
+
     #if DEBUG
     private static let tokenProcessingLogger: Logger = Logger(
         subsystem: AgentOrchestratorConfiguration.shared.logging.subsystem,
@@ -28,6 +34,13 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
     private let contextBuilder: ContextBuilder
     private let tooling: Tooling?
     private var currentChatId: UUID?
+    private var eventEmitter: EventEmitter = EventEmitter()
+    private let steeringCoordinator: SteeringCoordinator = SteeringCoordinator()
+
+    /// The stream of events emitted during generation
+    internal var eventStream: AgentEventStream {
+        get async { await eventEmitter.eventStream }
+    }
 
     internal func load(chatId: UUID) async throws {
         try await modelCoordinator.load(chatId: chatId)
@@ -39,6 +52,16 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
     }
     internal func stop() async throws {
         try await modelCoordinator.stop()
+    }
+
+    internal func steer(mode: SteeringMode) async {
+        await steeringCoordinator.submit(mode: mode)
+        Self.logger.info("Steering mode set: \(String(describing: mode))")
+
+        // For hard stop, also trigger model stop
+        if mode == .hardStop {
+            try? await modelCoordinator.stop()
+        }
     }
 
     internal func generate(prompt: String, action: Action) async throws {
@@ -135,30 +158,136 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         self.decisionChain = buildDecisionChain()
     }
 
+    // swiftlint:disable:next function_body_length
     private func orchestrate(request: GenerationRequest) async throws {
+        // Reset internal timing state for this generation (stream stays stable)
+        await eventEmitter.resetState()
+
         var state: GenerationState = GenerationState(request: request)
         Self.logger.notice(
             "Starting orchestration for message: \(request.messageId), chat: \(request.chatId)"
         )
 
-        while !state.isComplete {
-            Self.logger.info(
-                "Orchestration loop iteration \(state.iterationCount + 1) for message: \(state.messageId)"
-            )    // Step 1: Stream generation with real-time updates
-            state = try await streamGeneration(state)
+        // Emit generation started event
+        await eventEmitter.emitGenerationStarted(runId: request.messageId)
 
-            // Step 2: Make decision after stream completes
-            let decision: GenerationDecision? = try await decisionChain.decide(state)
-            Self.logger.info(
-                "Decision made: \(String(describing: decision)) for iteration \(state.iterationCount)"
+        // Clear any previous steering requests
+        await steeringCoordinator.clear()
+
+        do {
+            while !state.isComplete {
+                // Check for steering interrupt at start of iteration
+                if let steeringState = await checkSteering(state: state) {
+                    state = steeringState
+                    if state.isComplete {
+                        break
+                    }
+                }
+
+                Self.logger.info(
+                    "Orchestration loop iteration \(state.iterationCount + 1) for message: \(state.messageId)"
+                )
+
+                // Emit state update at start of iteration
+                await emitStateUpdate(for: state, isExecutingTools: false)
+
+                // Step 1: Stream generation with real-time updates
+                state = try await streamGeneration(state)
+                state = updateContextUtilization(state)
+
+                // Step 2: Make decision after stream completes
+                var decision: GenerationDecision? = try await decisionChain.decide(state)
+
+                // Check steering before tool execution
+                if case .executeTools = decision {
+                    if await steeringCoordinator.shouldSkipRemainingTools() {
+                        Self.logger.info("Steering: Skipping tool execution")
+                        decision = .complete
+                    }
+                }
+
+                Self.logger.info(
+                    "Decision made: \(String(describing: decision)) for iteration \(state.iterationCount)"
+                )
+
+                // Emit iteration completed event
+                await eventEmitter.emitIterationCompleted(
+                    iteration: state.iterationCount,
+                    decision: describeDecision(decision)
+                )
+
+                // Step 3: Execute decision
+                state = try await executeDecision(decision ?? .complete, state: state)
+            }
+
+            let iterCount: Int = state.iterationCount
+            Self.logger.notice(
+                "Orchestration completed for message: \(state.messageId) after \(iterCount) iterations"
             )
 
-            // Step 3: Execute decision
-            state = try await executeDecision(decision ?? .complete, state: state)
+            // Emit generation completed event
+            await eventEmitter.emitGenerationCompleted(runId: request.messageId)
+        } catch {
+            // Emit generation failed event
+            await eventEmitter.emitGenerationFailed(runId: request.messageId, error: error)
+            throw error
         }
-        Self.logger.notice(
-            "Orchestration completed for message: \(state.messageId) after \(state.iterationCount) iterations"
+    }
+
+    private func emitStateUpdate(for state: GenerationState, isExecutingTools: Bool) async {
+        let toolNames: [String] = state.pendingToolCalls.map(\.name)
+        let stateInfo: GenerationStateInfo = GenerationStateInfo(
+            iteration: state.iterationCount,
+            isExecutingTools: isExecutingTools,
+            activeTools: toolNames,
+            completedToolCalls: state.toolResults.count,
+            pendingToolCalls: state.pendingToolCalls.count
         )
+        await eventEmitter.emitStateUpdate(state: stateInfo)
+    }
+
+    private func describeDecision(_ decision: GenerationDecision?) -> String {
+        guard let decision else {
+            return "complete (default)"
+        }
+        switch decision {
+        case .complete:
+            return "complete"
+
+        case .continueWithNewPrompt:
+            return "continue with new prompt"
+
+        case .executeTools(let tools):
+            return "execute \(tools.count) tool(s)"
+
+        case .error(let error):
+            return "error: \(error.localizedDescription)"
+        }
+    }
+
+    private func checkSteering(state: GenerationState) async -> GenerationState? {
+        guard let request = await steeringCoordinator.consume() else {
+            return nil
+        }
+
+        Self.logger.info("Processing steering request: \(request.id)")
+
+        switch request.mode {
+        case .inactive:
+            return nil
+
+        case .hardStop:
+            Self.logger.info("Hard stop requested - completing generation")
+            return state.markComplete()
+
+        case .softInterrupt:
+            Self.logger.info("Soft interrupt - will complete after current operation")
+            return state.markComplete()
+
+        case .redirect(let newPrompt):
+            Self.logger.info("Redirect requested with new prompt")
+            return state.continueWithPrompt(newPrompt)
+        }
     }
 
     private func streamGeneration(_ state: GenerationState) async throws ->
@@ -186,6 +315,13 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         )
     }
 
+    private func updateContextUtilization(_ state: GenerationState) -> GenerationState {
+        guard let utilization: Double = state.lastMetrics?.usage?.contextUtilization else {
+            return state
+        }
+        return state.withContextUtilization(utilization)
+    }
+
     private func buildLLMInput(
         context: String,
         state: GenerationState
@@ -200,34 +336,84 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
     }
 
     private func buildContext(for state: GenerationState) async throws -> String {
-        let hasToolResults: Bool = !state.toolResults.isEmpty
-        Self.logger.debug(
-            "Building context for iteration \(state.iterationCount), has tool results: \(hasToolResults)"
-        )
-
-        // Configure semantic search if attachments exist
+        logContextStart(for: state)
         let modifiedAction: Action = try await configureSemanticSearchIfNeeded(
             for: state.action,
             chatId: state.chatId
         )
-
-        // Fetch context configuration from database
-        let contextConfig: ContextConfiguration = try await database.read(
-            ChatCommands.FetchContextData(chatId: state.chatId)
+        let contextConfig: ContextConfiguration = try await fetchContextConfiguration(
+            chatId: state.chatId
         )
-
-        // Build parameters for context builder
-        let parameters: BuildParameters = BuildParameters(
+        let parameters: BuildParameters = buildParameters(
+            for: state,
             action: modifiedAction,
-            contextConfiguration: contextConfig,
-            toolResponses: state.toolResults,
-            model: state.model
+            contextConfig: contextConfig
         )
-
-        // Build and return the context
         let context: String = try await contextBuilder.build(parameters: parameters)
         Self.logger.debug("Context built with \(context.count) characters")
         return context
+    }
+
+    private func applyPromptOverride(
+        for state: GenerationState,
+        to contextConfig: ContextConfiguration
+    ) -> ContextConfiguration {
+        ContextConfiguration(
+            systemInstruction: contextConfig.systemInstruction,
+            contextMessages: overrideContextMessages(
+                for: state,
+                in: contextConfig.contextMessages
+            ),
+            maxPrompt: contextConfig.maxPrompt,
+            reasoningLevel: contextConfig.reasoningLevel,
+            includeCurrentDate: contextConfig.includeCurrentDate,
+            knowledgeCutoffDate: contextConfig.knowledgeCutoffDate,
+            currentDateOverride: contextConfig.currentDateOverride,
+            memoryContext: contextConfig.memoryContext,
+            skillContext: contextConfig.skillContext
+        )
+    }
+
+    private func overrideContextMessages(
+        for state: GenerationState,
+        in messages: [MessageData]
+    ) -> [MessageData] {
+        messages.map { message in
+            guard message.id == state.messageId else {
+                return message
+            }
+            return MessageData(
+                id: message.id,
+                createdAt: message.createdAt,
+                userInput: state.prompt,
+                channels: message.channels,
+                toolCalls: message.toolCalls
+            )
+        }
+    }
+
+    private func logContextStart(for state: GenerationState) {
+        let hasToolResults: Bool = !state.toolResults.isEmpty
+        Self.logger.debug(
+            "Building context for iteration \(state.iterationCount), has tool results: \(hasToolResults)"
+        )
+    }
+
+    private func fetchContextConfiguration(chatId: UUID) async throws -> ContextConfiguration {
+        try await database.read(ChatCommands.FetchContextData(chatId: chatId))
+    }
+
+    private func buildParameters(
+        for state: GenerationState,
+        action: Action,
+        contextConfig: ContextConfiguration
+    ) -> BuildParameters {
+        BuildParameters(
+            action: action,
+            contextConfiguration: applyPromptOverride(for: state, to: contextConfig),
+            toolResponses: state.toolResults,
+            model: state.model
+        )
     }
 
     private func configureSemanticSearchIfNeeded(
@@ -395,7 +581,11 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         case .continueWithNewPrompt(let newPrompt):
             let promptMaxLength: Int = 50
             Self.logger.info("Continuing with new prompt: \(newPrompt.prefix(promptMaxLength))...")
-            return state.continueWithPrompt(newPrompt)
+            var updatedState: GenerationState = state.continueWithPrompt(newPrompt)
+            if newPrompt == AgentOrchestratorConfiguration.shared.compaction.flushPrompt {
+                updatedState = updatedState.markMemoryFlushPerformed()
+            }
+            return updatedState
 
         case .error(let error):
             Self.logger.error("Decision resulted in error: \(error.localizedDescription)")
@@ -411,7 +601,10 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             "Executing \(toolCalls.count) tool calls: \(toolCalls.map(\.name).joined(separator: ", "))"
         )
 
-        let results: [ToolResponse] = await getToolResults(
+        // Emit state update showing tools are executing
+        await emitStateUpdate(for: state, isExecutingTools: true)
+
+        let results: [ToolResponse] = await getToolResultsWithEvents(
             toolCalls: toolCalls
         )
         Self.logger.info("Tool execution completed, \(results.count) results received")
@@ -420,6 +613,60 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             results: results
         )
         return state.continueWithTools(results)
+    }
+
+    // swiftlint:disable:next function_body_length
+    private func getToolResultsWithEvents(
+        toolCalls: [ToolRequest]
+    ) async -> [ToolResponse] {
+        // Emit tool started events for all tools
+        for toolCall in toolCalls {
+            await eventEmitter.emitToolStarted(requestId: toolCall.id, toolName: toolCall.name)
+        }
+
+        let startTime: ContinuousClock.Instant = ContinuousClock().now
+
+        guard let tooling else {
+            Self.logger.warning(
+                "Tooling not configured, returning error results for \(toolCalls.count) tool calls"
+            )
+            let errorResults: [ToolResponse] = createErrorResults(
+                for: toolCalls,
+                error: ModelStateCoordinatorError.toolingNotConfigured
+            )
+            // Emit tool failed events
+            for result in errorResults {
+                await eventEmitter.emitToolFailed(
+                    requestId: result.requestId,
+                    error: result.error ?? "Tool execution failed"
+                )
+            }
+            return errorResults
+        }
+
+        Self.logger.debug("Invoking tooling.executeTools with \(toolCalls.count) requests")
+        let results: [ToolResponse] = await tooling.executeTools(toolRequests: toolCalls)
+
+        // Calculate total duration
+        let elapsed: Duration = startTime.duration(to: ContinuousClock().now)
+        let secondsMs: Int = Int(elapsed.components.seconds) * Self.millisecondsPerSecond
+        let attosecondsMs: Int = Int(elapsed.components.attoseconds / Self.attosecondsToMilliseconds)
+        let durationMs: Int = secondsMs + attosecondsMs
+
+        // Emit tool completed/failed events
+        for result in results {
+            if let error = result.error {
+                await eventEmitter.emitToolFailed(requestId: result.requestId, error: error)
+            } else {
+                await eventEmitter.emitToolCompleted(
+                    requestId: result.requestId,
+                    result: result.result,
+                    durationMs: durationMs
+                )
+            }
+        }
+
+        return results
     }
 
     private func getToolResults(
@@ -432,15 +679,11 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             return createErrorResults(
                 for: toolCalls,
                 error: ModelStateCoordinatorError.toolingNotConfigured
-            )}
-
-        do {
-            Self.logger.debug("Invoking tooling.executeTools with \(toolCalls.count) requests")
-            return await tooling.executeTools(toolRequests: toolCalls)
-        } catch {
-            Self.logger.error("Tool execution failed: \(error.localizedDescription)")
-            return createErrorResults(for: toolCalls, error: error)
+            )
         }
+
+        Self.logger.debug("Invoking tooling.executeTools with \(toolCalls.count) requests")
+        return await tooling.executeTools(toolRequests: toolCalls)
     }
 
     private func createErrorResults(for toolCalls: [ToolRequest], error: Error) -> [ToolResponse] {

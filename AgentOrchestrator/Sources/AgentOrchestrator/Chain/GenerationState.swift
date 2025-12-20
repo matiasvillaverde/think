@@ -12,7 +12,7 @@ internal struct GenerationState {
     internal let chatId: UUID
     internal let model: SendableModel
     internal let action: Action
-    internal let prompt: String
+    internal var prompt: String
 
     internal var previousOutput: ProcessedOutput?
     internal var latestOutput: ProcessedOutput?
@@ -21,6 +21,9 @@ internal struct GenerationState {
     internal var lastMetrics: ChunkMetrics?
     internal var iterationCount: Int = 0
     internal var isComplete: Bool = false
+    internal var pendingSteeringRequest: SteeringRequest?
+    internal var contextUtilization: Double = 0.0
+    internal var hasPerformedMemoryFlush: Bool = false
 
     internal init(request: GenerationRequest) {
         self.messageId = request.messageId
@@ -55,8 +58,9 @@ internal struct GenerationState {
         return new
     }
 
-    internal func continueWithPrompt(_: String) -> Self {
+    internal func continueWithPrompt(_ prompt: String) -> Self {
         var new: Self = self
+        new.prompt = prompt
         new.iterationCount += 1
         return new
     }
@@ -64,6 +68,30 @@ internal struct GenerationState {
     internal func markComplete() -> Self {
         var new: Self = self
         new.isComplete = true
+        return new
+    }
+
+    internal func withSteeringRequest(_ request: SteeringRequest?) -> Self {
+        var new: Self = self
+        new.pendingSteeringRequest = request
+        return new
+    }
+
+    internal func clearSteeringRequest() -> Self {
+        var new: Self = self
+        new.pendingSteeringRequest = nil
+        return new
+    }
+
+    internal func withContextUtilization(_ utilization: Double) -> Self {
+        var new: Self = self
+        new.contextUtilization = utilization
+        return new
+    }
+
+    internal func markMemoryFlushPerformed() -> Self {
+        var new: Self = self
+        new.hasPerformedMemoryFlush = true
         return new
     }
 }

@@ -98,6 +98,36 @@ internal struct AgentOrchestratorConfiguration: Sendable {
         }
     }
 
+    /// Context compaction configuration
+    internal struct Compaction: Sendable {
+        /// Soft threshold percentage (0.0-1.0) - trigger memory flush prompt
+        internal let softThresholdPercent: Double
+
+        /// Hard threshold percentage (0.0-1.0) - force compaction
+        internal let hardThresholdPercent: Double
+
+        /// Prompt to show when context limit is approaching
+        internal let flushPrompt: String
+
+        /// Whether automatic memory flush is enabled
+        internal let enableAutoFlush: Bool
+
+        internal init(
+            softThresholdPercent: Double = 0.80,
+            hardThresholdPercent: Double = 0.95,
+            flushPrompt: String = """
+                Context limit approaching. Please save any important facts, decisions, \
+                or user preferences to memory using the memory.write tool before they're summarized.
+                """,
+            enableAutoFlush: Bool = true
+        ) {
+            self.softThresholdPercent = softThresholdPercent
+            self.hardThresholdPercent = hardThresholdPercent
+            self.flushPrompt = flushPrompt
+            self.enableAutoFlush = enableAutoFlush
+        }
+    }
+
     /// Logging configuration
     internal let logging: Logging
 
@@ -113,6 +143,9 @@ internal struct AgentOrchestratorConfiguration: Sendable {
     /// Memory configuration
     internal let memory: Memory
 
+    /// Compaction configuration
+    internal let compaction: Compaction
+
     /// Shared configuration instance
     internal static let shared: Self = Self()
 
@@ -121,12 +154,14 @@ internal struct AgentOrchestratorConfiguration: Sendable {
         placeholderImage: PlaceholderImage = PlaceholderImage(),
         generation: Generation = Generation(),
         streaming: Streaming = Streaming(),
-        memory: Memory = Memory()
+        memory: Memory = Memory(),
+        compaction: Compaction = Compaction()
     ) {
         self.logging = logging
         self.placeholderImage = placeholderImage
         self.generation = generation
         self.streaming = streaming
         self.memory = memory
+        self.compaction = compaction
     }
 }

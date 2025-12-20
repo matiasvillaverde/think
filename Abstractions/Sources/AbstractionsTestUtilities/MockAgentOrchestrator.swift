@@ -18,12 +18,26 @@ public actor MockAgentOrchestrator: AgentOrchestrating {
     public private(set) var isLoaded: Bool = false
     public private(set) var isGenerating: Bool = false
 
+    // MARK: - Event Stream
+
+    private var eventContinuation: AsyncStream<AgentEvent>.Continuation?
+    private var _eventStream: AgentEventStream
+
+    // swiftlint:disable async_without_await
+    /// The stream of events emitted during generation
+    public var eventStream: AgentEventStream {
+        get async { _eventStream }
+    }
+    // swiftlint:enable async_without_await
+
     // MARK: - Method-Specific Call Tracking
 
     public private(set) var loadCalls: [(chatId: UUID, timestamp: Date)] = []
     public private(set) var unloadCalls: [Date] = []
     public private(set) var generateCalls: [(prompt: String, action: Action, timestamp: Date)] = []
     public private(set) var stopCalls: [Date] = []
+    public private(set) var steerCalls: [(mode: SteeringMode, timestamp: Date)] = []
+    public private(set) var currentSteeringMode: SteeringMode = .inactive
 
     // MARK: - Mock Configuration
 
@@ -37,12 +51,17 @@ public actor MockAgentOrchestrator: AgentOrchestrating {
     // MARK: - Initialization
 
     public init() {
-        // Empty initializer
+        var continuation: AsyncStream<AgentEvent>.Continuation?
+        self._eventStream = AsyncStream<AgentEvent> { cont in
+            continuation = cont
+        }
+        self.eventContinuation = continuation
     }
 
     // MARK: - AgentOrchestrating Implementation
 
-    public func load(chatId: UUID) throws {
+    // swiftlint:disable:next async_without_await
+    public func load(chatId: UUID) async throws {
         recordCall("load")
         loadCalls.append((chatId: chatId, timestamp: Date()))
 
@@ -54,7 +73,8 @@ public actor MockAgentOrchestrator: AgentOrchestrating {
         isLoaded = true
     }
 
-    public func unload() throws {
+    // swiftlint:disable:next async_without_await
+    public func unload() async throws {
         recordCall("unload")
         unloadCalls.append(Date())
 
@@ -75,6 +95,8 @@ public actor MockAgentOrchestrator: AgentOrchestrating {
             throw error
         }
 
+        let runId = UUID()
+        eventContinuation?.yield(.generationStarted(runId: runId))
         isGenerating = true
 
         if generateDelay > 0 {
@@ -82,6 +104,7 @@ public actor MockAgentOrchestrator: AgentOrchestrating {
         }
 
         isGenerating = false
+        eventContinuation?.yield(.generationCompleted(runId: runId, totalDurationMs: 0))
     }
 
     // swiftlint:disable:next async_without_await
@@ -94,6 +117,13 @@ public actor MockAgentOrchestrator: AgentOrchestrating {
         }
 
         isGenerating = false
+    }
+
+    // swiftlint:disable:next async_without_await
+    public func steer(mode: SteeringMode) async {
+        recordCall("steer")
+        steerCalls.append((mode: mode, timestamp: Date()))
+        currentSteeringMode = mode
     }
 
     // MARK: - Helper Methods
@@ -119,14 +149,34 @@ public actor MockAgentOrchestrator: AgentOrchestrating {
         unloadCalls = []
         generateCalls = []
         stopCalls = []
+        steerCalls = []
         currentChatId = nil
         isLoaded = false
         isGenerating = false
+        currentSteeringMode = .inactive
         shouldThrowOnLoad = nil
         shouldThrowOnUnload = nil
         shouldThrowOnGenerate = nil
         shouldThrowOnStop = nil
         generateDelay = 0
+
+        // Reset event stream
+        eventContinuation?.finish()
+        var continuation: AsyncStream<AgentEvent>.Continuation?
+        _eventStream = AsyncStream<AgentEvent> { cont in
+            continuation = cont
+        }
+        eventContinuation = continuation
+    }
+
+    /// Emit an event for testing purposes
+    public func emitEvent(_ event: AgentEvent) {
+        eventContinuation?.yield(event)
+    }
+
+    /// Finish the event stream
+    public func finishEventStream() {
+        eventContinuation?.finish()
     }
 
     // MARK: - Test Verification Helpers
