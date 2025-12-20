@@ -21,7 +21,7 @@ let package = Package(
         .package(path: "../Abstractions"),
         .package(url: "https://github.com/ml-explore/mlx-swift", .upToNextMinor(from: "0.30.3")),
         .package(
-            url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "0.1.22")
+            url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "1.1.6")
         ),
     ],
     targets: [
@@ -194,6 +194,14 @@ let package = Package(
         ),
         .testTarget(
             name: "MLXErnieTests",
+            dependencies: [
+                "MLXSession",
+                "MLXSessionTestUtilities"
+            ],
+            resources: [.copy("Resources")]
+        ),
+        .testTarget(
+            name: "MLXKimiVLMTests",
             dependencies: [
                 "MLXSession",
                 "MLXSessionTestUtilities"

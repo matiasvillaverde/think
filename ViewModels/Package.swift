@@ -19,6 +19,7 @@ let package = Package(
         .package(path: "../Abstractions"),
         .package(path: "../DataAssets"),
         .package(path: "../Database"),
+        .package(path: "../RemoteSession"),
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "1.1.1")
     ],
     targets: [
@@ -28,6 +29,7 @@ let package = Package(
                 "Abstractions",
                 "DataAssets",
                 "Database",
+                "RemoteSession",
                 .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
             ],
             resources: [

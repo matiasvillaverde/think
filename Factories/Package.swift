@@ -27,7 +27,8 @@ let package = Package(
         .package(path: "../ImageGenerator"),
         .package(path: "../AgentOrchestrator"),
         .package(path: "../MLXSession"),
-        .package(path: "../LLamaCPP")
+        .package(path: "../LLamaCPP"),
+        .package(path: "../RemoteSession")
     ],
     targets: [
         .target(
@@ -45,7 +46,8 @@ let package = Package(
                 "ImageGenerator",
                 "AgentOrchestrator",
                 "MLXSession",
-                "LLamaCPP"
+                "LLamaCPP",
+                "RemoteSession"
             ],
             swiftSettings: [
                 .unsafeFlags(["-warnings-as-errors"])
