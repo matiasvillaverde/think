@@ -210,7 +210,15 @@ extension DiscoveredModel {
 
     /// Primary detected backend (first in the list)
     public var primaryBackend: SendableModel.Backend? {
-        detectedBackends.first
+        guard !detectedBackends.isEmpty else {
+            return nil
+        }
+
+        if let localBackend = detectedBackends.first(where: \.isLocal) {
+            return localBackend
+        }
+
+        return detectedBackends.first
     }
 
     /// Inferred model type from tags

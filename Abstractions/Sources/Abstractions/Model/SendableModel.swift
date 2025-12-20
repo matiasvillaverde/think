@@ -78,6 +78,13 @@ public struct SendableModel: Equatable, Hashable, Sendable {
         case gguf
         /// Core ML framework for optimized Apple device inference
         case coreml
+        /// Remote API providers (OpenRouter, OpenAI, Anthropic, Google)
+        case remote
+
+        /// Backends that run locally and require file storage.
+        public static var localCases: [Backend] {
+            allCases.filter(\.isLocal)
+        }
 
         /// File patterns to download for each backend
         public var filePatterns: [String] {
@@ -88,6 +95,8 @@ public struct SendableModel: Equatable, Hashable, Sendable {
                 return ["*.gguf", "*.json"]
             case .mlx:
                 return ["*.safetensors", "*.json", "*.plist"]
+            case .remote:
+                return [] // No local files needed for remote models
             }
         }
 
@@ -96,7 +105,7 @@ public struct SendableModel: Equatable, Hashable, Sendable {
             switch self {
             case .coreml:
                 return true
-            case .gguf, .mlx:
+            case .gguf, .mlx, .remote:
                 return false
             }
         }
@@ -104,6 +113,26 @@ public struct SendableModel: Equatable, Hashable, Sendable {
         /// Directory name for organizing models
         public var directoryName: String {
             self.rawValue
+        }
+
+        /// Whether this backend requires downloading model files
+        public var requiresDownload: Bool {
+            switch self {
+            case .mlx, .gguf, .coreml:
+                return true
+            case .remote:
+                return false
+            }
+        }
+
+        /// Whether this backend runs locally on device
+        public var isLocal: Bool {
+            switch self {
+            case .mlx, .gguf, .coreml:
+                return true
+            case .remote:
+                return false
+            }
         }
     }
 

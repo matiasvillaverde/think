@@ -22,6 +22,10 @@ public enum DatabaseError: LocalizedError, Equatable {
     case timeout
     case invalidInput(String)
     case invalidStateTransition
+    case memoryNotFound
+    case skillNotFound
+    case toolPolicyNotFound
+    case subAgentRunNotFound
     case unknown
 
     public var errorDescription: String? {
@@ -66,6 +70,14 @@ public enum DatabaseError: LocalizedError, Equatable {
             return "Timeout"
         case .invalidStateTransition:
             return "Invalid state transition, you can't set ready twice"
+        case .memoryNotFound:
+            return "Memory not found"
+        case .skillNotFound:
+            return "Skill not found"
+        case .toolPolicyNotFound:
+            return "Tool policy not found"
+        case .subAgentRunNotFound:
+            return "Sub-agent run not found"
         case .unknown:
             return "Unknown error"
         }

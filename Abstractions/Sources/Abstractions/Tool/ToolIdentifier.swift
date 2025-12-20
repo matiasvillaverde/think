@@ -10,6 +10,7 @@ public enum ToolIdentifier: String, CaseIterable, Hashable, Sendable {
     case weather = "Weather"
     case duckduckgo = "DuckDuckGo Search"
     case braveSearch = "Brave Search"
+    case memory = "Memory"
 }
 
 extension ToolIdentifier {
@@ -25,6 +26,7 @@ extension ToolIdentifier {
         case .braveSearch: return "brave_search"
         case .reasoning: return "reasoning"
         case .imageGeneration: return "image_generation"
+        case .memory: return "memory"
         }
     }
 
