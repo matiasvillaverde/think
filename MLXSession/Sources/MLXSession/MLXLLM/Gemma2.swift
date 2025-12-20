@@ -198,7 +198,7 @@ internal class Gemma2Model: Module, LLMModel, KVCacheDimensionProvider {
     }
 }
 
-internal struct Gemma2Configuration: Codable {
+internal struct Gemma2Configuration: Codable, Sendable {
     var hiddenSize: Int
     var hiddenLayers: Int
     var intermediateSize: Int

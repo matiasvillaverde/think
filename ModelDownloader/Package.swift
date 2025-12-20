@@ -18,7 +18,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Abstractions"),
-        .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.0")
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.20")
     ],
     targets: [
         .target(

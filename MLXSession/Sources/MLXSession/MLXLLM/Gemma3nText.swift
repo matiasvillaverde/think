@@ -15,7 +15,7 @@ import MLXNN
 
 // MARK: - Configuration
 
-internal struct Gemma3nTextConfiguration: Codable {
+internal struct Gemma3nTextConfiguration: Codable, Sendable {
     let modelType: String
     let hiddenSize: Int
     let numHiddenLayers: Int

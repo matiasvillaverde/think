@@ -7,7 +7,7 @@ import MLX
 import Tokenizers
 
 /// Creates a function that loads a configuration file and instantiates a model with the proper configuration
-private func create<C: Codable, M>(
+private func create<C: Codable & Sendable, M>(
     _ configurationType: C.Type, _ modelInit: @escaping @Sendable (C) -> M
 ) -> @Sendable (URL) throws -> M {
     { url in
@@ -217,6 +217,11 @@ internal class LLMRegistry: AbstractModelRegistry, @unchecked Sendable {
         defaultPrompt: "Why is the sky blue?"
     )
 
+    public static let qwen3One1Point7bMXFP4 = ModelConfiguration(
+        id: "mlx-community/Qwen3-1.7B-MLX-MXFP4",
+        defaultPrompt: "Why is the sky blue?"
+    )
+
     public static let qwen3Four4b4bit = ModelConfiguration(
         id: "mlx-community/Qwen3-4B-4bit",
         defaultPrompt: "Why is the sky blue?"
@@ -341,6 +346,7 @@ internal class LLMRegistry: AbstractModelRegistry, @unchecked Sendable {
             qwen2Point5One1Point5b,
             qwen3Zero0Point6b4bit,
             qwen3One1Point7b4bit,
+            qwen3One1Point7bMXFP4,
             qwen3Four4b4bit,
             qwen3Eight8b4bit,
             qwen3MoE30bA3b4bit,

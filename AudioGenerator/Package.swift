@@ -17,7 +17,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Abstractions"),
-        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.25.4")
+        .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.30.3")
     ],
     targets: [
         .target(

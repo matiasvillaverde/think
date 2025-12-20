@@ -19,12 +19,12 @@ let package = Package(
         .package(path: "../Abstractions"),
         .package(path: "../DataAssets"),
         .package(path: "../Database"),
-        .package(url: "https://github.com/siteline/swiftui-introspect", from: "1.0.0"),
+        .package(url: "https://github.com/siteline/swiftui-introspect", from: "26.0.0"),
         .package(url: "https://github.com/gonzalezreal/swift-markdown-ui", from: "2.4.1"),
-        .package(url: "https://github.com/raspu/Highlightr/", from: "2.2.1"),
+        .package(url: "https://github.com/raspu/Highlightr/", from: "2.3.0"),
         .package(url: "https://github.com/vibeprogrammer/LaTeXSwiftUI", branch: "main"),
         .package(url: "https://github.com/CSolanaM/SkeletonUI.git", branch: "master"),
-        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.0.0")
+        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.6.2")
     ],
     targets: [
         .target(

@@ -16,8 +16,8 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/AvdLee/appstoreconnect-swift-sdk", from: "3.6.0"),
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0")
+        .package(url: "https://github.com/AvdLee/appstoreconnect-swift-sdk", from: "4.2.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.7.0")
     ],
     targets: [
         .executableTarget(

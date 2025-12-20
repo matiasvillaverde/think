@@ -21,7 +21,7 @@ disabled_rules:
   - vertical_whitespace
   - opening_brace
   - comma
-  - operator_whitespace
+  - function_name_whitespace
   - return_arrow_whitespace
   - statement_position
   - vertical_parameter_alignment
@@ -55,12 +55,7 @@ custom_rules:
     severity: warning
     excluded:
       - ".*CLIOutput\\.swift$"  # CLIOutput is exempt from print restrictions
-    
-  proper_error_handling:
-    name: "Proper error handling in async functions"
-    regex: 'func.*throws.*->'
-    message: "Consider using Result type for better error handling"
-    severity: info
+
 
 # Reporter
 reporter: "xcode"

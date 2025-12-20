@@ -18,7 +18,7 @@ let package = Package(
     dependencies: [
         .package(path: "../Abstractions"),
         .package(path: "../DataAssets"),
-        .package(url: "https://github.com/apple/swift-async-algorithms", from: "1.0.0")
+        .package(url: "https://github.com/apple/swift-async-algorithms", from: "1.1.1")
     ],
     targets: [
         .target(

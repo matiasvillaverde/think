@@ -12,7 +12,7 @@ import MLXNN
 
 // Port of https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/models/ernie4_5.py
 
-internal struct Ernie45Configuration: Codable {
+internal struct Ernie45Configuration: Codable, Sendable {
     var hiddenSize: Int
     var intermediateSize: Int
     var maxPositionEmbeddings: Int

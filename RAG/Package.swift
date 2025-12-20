@@ -20,8 +20,8 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Abstractions"),
-        .package(url: "https://github.com/jkrukowski/SQLiteVec", from: "0.0.9"),
-        .package(url: "https://github.com/jkrukowski/swift-embeddings", from: "0.0.19")
+        .package(url: "https://github.com/jkrukowski/SQLiteVec", from: "0.0.14"),
+        .package(url: "https://github.com/jkrukowski/swift-embeddings", from: "0.0.20")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

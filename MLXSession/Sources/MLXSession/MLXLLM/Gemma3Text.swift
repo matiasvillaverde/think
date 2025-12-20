@@ -13,7 +13,7 @@ import MLXFast
 
 import MLXNN
 
-internal struct Gemma3TextConfiguration: Codable {
+internal struct Gemma3TextConfiguration: Codable, Sendable {
     let modelType: String
     let hiddenSize: Int
     let hiddenLayers: Int

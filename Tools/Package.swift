@@ -17,7 +17,7 @@ let package = Package(
     dependencies: [
         .package(path: "../Abstractions"),
         .package(path: "../Database"),
-        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.7.0")
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.11.3")
     ],
     targets: [
         .target(
