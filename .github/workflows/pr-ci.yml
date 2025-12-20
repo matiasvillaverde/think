@@ -1,0 +1,65 @@
+name: PR CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (cheap)
+    runs-on: macos-14
+    timeout-minutes: 20
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 16.2
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "16.2"
+      - name: Install tooling
+        run: brew install swiftlint
+      - name: Lint
+        run: make lint
+
+  test-and-build:
+    name: Tests + Builds (macos-26-xlarge)
+    runs-on: macos-26-xlarge
+    needs: lint
+    timeout-minutes: 90
+    env:
+      CI: true
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 16.2
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "16.2"
+      - name: Install tooling
+        run: brew install swiftlint xcbeautify
+      - name: Cache SwiftPM + DerivedData
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData
+            ~/Library/Caches/org.swift.swiftpm
+            ~/Library/org.swift.swiftpm
+            ~/.swiftpm
+          key: ${{ runner.os }}-xcode-${{ hashFiles('**/Package.resolved') }}-${{ hashFiles('**/*.xcodeproj/**project.pbxproj') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-
+      - name: Run unit tests (skip LLamaCPP, MLXSession)
+        run: make test-ci
+      - name: Build apps (iOS, macOS, visionOS)
+        run: |
+          make build-ios-ci
+          make build-macos-ci
+          make build-visionos-ci

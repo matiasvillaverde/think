@@ -1,0 +1,46 @@
+# Enable all rules to see what we're actually not complying with
+opt_in_rules:
+  - all
+
+# Disable overly strict or problematic rules (matching UIComponents)
+disabled_rules:
+  # Same as UIComponents
+  - contrasted_opening_brace
+  - explicit_acl
+  - file_types_order
+  - one_declaration_per_file
+  - type_contents_order
+  - redundant_type_annotation
+  - extension_access_modifier
+  
+  # Temporarily disabled to allow tests to run
+  - type_body_length
+  - file_name
+
+# Make rules strict
+strict: true
+
+# Directories to include/exclude during linting
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build
+
+# Customize rule parameters
+line_length:
+  warning: 130
+  error: 150
+  ignores_function_declarations: true
+  ignores_comments: true
+  ignores_urls: true
+
+# Allow more parameters for complex initializers and functions
+function_parameter_count:
+  warning: 6
+  error: 8
+
+# Large tuples are sometimes needed in tests
+large_tuple:
+  warning: 3
+  error: 4

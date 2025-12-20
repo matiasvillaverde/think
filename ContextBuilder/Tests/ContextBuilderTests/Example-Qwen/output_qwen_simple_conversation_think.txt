@@ -1,0 +1,14 @@
+<|im_start|>system
+You are a helpful AI assistant.<|im_end|>
+<|im_start|>user
+What is 25 * 37?<|im_end|>
+<|im_start|>assistant
+25 * 37 = 925
+
+To calculate this:
+- 25 * 30 = 750
+- 25 * 7 = 175
+- 750 + 175 = 925<|im_end|>
+<|im_start|>user
+Great! Now divide that by 5 /think<|im_end|>
+<|im_start|>assistant

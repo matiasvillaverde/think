@@ -1,0 +1,6 @@
+[INST] You are a helpful AI assistant.
+Knowledge cutoff: 2024-06
+
+Today's date: 2025-08-21
+
+What is 2 + 2? [/INST]

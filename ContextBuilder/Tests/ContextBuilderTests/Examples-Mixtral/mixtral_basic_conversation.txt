@@ -1,0 +1,19 @@
+<s>[INST] What is your favorite condiment? [/INST]Well, I'm quite partial to a good squeeze of fresh lemon juice. It adds just the right amount of zesty flavor to whatever I'm cooking up in the kitchen!</s>[INST] The right amount of what? [/INST]The right amount of zesty flavor! Lemon juice adds a bright, tangy taste that can really enhance both savory and sweet dishes. It's particularly great on fish, in salad dressings, or even in desserts.</s>[INST] Can you suggest a recipe that uses lemon juice? [/INST]Here's a simple and delicious Lemon Garlic Butter Salmon recipe:
+
+**Ingredients:**
+- 4 salmon fillets
+- 3 tablespoons butter
+- 3 cloves garlic, minced
+- Juice of 2 lemons
+- Salt and pepper to taste
+- Fresh parsley for garnish
+
+**Instructions:**
+1. Season salmon with salt and pepper
+2. Melt butter in a pan over medium heat
+3. Add garlic and sauté for 1 minute
+4. Place salmon in the pan, cook 4-5 minutes per side
+5. Pour lemon juice over the salmon in the last minute
+6. Garnish with parsley and serve
+
+The lemon juice brightens the rich salmon and complements the garlic beautifully!</s>

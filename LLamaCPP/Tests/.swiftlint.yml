@@ -1,0 +1,24 @@
+# SwiftLint configuration for LLamaCPP Tests
+# Looser rules for test files
+
+# Inherit from parent configuration
+parent_config: ../.swiftlint.yml
+
+# Override specific rules for tests
+type_body_length:
+  warning: 300
+  error: 400  # Allow longer test helper types
+
+function_body_length:
+  warning: 50
+  error: 100  # Allow longer test methods
+
+file_length:
+  warning: 500
+  error: 700  # Allow longer test files
+
+# Disable rules that are too strict for tests
+disabled_rules:
+  - one_declaration_per_file  # Allow multiple test helpers in one file
+  - file_name  # Test files often contain extensions of test suites
+  - file_types_order  # Not critical for test files

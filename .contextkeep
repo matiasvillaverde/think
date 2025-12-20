@@ -1,0 +1,49 @@
+# Core functionality - Highest priority
+Abstractions/**/*.swift
+Database/**/*.swift
+
+# Important modules - High priority
+ViewModels/**/*.swift
+RAG/**/*.swift
+Context/**/*.swift
+AgentOrchestrator/**/*.swift
+MLXSession/**/*.swift
+LLamaCPP/**/*.swift
+ImageGenerator/**/*.swift
+UIComponents/**/*.swift
+ModelDownloader/**/*.swift
+
+# Secondary modules - Medium priority
+AudioGenerator/**/*.swift
+Factories/**/*.swift
+
+# Package manifests - Important for understanding dependencies
+**/Package.swift
+
+# Documentation - Important for context
+*.md
+README.md
+CLAUDE.md
+CI.md
+CONTRIBUTING.md
+
+# Main app entry points
+Think/*.swift
+"Think Vision"/*.swift
+
+# Important configuration files
+Makefile
+
+# Core protocols and interfaces
+**/Sources/**/Protocols/*.swift
+**/Sources/**/Protocol.swift
+
+# Database models and commands
+Database/Sources/Database/Models/*.swift
+Database/Sources/Database/Commands/*.swift
+
+# ViewModels - Critical business logic
+ViewModels/Sources/ViewModels/**/*.swift
+
+# Test files for understanding functionality
+**/Tests/**/*Tests.swift

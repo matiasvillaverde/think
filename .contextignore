@@ -1,0 +1,83 @@
+# Dependencies and build artifacts
+.build/
+build/
+DerivedData/
+*.xcworkspace/
+*.xcodeproj/
+.swiftpm/
+.DS_Store
+
+# Assets and resources
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+*.ico
+*.svg
+*.xcassets/
+Resources-ios/
+Resources-macos/
+Screenshots/
+App-Screenshots/
+screenshots-localized/
+app-store-metadata/
+
+# Private and sensitive files
+private_keys/
+.env
+*.p12
+*.p8
+*.mobileprovision
+*.cer
+
+# Test artifacts and reports
+*.xcresult
+.coverage/
+coverage/
+
+# Frameworks and external dependencies
+Frameworks/
+AppStoreConnectCLI/
+
+# Git and IDE files
+.git/
+.gitignore
+.git-cliff.toml
+.ropeproject/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation assets (keep .md files though)
+*.drawio
+*.sketch
+
+# Preview Content
+**/Preview Content/
+
+# Localization files - exclude all
+*.lproj/
+*.strings
+*.stringsdict
+Localizable.xcstrings
+
+# SwiftLint configuration
+.swiftlint.yml
+.swiftlint.yaml
+
+# Build scripts output
+scripts/*.log
+scripts/.env
+
+# Test data
+**/TestData/
+**/Fixtures/
+**/Mocks/
+
+# Generated files
+*.generated.swift
+
+# ImageGenerator test resources
+/ImageGenerator/Tests/ImageGeneratorTests/Resources/

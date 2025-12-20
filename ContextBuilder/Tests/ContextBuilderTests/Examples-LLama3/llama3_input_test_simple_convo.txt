@@ -1,0 +1,8 @@
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+You are a helpful AI assistant.
+Knowledge cutoff: 2024-06
+
+Today's date: 2025-08-21<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What is 2 + 2?<|eot_id|><|start_header_id|>assistant<|end_header_id|>

@@ -1,0 +1,1188 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		44189DBB2D48DCAC0063E374 /* Database in Frameworks */ = {isa = PBXBuildFile; productRef = 44189DBA2D48DCAC0063E374 /* Database */; };
+		443FD8DB2D6F72B500500B7A /* Abstractions in Frameworks */ = {isa = PBXBuildFile; productRef = 443FD8DA2D6F72B500500B7A /* Abstractions */; };
+		443FD8E72D6F72EA00500B7A /* Rag in Frameworks */ = {isa = PBXBuildFile; productRef = 443FD8E62D6F72EA00500B7A /* Rag */; };
+		444DC7C02D8B030600D7494E /* UIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = 444DC7BF2D8B030600D7494E /* UIComponents */; };
+		444DC7C22D8B033C00D7494E /* Factories in Frameworks */ = {isa = PBXBuildFile; productRef = 444DC7C12D8B033C00D7494E /* Factories */; };
+		444DC7C32D8B043500D7494E /* Resources-ios in Resources */ = {isa = PBXBuildFile; fileRef = 44E2FF082D70C7A100E096DF /* Resources-ios */; };
+		444DC7E92D8B171800D7494E /* Abstractions in Frameworks */ = {isa = PBXBuildFile; productRef = 444DC7E82D8B171800D7494E /* Abstractions */; };
+		444DC7EB2D8B171800D7494E /* Database in Frameworks */ = {isa = PBXBuildFile; productRef = 444DC7EA2D8B171800D7494E /* Database */; };
+		444DC7ED2D8B171800D7494E /* UIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = 444DC7EC2D8B171800D7494E /* UIComponents */; };
+		4458C56D2D75C6F7002485E7 /* ViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 4458C56C2D75C6F7002485E7 /* ViewModels */; };
+		44D1315C2D75EAD60074C391 /* Factories in Frameworks */ = {isa = PBXBuildFile; productRef = 44D1315B2D75EAD60074C391 /* Factories */; };
+		44E2FF092D70C7A100E096DF /* Resources-macos in Resources */ = {isa = PBXBuildFile; fileRef = 44E2FF072D70C7A100E096DF /* Resources-macos */; platformFilters = (macos, xros, ); };
+		44E2FF0A2D70C7A100E096DF /* Resources-ios in Resources */ = {isa = PBXBuildFile; fileRef = 44E2FF082D70C7A100E096DF /* Resources-ios */; platformFilter = ios; };
+		44F257652D76FFA000CE49CB /* UIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = 44F257642D76FFA000CE49CB /* UIComponents */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		444DC7EE2D8B172000D7494E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 44B648AA2D47DB4400058AA6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 444DC7D82D8B16F900D7494E;
+			remoteInfo = "App-Screenshots";
+		};
+		44717DF72E2E86280087121E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 44B648AA2D47DB4400058AA6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 44B648B12D47DB4400058AA6;
+			remoteInfo = Think;
+		};
+		44B648C72D47DB4500058AA6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 44B648AA2D47DB4400058AA6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 44B648B12D47DB4400058AA6;
+			remoteInfo = Think;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		444DC7982D8B02B700D7494E /* Think Vision.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Think Vision.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		444DC7C82D8B145200D7494E /* Screenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Screenshots.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		444DC7D92D8B16F900D7494E /* App-Screenshots.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "App-Screenshots.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		44717DF12E2E86280087121E /* AcceptanceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AcceptanceUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		44B648B22D47DB4400058AA6 /* Think.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Think.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44B648C62D47DB4500058AA6 /* ThinkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThinkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		44E2FF072D70C7A100E096DF /* Resources-macos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Resources-macos"; sourceTree = "<group>"; };
+		44E2FF082D70C7A100E096DF /* Resources-ios */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Resources-ios"; sourceTree = "<group>"; };
+		44F7140B2DB1110200383ABB /* ESpeakNG.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ESpeakNG.xcframework; path = Frameworks/ESpeakNG.xcframework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		444DC7B82D8B02B900D7494E /* Exceptions for "Think Vision" folder in "Think Vision" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 444DC7972D8B02B700D7494E /* Think Vision */;
+		};
+		44B648D82D47DB4500058AA6 /* Exceptions for "Think" folder in "Think" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ExportOptions.plist,
+				Info.plist,
+			);
+			target = 44B648B12D47DB4400058AA6 /* Think */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		444DC7992D8B02B700D7494E /* Think Vision */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				444DC7B82D8B02B900D7494E /* Exceptions for "Think Vision" folder in "Think Vision" target */,
+			);
+			path = "Think Vision";
+			sourceTree = "<group>";
+		};
+		444DC7C92D8B145200D7494E /* Screenshots */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Screenshots;
+			sourceTree = "<group>";
+		};
+		444DC7DA2D8B16F900D7494E /* App-Screenshots */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "App-Screenshots";
+			sourceTree = "<group>";
+		};
+		44B648B42D47DB4400058AA6 /* Think */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				44B648D82D47DB4500058AA6 /* Exceptions for "Think" folder in "Think" target */,
+			);
+			path = Think;
+			sourceTree = "<group>";
+		};
+		44B648C92D47DB4500058AA6 /* ThinkTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ThinkTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		444DC7952D8B02B700D7494E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				444DC7C02D8B030600D7494E /* UIComponents in Frameworks */,
+				444DC7C22D8B033C00D7494E /* Factories in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		444DC7C52D8B145200D7494E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		444DC7D62D8B16F900D7494E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				444DC7ED2D8B171800D7494E /* UIComponents in Frameworks */,
+				444DC7E92D8B171800D7494E /* Abstractions in Frameworks */,
+				444DC7EB2D8B171800D7494E /* Database in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44717DEE2E2E86280087121E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44B648AF2D47DB4400058AA6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				44D1315C2D75EAD60074C391 /* Factories in Frameworks */,
+				44189DBB2D48DCAC0063E374 /* Database in Frameworks */,
+				443FD8E72D6F72EA00500B7A /* Rag in Frameworks */,
+				4458C56D2D75C6F7002485E7 /* ViewModels in Frameworks */,
+				443FD8DB2D6F72B500500B7A /* Abstractions in Frameworks */,
+				44F257652D76FFA000CE49CB /* UIComponents in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44B648C32D47DB4500058AA6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		44B648A92D47DB4400058AA6 = {
+			isa = PBXGroup;
+			children = (
+				44E2FF082D70C7A100E096DF /* Resources-ios */,
+				44E2FF072D70C7A100E096DF /* Resources-macos */,
+				44B648B42D47DB4400058AA6 /* Think */,
+				44B648C92D47DB4500058AA6 /* ThinkTests */,
+				444DC7992D8B02B700D7494E /* Think Vision */,
+				444DC7C92D8B145200D7494E /* Screenshots */,
+				444DC7DA2D8B16F900D7494E /* App-Screenshots */,
+				44B648EC2D47DD4B00058AA6 /* Frameworks */,
+				44B648B32D47DB4400058AA6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		44B648B32D47DB4400058AA6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				44B648B22D47DB4400058AA6 /* Think.app */,
+				44B648C62D47DB4500058AA6 /* ThinkTests.xctest */,
+				444DC7982D8B02B700D7494E /* Think Vision.app */,
+				444DC7C82D8B145200D7494E /* Screenshots.xctest */,
+				444DC7D92D8B16F900D7494E /* App-Screenshots.app */,
+				44717DF12E2E86280087121E /* AcceptanceUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		44B648EC2D47DD4B00058AA6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				44F7140B2DB1110200383ABB /* ESpeakNG.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		444DC7972D8B02B700D7494E /* Think Vision */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 444DC7B92D8B02B900D7494E /* Build configuration list for PBXNativeTarget "Think Vision" */;
+			buildPhases = (
+				444DC7942D8B02B700D7494E /* Sources */,
+				444DC7952D8B02B700D7494E /* Frameworks */,
+				444DC7962D8B02B700D7494E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				444DC7992D8B02B700D7494E /* Think Vision */,
+			);
+			name = "Think Vision";
+			packageProductDependencies = (
+				444DC7BF2D8B030600D7494E /* UIComponents */,
+				444DC7C12D8B033C00D7494E /* Factories */,
+			);
+			productName = "Think Vision";
+			productReference = 444DC7982D8B02B700D7494E /* Think Vision.app */;
+			productType = "com.apple.product-type.application";
+		};
+		444DC7C72D8B145200D7494E /* Screenshots */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 444DC7D02D8B145200D7494E /* Build configuration list for PBXNativeTarget "Screenshots" */;
+			buildPhases = (
+				444DC7C42D8B145200D7494E /* Sources */,
+				444DC7C52D8B145200D7494E /* Frameworks */,
+				444DC7C62D8B145200D7494E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				444DC7EF2D8B172000D7494E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				444DC7C92D8B145200D7494E /* Screenshots */,
+			);
+			name = Screenshots;
+			packageProductDependencies = (
+			);
+			productName = Screenshots;
+			productReference = 444DC7C82D8B145200D7494E /* Screenshots.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		444DC7D82D8B16F900D7494E /* App-Screenshots */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 444DC7E52D8B16FA00D7494E /* Build configuration list for PBXNativeTarget "App-Screenshots" */;
+			buildPhases = (
+				444DC7D52D8B16F900D7494E /* Sources */,
+				444DC7D62D8B16F900D7494E /* Frameworks */,
+				444DC7D72D8B16F900D7494E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				444DC7DA2D8B16F900D7494E /* App-Screenshots */,
+			);
+			name = "App-Screenshots";
+			packageProductDependencies = (
+				444DC7E82D8B171800D7494E /* Abstractions */,
+				444DC7EA2D8B171800D7494E /* Database */,
+				444DC7EC2D8B171800D7494E /* UIComponents */,
+			);
+			productName = "App-Screenshots";
+			productReference = 444DC7D92D8B16F900D7494E /* App-Screenshots.app */;
+			productType = "com.apple.product-type.application";
+		};
+		44717DF02E2E86280087121E /* AcceptanceUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 44717DF92E2E86280087121E /* Build configuration list for PBXNativeTarget "AcceptanceUITests" */;
+			buildPhases = (
+				44717DED2E2E86280087121E /* Sources */,
+				44717DEE2E2E86280087121E /* Frameworks */,
+				44717DEF2E2E86280087121E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				44717DF82E2E86280087121E /* PBXTargetDependency */,
+			);
+			name = AcceptanceUITests;
+			packageProductDependencies = (
+			);
+			productName = AcceptanceUITests;
+			productReference = 44717DF12E2E86280087121E /* AcceptanceUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		44B648B12D47DB4400058AA6 /* Think */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 44B648D92D47DB4500058AA6 /* Build configuration list for PBXNativeTarget "Think" */;
+			buildPhases = (
+				44B648AE2D47DB4400058AA6 /* Sources */,
+				44B648AF2D47DB4400058AA6 /* Frameworks */,
+				44B648B02D47DB4400058AA6 /* Resources */,
+				44F257662D76FFC300CE49CB /* Run Script */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				44B648B42D47DB4400058AA6 /* Think */,
+			);
+			name = Think;
+			packageProductDependencies = (
+				44189DBA2D48DCAC0063E374 /* Database */,
+				443FD8DA2D6F72B500500B7A /* Abstractions */,
+				443FD8E62D6F72EA00500B7A /* Rag */,
+				4458C56C2D75C6F7002485E7 /* ViewModels */,
+				44D1315B2D75EAD60074C391 /* Factories */,
+				44F257642D76FFA000CE49CB /* UIComponents */,
+			);
+			productName = Think;
+			productReference = 44B648B22D47DB4400058AA6 /* Think.app */;
+			productType = "com.apple.product-type.application";
+		};
+		44B648C52D47DB4500058AA6 /* ThinkTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 44B648DE2D47DB4500058AA6 /* Build configuration list for PBXNativeTarget "ThinkTests" */;
+			buildPhases = (
+				44B648C22D47DB4500058AA6 /* Sources */,
+				44B648C32D47DB4500058AA6 /* Frameworks */,
+				44B648C42D47DB4500058AA6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				44B648C82D47DB4500058AA6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				44B648C92D47DB4500058AA6 /* ThinkTests */,
+			);
+			name = ThinkTests;
+			packageProductDependencies = (
+			);
+			productName = ThinkTests;
+			productReference = 44B648C62D47DB4500058AA6 /* ThinkTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		44B648AA2D47DB4400058AA6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					444DC7972D8B02B700D7494E = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					444DC7C72D8B145200D7494E = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 444DC7D82D8B16F900D7494E;
+					};
+					444DC7D82D8B16F900D7494E = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					44717DF02E2E86280087121E = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 44B648B12D47DB4400058AA6;
+					};
+					44B648B12D47DB4400058AA6 = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					44B648C52D47DB4500058AA6 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = 44B648B12D47DB4400058AA6;
+					};
+				};
+			};
+			buildConfigurationList = 44B648AD2D47DB4400058AA6 /* Build configuration list for PBXProject "Think" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				es,
+			);
+			mainGroup = 44B648A92D47DB4400058AA6;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				44D1315A2D75EAD60074C391 /* XCLocalSwiftPackageReference "Factories" */,
+				44F257632D76FFA000CE49CB /* XCLocalSwiftPackageReference "UIComponents" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 44B648B32D47DB4400058AA6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				44B648B12D47DB4400058AA6 /* Think */,
+				44B648C52D47DB4500058AA6 /* ThinkTests */,
+				444DC7972D8B02B700D7494E /* Think Vision */,
+				444DC7C72D8B145200D7494E /* Screenshots */,
+				444DC7D82D8B16F900D7494E /* App-Screenshots */,
+				44717DF02E2E86280087121E /* AcceptanceUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		444DC7962D8B02B700D7494E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				444DC7C32D8B043500D7494E /* Resources-ios in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		444DC7C62D8B145200D7494E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		444DC7D72D8B16F900D7494E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44717DEF2E2E86280087121E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44B648B02D47DB4400058AA6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				44E2FF092D70C7A100E096DF /* Resources-macos in Resources */,
+				44E2FF0A2D70C7A100E096DF /* Resources-ios in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44B648C42D47DB4500058AA6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		44F257662D76FFC300CE49CB /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/bash\n\n# This script only runs SwiftLint in Debug configuration\n# It includes output specifications to improve build performance\n\nif [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  if which swiftlint >/dev/null; then\n    # Create an output file that Xcode can track for dependency analysis\n    SCRIPT_OUTPUT_FILE_0=\"${DERIVED_FILE_DIR}/swiftlint.result\"\n    swiftlint --quiet > \"${SCRIPT_OUTPUT_FILE_0}\"\n  else\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n  fi\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		444DC7942D8B02B700D7494E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		444DC7C42D8B145200D7494E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		444DC7D52D8B16F900D7494E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44717DED2E2E86280087121E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44B648AE2D47DB4400058AA6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44B648C22D47DB4500058AA6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		444DC7EF2D8B172000D7494E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 444DC7D82D8B16F900D7494E /* App-Screenshots */;
+			targetProxy = 444DC7EE2D8B172000D7494E /* PBXContainerItemProxy */;
+		};
+		44717DF82E2E86280087121E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 44B648B12D47DB4400058AA6 /* Think */;
+			targetProxy = 44717DF72E2E86280087121E /* PBXContainerItemProxy */;
+		};
+		44B648C82D47DB4500058AA6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 44B648B12D47DB4400058AA6 /* Think */;
+			targetProxy = 44B648C72D47DB4500058AA6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		444DC7BA2D8B02B900D7494E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Think Vision/Think Vision.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 404;
+				DEVELOPMENT_ASSET_PATHS = "\"Think Vision/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Think Vision/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Think;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 3.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				VERSIONING_SYSTEM = "apple-generic";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		444DC7BB2D8B02B900D7494E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Think Vision/Think Vision.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 404;
+				DEVELOPMENT_ASSET_PATHS = "\"Think Vision/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Think Vision/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Think;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 3.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
+		444DC7D12D8B145200D7494E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 401;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 2.0.25;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think.screenshots;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = NO;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = "App-Screenshots";
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Debug;
+		};
+		444DC7D22D8B145200D7494E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 401;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 2.0.25;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think.screenshots;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = NO;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = "App-Screenshots";
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Release;
+		};
+		444DC7E62D8B16FA00D7494E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "App-Screenshots/App_Screenshots.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 401;
+				DEVELOPMENT_ASSET_PATHS = "\"App-Screenshots/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 2.0.25;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think.appscreenshots;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Debug;
+		};
+		444DC7E72D8B16FA00D7494E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "App-Screenshots/App_Screenshots.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 401;
+				DEVELOPMENT_ASSET_PATHS = "\"App-Screenshots/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 2.0.25;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think.appscreenshots;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Release;
+		};
+		44717DFA2E2E86280087121E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 401;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think.acceptanceuitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = Think;
+				XROS_DEPLOYMENT_TARGET = 2.5;
+			};
+			name = Debug;
+		};
+		44717DFB2E2E86280087121E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 401;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think.acceptanceuitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = Think;
+				XROS_DEPLOYMENT_TARGET = 2.5;
+			};
+			name = Release;
+		};
+		44B648DA2D47DB4500058AA6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Think/ThinkDebug.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 405;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Think/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Think;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "This app needs access to documents to open and process files.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app needs access to your microphone to listen to your voice input for the AI assistant.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save images to your library";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "This app needs access to speech recognition to transcribe your voice into text for the AI assistant.";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 3.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				VERSIONING_SYSTEM = "apple-generic";
+				XROS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Debug;
+		};
+		44B648DB2D47DB4500058AA6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Think/Think.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 405;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Think/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Think;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "This app needs access to documents to open and process files.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app needs access to your microphone to listen to your voice input for the AI assistant.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save images to your library";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "This app needs access to speech recognition to transcribe your voice into text for the AI assistant.";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 3.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				VERSIONING_SYSTEM = "apple-generic";
+				XROS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Release;
+		};
+		44B648DC2D47DB4500058AA6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		44B648DD2D47DB4500058AA6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		44B648DF2D47DB4500058AA6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 401;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MARKETING_VERSION = 2.0.25;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Think.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Think";
+				XROS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Debug;
+		};
+		44B648E02D47DB4500058AA6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 401;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MARKETING_VERSION = 2.0.25;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.think.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Think.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Think";
+				XROS_DEPLOYMENT_TARGET = 2.1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		444DC7B92D8B02B900D7494E /* Build configuration list for PBXNativeTarget "Think Vision" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				444DC7BA2D8B02B900D7494E /* Debug */,
+				444DC7BB2D8B02B900D7494E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		444DC7D02D8B145200D7494E /* Build configuration list for PBXNativeTarget "Screenshots" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				444DC7D12D8B145200D7494E /* Debug */,
+				444DC7D22D8B145200D7494E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		444DC7E52D8B16FA00D7494E /* Build configuration list for PBXNativeTarget "App-Screenshots" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				444DC7E62D8B16FA00D7494E /* Debug */,
+				444DC7E72D8B16FA00D7494E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		44717DF92E2E86280087121E /* Build configuration list for PBXNativeTarget "AcceptanceUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44717DFA2E2E86280087121E /* Debug */,
+				44717DFB2E2E86280087121E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		44B648AD2D47DB4400058AA6 /* Build configuration list for PBXProject "Think" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44B648DC2D47DB4500058AA6 /* Debug */,
+				44B648DD2D47DB4500058AA6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		44B648D92D47DB4500058AA6 /* Build configuration list for PBXNativeTarget "Think" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44B648DA2D47DB4500058AA6 /* Debug */,
+				44B648DB2D47DB4500058AA6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		44B648DE2D47DB4500058AA6 /* Build configuration list for PBXNativeTarget "ThinkTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44B648DF2D47DB4500058AA6 /* Debug */,
+				44B648E02D47DB4500058AA6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		44D1315A2D75EAD60074C391 /* XCLocalSwiftPackageReference "Factories" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Factories;
+		};
+		44F257632D76FFA000CE49CB /* XCLocalSwiftPackageReference "UIComponents" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = UIComponents;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		44189DBA2D48DCAC0063E374 /* Database */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Database;
+		};
+		443FD8DA2D6F72B500500B7A /* Abstractions */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Abstractions;
+		};
+		443FD8E62D6F72EA00500B7A /* Rag */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Rag;
+		};
+		444DC7BF2D8B030600D7494E /* UIComponents */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UIComponents;
+		};
+		444DC7C12D8B033C00D7494E /* Factories */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Factories;
+		};
+		444DC7E82D8B171800D7494E /* Abstractions */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Abstractions;
+		};
+		444DC7EA2D8B171800D7494E /* Database */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Database;
+		};
+		444DC7EC2D8B171800D7494E /* UIComponents */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UIComponents;
+		};
+		4458C56C2D75C6F7002485E7 /* ViewModels */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ViewModels;
+		};
+		44D1315B2D75EAD60074C391 /* Factories */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Factories;
+		};
+		44F257642D76FFA000CE49CB /* UIComponents */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UIComponents;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 44B648AA2D47DB4400058AA6 /* Project object */;
+}

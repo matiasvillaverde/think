@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Document</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.adobe.pdf</string>
+				<string>public.plain-text</string>
+				<string>public.comma-separated-values-text</string>
+				<string>org.openxmlformats.wordprocessingml.document</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleShortVersionString</key>
+	<string>3.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>401</string>
+	<key>APPSTORE_APP_ID</key>
+	<string>0000000000</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Think will notify you when your AI model download is complete, so you can close the app and come back when it's ready.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Think needs access to your health data to provide AI-powered health insights and analysis. Your health information is processed locally and never shared without your permission.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Think can save health data like weight, height, and step counts that you provide. This helps track your health metrics over time.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.content</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Microsoft Word Document</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.openxmlformats.wordprocessingml.document</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>docx</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>application/vnd.openxmlformats-officedocument.wordprocessingml.document</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.content</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Microsoft Word Document</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.openxmlformats.wordprocessingml.document</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>docx</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>application/vnd.openxmlformats-officedocument.wordprocessingml.document</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

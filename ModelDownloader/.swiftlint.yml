@@ -1,0 +1,50 @@
+# Enable all rules to see what we're actually not complying with
+opt_in_rules:
+  - all
+
+# Disable overly strict or problematic rules (matching UIComponents)
+disabled_rules:
+  # We should keep
+  - contrasted_opening_brace
+  - explicit_acl
+  - file_types_order
+  - one_declaration_per_file
+  - type_contents_order
+  - redundant_type_annotation
+  - extension_access_modifier
+  - redundant_string_enum_value
+
+  # Major refactoring required (hundreds/thousands of violations)
+  - no_magic_numbers # 462 violations - Hard-coded numeric values
+  - indentation_width # 188 violations - Indentation consistency
+  - force_unwrapping # 132 violations - Force unwrapping should be avoided
+  - explicit_top_level_acl # 116 violations - Top-level declarations need access control
+
+  # Medium effort to fix (50-100 violations)
+  - no_empty_block # 106 violations - Empty code blocks
+  - sorted_enum_cases # 100 violations - Enum case ordering
+  - conditional_returns_on_newline # 62 violations - Return placement
+  - file_name # 52 violations - File naming
+
+  # Low effort to fix (under 50 violations)
+  - discouraged_optional_collection # 46 violations - Prefer empty over optional
+  - function_body_length # 10 violations - Function length limits (would break tests if refactored)
+  - cyclomatic_complexity # 8 violations - Function complexity
+  - type_body_length # 10 violations - Type length limits (requires splitting types)
+  - file_length # 19 violations - File length limits (requires splitting files)
+  - closure_body_length # 9 violations - Closure length (complex refactoring needed)
+
+# Make rules strict
+strict: true
+
+# Directories to include/exclude during linting
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build
+
+# Customize rule parameters
+line_length:
+  warning: 120 # 810 violations - Lines over 100 characters
+  error: 120

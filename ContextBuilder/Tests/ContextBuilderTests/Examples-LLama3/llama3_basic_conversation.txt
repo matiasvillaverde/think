@@ -1,0 +1,15 @@
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+You are a helpful, respectful and honest assistant. Always answer as helpfully as possible.<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+What's the capital of France?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The capital of France is Paris.<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Tell me an interesting fact about Paris.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Here's an interesting fact about Paris: The Eiffel Tower was originally intended to be a temporary structure! It was built for the 1889 World's Fair and was supposed to be demolished after 20 years. However, it was saved because it proved to be valuable as a radio transmission tower. Today, it's one of the most iconic landmarks in the world and receives about 7 million visitors annually.<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+How tall is it?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The Eiffel Tower is 330 meters (1,083 feet) tall, including its antennas. The original structure without antennas is 300 meters (984 feet) tall. When it was completed in 1889, it was the tallest man-made structure in the world, holding that title for 41 years until the Chrysler Building was built in New York City in 1930.<|eot_id|>

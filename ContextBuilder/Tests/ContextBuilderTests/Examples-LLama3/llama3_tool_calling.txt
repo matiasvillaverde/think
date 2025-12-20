@@ -1,0 +1,45 @@
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+Environment: ipython
+Tools: brave_search, wolfram_alpha
+
+Cutting Knowledge Date: December 2023
+Today Date: 25 Jul 2024
+
+You are a helpful assistant with access to tools for searching and computation.<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Who won the most recent FIFA World Cup and what was the final score?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+I'll search for information about the most recent FIFA World Cup winner and final score.
+
+<|python_tag|>
+brave_search.call(query="FIFA World Cup 2022 winner final score Argentina France")
+<|eom_id|><|start_header_id|>ipython<|end_header_id|>
+
+{"results": [{"title": "2022 FIFA World Cup Final", "snippet": "Argentina defeated France 4-2 on penalties after a 3-3 draw. Lionel Messi finally won his first World Cup at age 35.", "url": "https://example.com"}]}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Argentina won the most recent FIFA World Cup in 2022! They defeated France in an absolutely thrilling final. The match ended 3-3 after extra time, with Argentina winning 4-2 on penalties. This was particularly special as it was Lionel Messi's first World Cup victory at age 35, finally completing his collection of major trophies.<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Calculate the total number of goals scored in that final match including the penalty shootout.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+<|python_tag|>
+# Regular time and extra time: 3-3 (6 goals total)
+regular_goals = 6
+
+# Penalty shootout: Argentina 4-2 France (6 successful penalties)
+penalty_goals = 4 + 2
+
+# Total goals
+total_goals = regular_goals + penalty_goals
+print(f"Total goals in the match: {total_goals}")
+print(f"Breakdown: {regular_goals} in regular/extra time + {penalty_goals} in penalties")
+<|eom_id|><|start_header_id|>ipython<|end_header_id|>
+
+Total goals in the match: 12
+Breakdown: 6 in regular/extra time + 6 in penalties<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+The total number of goals scored in the 2022 World Cup final was **12 goals**:
+- 6 goals during regular and extra time (3-3 draw)
+- 6 successful penalties in the shootout (Argentina 4, France 2)
+
+This makes it one of the highest-scoring World Cup finals in history when including the penalty shootout!<|eot_id|>

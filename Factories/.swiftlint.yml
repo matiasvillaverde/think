@@ -1,0 +1,28 @@
+# Enable all available rules
+opt_in_rules:
+  - all
+
+disabled_rules:
+  - contrasted_opening_brace
+  - explicit_acl
+  - file_types_order
+  - one_declaration_per_file
+  - type_contents_order
+  - redundant_type_annotation
+  - extension_access_modifier
+
+  # Temporarily disabled due to @testable import ordering issues
+  - sorted_imports
+  
+  # Factories-specific exceptions
+  - missing_docs # Provider methods are self-documenting
+
+# Make rules strict
+strict: true
+
+# Directories to include/exclude during linting
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build

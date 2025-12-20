@@ -1,0 +1,69 @@
+# SwiftLint Configuration for AppStoreConnectCLI
+# Follows project's permissive pattern with essential safety rules
+
+# Included/Excluded paths
+included:
+  - Sources
+  - Tests
+
+# Essential rules that are always enabled for safety and code quality
+opt_in_rules:
+  - force_unwrapping                     # Prevent runtime crashes
+
+force_unwrapping: error
+line_length:
+  warning: 100
+  error: 120
+
+# Disabled rules - following project's permissive pattern
+disabled_rules:
+  - trailing_whitespace
+  - vertical_whitespace
+  - opening_brace
+  - comma
+  - operator_whitespace
+  - return_arrow_whitespace
+  - statement_position
+  - vertical_parameter_alignment
+  - vertical_parameter_alignment_on_call
+  - closure_parameter_position
+  - multiline_parameters
+  - multiline_arguments
+  - multiline_function_chains
+  - multiline_literal_brackets
+  - multiline_parameters_brackets
+  - function_parameter_count
+  - type_body_length
+  - file_length
+  - function_body_length
+  - cyclomatic_complexity
+  - nesting
+  - large_tuple
+  - identifier_name
+  - type_name
+  - inclusive_language
+  - orphaned_doc_comment
+  - missing_docs
+  - todo  # TODOs are acceptable for this phase of development
+
+# Custom rules for CLI-specific patterns
+custom_rules:
+  no_print_statements:
+    name: "No print statements"
+    regex: '^\s*print\s*\('
+    message: "Use Logger instead of print statements"
+    severity: warning
+    excluded:
+      - ".*CLIOutput\\.swift$"  # CLIOutput is exempt from print restrictions
+    
+  proper_error_handling:
+    name: "Proper error handling in async functions"
+    regex: 'func.*throws.*->'
+    message: "Consider using Result type for better error handling"
+    severity: info
+
+# Reporter
+reporter: "xcode"
+
+# Analyzer rules (disabled for faster builds)
+analyzer_rules: []

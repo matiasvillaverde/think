@@ -1,0 +1,24 @@
+import Foundation
+import MLX
+import MLXFast
+import MLXNN
+
+internal class LayerNormInference: Module {
+    let eps: Float
+    let weight: MLXArray?
+    let bias: MLXArray?
+
+    init(weight: MLXArray, bias: MLXArray?, eps: Float = 1e-5) {
+        self.weight = weight
+        self.bias = bias
+        self.eps = eps
+    }
+
+    func callAsFunction(_ x: MLXArray) -> MLXArray {
+        MLXFast.layerNorm(x, weight: weight, bias: bias, eps: eps)
+    }
+
+    deinit {
+        // MLX neural network module - no explicit cleanup needed
+    }
+}

@@ -1,0 +1,4 @@
+<think>
+Let me calculate 2 + 2. That equals 4.
+</think>
+2 + 2 equals 4.

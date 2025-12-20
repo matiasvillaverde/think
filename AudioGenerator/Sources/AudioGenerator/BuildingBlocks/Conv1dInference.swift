@@ -1,0 +1,46 @@
+import Foundation
+import MLX
+import MLXNN
+
+internal class Conv1dInference {
+    let weight: MLXArray
+    let bias: MLXArray?
+    let padding: Int
+    let dilation: Int
+    let stride: Int
+    let groups: Int
+
+    init(
+        inputChannels _: Int,
+        outputChannels _: Int,
+        kernelSize _: Int,
+        stride: Int = 1,
+        padding: Int = 0,
+        dilation: Int = 1,
+        groups: Int = 1,
+        weight: MLXArray,
+        bias: MLXArray? = nil
+    ) {
+        self.weight = weight
+        self.bias = bias
+        self.padding = padding
+        self.dilation = dilation
+        self.stride = stride
+        self.groups = groups
+    }
+
+    func callAsFunction(_ x: MLXArray) -> MLXArray {
+        var y: MLXArray = conv1d(
+            x, weight, stride: stride, padding: padding, dilation: dilation, groups: groups
+        )
+
+        if let bias {
+            y += bias
+        }
+        return y
+    }
+
+    deinit {
+        // MLX neural network module - no explicit cleanup needed
+    }
+}

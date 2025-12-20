@@ -1,0 +1,143 @@
+{
+  "configurations" : [
+    {
+      "id" : "7443A597-E809-446D-81E9-EE731974A42B",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXMistralTests",
+        "name" : "MLXMistralTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXQwenTests",
+        "name" : "MLXQwenTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXPhiTests",
+        "name" : "MLXPhiTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXSessionTests",
+        "name" : "MLXSessionTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXPhi3Tests",
+        "name" : "MLXPhi3Tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXGraniteTests",
+        "name" : "MLXGraniteTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXLlamaTests",
+        "name" : "MLXLlamaTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXPhiMoETests",
+        "name" : "MLXPhiMoETests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXOpenELMTests",
+        "name" : "MLXOpenELMTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXInternLMTests",
+        "name" : "MLXInternLMTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXErnieTests",
+        "name" : "MLXErnieTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXStarcoderTests",
+        "name" : "MLXStarcoderTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXSmolLMTests",
+        "name" : "MLXSmolLMTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXBitnetTests",
+        "name" : "MLXBitnetTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXDeepseekTests",
+        "name" : "MLXDeepseekTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXCohereTests",
+        "name" : "MLXCohereTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXGemmaTests",
+        "name" : "MLXGemmaTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MLXGemma2Tests",
+        "name" : "MLXGemma2Tests"
+      }
+    }
+  ],
+  "version" : 1
+}

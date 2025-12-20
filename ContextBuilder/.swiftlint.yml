@@ -1,0 +1,26 @@
+# Enable all available rules
+opt_in_rules:
+  - all
+
+disabled_rules:
+  - contrasted_opening_brace
+  - explicit_acl
+  - file_types_order
+  - type_contents_order
+  - redundant_type_annotation
+  - extension_access_modifier
+
+# Make rules strict
+strict: true
+
+# Directories to include/exclude during linting
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build
+
+# Customize rule parameters
+line_length:
+  warning: 100
+  error: 120

@@ -1,0 +1,35 @@
+import Foundation
+
+public enum ToolIdentifier: String, CaseIterable, Hashable, Sendable {
+    case reasoning = "Reason"
+    case imageGeneration = "Generate an image"
+    case browser = "Browser"
+    case python = "Python"
+    case functions = "Functions"
+    case healthKit = "Health Data"
+    case weather = "Weather"
+    case duckduckgo = "DuckDuckGo Search"
+    case braveSearch = "Brave Search"
+}
+
+extension ToolIdentifier {
+    /// Standard tool name used by tooling implementations
+    public var toolName: String {
+        switch self {
+        case .browser: return "browser.search"
+        case .python: return "python_exec"
+        case .functions: return "functions"
+        case .healthKit: return "health_kit"
+        case .weather: return "weather"
+        case .duckduckgo: return "duckduckgo_search"
+        case .braveSearch: return "brave_search"
+        case .reasoning: return "reasoning"
+        case .imageGeneration: return "image_generation"
+        }
+    }
+
+    /// Create ToolIdentifier from tool name
+    public static func from(toolName: String) -> ToolIdentifier? {
+        ToolIdentifier.allCases.first { $0.toolName == toolName }
+    }
+}

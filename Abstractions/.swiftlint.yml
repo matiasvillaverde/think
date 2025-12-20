@@ -1,0 +1,97 @@
+# Enable all rules
+opt_in_rules:
+  - all
+
+# Disable overly strict or problematic rules (matching UIComponents)
+disabled_rules:
+  # Same as UIComponents
+  - contrasted_opening_brace
+  - explicit_acl
+  - file_types_order
+  - one_declaration_per_file
+  - type_contents_order
+  - redundant_type_annotation
+  - extension_access_modifier
+
+  # Abstractions-specific exceptions (from original config)
+  - explicit_enum_raw_value
+  - redundant_string_enum_value # Allow explicit enum values for clarity
+  - vertical_parameter_alignment # Can be too strict for complex signatures
+  - superfluous_disable_command # Sometimes needed for edge cases
+  - trailing_comma
+  - unused_closure_parameter
+  - vertical_parameter_alignment_on_call
+  - closure_parameter_position
+  - multiple_closures_with_trailing_closure
+  - no_extension_access_modifier
+  - prefer_self_type_over_type_of_self
+  - prefer_zero_over_explicit_init
+  - sorted_first_last
+  - unneeded_parentheses_in_closure_argument
+  - vertical_whitespace_between_cases
+  - trailing_closure
+  - anonymous_argument_in_multiline_closure
+  - blanket_disable_command
+  - convenience_type
+  - explicit_self
+  - explicit_top_level_acl
+  - file_header
+  - no_grouping_extension
+  - prefixed_toplevel_constant
+  - required_deinit
+  - strict_fileprivate
+  - todo
+  - file_length
+  - type_body_length
+  - function_body_length
+  - cyclomatic_complexity
+  - for_where
+  - identifier_name
+
+  # Major refactoring required (hundreds of violations)
+  - explicit_type_interface # 370 violations - Would require adding type annotations everywhere
+  - sorted_enum_cases # 334 violations - Enum case ordering
+  - no_magic_numbers # 222 violations - Hard-coded numeric values
+  - switch_case_on_newline # 210 violations - Switch case newlines
+
+  # Medium effort to fix (50-100 violations)
+  - number_separator # 86 violations - Underscores in large numbers
+  - multiline_arguments # 72 violations - Argument placement
+  - indentation_width # 62 violations - Indentation consistency
+  - sorted_imports # 56 violations - Import ordering
+  - collection_alignment # 54 violations - Collection element alignment
+
+  # Low effort to fix (under 50 violations)
+  - prefer_self_in_static_references # 34 violations - Use Self
+  - prefer_nimble # 22 violations - Nimble matchers (test-specific)
+  - multiline_arguments_brackets # 20 violations - Bracket placement
+  - unused_parameter # 38 violations - Unused parameters (various)
+
+# Make rules strict
+strict: true
+
+# Directories to include/exclude during linting
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build
+
+# Customize rule parameters
+line_length:
+  warning: 150
+  error: 200
+  # Ignore line length in test files and files with long URLs/strings
+  ignores_function_declarations: true
+  ignores_comments: true
+  ignores_urls: true
+
+# Allow more parameters for complex initializers and functions
+function_parameter_count:
+  warning: 7
+  error: 10
+
+# Large tuples are sometimes needed in tests
+large_tuple:
+  warning: 4
+  error: 5

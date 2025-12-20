@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "1E6FA581-9A7C-4750-B24E-26FE8D1AD26E",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Think.xcodeproj",
+        "identifier" : "44B648C52D47DB4500058AA6",
+        "name" : "ThinkTests"
+      }
+    }
+  ],
+  "version" : 1
+}

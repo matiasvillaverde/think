@@ -1,0 +1,36 @@
+<|im_start|>system
+<tools>
+{"type": "function", "function": {"name": "divide", "description": "Divide two numbers", "parameters": {"type": "object", "properties": {"a": {"type": "number"}, "b": {"type": "number"}}, "required": ["a", "b"]}}}
+{"type": "function", "function": {"name": "sqrt", "description": "Calculate square root", "parameters": {"type": "object", "properties": {"n": {"type": "number"}}, "required": ["n"]}}}
+</tools><|im_end|>
+<|im_start|>user
+Calculate 10 divided by 0 and the square root of -4.<|im_end|>
+<|im_start|>assistant
+<think>
+The user is asking for two calculations that will result in errors:
+1. Division by zero (undefined)
+2. Square root of negative number (imaginary in real number system)
+I should still make the tool calls to show the errors.
+</think>
+
+I'll attempt both calculations, though they involve mathematical edge cases.
+
+<tool_call>
+{"name": "divide", "arguments": {"a": 10, "b": 0}}
+</tool_call>
+
+<tool_call>
+{"name": "sqrt", "arguments": {"n": -4}}
+</tool_call><|im_end|>
+<|im_start|>tool
+{"error": "Division by zero", "error_code": "MATH_ERROR", "message": "Cannot divide by zero"}<|im_end|>
+<|im_start|>tool
+{"error": "Invalid input", "error_code": "MATH_ERROR", "message": "Cannot calculate square root of negative number in real number system"}<|im_end|>
+<|im_start|>assistant
+Both calculations resulted in mathematical errors:
+
+1. **10 ÷ 0**: This produces a "Division by zero" error. Division by zero is undefined in mathematics because there's no number that, when multiplied by 0, gives 10.
+
+2. **√(-4)**: This produces an error because we cannot calculate the square root of a negative number in the real number system. In the complex number system, this would be 2i (where i is the imaginary unit), but standard calculators working with real numbers cannot compute this.
+
+These are fundamental mathematical limitations rather than calculation errors. Would you like me to help with any valid calculations instead?<|im_end|>

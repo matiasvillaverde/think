@@ -1,0 +1,76 @@
+# ImageGenerator SwiftLint Configuration
+# Balanced configuration for practical development while maintaining code quality
+
+# Enable all rules to see what we're actually not complying with
+opt_in_rules:
+  - all
+
+# Disable overly strict or problematic rules (matching UIComponents)
+disabled_rules:
+  # Same as UIComponents
+  - contrasted_opening_brace
+  - explicit_acl
+  - file_types_order
+  - one_declaration_per_file
+  - type_contents_order
+  - redundant_type_annotation
+  - extension_access_modifier
+  
+  # ImageGenerator-specific exceptions
+  - identifier_name # Domain-specific names in image processing
+  
+  # Major refactoring required (hundreds/thousands of violations)
+  - explicit_type_interface # 1052 violations - Would require adding type annotations everywhere
+  - no_magic_numbers # 370 violations - Hard-coded numeric values (common in image processing)
+  - missing_docs # 114 violations - Public documentation
+  
+  # Medium effort to fix (50-100 violations)
+  - indentation_width # 144 violations - Indentation consistency (98 + 46)
+  - sorted_enum_cases # 82 violations - Enum case ordering
+  - force_unwrapping # 66 violations - Force unwrapping (critical for safety)
+  - number_separator # 52 violations - Underscores in large numbers
+  - pattern_matching_keywords # 52 violations - Pattern matching
+  
+  # Low effort to fix (under 50 violations)
+  - explicit_top_level_acl # 48 violations - Top-level access control
+  - switch_case_on_newline # 48 violations - Switch case newlines
+  - multiline_arguments_brackets # 38 violations - Bracket placement
+  - anonymous_argument_in_multiline_closure # 30 violations - Named arguments
+  - no_extension_access_modifier # 24 violations - Extension access modifiers
+  - multiline_parameters_brackets # 24 violations - Parameter bracket placement
+  - no_empty_block # 22 violations - Empty code blocks
+  - vertical_whitespace_between_cases # 18 violations - Empty lines between switch cases
+  - sorted_imports # 18 violations - Import ordering
+  - no_grouping_extension # 14 violations - Extensions in same file
+  - explicit_enum_raw_value # 14 violations - Enum raw values
+  - superfluous_else # 14 violations - Else after return
+  - conditional_returns_on_newline # 14 violations - Return placement
+  - required_deinit # 14 violations - Explicit deinit methods
+  - multiline_arguments # 12 violations - Argument placement
+  - vertical_whitespace # 10 violations - Vertical whitespace
+  - implicit_return # 8 violations - Implicit returns
+  - discouraged_optional_collection # 8 violations - Prefer empty over optional
+  - file_name # 8 violations - File naming
+  - unused_parameter # 8 violations - Unused parameters
+  - multiline_literal_brackets # 4 violations - Literal bracket placement
+  - shorthand_optional_binding # 2 violations - Use shorthand syntax
+  - legacy_multiple # 2 violations - Use isMultiple(of:)
+  - multiline_parameters # 2 violations - Parameter placement
+  - attributes # 2 violations - Attribute placement
+  - vertical_whitespace_closing_braces # 5 violations - Whitespace before closing braces
+  - vertical_whitespace_opening_braces # 5 violations - Whitespace after opening braces
+  
+# Make rules strict
+strict: true
+
+# Configure function body length
+function_body_length:
+  warning: 30
+  error: 30
+
+# Directories to include/exclude during linting
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build

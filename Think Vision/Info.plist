@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleShortVersionString</key>
+	<string>3.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>401</string>
+	<key>APPSTORE_APP_ID</key>
+	<string>0000000000</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationPreferredDefaultSceneSessionRole</key>
+		<string>UIWindowSceneSessionRoleApplication</string>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UISceneSessionRoleImmersiveSpaceApplication</key>
+			<array>
+				<dict>
+					<key>UISceneInitialImmersionStyle</key>
+					<string>UIImmersionStyleMixed</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Think uses speech recognition to convert text to phonemes for AI-powered voice synthesis. Voice processing is done locally and not shared with external services.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Think needs access to your health data to provide AI-powered health insights and analysis. Your health information is processed locally and never shared without your permission.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Think can save health data like weight, height, and step counts that you provide. This helps track your health metrics over time.</string>
+</dict>
+</plist>

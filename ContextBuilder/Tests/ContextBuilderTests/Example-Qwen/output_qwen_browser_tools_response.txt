@@ -1,0 +1,41 @@
+<|im_start|>system
+You are a helpful assistant.
+
+# Tools Available
+You are provided with function signatures within <tools></tools> XML tags. You may call one or more functions to assist with the user query. Don't make assumptions about what values to plug into functions.
+
+<tools>
+[{"type":"function","function":{"name":"browser.search","description":"Search the web for information","parameters":{"type":"object","properties":{"query":{"type":"string"},"max_results":{"type":"number"}},"required":["query"]}}}]
+</tools>
+
+# How to Call Functions
+Before calling any function, provide your reasoning in <commentary></commentary> tags.
+Then, for each function call, return a JSON object with function name and arguments within <tool_call></tool_call> XML tags:
+
+<commentary>
+Explain your reasoning for using the tool here
+</commentary>
+<tool_call>
+{"name": "<function-name>", "arguments": <args-dict>}
+</tool_call>
+
+# Important Instructions
+- Only call functions when necessary to answer the user's query
+- Always write commentary before making tool calls to explain your reasoning
+- You can make multiple function calls if needed
+- Wait for function results before providing your final answer
+- If you don't need any functions to answer the query, respond normally<|im_end|>
+<|im_start|>user
+Search for the latest news about AI development /no_think<|im_end|>
+<|im_start|>assistant
+<commentary>
+I'll search for the latest news about AI development.
+</commentary>
+<tool_call>
+{"name": "browser.search", "arguments": {"query": "latest AI development news", "max_results": 5}}
+</tool_call><|im_end|>
+<|im_start|>tool
+<tool_response>
+{"name": "browser.search", "content": {"results": [{"title": "OpenAI Releases GPT-5", "url": "https://example.com", "snippet": "Major breakthrough in AI"}], "search_query": "latest AI development news", "total_results": 1}}
+</tool_response><|im_end|>
+<|im_start|>assistant

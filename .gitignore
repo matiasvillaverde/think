@@ -1,0 +1,283 @@
+# Think AI - Production .gitignore
+# This file prevents unnecessary files from being committed to version control
+
+# ===========================
+# macOS System Files
+# ===========================
+# macOS metadata files that should never be committed
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS thumbnails
+._*
+
+# macOS directory customization files
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# ===========================
+# Test Resources
+# ===========================
+# Large model files (handled by Git LFS)
+# Note: These are tracked by Git LFS, not ignored
+# *.gguf and *.mlmodelc files are managed through .gitattributes
+
+# MLXSession Test Models
+# Keep the download scripts but ignore all model files
+# Old structure (for backwards compatibility)
+MLXSession/Tests/MLXSessionTests/Resources/*/*.safetensors*
+MLXSession/Tests/MLXSessionTests/Resources/*/*.json
+MLXSession/Tests/MLXSessionTests/Resources/*/*.txt
+MLXSession/Tests/MLXSessionTests/Resources/*/*.model
+MLXSession/Tests/MLXSessionTests/Resources/*/*.py
+MLXSession/Tests/MLXSessionTests/Resources/*/.gitattributes
+MLXSession/Tests/MLXSessionTests/Resources/*/README.md
+MLXSession/Tests/MLXSessionTests/Resources/*/.cache/
+MLXSession/Tests/MLXSessionTests/Resources/*/chat_template.jinja
+MLXSession/Tests/MLXSessionTests/Resources/*/*.jinja
+# Keep the download scripts
+!MLXSession/Tests/MLXSessionTests/Resources/*/download.sh
+
+# New architecture-specific test structure
+MLXSession/Tests/MLX*/Resources/**/*.safetensors*
+MLXSession/Tests/MLX*/Resources/**/*.json
+MLXSession/Tests/MLX*/Resources/**/*.txt
+MLXSession/Tests/MLX*/Resources/**/*.model
+MLXSession/Tests/MLX*/Resources/**/*.py
+MLXSession/Tests/MLX*/Resources/**/*.jinja
+MLXSession/Tests/MLX*/Resources/**/.gitattributes
+MLXSession/Tests/MLX*/Resources/**/README.md
+MLXSession/Tests/MLX*/Resources/**/.cache/
+MLXSession/Tests/MLX*/Resources/**/*.bin
+MLXSession/Tests/MLX*/Resources/**/*.msgpack
+MLXSession/Tests/MLX*/Resources/**/*.h5
+MLXSession/Tests/MLX*/Resources/**/*.onnx
+MLXSession/Tests/MLX*/Resources/**/*.xml
+MLXSession/Tests/MLX*/Resources/**/*.gguf
+MLXSession/Tests/MLX*/Resources/**/*.npz
+MLXSession/Tests/MLX*/Resources/**/pytorch_model.bin
+MLXSession/Tests/MLX*/Resources/**/tf_model.h5
+# Tokenizer files (except the scripts)
+MLXSession/Tests/MLX*/Resources/**/tokenizer.model
+MLXSession/Tests/MLX*/Resources/**/vocab.txt
+MLXSession/Tests/MLX*/Resources/**/vocab.json
+MLXSession/Tests/MLX*/Resources/**/merges.txt
+MLXSession/Tests/MLX*/Resources/**/added_tokens.json
+MLXSession/Tests/MLX*/Resources/**/special_tokens_map.json
+# Keep the download scripts!
+!MLXSession/Tests/MLX*/Resources/*/download.sh
+!MLXSession/Tests/MLX*/Resources/download.sh
+
+# ===========================
+# Xcode Build Artifacts
+# ===========================
+# Build products and intermediate files
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Xcode user-specific files (workspace and project settings)
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+*.xcuserstate
+
+# Xcode workspace user data
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# ===========================
+# Swift Package Manager
+# ===========================
+# SPM build artifacts for all packages
+*/.build/
+.build/
+.swiftpm/
+Package.resolved
+*.resolved
+
+# Specific package build directories
+/AgentOrchestrator/.build/
+/Database/.build/
+/ViewModels/.build/
+/UIComponents/.build/
+/Abstractions/.build/
+/Factories/.build/
+/AudioGenerator/.build/
+/Context/.build/
+/RAG/.build/
+/Packages/RealityKitContent/.build/
+
+# ===========================
+# Project-Specific Resources
+# ===========================
+# Downloaded or generated resources
+/Resources-macos/
+/Resources-ios/
+
+# Generated audio model files
+AudioGenerator/Sources/AudioGenerator/Resources/kokoro-v1_0.safetensors
+AudioGenerator/Sources/AudioGenerator/Resources/*.safetensors
+
+# ===========================
+# Secrets and Environment Files
+# ===========================
+# Never commit sensitive information
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.mobileprovision
+AuthKey_*.p8
+Context/Sources/Context/Secrets.swift
+**/Secrets.swift
+.build_environment
+.build_environment.*
+
+# ===========================
+# Fastlane
+# ===========================
+# Fastlane build artifacts and reports
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+fastlane/.env*
+scan_output/
+
+# ===========================
+# App Distribution
+# ===========================
+# Built applications
+*.app/
+*.pkg
+*.ipa
+
+# ===========================
+# Testing and Linting
+# ===========================
+# Test artifacts
+**/swiftlint.result
+*.xcresult
+test_output/
+
+# ===========================
+# Screenshots and Media
+# ===========================
+# Generated screenshots
+/screenshots-localized/
+App-Screenshots/Screenshots.pco/Images/
+App-Screenshots/
+Screenshots/
+app-store-metadata/
+
+# ===========================
+# Scripts and Tools
+# ===========================
+# Script-specific files and outputs
+/scripts/AITranslate/
+scripts/.env
+scripts/output/
+
+# ===========================
+# IDE and Editor Files
+# ===========================
+# JetBrains IDEs
+.idea/
+*.iml
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+\#*\#
+.\#*
+
+# ===========================
+# Dependency Management
+# ===========================
+# CocoaPods (if ever used)
+Pods/
+*.xcworkspace
+
+# Carthage (if ever used)
+Carthage/Build/
+Carthage/Checkouts/
+
+# ===========================
+# OS-Specific Files
+# ===========================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# ===========================
+# Temporary Files
+# ===========================
+*.tmp
+*.temp
+*.log
+.cache/
+tmp/
+temp/
+
+# ===========================
+# CI/CD Files
+# ===========================
+# Build environment record
+.build_environment
+# Archives created by CI/CD pipeline
+build/archives/
+
+# ===========================
+# Documentation Build Output
+# ===========================
+# If using documentation generators
+docs/_build/
+.docusaurus/
+.next/
+
+# ===========================
+# Backup Files
+# ===========================
+*.backup
+*.bak
+*.orig
+
+# ===========================
+# Localization Backup Files
+# ===========================
+# Xcode-generated backup files for localization strings
+Localizable.xcstrings.original
+**/Localizable.xcstrings.original
+
+# End of .gitignore

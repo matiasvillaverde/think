@@ -1,0 +1,6 @@
+<commentary>
+I'll check the weather in Paris for you.
+</commentary>
+<tool_call>
+{"name": "weather", "arguments": {"city": "Paris"}}
+</tool_call>

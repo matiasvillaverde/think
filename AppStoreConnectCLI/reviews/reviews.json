@@ -1,0 +1,2026 @@
+[
+  {
+    "attributes" : {
+      "body" : "Ich finde das Programm allgemein gut, aber ich würde die Möglichkeit ins Symbol auch schwarz zu machen integrieren. Außerdem wäre es toll bei iOS 26 in Zukunft die originalen Modelle von Apple zu benutzen",
+      "createdDate" : "2025-06-17T11:39:34Z",
+      "rating" : 5,
+      "reviewerNickname" : "…M14…",
+      "territory" : "DEU",
+      "title" : "Gut aber noch verbesserungsbedürftig"
+    },
+    "id" : "00000182-06e9-6002-fa05-2e0200000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fa05-2e0200000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fa05-2e0200000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fa05-2e0200000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Die Handhabe, Konzept und Design finde ich sehr gelungen. Leider ist die App noch ein bisschen buggy. Aber  das wird sich hoffentlich bald verbessern",
+      "createdDate" : "2025-05-24T10:00:14Z",
+      "rating" : 3,
+      "reviewerNickname" : "Nordlicht.hh.de.eu.earth",
+      "territory" : "DEU",
+      "title" : "Tolle Idee und Design"
+    },
+    "id" : "00000182-06e9-6002-f47e-ec1b00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f47e-ec1b00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f47e-ec1b00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f47e-ec1b00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Tolles Oberfläche, mit einigen guten Ideen, leider funktioniert der Voice Chat nicht (Beta) und die deutsche Sprachausgabe verwendet kein deutsches TTS. Weiter so, hoffe das bald alles oben aufgeführte bald korrekt zur Verfügung steht. Soweit ich das an der GPU sehen kann, werden diese nicht benutzt. Da aber noch in der Entwicklung erstmal ⭐️ ⭐️ ⭐️",
+      "createdDate" : "2025-05-25T00:54:26Z",
+      "rating" : 3,
+      "reviewerNickname" : "LeonoeL007",
+      "territory" : "DEU",
+      "title" : "Voice chat (Beta) hat keine Funktion auf MacBook M4 Max"
+    },
+    "id" : "00000182-06e9-6002-f4a7-d7c300000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f4a7-d7c300000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f4a7-d7c300000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f4a7-d7c300000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "War gespannt auf die neue Version. Aber jetzt stürzt die App beim Aufrufen sofort ab. (iOS 18.5, iPhone 13 Pro Max)\n\nP.S.: Deinstallieren und erneut laden hilft.",
+      "createdDate" : "2025-07-02T06:22:04Z",
+      "rating" : 3,
+      "reviewerNickname" : "McAwado",
+      "territory" : "DEU",
+      "title" : "Guter Ansatz"
+    },
+    "id" : "00000182-06e9-6002-fd74-a4d600000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fd74-a4d600000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fd74-a4d600000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fd74-a4d600000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "This app has all the relevant Open Source AI tools available. The key part is that it works on your device only - it is not sharing any of your information. We need more of this and we need to be wary of these big companies that don’t give us the privacy we should have. Thank you Think for putting our privacy first when it comes to AI.",
+      "createdDate" : "2025-05-04T19:52:57Z",
+      "rating" : 5,
+      "reviewerNickname" : "D Mori",
+      "territory" : "GBR",
+      "title" : "AI and Privacy"
+    },
+    "id" : "00000182-06e9-6002-f032-1e9100000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f032-1e9100000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f032-1e9100000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f032-1e9100000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Love how easy yet still powerful it is. The personalities feature is great as it’s easy to tailor your search results to different types of questions",
+      "createdDate" : "2025-06-22T14:51:10Z",
+      "rating" : 5,
+      "reviewerNickname" : "Qazwix",
+      "territory" : "USA",
+      "title" : "Great app!"
+    },
+    "id" : "00000182-06e9-6002-fb33-6e2b00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fb33-6e2b00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fb33-6e2b00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fb33-6e2b00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Its good but crash sometime… i hove the DEV will fix it and hope have a more feature soon",
+      "createdDate" : "2025-05-18T08:13:15Z",
+      "rating" : 5,
+      "reviewerNickname" : "Joe-1985",
+      "territory" : "AUS",
+      "title" : "I like it"
+    },
+    "id" : "00000182-06e9-6002-f323-71ca00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f323-71ca00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f323-71ca00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f323-71ca00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Some old chat cannot be deleted as the confirm dialog closed automatically. For non-English reply, such as Chinese, it only read ‘Chinese letter’.",
+      "createdDate" : "2025-05-11T16:23:31Z",
+      "rating" : 3,
+      "reviewerNickname" : "HowLongCanIPickANickname",
+      "territory" : "USA",
+      "title" : "Works but some bugs"
+    },
+    "id" : "00000182-06e9-6002-f1b3-577d00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f1b3-577d00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f1b3-577d00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f1b3-577d00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Crashes on newest iPhone pro max, reinstalled multiple times, updated everything, won’t launch",
+      "createdDate" : "2025-05-27T18:04:26Z",
+      "rating" : 1,
+      "reviewerNickname" : "Testerak",
+      "territory" : "USA",
+      "title" : "Won’t open - installed and updated - crashes - never seen it open once"
+    },
+    "id" : "00000182-06e9-6002-f545-da2200000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f545-da2200000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f545-da2200000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f545-da2200000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "I enjoy Think completely and it serves my needs daily",
+      "createdDate" : "2025-04-20T16:45:45Z",
+      "rating" : 5,
+      "reviewerNickname" : "uosaze",
+      "territory" : "USA",
+      "title" : "Think is the best"
+    },
+    "id" : "00000182-06e9-6002-ed01-988300000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ed01-988300000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ed01-988300000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ed01-988300000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Thanks for for your efforts in making an AI chat app with offline models",
+      "createdDate" : "2025-05-22T16:02:14Z",
+      "rating" : 5,
+      "reviewerNickname" : "idly or cookie",
+      "territory" : "IND",
+      "title" : "Wonderful app"
+    },
+    "id" : "00000182-06e9-6002-f418-afba00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f418-afba00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f418-afba00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f418-afba00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Open app, type, text is invisible on the textbox, send question, no response. Download new model, crash, close then reopen app, crash. Uninstalled.",
+      "createdDate" : "2025-05-04T22:46:46Z",
+      "rating" : 1,
+      "reviewerNickname" : "Francesc Fuongbregas",
+      "territory" : "USA",
+      "title" : "Crash instantly on iPad Mini 6"
+    },
+    "id" : "00000182-06e9-6002-f038-db1900000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f038-db1900000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f038-db1900000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f038-db1900000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Crashes all the time. While generating answers, while voicing them. iPhone 14.",
+      "createdDate" : "2025-05-08T19:57:49Z",
+      "rating" : 2,
+      "reviewerNickname" : "Viktor Revo",
+      "territory" : "USA",
+      "title" : "Crashes"
+    },
+    "id" : "00000182-06e9-6002-f111-1a8f00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f111-1a8f00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f111-1a8f00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f111-1a8f00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Hi, when u click chat n send, itself will close the program n back to the homepage",
+      "createdDate" : "2025-04-05T12:46:58Z",
+      "rating" : 1,
+      "reviewerNickname" : "Sunny teo",
+      "territory" : "MYS",
+      "title" : "Auto jump out"
+    },
+    "id" : "00000182-06e9-6002-e972-2f4b00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e972-2f4b00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e972-2f4b00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e972-2f4b00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Wont let me start a chat or anything but look at settings",
+      "createdDate" : "2025-04-13T23:34:48Z",
+      "rating" : 1,
+      "reviewerNickname" : "Jawbreaker335",
+      "territory" : "USA",
+      "title" : "Won't do anything"
+    },
+    "id" : "00000182-06e9-6002-eb75-dac500000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-eb75-dac500000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-eb75-dac500000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-eb75-dac500000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Very nice app, but need the amazing Gemma 3 Models 3B and if possible 12B",
+      "createdDate" : "2025-04-26T10:38:08Z",
+      "rating" : 5,
+      "reviewerNickname" : "ALX-7",
+      "territory" : "ARE",
+      "title" : "Please Gemma Models"
+    },
+    "id" : "00000182-06e9-6002-ee48-c5d000000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ee48-c5d000000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ee48-c5d000000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ee48-c5d000000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "app works in some instances. issues downloading some models \/ downloaded models randomly deleting",
+      "createdDate" : "2025-06-30T20:01:59Z",
+      "rating" : 3,
+      "reviewerNickname" : "firstpocket",
+      "territory" : "USA",
+      "title" : "works but buggy"
+    },
+    "id" : "00000182-06e9-6002-fd1c-f75800000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fd1c-f75800000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fd1c-f75800000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fd1c-f75800000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : ".",
+      "createdDate" : "2025-05-03T16:31:50Z",
+      "rating" : 1,
+      "reviewerNickname" : "tmio00",
+      "territory" : "HRV",
+      "title" : "Cant even open it"
+    },
+    "id" : "00000182-06e9-6002-efed-3c3700000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-efed-3c3700000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-efed-3c3700000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-efed-3c3700000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Can’t get a straight answer. It’ useless.",
+      "createdDate" : "2025-04-25T13:39:36Z",
+      "rating" : 1,
+      "reviewerNickname" : "Koltrast83",
+      "territory" : "GBR",
+      "title" : "Model is hallucinated"
+    },
+    "id" : "00000182-06e9-6002-ee16-43ed00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ee16-43ed00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ee16-43ed00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ee16-43ed00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Non funziona,  non ce modo di inviare il messaggio",
+      "createdDate" : "2025-05-01T08:20:10Z",
+      "rating" : 1,
+      "reviewerNickname" : "FuxG",
+      "territory" : "ITA",
+      "title" : "Non funziona"
+    },
+    "id" : "00000182-06e9-6002-ef5f-95e600000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ef5f-95e600000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ef5f-95e600000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ef5f-95e600000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Rubbish⋯⋯",
+      "createdDate" : "2025-05-02T15:19:23Z",
+      "rating" : 1,
+      "reviewerNickname" : "Leon Man",
+      "territory" : "HKG",
+      "title" : "SE Gen2 Can’t Use"
+    },
+    "id" : "00000182-06e9-6002-efae-7f2900000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-efae-7f2900000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-efae-7f2900000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-efae-7f2900000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "First of all think it’s kind of odd that when you click on “app support” for this app’s iOS AppStore page, you go to the developer website. But it has absolutely nothing to do with this app whatsoever. It’s in Swedish and has random facts on the page such as getting a corona dog (ie. Getting a dog during Covid). So that in and of itself is pretty odd. Also not sure how this app can claim to offer all of these features 100% free with no ads and no data collected. That’s a good thing if true but can’t understand how this can be accomplished in today’s AI app marketplace.\n\nFinally with the bugs: updated the app with the most recent update and tried to download the deepseek ai model. Took a lot longer than it should have especially considering ultra fast WiFi speeds, so kind of a red flag there. But after it finished downloading, tried to use it in any way I could. And the app would crash. Even something as simple as tapping in the text box where you would type causes the app to go black and crash. And then my phone started to slowdown which isn’t normal. And on top of all that my WiFi connection was mysteriously lost.\n\nTried deleting and reinstalling the app with the same steps above. Same occurrence. Even went so far as to reset network settings and then repeated the steps above. And same occurrence. Seems pretty odd and not sure what to make of it but if this is a bug it’s a pretty big one.",
+      "createdDate" : "2025-02-04T04:59:27Z",
+      "rating" : 3,
+      "reviewerNickname" : "SKY33WALKER",
+      "territory" : "USA",
+      "title" : "Found bugs with latest update"
+    },
+    "id" : "00000182-06e9-6002-db40-d58000000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-db40-d58000000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-db40-d58000000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-db40-d58000000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Das eine Modell (Lama) macht seinen Namen alle Ehre. Es generiert lahme Witze. Das andere Modell stürzt auf meinen iPhone 12 immer ab.",
+      "createdDate" : "2025-02-17T18:58:01Z",
+      "rating" : 1,
+      "reviewerNickname" : "*#*Frank*#*",
+      "territory" : "DEU",
+      "title" : "Noch viel Luft nach oben …"
+    },
+    "id" : "00000182-06e9-6002-de7f-f08000000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-de7f-f08000000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-de7f-f08000000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-de7f-f08000000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "No summit button any more?",
+      "createdDate" : "2025-01-20T19:20:14Z",
+      "rating" : 1,
+      "reviewerNickname" : "fvalett",
+      "territory" : "DEU",
+      "title" : "No summit button any more?"
+    },
+    "id" : "00000182-06e9-6002-d7b4-b30f00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7b4-b30f00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7b4-b30f00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7b4-b30f00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "\"As someone who relies heavily on AI chatbots for various tasks, I was really excited to try out this new chat app. The initial experience was quite impressive - the interface is sleek and user-friendly, and the AI's responses were coherent and relevant to my queries.\n\nHowever, one major feature that I found to be lacking was the chat history functionality. During my conversations, I often needed to refer back to previous information or instructions that I had provided, but the app did not retain the chat history in an accessible manner. This made it difficult to pick up where I left off or review important details from our previous exchanges.\n\nI understand that privacy and security are important considerations for AI chat apps, but having the option to view and manage my chat history would be incredibly valuable. Being able to bookmark or save key conversations would greatly enhance the usability and productivity of this tool.",
+      "createdDate" : "2024-07-28T06:53:38Z",
+      "rating" : 4,
+      "reviewerNickname" : "NullNameException",
+      "territory" : "USA",
+      "title" : "Chat history needed"
+    },
+    "id" : "00000182-06e9-6002-b00b-996100000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-b00b-996100000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-b00b-996100000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-b00b-996100000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "（这是我第一次给一个软件写评价）非常感谢作者可以让我在iPad上体验到生成式人工智能🤖，虽然仍有些不足，比如说在中文，英文的语法方面。总体上非常好👍",
+      "createdDate" : "2024-04-22T14:54:52Z",
+      "rating" : 5,
+      "reviewerNickname" : "YitongZou",
+      "territory" : "CHN",
+      "title" : "非常棒的作品"
+    },
+    "id" : "00000182-06e9-6002-9ae4-73d100000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-9ae4-73d100000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-9ae4-73d100000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-9ae4-73d100000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "The idea behind is worth every praise, the selfless free app also. \n\nOnly the fact that the current model is pretty much incomparable to the models that we use online is what makes the current version useless. Yes, that may seem harsh, but it’s a fact if we’re honest. And I’m not judging any of the bugs or UI\/UX, the is all still under development.\n\nI will gladly follow the further development of this app in the hopes that we can use other models with it and that it will improve with time.",
+      "createdDate" : "2025-04-01T07:11:27Z",
+      "rating" : 4,
+      "reviewerNickname" : "Schmittsson",
+      "territory" : "DEU",
+      "title" : "The stars are for the idea"
+    },
+    "id" : "00000182-06e9-6002-e86f-f77d00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e86f-f77d00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e86f-f77d00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e86f-f77d00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "For running on an iPhone this app works wonders being able to converse with artificial intelligence without the Internet is really some special. I’m really happy that these developers decided to make this more accessible and share this app for free I would 100% recommend downloading this app one of the coolest technologies I’ve ever seen and I hope, they keep improving it. Thank you for creating something truly amazing!!",
+      "createdDate" : "2024-03-21T23:09:04Z",
+      "rating" : 5,
+      "reviewerNickname" : "Rybib101",
+      "territory" : "USA",
+      "title" : "I love this app finally accessible local AI"
+    },
+    "id" : "00000182-06e9-6002-93db-3f1a00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-93db-3f1a00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-93db-3f1a00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-93db-3f1a00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Think AI is a fantastic tool for anyone who values productivity and privacy. The interface is smooth and intuitive, and it's clear that the developers prioritize user security. It's a reliable app that uses your existing hardware, so it doesn’t contribute to the pollution and water consumption of the big data centers for LLMs. Highly recommend!",
+      "createdDate" : "2025-01-16T15:41:36Z",
+      "rating" : 5,
+      "reviewerNickname" : "Lucaslober",
+      "territory" : "DEU",
+      "title" : "Great App For Productivity and Privacy"
+    },
+    "id" : "00000182-06e9-6002-d6ae-1a4c00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6ae-1a4c00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6ae-1a4c00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6ae-1a4c00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "This AI is able to answer things quickly and well and at the same time doesn’t have the caveat of storing all of your queries or gathering your data. So far the answers have been high-quality and thorough without the need to connect online, which is impressive.",
+      "createdDate" : "2024-03-07T22:55:37Z",
+      "rating" : 5,
+      "reviewerNickname" : "Hunter Holder",
+      "territory" : "USA",
+      "title" : "Great AI that respects privacy"
+    },
+    "id" : "00000182-06e9-6002-90d1-b37200000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-90d1-b37200000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-90d1-b37200000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-90d1-b37200000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Model seems trained with data up to 2023 events, but that’s sufficient for so many use cases. It’s intended to run local so it’s private, with the constraint that it will be slower than a Data Center version.",
+      "createdDate" : "2025-01-17T00:18:58Z",
+      "rating" : 5,
+      "reviewerNickname" : "themd337",
+      "territory" : "GBR",
+      "title" : "Works well on 16pro"
+    },
+    "id" : "00000182-06e9-6002-d6c4-ed0400000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6c4-ed0400000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6c4-ed0400000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6c4-ed0400000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Thank you Mr Matias for giving us the chance to try your app. I think the concept and idea is great, however the app needs continuous improvement to fix. I wonder why a message came to me saying: Your device has less than 3788 of memory and so this model cannot be initialized ?!",
+      "createdDate" : "2025-01-20T05:13:31Z",
+      "rating" : 3,
+      "reviewerNickname" : "Travelling traveller",
+      "territory" : "USA",
+      "title" : "Think"
+    },
+    "id" : "00000182-06e9-6002-d78f-ecaa00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d78f-ecaa00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d78f-ecaa00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d78f-ecaa00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Can’t be customised to the user and only talks in the most general context. What’s the point of having it on-device if it’s no more custom than that found in the cloud?\nI asked the model for the most basic role play or style change and it flat out refused to play ball. It said it “needs to be accessible to everyone” - which is hilarious since it won’t ever speak to anyone else….\nPointless.",
+      "createdDate" : "2025-01-17T03:07:52Z",
+      "rating" : 1,
+      "reviewerNickname" : "Jnvf(667$??",
+      "territory" : "AUS",
+      "title" : "Low quality ai"
+    },
+    "id" : "00000182-06e9-6002-d6cb-9b8100000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6cb-9b8100000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6cb-9b8100000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6cb-9b8100000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "This offline chat AI is impressive—fast, intelligent, and secure. It offers deep, context-aware conversations, personalized responses, and a vast knowledge base, all while ensuring complete privacy. Highly recommended!",
+      "createdDate" : "2025-01-18T19:23:34Z",
+      "rating" : 5,
+      "reviewerNickname" : "chesswitch",
+      "territory" : "DEU",
+      "title" : "Incredible Accuracy and Knowledge"
+    },
+    "id" : "00000182-06e9-6002-d734-e08000000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d734-e08000000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d734-e08000000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d734-e08000000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "App is well designed. Beyond that, it needs a ton of work. It generates text slowly and is extremely biased and politically correct to a nauseating extent. I would love to be able to use my own choice of LLM rather than being stuck with whatever is being forced on users.",
+      "createdDate" : "2024-06-28T05:43:30Z",
+      "rating" : 2,
+      "reviewerNickname" : "P4ND4 🐼",
+      "territory" : "USA",
+      "title" : "Biased and politically correct."
+    },
+    "id" : "00000182-06e9-6002-a961-f92100000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-a961-f92100000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-a961-f92100000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-a961-f92100000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "It’s incredible to run a AI locally in my phone. The Rag works great, even with big files. The image generation is good. Looking forward for more features",
+      "createdDate" : "2025-03-03T19:13:51Z",
+      "rating" : 5,
+      "reviewerNickname" : "chesswitch",
+      "territory" : "DEU",
+      "title" : "Amazing app"
+    },
+    "id" : "00000182-06e9-6002-e1cd-147100000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e1cd-147100000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e1cd-147100000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e1cd-147100000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "3 stars due to the transparency and communication from the developer. I’m getting a lot of crashes on my 14 Pro and M2 MacBook Air (8GB). Would love to see it remember tabs\/conversations from previous sessions. Can’t wait to see this app grow.",
+      "createdDate" : "2025-01-20T18:41:12Z",
+      "rating" : 3,
+      "reviewerNickname" : "x6Bx",
+      "territory" : "USA",
+      "title" : "There’s Potential"
+    },
+    "id" : "00000182-06e9-6002-d7b2-c5c200000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7b2-c5c200000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7b2-c5c200000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7b2-c5c200000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Does do what it says, as AI. However, it is too slow to respond every single time. You could fall asleep waiting for it.\n\niPhone 12 Pro w latest iOS 18. Is that considered old? No other AI app is slow, on it.",
+      "createdDate" : "2025-01-19T08:29:46Z",
+      "rating" : 3,
+      "reviewerNickname" : "Kaleo",
+      "territory" : "USA",
+      "title" : "Slowwwwwwwwwww"
+    },
+    "id" : "00000182-06e9-6002-d756-7d4700000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d756-7d4700000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d756-7d4700000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d756-7d4700000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Two important features missing: 1, chat history. 2, export generated images. Please consider supporting these essential features, that will be perfect!",
+      "createdDate" : "2025-01-22T00:26:59Z",
+      "rating" : 3,
+      "reviewerNickname" : "Patrick-Wu-Awesome",
+      "territory" : "USA",
+      "title" : "Generated image can’t be saved"
+    },
+    "id" : "00000182-06e9-6002-d7fe-1d2e00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7fe-1d2e00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7fe-1d2e00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7fe-1d2e00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Says “Buy something new, you, owner of the ancient artifact”",
+      "createdDate" : "2024-04-24T23:28:30Z",
+      "rating" : 5,
+      "reviewerNickname" : "crackoff-",
+      "territory" : "GBR",
+      "title" : "Unfortunately does not work on iPhone 11"
+    },
+    "id" : "00000182-06e9-6002-9b65-2cb800000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-9b65-2cb800000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-9b65-2cb800000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-9b65-2cb800000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Any updates for iPhone se2?  doesn’t seem to properly work.  But I appreciate your work very much.  Thank you.",
+      "createdDate" : "2025-03-01T23:59:34Z",
+      "rating" : 4,
+      "reviewerNickname" : "h9uth4",
+      "territory" : "USA",
+      "title" : "iPhone se2"
+    },
+    "id" : "00000182-06e9-6002-e15f-cbe200000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e15f-cbe200000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e15f-cbe200000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e15f-cbe200000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Super valuable to be able to interact with the AI assistant without an internet connection and completely privately.",
+      "createdDate" : "2024-02-10T15:44:49Z",
+      "rating" : 5,
+      "reviewerNickname" : "andrespch",
+      "territory" : "DEU",
+      "title" : "Great app!"
+    },
+    "id" : "00000182-06e9-6002-8b1b-3cfb00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-8b1b-3cfb00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-8b1b-3cfb00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-8b1b-3cfb00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Model download hangs If connection interrupted during model download.",
+      "createdDate" : "2025-03-24T00:32:31Z",
+      "rating" : 5,
+      "reviewerNickname" : "Franky Rock",
+      "territory" : "DEU",
+      "title" : "Model download hang"
+    },
+    "id" : "00000182-06e9-6002-e67b-99d900000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e67b-99d900000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e67b-99d900000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e67b-99d900000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Die simple Frage \"Welcher Tag ist heute?\" würgt nach fünf Minuten die völlig falsche Antwort hervor: \n\n\"Aus geachteter Quelle und mit vollem Respekt gegenüber unsrer CosmosxWorld kann ich sagen, dass heute Donnerstag ist. Es ist 22. März 2023 und der Tag ist ein sonniani Montag. ( smiling )\n\nWas a helpful and respectful assistant, I can provide you with information and answers to your questions, but I must also do so in a manner that is respectful and considerate of the person I am interacting with. I strive to be a positive and uplifting presence in your life, and I hope that you will find my responses to be helpful and informative.\"\n\nSofort wieder gelöscht.",
+      "createdDate" : "2024-06-28T05:00:12Z",
+      "rating" : 1,
+      "reviewerNickname" : "awado",
+      "territory" : "DEU",
+      "title" : "Völlig unbrauchbar"
+    },
+    "id" : "00000182-06e9-6002-a960-85b800000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-a960-85b800000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-a960-85b800000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-a960-85b800000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "la versione per mac non si avvia dopo l’ultimo aggiornameto",
+      "createdDate" : "2025-02-01T19:18:57Z",
+      "rating" : 1,
+      "reviewerNickname" : "itsmemario04",
+      "territory" : "ITA",
+      "title" : "Mac"
+    },
+    "id" : "00000182-06e9-6002-daa9-078100000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-daa9-078100000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-daa9-078100000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-daa9-078100000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "I love the respect for private and secure use that this app is built on.\n\nJust a couple things I’d like to see improved:\n\nWhen receiving a response, text comes in one word at a time, very slowly.\n\nOften, responses are left incomplete.\n\nOnce improved, I will update my review.\n\nThank you for your efforts!",
+      "createdDate" : "2024-04-01T21:50:57Z",
+      "rating" : 3,
+      "reviewerNickname" : "Melissifent",
+      "territory" : "USA",
+      "title" : "Love Where this is Going!"
+    },
+    "id" : "00000182-06e9-6002-9645-919000000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-9645-919000000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-9645-919000000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-9645-919000000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Updated app crashes again when starting up in iPhone 12 mini with its iOS v18.3.1.  It was fixed a few versions ago! :(",
+      "createdDate" : "2025-03-03T15:00:01Z",
+      "rating" : 1,
+      "reviewerNickname" : "🐜Dude",
+      "territory" : "USA",
+      "title" : "Crashes!"
+    },
+    "id" : "00000182-06e9-6002-e1c1-2f3c00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e1c1-2f3c00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e1c1-2f3c00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e1c1-2f3c00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Asked some questions but it just told me the same texts by the same patterns.\n\nIt can’t explain why the name is.",
+      "createdDate" : "2025-03-30T00:11:23Z",
+      "rating" : 2,
+      "reviewerNickname" : "啦噗啦噗小鴨妹的爹",
+      "territory" : "TWN",
+      "title" : "Keep looping"
+    },
+    "id" : "00000182-06e9-6002-e7e6-054c00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7e6-054c00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7e6-054c00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7e6-054c00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Claims to need a newer device. Yet I’ve had to pay for this in order to find out?",
+      "createdDate" : "2024-08-31T19:46:42Z",
+      "rating" : 1,
+      "reviewerNickname" : "Sawyer Latte",
+      "territory" : "GBR",
+      "title" : "Doesn’t work"
+    },
+    "id" : "00000182-06e9-6002-b7db-b05900000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-b7db-b05900000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-b7db-b05900000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-b7db-b05900000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "I got this for free so I guess I shouldn’t complain, but it takes forever to return a result.",
+      "createdDate" : "2025-01-18T05:52:48Z",
+      "rating" : 3,
+      "reviewerNickname" : "David Baehler",
+      "territory" : "USA",
+      "title" : "Sooo Slooow"
+    },
+    "id" : "00000182-06e9-6002-d70e-bd9900000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d70e-bd9900000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d70e-bd9900000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d70e-bd9900000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Unable to open at all. Please fix this urghh",
+      "createdDate" : "2025-01-17T15:16:14Z",
+      "rating" : 1,
+      "reviewerNickname" : "Gengenaaila",
+      "territory" : "MYS",
+      "title" : "Totally crashed on ip13"
+    },
+    "id" : "00000182-06e9-6002-d6e8-a6e000000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6e8-a6e000000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6e8-a6e000000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6e8-a6e000000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Can’t open",
+      "createdDate" : "2025-03-29T16:08:52Z",
+      "rating" : 1,
+      "reviewerNickname" : "Sakura Tomozou",
+      "territory" : "TWN",
+      "title" : "Can’t open"
+    },
+    "id" : "00000182-06e9-6002-e7d0-3bf900000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d0-3bf900000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d0-3bf900000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d0-3bf900000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Non si capisce come inviarle una richiesta scritta visto che manca un tasto d’invio…",
+      "createdDate" : "2025-01-20T22:28:35Z",
+      "rating" : 1,
+      "reviewerNickname" : "Vorse Raider",
+      "territory" : "ITA",
+      "title" : "Impossibile scriverle"
+    },
+    "id" : "00000182-06e9-6002-d7bd-105d00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7bd-105d00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7bd-105d00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d7bd-105d00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "支持一下！希望能解決以上的問題！謝謝！",
+      "createdDate" : "2025-03-29T18:48:56Z",
+      "rating" : 5,
+      "reviewerNickname" : "Hell Jason",
+      "territory" : "TWN",
+      "title" : "提問會閃退！"
+    },
+    "id" : "00000182-06e9-6002-e7d8-686500000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d8-686500000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d8-686500000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d8-686500000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "下載模型一直不成功，產生圖片的功能沒了沒幾秒直接閃退，真的很傻眼！",
+      "createdDate" : "2025-03-31T13:57:49Z",
+      "rating" : 1,
+      "reviewerNickname" : "Eric-jay",
+      "territory" : "TWN",
+      "title" : "圖片閃退"
+    },
+    "id" : "00000182-06e9-6002-e843-dc0300000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e843-dc0300000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e843-dc0300000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e843-dc0300000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "沒連網還是很廢",
+      "createdDate" : "2025-03-29T16:52:43Z",
+      "rating" : 1,
+      "reviewerNickname" : "貝樂貝樂哈秋",
+      "territory" : "TWN",
+      "title" : "其實不好用"
+    },
+    "id" : "00000182-06e9-6002-e7d2-947600000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d2-947600000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d2-947600000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d2-947600000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "在聊天时，只有Qwen3大模型能回答问题。回答问题还算可以，但问了个地球表面积的问题时，就一直在转圈了。\n本想换个大模型试一下。但选择DeepSeek大模型时显示网络似乎中断。其它大模型也无法下载。\n希望改进",
+      "createdDate" : "2025-06-06T13:55:14Z",
+      "rating" : 4,
+      "reviewerNickname" : "敛翼盘云",
+      "territory" : "CHN",
+      "title" : "无法下载其它大模型"
+    },
+    "id" : "00000182-06e9-6002-f785-bc6800000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f785-bc6800000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f785-bc6800000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f785-bc6800000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "iPhone12のiOS18.4.1です。新規作成みたいな右上のものを押しても何もできず、チャットを検索に文字入力しても、何も作成していないので意味がない。アッフデートしても同じでした。使いたいので使える方法を教えて欲しいです。",
+      "createdDate" : "2025-05-02T01:34:10Z",
+      "rating" : 1,
+      "reviewerNickname" : "わならあまさ",
+      "territory" : "JPN",
+      "title" : "どうしたら使えるのか"
+    },
+    "id" : "00000182-06e9-6002-ef8c-f2ff00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ef8c-f2ff00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ef8c-f2ff00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ef8c-f2ff00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Still teething, but it’s getting more useful with every update. Hats off to the dev.",
+      "createdDate" : "2025-06-03T14:05:27Z",
+      "rating" : 5,
+      "reviewerNickname" : "Ryosan04",
+      "territory" : "JPN",
+      "title" : "Amazing!"
+    },
+    "id" : "00000182-06e9-6002-f6d7-847e00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f6d7-847e00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f6d7-847e00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f6d7-847e00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Jó lenne az open ai chat is",
+      "createdDate" : "2025-07-01T08:45:02Z",
+      "rating" : 5,
+      "reviewerNickname" : "Dezman100",
+      "territory" : "HUN",
+      "title" : "🤔🤔🤔"
+    },
+    "id" : "00000182-06e9-6002-fd3a-d54400000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fd3a-d54400000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fd3a-d54400000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-fd3a-d54400000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "An offline privacy AI using websearch for all queries including translation, is so inept I don’t even know where to start",
+      "createdDate" : "2025-06-12T17:18:47Z",
+      "rating" : 1,
+      "reviewerNickname" : "Swedensverige",
+      "territory" : "NOR",
+      "title" : "Not private, not offline"
+    },
+    "id" : "00000182-06e9-6002-f8f1-39c300000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f8f1-39c300000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f8f1-39c300000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f8f1-39c300000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Crash app. :(",
+      "createdDate" : "2025-05-29T05:25:33Z",
+      "rating" : 1,
+      "reviewerNickname" : "VinlySCS",
+      "territory" : "VNM",
+      "title" : "Iphone xs max ios 18.2"
+    },
+    "id" : "00000182-06e9-6002-f598-f91100000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f598-f91100000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f598-f91100000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f598-f91100000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Hey, thank u for making this app. It helps me so much. Please, update for the settings. So i can add system prompt for the ai",
+      "createdDate" : "2025-05-17T22:34:54Z",
+      "rating" : 5,
+      "reviewerNickname" : "Fadilleel shaldy",
+      "territory" : "IDN",
+      "title" : "Amazing app"
+    },
+    "id" : "00000182-06e9-6002-f30f-0d7400000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f30f-0d7400000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f30f-0d7400000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-f30f-0d7400000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Отличное приложение! Спасибо разработчикам. Только постоянно выскакивает сообщение оставьте отзыв))",
+      "createdDate" : "2025-04-26T15:32:58Z",
+      "rating" : 5,
+      "reviewerNickname" : "Sell_Pro",
+      "territory" : "IDN",
+      "title" : "Cool 9\/10"
+    },
+    "id" : "00000182-06e9-6002-ee57-243f00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ee57-243f00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ee57-243f00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ee57-243f00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "「一個中國原則」的AI私密聊天您的文件這種說法看看就好",
+      "createdDate" : "2025-04-18T17:04:25Z",
+      "rating" : 1,
+      "reviewerNickname" : "小額妖精",
+      "territory" : "TWN",
+      "title" : "畢竟是好強大的AI"
+    },
+    "id" : "00000182-06e9-6002-ec8b-96e500000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ec8b-96e500000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ec8b-96e500000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ec8b-96e500000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Keep repeating repeating repeating repeating repeating…….",
+      "createdDate" : "2025-04-08T08:19:03Z",
+      "rating" : 1,
+      "reviewerNickname" : "超人大衛",
+      "territory" : "TWN",
+      "title" : "Keep repeat answer"
+    },
+    "id" : "00000182-06e9-6002-ea1d-1d5900000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ea1d-1d5900000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ea1d-1d5900000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-ea1d-1d5900000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "问问题时，要么回复的内容完全没有意义，问面试技巧，它会从1.5小时背景技能一直写到200小时背景技能，不停止还继续写。要么就每两行就重复一遍",
+      "createdDate" : "2025-04-03T01:19:25Z",
+      "rating" : 1,
+      "reviewerNickname" : "寒冰魄雨",
+      "territory" : "CHN",
+      "title" : "回答的太差了，用不了"
+    },
+    "id" : "00000182-06e9-6002-e8dc-f73300000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e8dc-f73300000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e8dc-f73300000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e8dc-f73300000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "我是18.2.1，希望开发者尽快修复",
+      "createdDate" : "2025-04-02T12:46:21Z",
+      "rating" : 4,
+      "reviewerNickname" : "臣獨秀",
+      "territory" : "USA",
+      "title" : "闪退"
+    },
+    "id" : "00000182-06e9-6002-e8ba-674800000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e8ba-674800000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e8ba-674800000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e8ba-674800000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Can’t use it on my 12 mini. Open once and can’t open again",
+      "createdDate" : "2025-03-31T17:53:32Z",
+      "rating" : 4,
+      "reviewerNickname" : "Huney S.",
+      "territory" : "TUR",
+      "title" : "Can’t open it again"
+    },
+    "id" : "00000182-06e9-6002-e850-294e00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e850-294e00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e850-294e00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e850-294e00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Crash on iOS 18.2, iPhone 15 Pro",
+      "createdDate" : "2025-03-30T19:31:14Z",
+      "rating" : 1,
+      "reviewerNickname" : "Poodiepie12377",
+      "territory" : "VNM",
+      "title" : "Crash"
+    },
+    "id" : "00000182-06e9-6002-e819-0d7e00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e819-0d7e00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e819-0d7e00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e819-0d7e00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Al arrancar aparece un error diciendo que falta algo y lo único que puedes hacer es salir de la aplicación.",
+      "createdDate" : "2025-03-30T17:05:31Z",
+      "rating" : 1,
+      "reviewerNickname" : "xfiles.",
+      "territory" : "ESP",
+      "title" : "No funciona"
+    },
+    "id" : "00000182-06e9-6002-e811-ecb700000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e811-ecb700000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e811-ecb700000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e811-ecb700000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "回答內容雞同鴨講，程式狂閃退",
+      "createdDate" : "2025-03-29T23:29:01Z",
+      "rating" : 1,
+      "reviewerNickname" : "melhsu",
+      "territory" : "TWN",
+      "title" : "文不對題"
+    },
+    "id" : "00000182-06e9-6002-e7e4-567900000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7e4-567900000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7e4-567900000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7e4-567900000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "The app freezes sometimes, I’m not sure if it’s because I’m asking a complex question. I’m on an iPhone 15 Pro Max.\n\nWould be great if you could cancel your question and start again. I have to kill the app to try again.\n\nLimited functionality for my usage but great either way. Doesn’t translate language well which would have been nice.",
+      "createdDate" : "2025-03-29T19:18:58Z",
+      "rating" : 5,
+      "reviewerNickname" : "escakot",
+      "territory" : "CAN",
+      "title" : "Great for offline but needs work"
+    },
+    "id" : "00000182-06e9-6002-e7d9-d05500000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d9-d05500000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d9-d05500000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e7d9-d05500000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Everything is fine, I'm waiting for you to be able to freely switch between models, and not just load them into memory. When models become smarter for powerful processors of iPhones 15\/16 and so on. I would like to see the level of interaction as the weakest chat gpt model, this will be enough for offline users. I would like better support for the Russian language. And so, everything is beautiful, well done!",
+      "createdDate" : "2025-03-12T17:13:41Z",
+      "rating" : 5,
+      "reviewerNickname" : "Maksimas",
+      "territory" : "RUS",
+      "title" : "Everything is fine, but there is a lot of work!"
+    },
+    "id" : "00000182-06e9-6002-e3d7-8c7100000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e3d7-8c7100000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e3d7-8c7100000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e3d7-8c7100000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Después de descargar muchas apps gratuitas que ejecuten MLX, esta sin duda es la mejor admitiendo RAG (chat con documentos) y modelos personalizados totalmente gratis y accesible.",
+      "createdDate" : "2025-03-05T08:10:00Z",
+      "rating" : 4,
+      "reviewerNickname" : "Angelpr880",
+      "territory" : "ESP",
+      "title" : "Buena integración e intenciones."
+    },
+    "id" : "00000182-06e9-6002-e222-b21c00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e222-b21c00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e222-b21c00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-e222-b21c00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "On iphone 15pro max needs 4 times longer than ChatGpt.",
+      "createdDate" : "2025-01-20T09:07:35Z",
+      "rating" : 3,
+      "reviewerNickname" : "Rob Bajuware",
+      "territory" : "IDN",
+      "title" : "Very slow"
+    },
+    "id" : "00000182-06e9-6002-d797-df3600000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d797-df3600000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d797-df3600000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d797-df3600000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Great local text and image AI generative. yet it doesn’t support apple shortcuts .",
+      "createdDate" : "2025-01-19T22:54:17Z",
+      "rating" : 5,
+      "reviewerNickname" : "oldkfc",
+      "territory" : "CAN",
+      "title" : "I gave 4 stars  for not having apple shortcuts"
+    },
+    "id" : "00000182-06e9-6002-d780-c88f00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d780-c88f00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d780-c88f00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d780-c88f00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "No submit button after the update. There’s no way of submitting a query.",
+      "createdDate" : "2025-01-19T18:55:04Z",
+      "rating" : 2,
+      "reviewerNickname" : "marceloZ",
+      "territory" : "BRA",
+      "title" : "No submit button after de update"
+    },
+    "id" : "00000182-06e9-6002-d775-906600000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d775-906600000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d775-906600000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d775-906600000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Ça ne marche pas avec mon iPhone SE et mon iPhone 11",
+      "createdDate" : "2025-01-19T14:16:14Z",
+      "rating" : 2,
+      "reviewerNickname" : "seyjutsu",
+      "territory" : "CIV",
+      "title" : "Not working"
+    },
+    "id" : "00000182-06e9-6002-d765-d3a900000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d765-d3a900000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d765-d3a900000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d765-d3a900000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Just crashes",
+      "createdDate" : "2025-01-19T12:14:16Z",
+      "rating" : 1,
+      "reviewerNickname" : "Timberhill.",
+      "territory" : "NOR",
+      "title" : "Roy gerbil"
+    },
+    "id" : "00000182-06e9-6002-d75f-9f0200000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d75f-9f0200000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d75f-9f0200000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d75f-9f0200000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Whenever you minimize the app for long enough your conversation disappears.",
+      "createdDate" : "2025-01-17T04:52:15Z",
+      "rating" : 1,
+      "reviewerNickname" : "jusatinn",
+      "territory" : "FIN",
+      "title" : "Disappearing conversations"
+    },
+    "id" : "00000182-06e9-6002-d6cf-656e00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6cf-656e00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6cf-656e00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6cf-656e00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "Many people will likely compare this to ChatGPT which isn’t fair. ChatGPT and other “AI” services will be better than this, but this is offline and your data isn’t being actively used.",
+      "createdDate" : "2025-01-16T22:35:26Z",
+      "rating" : 5,
+      "reviewerNickname" : "mobilekid",
+      "territory" : "CAN",
+      "title" : "Fantastic offline LLM"
+    },
+    "id" : "00000182-06e9-6002-d6c0-ee7800000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6c0-ee7800000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6c0-ee7800000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6c0-ee7800000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "I appreciate a lot of the effort but the app doesn’t open and make my iPhone slowly x)",
+      "createdDate" : "2025-01-16T18:36:08Z",
+      "rating" : 3,
+      "reviewerNickname" : "silexcorps",
+      "territory" : "GTM",
+      "title" : "Doesn’t open"
+    },
+    "id" : "00000182-06e9-6002-d6b6-c2f600000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6b6-c2f600000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6b6-c2f600000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-d6b6-c2f600000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "if it’s unable to use on device < 4 GB of ram please let the user know",
+      "createdDate" : "2024-03-25T12:11:05Z",
+      "rating" : 1,
+      "reviewerNickname" : "Vederis",
+      "territory" : "IDN",
+      "title" : "Unable to use on IPAD 9"
+    },
+    "id" : "00000182-06e9-6002-94a4-38fb00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-94a4-38fb00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-94a4-38fb00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-94a4-38fb00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "This is really good but it can not translate, Create photo etc.. im ready to 1 time pay. Give me more and take my money.",
+      "createdDate" : "2024-02-05T22:05:26Z",
+      "rating" : 5,
+      "reviewerNickname" : "Definzer",
+      "territory" : "TUR",
+      "title" : "Give me more, take my money"
+    },
+    "id" : "00000182-06e9-6002-8a0d-b47600000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-8a0d-b47600000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-8a0d-b47600000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-8a0d-b47600000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "thx",
+      "createdDate" : "2024-02-22T12:06:00Z",
+      "rating" : 3,
+      "reviewerNickname" : "hao123456wyiey",
+      "territory" : "CHN",
+      "title" : "please add openai api support"
+    },
+    "id" : "00000182-06e9-6002-8dac-022c00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-8dac-022c00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-8dac-022c00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-8dac-022c00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "“Sorry, your device cannot provide 3788.8MB Memory as requested to the app, so we cannot initialize this model on this device. Please try on a newer device”\n\nUsing IPhone 12 Mini chat gpt and both perplexity along with others work. Hmm but indeed those devices primely don’t run locally offline on devices.",
+      "createdDate" : "2024-05-22T09:51:03Z",
+      "rating" : 2,
+      "reviewerNickname" : "Narutoblockhead",
+      "territory" : "USA",
+      "title" : "Unsure 🤷"
+    },
+    "id" : "00000182-06e9-6002-a12d-64bc00000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-a12d-64bc00000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-a12d-64bc00000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-a12d-64bc00000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  },
+  {
+    "attributes" : {
+      "body" : "I will preface this review with stating this is is free and collects zero user data so any ideas I have could be improved with future update.\n\nThe overall interface is really good. It’s super simple with nothing more than what is needed for chatting with a llm on device. It follow design notes of even the open ai ChatGPT app with suggested prompts and a clean input and well formatted chat dialog interfaces. \n\nThe icon and name and branding are just simple clean and great all around. \n\nThe speech to text feature is nice and stable. It doesn’t detect when you stop speaking but I’d argue that’s more accessible for if you pause to think mid way through your question. \n\nThe simple use of color is also nice. \n\nNow for the areas to improve. \nThe app description claims that it is a fully open source project but I cannot find an app by this branding anywhere online on public code hosting sites like GitHub or Gitlab.  Also the app listing website or app support go to a website that has no contact information or even a mention of this app at all. It’s an outdated manifest predicting what advancements apple may roll out in 2022. It’s 2024, at least follow apples guidelines and provide some contact information on your support website so end users can get ahold of the developer if needed. \n\nThis brings up concerns of the credibility of the developer claiming no data collected and claiming the app is completely open source. Maybe the description meant the llm model used on devices is open source? I’m not sure I’ll ever know which. \n\nOther areas for improvement would be a text to speech option for the llm responses so you could optionally hear the response. iOS has a great built in TTS frameworks that work offline too. \n\nThe main issue with this app in its current form is just how slow it is at typing the response from the LLM.  I know some LLMs are slower that others on an iPhone but I have other offline LLM apps that run circles around how slow this app is at relaying the response. I’m not sure why it’s so slow? Maybe a artificial delay introduces from a poorly written animation? Or the model included in the app is not as optimized as some of the other open source models used in other apps. \n\nI was kind of thinking of making a pull request to at least add TTS and maybe fix the slow response output but without a public git repo I simply cannot help. \n\nHopefully you can fix these concerns in a future update even if you keep your source code private. That’s fine too. It’s so close to being a 5 star app.",
+      "createdDate" : "2024-03-26T01:33:46Z",
+      "rating" : 4,
+      "reviewerNickname" : "Hello Blaine",
+      "territory" : "USA",
+      "title" : "It’s pretty great but could be even better"
+    },
+    "id" : "00000182-06e9-6002-94c6-08e200000000",
+    "links" : {
+      "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-94c6-08e200000000"
+    },
+    "relationships" : {
+      "response" : {
+        "links" : {
+          "related" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-94c6-08e200000000\/response",
+          "self" : "https:\/\/api.appstoreconnect.apple.com\/v1\/customerReviews\/00000182-06e9-6002-94c6-08e200000000\/relationships\/response"
+        }
+      }
+    },
+    "type" : "customerReviews"
+  }
+]

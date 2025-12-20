@@ -1,0 +1,32 @@
+# Enable all available rules
+opt_in_rules:
+  - all
+
+disabled_rules:
+  - contrasted_opening_brace
+  - type_contents_order
+  - redundant_type_annotation
+  - extension_access_modifier
+
+# Make rules strict
+strict: true
+
+# Directories to include/exclude during linting
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build
+
+# Customize rule parameters
+line_length:
+  warning: 110
+  error: 120
+
+function_body_length:
+  warning: 20
+  error: 30 # Allow slightly longer test methods
+
+cyclomatic_complexity:
+  warning: 8
+  error: 8

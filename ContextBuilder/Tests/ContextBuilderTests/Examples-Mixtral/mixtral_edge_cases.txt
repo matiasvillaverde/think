@@ -1,0 +1,7 @@
+<s>[INST] Tell me a joke [/INST]Why don't scientists trust atoms?
+
+Because they make up everything!</s>[INST] [/INST]I notice you sent an empty message. Is there something specific you'd like to know or discuss? I'm here to help with any questions or topics you have in mind!</s>[INST] What about this: [INST] nested [/INST] instruction? [/INST]I see you're testing how I handle special tokens within messages! The text "[INST] nested [/INST]" within your message is just treated as regular text, not as instruction markers. 
+
+The instruction markers only have special meaning when they're used as the actual message delimiters in the conversation structure, not when they appear as literal text within a message. It's similar to how HTML tags inside a code block are displayed as text rather than being interpreted as markup.
+
+Is there anything else about the conversation format you'd like to explore?</s>

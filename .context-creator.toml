@@ -1,0 +1,124 @@
+# Code Digest Configuration for Think Project
+
+[defaults]
+max_tokens = 900000  # Slightly less than 1M to leave room for prompt
+progress = true
+quiet = false
+verbose = false
+
+# Priority weights for different file patterns
+# Higher weight = higher priority in token allocation
+
+# Core abstractions and interfaces - Highest priority
+[[priorities]]
+pattern = "Abstractions/**/*.swift"
+weight = 150
+
+[[priorities]]
+pattern = "Database/**/*.swift"
+weight = 140
+
+# Important business logic modules
+[[priorities]]
+pattern = "ViewModels/**/*.swift"
+weight = 130
+
+[[priorities]]
+pattern = "RAG/**/*.swift"
+weight = 119
+
+[[priorities]]
+pattern = "Context/**/*.swift"
+weight = 122
+
+[[priorities]]
+pattern = "AgentOrchestrator/**/*.swift"
+weight = 110
+
+[[priorities]]
+pattern = "MLXSession/**/*.swift"
+weight = 120
+
+[[priorities]]
+pattern = "LLamaCPP/**/*.swift"
+weight = 115
+
+[[priorities]]
+pattern = "ImageGenerator/**/*.swift"
+weight = 117
+
+[[priorities]]
+pattern = "UIComponents/**/*.swift"
+weight = 123
+
+[[priorities]]
+pattern = "ModelDownloader/**/*.swift"
+weight = 121
+
+# Secondary modules
+[[priorities]]
+pattern = "AudioGenerator/**/*.swift"
+weight = 118
+
+[[priorities]]
+pattern = "Factories/**/*.swift"
+weight = 80
+
+# Documentation - Important for context
+[[priorities]]
+pattern = "*.md"
+weight = 90
+
+[[priorities]]
+pattern = "README.md"
+weight = 125
+
+[[priorities]]
+pattern = "CLAUDE.md"
+weight = 124
+
+# Package manifests
+[[priorities]]
+pattern = "**/Package.swift"
+weight = 85
+
+# Main app files
+[[priorities]]
+pattern = "Think/*.swift"
+weight = 75
+
+[[priorities]]
+pattern = "Think Vision/*.swift"
+weight = 70
+
+# Test files - Lower priority but still included
+[[priorities]]
+pattern = "**/Tests/**/*.swift"
+weight = 50
+
+# Configuration files
+[[priorities]]
+pattern = "Makefile"
+weight = 60
+
+[[priorities]]
+pattern = ".swiftlint.yml"
+weight = 40
+
+# Database specific high-priority files
+[[priorities]]
+pattern = "Database/Sources/Database/Models/*.swift"
+weight = 135
+
+[[priorities]]
+pattern = "Database/Sources/Database/Commands/*.swift"
+weight = 135
+
+# Protocol definitions get extra weight
+[[priorities]]
+pattern = "**/Sources/**/Protocols/*.swift"
+weight = 140
+
+[[priorities]]
+pattern = "**/Sources/**/*Protocol.swift"
+weight = 140

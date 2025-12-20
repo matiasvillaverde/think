@@ -1,0 +1,60 @@
+# Enable all rules to see what we're actually not complying with
+opt_in_rules:
+  - all
+
+# Disable overly strict or problematic rules (matching UIComponents)
+disabled_rules:
+  # Same as UIComponents
+  - contrasted_opening_brace
+  - explicit_acl
+  - file_types_order
+  - one_declaration_per_file
+  - type_contents_order
+  - redundant_type_annotation
+  - extension_access_modifier
+
+  - blanket_disable_command # Would require refactoring all file-level disable commands to be more specific
+  - no_grouping_extension
+  - superfluous_disable_command # Many files have legacy disable commands - would require extensive manual cleanup
+
+  # Major refactoring required (hundreds/thousands of violations)
+  - no_magic_numbers # Test file violations remaining (source files complete)
+  - unused_parameter # 320+ violations - Causes Swift compiler crash when auto-fixed (compiler bug)
+
+  # Low effort to fix (under 50 violations)
+  - indentation_width # Causes Swift compiler crash when enabled (compiler bug)
+  - object_literal # Not applicable to Swift Packages (no bundle resources for image literals)
+  - discouraged_object_literal # Conflicts with object_literal rule
+
+# Make rules strict
+strict: true
+
+# Directories to include/exclude during linting
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build
+
+# Customize rule parameters
+line_length:
+  warning: 130
+  error: 150
+  ignores_function_declarations: true
+  ignores_comments: true
+  ignores_urls: true
+
+# Large tuples are sometimes needed in tests
+large_tuple:
+  warning: 3
+  error: 4
+
+# Allow slightly larger type bodies for complex ViewModels
+type_body_length:
+  warning: 260
+  error: 300
+
+# Allow slightly larger files for complex implementations
+file_length:
+  warning: 410
+  error: 500

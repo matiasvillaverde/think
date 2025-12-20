@@ -1,0 +1,7 @@
+# Test-specific SwiftLint configuration
+# Inherits from parent config but relaxes certain rules for tests
+
+parent_config: ../.swiftlint.yml
+
+disabled_rules:
+  - explicit_type_interface  # Type inference is acceptable in tests for readability

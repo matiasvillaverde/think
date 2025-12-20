@@ -1,0 +1,11 @@
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+You are a concise assistant. Sometimes the best answer is no answer.<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+...<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Hello?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Hello! How can I help you today?<|eot_id|>

@@ -1,0 +1,303 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "ContextBuilderError.ContextTooLarge.Description" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Context would be %1$lld tokens, exceeding limit of %2$lld"
+          }
+        }
+      }
+    },
+    "ContextBuilderError.ContextTooLarge.Reason" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The generated context exceeds the model's maximum input length"
+          }
+        }
+      }
+    },
+    "ContextBuilderError.ContextTooLarge.Recovery" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Reduce conversation history, system instructions, or tools"
+          }
+        }
+      }
+    },
+    "ContextBuilderError.ToolingUnavailable.Description" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tool system is currently unavailable"
+          }
+        }
+      }
+    },
+    "ContextBuilderError.ToolingUnavailable.Reason" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The underlying tool execution system is not accessible"
+          }
+        }
+      }
+    },
+    "ContextBuilderError.ToolingUnavailable.Recovery" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Check tool system configuration and try again"
+          }
+        }
+      }
+    },
+    "ContextBuilderError.ToolsNotAvailable.Description" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tools [%1$@] not available. Missing: [%2$@]"
+          }
+        }
+      }
+    },
+    "ContextBuilderError.ToolsNotAvailable.Reason" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The tooling implementation does not provide: %@"
+          }
+        }
+      }
+    },
+    "ContextBuilderError.ToolsNotAvailable.Recovery" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Configure tooling for: %@, or remove from request"
+          }
+        }
+      }
+    },
+    "LabelError.InvalidConfiguration.Description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid label configuration: %@"
+          }
+        }
+      }
+    },
+    "LabelError.InvalidConfiguration.Reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Required configuration parameters are missing or invalid."
+          }
+        }
+      }
+    },
+    "LabelError.InvalidConfiguration.Recovery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verify all required configuration parameters are provided."
+          }
+        }
+      }
+    },
+    "LabelError.ModelPurpose.BERT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "text embeddings and classification"
+          }
+        }
+      }
+    },
+    "LabelError.ModelPurpose.Flux" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "advanced image generation"
+          }
+        }
+      }
+    },
+    "LabelError.ModelPurpose.StableDiffusion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "image generation from text"
+          }
+        }
+      }
+    },
+    "LabelError.ModelPurpose.T5" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "text-to-text transformation"
+          }
+        }
+      }
+    },
+    "LabelError.ModelPurpose.Unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "specialized non-conversational tasks"
+          }
+        }
+      }
+    },
+    "LabelError.ModelPurpose.Whisper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "speech-to-text transcription"
+          }
+        }
+      }
+    },
+    "LabelError.NonConversationalModel.Description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The model type '%@' is designed for %@ and cannot be used for chat conversations."
+          }
+        }
+      }
+    },
+    "LabelError.NonConversationalModel.Reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is a specialized model without chat capabilities."
+          }
+        }
+      }
+    },
+    "LabelError.NonConversationalModel.Recovery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a model designed for chat or conversation tasks."
+          }
+        }
+      }
+    },
+    "LabelError.UnsupportedArchitecture.Description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The architecture '%@' is not supported for conversational AI."
+          }
+        }
+      }
+    },
+    "LabelError.UnsupportedArchitecture.Reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ models do not support conversational formatting."
+          }
+        }
+      }
+    },
+    "LabelError.UnsupportedArchitecture.Recovery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use a conversational model architecture like Llama, Mistral, Qwen, or GPT. Current architecture '%@' is meant for %@."
+          }
+        }
+      }
+    },
+    "LabelError.VariantNotAvailable.Description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The variant '%@' is not available for architecture '%@'."
+          }
+        }
+      }
+    },
+    "LabelError.VariantNotAvailable.Reason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The requested variant does not exist."
+          }
+        }
+      }
+    },
+    "LabelError.VariantNotAvailable.Recovery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use the default configuration for %@ or check available variants."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
