@@ -67,7 +67,7 @@ public actor Database: DatabaseProtocol {
             Self.logger.info("Creating ModelContainer with SwiftData models...")
             Self.logger.info("""
                 Models to register: LLMConfiguration, DiffusorConfiguration, User, Prompt, \
-                ImageAttachment, FileAttachment, Chat, Message, Tool, Source, Model, \
+                ImageAttachment, FileAttachment, Chat, Message, Memory, Skill, ToolPolicy, SubAgentRun, Tool, Source, Model, \
                 Tag, NotificationAlert, Personality, ModelDetails
                 """)
             
@@ -82,6 +82,10 @@ public actor Database: DatabaseProtocol {
                 Metrics.self,
                 Chat.self,
                 Message.self,
+                Memory.self,
+                Skill.self,
+                ToolPolicy.self,
+                SubAgentRun.self,
                 Source.self,
                 Model.self,
                 Tag.self,

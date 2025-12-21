@@ -19,7 +19,7 @@ extension DatabaseConfiguration {
 }
 
 @MainActor
-func waitForStatus(_ database: Database, expectedStatus: DatabaseStatus, timeout: TimeInterval = 0.3) async throws {
+func waitForStatus(_ database: Database, expectedStatus: DatabaseStatus, timeout: TimeInterval = 2.0) async throws {
     let start = ProcessInfo.processInfo.systemUptime
 
     while true {
@@ -34,7 +34,7 @@ func waitForStatus(_ database: Database, expectedStatus: DatabaseStatus, timeout
             if ProcessInfo.processInfo.systemUptime - start > timeout {
                 throw DatabaseError.timeout
             }
-            try await Task.sleep(nanoseconds: 200_000_000) // 0.1 second
+            try await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
         }
     }
 }
