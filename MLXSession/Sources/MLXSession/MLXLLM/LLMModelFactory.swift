@@ -368,6 +368,28 @@ internal class LLMRegistry: AbstractModelRegistry, @unchecked Sendable {
 @available(*, deprecated, renamed: "LLMRegistry", message: "Please use LLMRegistry directly.")
 internal typealias ModelRegistry = LLMRegistry
 
+private struct LLMUserInputProcessor: UserInputProcessor {
+    let tokenizer: Tokenizer
+    let messageGenerator: MessageGenerator
+
+    internal init(tokenizer: any Tokenizer, messageGenerator: MessageGenerator) {
+        self.tokenizer = tokenizer
+        self.messageGenerator = messageGenerator
+    }
+
+    internal func prepare(input: UserInput) async throws -> LMInput {
+        let messages = messageGenerator.generate(from: input)
+        do {
+            let promptTokens = try tokenizer.applyChatTemplate(messages: messages)
+            return LMInput(tokens: MLXArray(promptTokens))
+        } catch {
+            let prompt = messages.compactMap { $0["content"] as? String }.joined(separator: "\n\n")
+            let promptTokens = tokenizer.encode(text: prompt)
+            return LMInput(tokens: MLXArray(promptTokens))
+        }
+    }
+}
+
 /// Factory for creating new LLMs.
 ///
 /// Callers can use the `shared` instance or create a new instance if custom configuration
@@ -445,12 +467,16 @@ internal final class LLMModelFactory: ModelFactory {
 
         // Step 4: Load tokenizer (80-100%)
         let tokenizer = try await loadTokenizer(configuration: configuration, hub: hub)
+        let processor = LLMUserInputProcessor(
+            tokenizer: tokenizer,
+            messageGenerator: DefaultMessageGenerator()
+        )
 
         progress.completedUnitCount = 100
         progressHandler(progress)
 
         return .init(
-            configuration: configuration, model: model, tokenizer: tokenizer)
+            configuration: configuration, model: model, processor: processor, tokenizer: tokenizer)
     }
 }
 

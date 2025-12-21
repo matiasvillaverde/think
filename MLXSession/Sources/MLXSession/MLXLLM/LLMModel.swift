@@ -17,12 +17,12 @@ extension LLMModel {
         -> PrepareResult {
         let prefillStepSize = windowSize ?? GenerationConstants.defaultPrefillStepSize
         var y = input.text
-        var state: LMOutput.State?
+        let state: LMOutput.State? = nil
 
         // prepare the prompt in chunks if larger than the prefill size
         while y.tokens.size > prefillStepSize {
             let input = y[.newAxis, ..<prefillStepSize]
-            let result = self(input, cache: cache.isEmpty ? nil : cache, state: state)
+            _ = self(input, cache: cache.isEmpty ? nil : cache, state: state)
             eval(cache)
             y = y[prefillStepSize...]
         }

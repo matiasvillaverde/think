@@ -133,7 +133,7 @@ class SwitchLinear: Module, Quantizable {
         _ x: MLXArray, _ indices: MLXArray, sortedIndices: Bool = false
     ) -> MLXArray {
         let weightT = self.weight.swappedAxes(-1, -2)
-        var result = MLX.gatherMatmul(x, weightT, rhsIndices: indices, sortedIndices: sortedIndices)
+        var result = MLX.gatherMM(x, weightT, rhsIndices: indices, sortedIndices: sortedIndices)
 
         if let bias = self.bias {
             result = result + MLX.expandedDimensions(bias[indices], axis: -2)
@@ -185,7 +185,7 @@ class QuantizedSwitchLinear: SwitchLinear, Quantized {
     override func callAsFunction(
         _ x: MLXArray, _ indices: MLXArray, sortedIndices: Bool = false
     ) -> MLXArray {
-        var result = MLX.gatherQuantizedMatmul(
+        var result = MLX.gatherQuantizedMM(
             x,
             self.weight,
             scales: self.scales,

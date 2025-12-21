@@ -18,7 +18,7 @@ internal struct DeepseekV3Configuration: Codable, Sendable {
     var nRoutedExperts: Int?
     var routedScalingFactor: Float
     var kvLoraRank: Int
-    var qLoraRank: Int
+    var qLoraRank: Int?
     var qkRopeHeadDim: Int
     var vHeadDim: Int
     var qkNopeHeadDim: Int
@@ -479,8 +479,20 @@ private class DeepseekV3ModelInner: Module {
         self.pipelineSize = 1
     }
 
+    func embedTokensArray(_ input: MLXArray) -> MLXArray {
+        embedTokens(input)
+    }
+
     func callAsFunction(_ input: MLXArray, cache: [KVCache]?) -> MLXArray {
-        var hiddenStates = embedTokens(input)
+        callAsFunction(input, cache: cache, inputEmbedding: nil)
+    }
+
+    func callAsFunction(
+        _ input: MLXArray?,
+        cache: [KVCache]?,
+        inputEmbedding: MLXArray?
+    ) -> MLXArray {
+        var hiddenStates = inputEmbedding ?? embedTokensArray(input!)
 
         let attentionMask = createAttentionMask(h: hiddenStates, cache: cache)
 
@@ -503,10 +515,24 @@ internal class DeepseekV3Model: Module, LLMModel, KVCacheDimensionProvider, LoRA
         self.args = args
         self.model = DeepseekV3ModelInner(config: args)
         self._lmHead.wrappedValue = Linear(args.hiddenSize, args.vocabSize, bias: false)
+        self.kvHeads = (0 ..< args.numHiddenLayers).map { _ in args.numKeyValueHeads }
+    }
+
+    public func embedTokens(_ input: MLXArray) -> MLXArray {
+        model.embedTokensArray(input)
     }
 
     public func callAsFunction(_ inputs: MLXArray, cache: [KVCache]? = nil) -> MLXArray {
         let out = model(inputs, cache: cache)
+        return lmHead(out)
+    }
+
+    public func callAsFunction(
+        _ inputs: MLXArray?,
+        cache: [KVCache]? = nil,
+        inputEmbedding: MLXArray? = nil
+    ) -> MLXArray {
+        let out = model(inputs, cache: cache, inputEmbedding: inputEmbedding)
         return lmHead(out)
     }
 

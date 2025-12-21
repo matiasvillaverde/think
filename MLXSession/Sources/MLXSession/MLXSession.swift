@@ -1,4 +1,5 @@
 import Abstractions
+import CoreImage
 import Foundation
 import MLX
 import OSLog
@@ -103,9 +104,8 @@ internal actor MLXSession: LLMSession {
         progress.localizedDescription = "Loading MLX model"
         continuation.yield(progress)
 
-        let modelConfig = ModelConfiguration(directory: configuration.location)
-        modelContainer = try await LLMModelFactory.shared.loadContainer(
-            configuration: modelConfig
+        modelContainer = try await loadModelContainer(
+            directory: configuration.location
         ) { continuation.yield($0) }
 
         let duration = loadStart.duration(to: clock.now)
@@ -124,9 +124,8 @@ internal actor MLXSession: LLMSession {
         let loadStart = clock.now
         logger.info("Loading model from \(configuration.location.path)")
 
-        let modelConfig = ModelConfiguration(directory: configuration.location)
-        modelContainer = try await LLMModelFactory.shared.loadContainer(
-            configuration: modelConfig
+        modelContainer = try await loadModelContainer(
+            directory: configuration.location
         ) { _ in /* Progress callback not used */ }
 
         let duration = loadStart.duration(to: clock.now)
@@ -140,21 +139,18 @@ internal actor MLXSession: LLMSession {
         input: LLMInput,
         continuation: AsyncThrowingStream<LLMStreamChunk, Error>.Continuation
     ) async throws {
-        if !input.images.isEmpty {
-            logger.error(
-                "Invalid input: MLX models don't support image inputs. Received \(input.images.count)"
-            )
-            throw LLMError.invalidConfiguration("MLX models don't support image inputs")
-        }
-        if !input.videoURLs.isEmpty {
-            logger.error(
-                "Invalid input: MLX models don't support video inputs. Received \(input.videoURLs.count)"
-            )
-            throw LLMError.invalidConfiguration("MLX models don't support video inputs")
-        }
         guard let container = modelContainer else {
             logger.error("Model not loaded: Configuration must be set via preload() before generation")
             throw LLMError.modelNotFound("Model not loaded")
+        }
+        if !input.images.isEmpty || !input.videoURLs.isEmpty {
+            let supportsVision = await container.perform { context in
+                context.model is VLMModel
+            }
+            if !supportsVision {
+                logger.error("Invalid input: model does not support image/video inputs")
+                throw LLMError.invalidConfiguration("Model does not support image/video inputs")
+            }
         }
         try await performGeneration(container: container, input: input, continuation: continuation)
     }
@@ -230,19 +226,26 @@ internal actor MLXSession: LLMSession {
                 continuation: continuation,
                 clock: clock
             )
-            return try self.executeGeneration(genContext)
+            return try await self.executeGeneration(genContext)
         }
     }
 
     // swiftlint:disable:next function_body_length
     nonisolated private func executeGeneration(
         _ genContext: GenerationContext
-    ) throws -> MetricsData {
+    ) async throws -> MetricsData {
         let promptStartTime = genContext.clock.now
 
-        let mlxInput = try genContext.modelContext.tokenize(
-            prompt: genContext.input.context
-        )
+        let mlxInput: LMInput
+        if genContext.input.images.isEmpty,
+            genContext.input.videoURLs.isEmpty {
+            mlxInput = try genContext.modelContext.tokenize(prompt: genContext.input.context)
+        } else {
+            let images = genContext.input.images.map { UserInput.Image.ciImage(CIImage(cgImage: $0)) }
+            let videos = genContext.input.videoURLs.map { UserInput.Video.url($0) }
+            let userInput = UserInput(prompt: genContext.input.context, images: images, videos: videos)
+            mlxInput = try await genContext.modelContext.prepare(input: userInput)
+        }
 
         let promptEndTime = genContext.clock.now
         let tokenizeDuration = promptStartTime.duration(to: promptEndTime)
