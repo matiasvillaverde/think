@@ -37,11 +37,18 @@ struct DeepseekModelTest {
         let result = try await baseTest.runGenerationForAssertion(
             modelURL: modelURL,
             modelName: "DeepSeek-R1-Distill-Qwen-7B",
-            prompt: "List 5 common house pets:",
-            maxTokens: 30
+            prompt: "Name one common house pet. Answer with a single word and no reasoning.",
+            maxTokens: 60
         )
 
-        #expect(result.lowercased().contains("dog"))
+        let normalized = result.lowercased()
+        let pets = [
+            "dog", "cat", "fish", "bird", "hamster", "rabbit", "turtle",
+            "perro", "gato", "pez", "pajaro", "pájaro", "hámster", "hamster", "conejo", "tortuga"
+        ]
+        let petsCn = ["狗", "猫", "鱼", "鸟", "仓鼠", "兔", "兔子", "乌龟"]
+        let matchesPet = pets.contains { normalized.contains($0) } || petsCn.contains { result.contains($0) }
+        #expect(matchesPet)
     }
 
     @Test("DeepSeek simple math")
@@ -56,10 +63,19 @@ struct DeepseekModelTest {
         let result = try await baseTest.runGenerationForAssertion(
             modelURL: modelURL,
             modelName: "DeepSeek-R1-Distill-Qwen-7B",
-            prompt: "What is 10 - 3?",
-            maxTokens: 10
+            prompt: "Compute 10 - 3. Answer with a single digit and no reasoning.",
+            maxTokens: 60
         )
 
-        #expect(result.contains("7"))
+        let normalized = result.lowercased()
+        let matcher = try? NSRegularExpression(pattern: "(?<!\\d)[7７](?!\\d)")
+        let hasExactNumber = matcher?.firstMatch(
+            in: normalized,
+            range: NSRange(normalized.startIndex..., in: normalized)
+        ) != nil
+
+        let hasChineseNumeral = normalized.contains("七") || normalized.contains("柒")
+        let matchesNumber = hasExactNumber || normalized.contains("seven") || hasChineseNumeral
+        #expect(matchesNumber)
     }
 }

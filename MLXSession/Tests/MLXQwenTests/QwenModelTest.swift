@@ -42,6 +42,23 @@ struct QwenModelTest {
         )
     }
 
+    @Test("MXFP4 model short generation smoke test")
+    func testQwen3MXFP4ShortGeneration() async throws {
+        guard let modelURL: URL = baseTest.getModelURLIfAvailable(
+            resourceName: "Qwen3-1.7B-MLX-MXFP4",
+            in: Bundle.module
+        ) else {
+            return
+        }
+
+        _ = try await baseTest.runGenerationForAssertion(
+            modelURL: modelURL,
+            modelName: "Qwen3-1.7B-MLX-MXFP4",
+            prompt: "Give one word for hello.",
+            maxTokens: 5
+        )
+    }
+
     @Test("Generate text with Qwen1.5 model")
     func testQwen15Generation() async throws {
         guard let modelURL: URL = baseTest.getModelURLIfAvailable(

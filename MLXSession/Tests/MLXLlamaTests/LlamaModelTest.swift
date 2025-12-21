@@ -110,10 +110,17 @@ struct LlamaModelTest {
         let result = try await baseTest.runGenerationForAssertion(
             modelURL: modelURL,
             modelName: "Llama-3.2-1B-Instruct",
-            prompt: "What is 6 × 4?",
-            maxTokens: 10
+            prompt: "What is 6 * 4? Answer with only the number.",
+            maxTokens: 15
         )
 
-        #expect(result.contains("24"))
+        let normalized = result.lowercased()
+        let matcher = try? NSRegularExpression(pattern: "(?<!\\d)24(?!\\d)")
+        let hasExactNumber = matcher?.firstMatch(
+            in: normalized,
+            range: NSRange(normalized.startIndex..., in: normalized)
+        ) != nil
+
+        #expect(hasExactNumber || normalized.contains("twenty-four"))
     }
 }

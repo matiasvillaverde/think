@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Download DeepSeek-VL2-Tiny model from Hugging Face using Git (smallest model)
-# Repository: mlx-community/deepseek-vl2-tiny-3bit
+# Download DeepSeek-R1-Distill-Qwen-7B model from Hugging Face using Git
+# Repository: mlx-community/DeepSeek-R1-Distill-Qwen-7B-4bit
 
-MODEL_NAME="DeepSeek-VL2-Tiny"
-REPO_URL="https://huggingface.co/mlx-community/deepseek-vl2-tiny-3bit"
+MODEL_NAME="DeepSeek-R1-Distill-Qwen-7B"
+REPO_URL="https://huggingface.co/mlx-community/DeepSeek-R1-Distill-Qwen-7B-4bit"
 LOCAL_DIR="."
 CLEANUP_GIT="false"
 

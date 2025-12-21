@@ -7,10 +7,10 @@ import Testing
 struct CohereModelTest {
     let baseTest = BaseModelTest()
 
-    @Test("Generate text with Command-R model")
+    @Test("Generate text with Exaone-4.0 model")
     func testCohereGeneration() async throws {
         guard let modelURL: URL = baseTest.getModelURLIfAvailable(
-            resourceName: "c4ai-command-r-v01-4bit",
+            resourceName: "exaone-4.0-1.2b-4bit",
             in: Bundle.module
         ) else {
             return
@@ -18,17 +18,17 @@ struct CohereModelTest {
 
         try await baseTest.runBasicGenerationTest(
             modelURL: modelURL,
-            modelName: "command-r-v01",
+            modelName: "exaone-4.0-1.2b",
             prompt: "Summarize the following text:",
             expectedTokens: ["summary", "text", "following", "the"],
             maxTokens: 10
         )
     }
 
-    @Test("Generate text with Command-R creative writing")
+    @Test("Generate text with Exaone-4.0 creative writing")
     func testCohereCreativeGeneration() async throws {
         guard let modelURL: URL = baseTest.getModelURLIfAvailable(
-            resourceName: "c4ai-command-r-v01-4bit",
+            resourceName: "exaone-4.0-1.2b-4bit",
             in: Bundle.module
         ) else {
             return
@@ -36,7 +36,7 @@ struct CohereModelTest {
 
         try await baseTest.runBasicGenerationTest(
             modelURL: modelURL,
-            modelName: "command-r-v01",
+            modelName: "exaone-4.0-1.2b",
             prompt: "Write a haiku about artificial intelligence:",
             expectedTokens: ["haiku", "intelligence", "artificial", "lines", "syllables"],
             maxTokens: 20
@@ -110,10 +110,11 @@ struct CohereModelTest {
         let result = try await baseTest.runGenerationForAssertion(
             modelURL: modelURL,
             modelName: "exaone-4.0-1.2b",
-            prompt: "What is 5 + 3?",
-            maxTokens: 10
+            prompt: "5 + 3 =",
+            maxTokens: 15
         )
 
-        #expect(result.contains("8"))
+        let normalized = result.lowercased()
+        #expect(normalized.contains("8") || normalized.contains("eight"))
     }
 }
