@@ -87,6 +87,29 @@ public struct RecommendedModels {
         fourGBModels + eightGBModels + sixteenGBModels +
         thirtyTwoGBModels + sixtyFourGBModels + oneTwentyEightGBPlusModels
 
+    // MARK: - Remote/Cloud Models
+
+    /// Free remote models available through OpenRouter
+    /// These models don't require local RAM and run on cloud infrastructure
+    public static let freeRemoteModels: [String] = [
+        "openrouter:google/gemma-3n-e2b-it:free",
+        "openrouter:meta-llama/llama-3.2-3b-instruct:free",
+        "openrouter:deepseek/deepseek-r1-0528:free",
+        "openrouter:qwen/qwen3-coder:free",
+        "openrouter:moonshotai/kimi-k2:free"
+    ]
+
+    /// Premium remote models available through OpenRouter (requires API credits)
+    public static let premiumRemoteModels: [String] = [
+        "openrouter:anthropic/claude-3.5-sonnet",
+        "openrouter:openai/gpt-4o",
+        "openrouter:google/gemini-pro",
+        "openrouter:meta-llama/llama-3.1-405b-instruct"
+    ]
+
+    /// All remote models (free + premium)
+    public static let allRemoteModels: [String] = freeRemoteModels + premiumRemoteModels
+
     /// Default recommended image generation models
     /// These models are optimized for Apple devices and provide good image quality
     public static let defaultImageModels: [String] = [

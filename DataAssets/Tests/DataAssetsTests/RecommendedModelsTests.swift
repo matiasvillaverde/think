@@ -228,4 +228,65 @@ struct RecommendedModelsTests {
         #expect(RecommendedModels.RecommendationType.fast.rawValue == "recommended_fast")
         #expect(RecommendedModels.RecommendationType.complexTasks.rawValue == "recommended_complex_tasks")
     }
+
+    // MARK: - Remote Models Tests
+
+    @Test("Free remote models should have correct format")
+    func testFreeRemoteModelsFormat() {
+        // All free remote models should start with "openrouter:" prefix
+        for model in RecommendedModels.freeRemoteModels {
+            #expect(model.hasPrefix("openrouter:"), "Model \(model) should have openrouter prefix")
+        }
+
+        // Should have at least 5 free models
+        #expect(RecommendedModels.freeRemoteModels.count >= 5)
+    }
+
+    @Test("Premium remote models should have correct format")
+    func testPremiumRemoteModelsFormat() {
+        // All premium remote models should start with "openrouter:" prefix
+        for model in RecommendedModels.premiumRemoteModels {
+            #expect(model.hasPrefix("openrouter:"), "Model \(model) should have openrouter prefix")
+        }
+
+        // Should have at least 4 premium models
+        #expect(RecommendedModels.premiumRemoteModels.count >= 4)
+    }
+
+    @Test("All remote models should combine free and premium")
+    func testAllRemoteModelsCombination() {
+        let expectedCount = RecommendedModels.freeRemoteModels.count + RecommendedModels.premiumRemoteModels.count
+        #expect(RecommendedModels.allRemoteModels.count == expectedCount)
+
+        // Free models should be first
+        for freeModel in RecommendedModels.freeRemoteModels {
+            #expect(RecommendedModels.allRemoteModels.contains(freeModel))
+        }
+
+        // Premium models should also be included
+        for premiumModel in RecommendedModels.premiumRemoteModels {
+            #expect(RecommendedModels.allRemoteModels.contains(premiumModel))
+        }
+    }
+
+    @Test("Free remote models should end with :free suffix")
+    func testFreeRemoteModelsSuffix() {
+        // Free models typically end with :free
+        let modelsWithFreeSuffix = RecommendedModels.freeRemoteModels.filter { $0.hasSuffix(":free") }
+        #expect(modelsWithFreeSuffix.count == RecommendedModels.freeRemoteModels.count)
+    }
+
+    @Test("Premium remote models should not have :free suffix")
+    func testPremiumRemoteModelsNoFreeSuffix() {
+        // Premium models should NOT end with :free
+        for model in RecommendedModels.premiumRemoteModels {
+            #expect(!model.hasSuffix(":free"), "Premium model \(model) should not have :free suffix")
+        }
+    }
+
+    @Test("Remote models should have no duplicates")
+    func testRemoteModelsNoDuplicates() {
+        let uniqueModels = Set(RecommendedModels.allRemoteModels)
+        #expect(uniqueModels.count == RecommendedModels.allRemoteModels.count)
+    }
 }
