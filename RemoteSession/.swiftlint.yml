@@ -1,0 +1,62 @@
+# Enable all available rules
+opt_in_rules:
+  - all
+
+disabled_rules:
+  - contrasted_opening_brace
+  - explicit_acl
+  - explicit_top_level_acl
+  - explicit_type_interface
+  - file_types_order
+  - one_declaration_per_file
+  - type_contents_order
+  - redundant_type_annotation
+  - extension_access_modifier
+  - required_deinit
+  - sorted_enum_cases
+  - vertical_whitespace_between_cases
+  - nesting
+  - async_without_await
+  - unneeded_throws_rethrows
+  - discouraged_optional_collection
+  - explicit_enum_raw_value
+  - no_magic_numbers
+  - no_grouping_extension
+  - let_var_whitespace
+  - sorted_imports
+  - trailing_closure
+  - indentation_width
+  - closure_body_length
+  - function_default_parameter_at_end
+  - prefer_condition_list
+  - number_separator
+  - empty_string
+  - non_optional_string_data_conversion
+  - file_name  # Multiple types per file is acceptable
+
+# Make rules strict
+strict: true
+
+# Directories to include/exclude during linting
+included:
+  - Sources
+  - Tests
+excluded:
+  - .build
+
+# Customize rule parameters
+line_length:
+  warning: 110
+  error: 120
+
+function_body_length:
+  warning: 60
+  error: 80
+
+type_body_length:
+  warning: 300
+  error: 400
+
+cyclomatic_complexity:
+  warning: 12
+  error: 15
