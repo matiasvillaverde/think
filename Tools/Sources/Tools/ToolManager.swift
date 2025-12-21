@@ -57,12 +57,10 @@ public actor ToolManager: Tooling {
             case .braveSearch:
                 await executor.registerStrategy(BraveSearchStrategy())
 
-            case .reasoning:
-                // Reasoning is handled by the LLM itself, no tool needed
-                break
-
-            case .imageGeneration:
-                // Image generation is handled by separate module
+            case .reasoning, .imageGeneration, .memory:
+                // These tools are either handled by the LLM itself (reasoning),
+                // by separate modules (imageGeneration), or require special
+                // configuration (memory via configureMemory method)
                 break
             }
         }
@@ -128,5 +126,21 @@ public actor ToolManager: Tooling {
         await executor.registerStrategy(semanticSearchStrategy)
 
         logger.notice("Semantic search configured successfully")
+    }
+
+    // MARK: - Memory (Special Case)
+
+    /// Configures the memory tool with a write callback
+    /// - Parameter writeCallback: Callback to persist memory entries to the database
+    @preconcurrency
+    public func configureMemory(
+        writeCallback: @escaping @Sendable (MemoryWriteRequest) async -> Result<UUID, Error>
+    ) async {
+        logger.info("Configuring memory tool")
+
+        let memoryStrategy: MemoryStrategy = MemoryStrategy(writeCallback: writeCallback)
+        await executor.registerStrategy(memoryStrategy)
+
+        logger.notice("Memory tool configured successfully")
     }
 }
