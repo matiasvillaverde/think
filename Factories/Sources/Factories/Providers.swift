@@ -7,6 +7,7 @@ import ImageGenerator
 import LLamaCPP
 import MLXSession
 import ModelDownloader
+import RemoteSession
 import SwiftData
 import SwiftUI
 import UIComponents
@@ -34,6 +35,7 @@ public struct GeneratorProvider: ViewModifier {
                         database: database,
                         mlxSession: MLXSessionFactory.create(),
                         ggufSession: LlamaCPPFactory.createSession(),
+                        remoteSession: RemoteSessionFactory.create(),
                         modelDownloader: ModelDownloader.shared
                     ),
                     database: database
