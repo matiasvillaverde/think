@@ -623,7 +623,7 @@ extension TextGenerator {
     var promptTime: TimeInterval = 0
 
     let additionalEOSTokenIds = Set(
-        (context.configuration.extraEOSTokens ?? [])
+        context.configuration.extraEOSTokens
             .compactMap {
                 context.tokenizer.convertTokenToId($0)
             })
@@ -729,7 +729,7 @@ extension TextGenerator {
         var promptTime: TimeInterval = 0
 
         let additionalEOSTokenIds = Set(
-            (context.configuration.extraEOSTokens ?? [])
+            context.configuration.extraEOSTokens
                 .compactMap {
                     context.tokenizer.convertTokenToId($0)
                 })

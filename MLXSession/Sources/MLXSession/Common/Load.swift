@@ -98,6 +98,11 @@ internal func loadWeights(
 
     // per-model cleanup
     weights = model.sanitize(weights: weights)
+    stripMXFP4QuantizationBiases(
+        weights: &weights,
+        quantization: quantization,
+        perLayerQuantization: perLayerQuantization
+    )
 
     // quantize if needed
     if quantization != nil || perLayerQuantization != nil {
@@ -122,7 +127,8 @@ internal func loadWeights(
                     )
                 }
                 return nil
-            }
+            },
+            apply: quantizeApplyingMode(module:groupSize:bits:mode:)
         )
     }
 
@@ -174,4 +180,68 @@ private func containsNonAffineQuantization(
             return quantizationMode(for: perLayer) != .affine
         }
     }
+}
+
+private func quantizeApplyingMode(
+    module: Module,
+    groupSize: Int,
+    bits: Int,
+    mode: QuantizationMode
+) -> Module? {
+    if module is Quantized {
+        return nil
+    }
+
+    if let linear = module as? Linear {
+        let (weight, scales, biases) = MLX.quantized(
+            linear.weight,
+            groupSize: groupSize,
+            bits: bits,
+            mode: mode
+        )
+        return QuantizedLinear(
+            weight: weight,
+            bias: linear.bias,
+            scales: scales,
+            biases: biases,
+            groupSize: groupSize,
+            bits: bits,
+            mode: mode
+        )
+    }
+
+    return quantizeSingle(layer: module, groupSize: groupSize, bits: bits, mode: mode)
+}
+
+private func stripMXFP4QuantizationBiases(
+    weights: inout [String: MLXArray],
+    quantization: BaseConfiguration.Quantization?,
+    perLayerQuantization: BaseConfiguration.PerLayerQuantization?
+) {
+    if let quantization, isMXFP4(quantization) {
+        removeQuantizationBiases(from: &weights)
+        return
+    }
+
+    guard let perLayerQuantization else { return }
+    if let defaultQuantization = perLayerQuantization.quantization, isMXFP4(defaultQuantization) {
+        removeQuantizationBiases(from: &weights)
+        return
+    }
+
+    for (layer, option) in perLayerQuantization.perLayerQuantization {
+        guard case .quantize(let quantization) = option, isMXFP4(quantization) else { continue }
+        weights["\(layer).biases"] = nil
+    }
+}
+
+private func removeQuantizationBiases(from weights: inout [String: MLXArray]) {
+    let keysToRemove = weights.keys.filter { $0.hasSuffix(".biases") }
+    for key in keysToRemove {
+        weights[key] = nil
+    }
+}
+
+private func isMXFP4(_ quantization: BaseConfiguration.Quantization) -> Bool {
+    quantization.quantizationMode?.lowercased() == "mxfp4"
 }

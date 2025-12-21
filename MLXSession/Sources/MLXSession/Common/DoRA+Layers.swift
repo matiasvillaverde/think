@@ -170,7 +170,7 @@ internal class QDoRALinear: QuantizedLinear, LoRALayer {
     }
 
     public override func callAsFunction(_ x: MLXArray) -> MLXArray {
-        let y = quantizedMatmul(
+        let y = quantizedMM(
             x, weight, scales: scales, biases: biases,
             groupSize: groupSize, bits: bits, mode: mode)
         return forward(

@@ -8,6 +8,7 @@ import Tokenizers
 internal enum ModelFactoryError: LocalizedError {
     case unsupportedModelType(String)
     case unsupportedProcessorType(String)
+    case configurationFileError(String, String, Error)
     case configurationDecodingError(String, String, DecodingError)
     case noModelFactoryAvailable
 
@@ -17,6 +18,8 @@ internal enum ModelFactoryError: LocalizedError {
             return "Unsupported model type: \(type)"
         case .unsupportedProcessorType(let type):
             return "Unsupported processor type: \(type)"
+        case .configurationFileError(let file, let modelName, let error):
+            return "Error reading '\(file)' for model '\(modelName)': \(error.localizedDescription)"
         case .noModelFactoryAvailable:
             return "No model factory available via ModelFactoryRegistry"
         case .configurationDecodingError(let file, let modelName, let decodingError):
@@ -56,7 +59,8 @@ internal enum ModelFactoryError: LocalizedError {
 ///
 /// - ``ModelConfiguration`` -- identifier for the model
 /// - ``LanguageModel`` -- the model itself, see ``generate(input:parameters:context:didGenerate:)``
-/// - `Tokenizer` -- the tokenizer used to convert text into tokens
+/// - ``UserInputProcessor`` -- can convert ``UserInput`` into ``LMInput``
+/// - `Tokenizer` -- the tokenizer used by the processor
 ///
 /// This type is marked `@unchecked Sendable` because:
 /// - It contains `LanguageModel` (a protocol) which may have non-Sendable implementations
@@ -75,14 +79,16 @@ internal enum ModelFactoryError: LocalizedError {
 internal struct ModelContext: @unchecked Sendable {
     internal var configuration: ModelConfiguration
     internal var model: any LanguageModel
+    internal var processor: any UserInputProcessor
     internal var tokenizer: Tokenizer
 
     internal init(
         configuration: ModelConfiguration, model: any LanguageModel,
-        tokenizer: any Tokenizer
+        processor: any UserInputProcessor, tokenizer: any Tokenizer
     ) {
         self.configuration = configuration
         self.model = model
+        self.processor = processor
         self.tokenizer = tokenizer
     }
 
@@ -103,6 +109,10 @@ internal struct ModelContext: @unchecked Sendable {
             let tokens = tokenizer.encode(text: prompt)
             return LMInput(tokens: MLXArray(tokens))
         }
+    }
+
+    internal func prepare(input: UserInput) async throws -> LMInput {
+        try await processor.prepare(input: input)
     }
 }
 
@@ -400,14 +410,8 @@ final internal class ModelFactoryRegistry: @unchecked Sendable {
 
     private init() {
         self.trampolines = [
-            {
-                (NSClassFromString("MLXVLM.TrampolineModelFactory") as? ModelFactoryTrampoline.Type)?
-                    .modelFactory()
-            },
-            {
-                (NSClassFromString("MLXLLM.TrampolineModelFactory") as? ModelFactoryTrampoline.Type)?
-                    .modelFactory()
-            },
+            { VLMModelFactory.shared },
+            { LLMModelFactory.shared },
         ]
     }
 

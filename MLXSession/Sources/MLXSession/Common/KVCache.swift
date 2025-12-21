@@ -67,7 +67,7 @@ internal protocol KVCache: Evaluatable {
 /// if let quantizedCache = cache as? QuantizedKVCacheProtocol {
 ///     let (qKeys, qValues) = quantizedCache.updateQuantized(keys: k, values: v)
 ///     // Use native quantized operations
-///     let scores = quantizedMatmul(queries, w: qKeys.0, scales: qKeys.1, biases: qKeys.2, ...)
+///     let scores = quantizedMM(queries, w: qKeys.0, scales: qKeys.1, biases: qKeys.2, ...)
 /// } else {
 ///     // Regular path
 ///     let (k, v) = cache.update(keys: k, values: v)
@@ -791,9 +791,18 @@ internal class QuantizedKVCache: BaseKVCache, QuantizedKVCacheProtocol {
             self.offset = Int(newValue[1]) ?? 0
 
             // Validate that step, groupSize, and bits match current instance
-            let expectedStep = Int(newValue[0]) ?? 256
-            let expectedGroupSize = Int(newValue[2]) ?? 64
-            let expectedBits = Int(newValue[3]) ?? 8
+            let expectedStep = Int(newValue[0]) ?? step
+            let expectedGroupSize = Int(newValue[2]) ?? groupSize
+            let expectedBits = Int(newValue[3]) ?? bits
+            guard expectedStep == step,
+                expectedGroupSize == groupSize,
+                expectedBits == bits
+            else {
+                fatalError(
+                    "QuantizedKVCache metaState mismatch (step: \(expectedStep) vs \(step), " +
+                    "groupSize: \(expectedGroupSize) vs \(groupSize), bits: \(expectedBits) vs \(bits))"
+                )
+            }
         }
     }
 
@@ -1346,7 +1355,7 @@ internal func quantizedScaledDotProductAttention(
     }
 
     // Compute attention scores using quantized matmul
-    var scores = quantizedMatmul(
+    var scores = quantizedMM(
         scaledQueries, qKeys.0, scales: qKeys.1, biases: qKeys.2,
         transpose: true, groupSize: groupSize, bits: bits, mode: mode
     )
@@ -1385,7 +1394,7 @@ internal func quantizedScaledDotProductAttention(
     let attentionWeights = softmax(scores, axis: -1)
 
     // Compute output using quantized matmul
-    var output = quantizedMatmul(
+    var output = quantizedMM(
         attentionWeights, qValues.0, scales: qValues.1, biases: qValues.2,
         transpose: false, groupSize: groupSize, bits: bits, mode: mode
     )
