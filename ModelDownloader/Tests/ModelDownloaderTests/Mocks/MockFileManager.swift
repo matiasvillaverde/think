@@ -73,7 +73,7 @@ internal final class MockFileManager: ModelFileManagerProtocol, @unchecked Senda
         models.removeValue(forKey: repositoryId)
 
         // Remove all directories for this model
-        let modelPaths: [String] = SendableModel.Backend.allCases.map { backend in
+        let modelPaths: [String] = SendableModel.Backend.localCases.map { backend in
             modelDirectory(for: repositoryId, backend: backend).path
         }
 

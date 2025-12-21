@@ -132,7 +132,7 @@ internal struct FileManagerTests {
         let mockManager: MockFileManager = MockFileManager()
 
         // Add models with different formats
-        for (index, backend): (Int, SendableModel.Backend) in SendableModel.Backend.allCases.enumerated() {
+        for (index, backend): (Int, SendableModel.Backend) in SendableModel.Backend.localCases.enumerated() {
             let repositoryId: String = "test/model\(index)"
             let modelInfo: ModelInfo = ModelInfo(
                 id: UUID(), // Different ID for each format
@@ -146,11 +146,11 @@ internal struct FileManagerTests {
         }
 
         let models: [ModelInfo] = try await mockManager.listDownloadedModels()
-        let expectedBackendCount: Int = SendableModel.Backend.allCases.count
+        let expectedBackendCount: Int = SendableModel.Backend.localCases.count
         #expect(models.count == expectedBackendCount)
 
         let backends: Set<SendableModel.Backend> = Set(models.map(\.backend))
-        #expect(backends == Set(SendableModel.Backend.allCases))
+        #expect(backends == Set(SendableModel.Backend.localCases))
     }
 }
 

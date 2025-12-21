@@ -566,7 +566,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
         // Note: We can't access baseDirectory from the protocol, so we'll skip the repository overview
 
         // Try all backends to find where the model is stored
-        for backend: SendableModel.Backend in SendableModel.Backend.allCases {
+        for backend: SendableModel.Backend in SendableModel.Backend.localCases {
             let location: URL = fileManager.modelDirectory(for: model, backend: backend)
             if directoryExists(location) {
                 await logger.debug("Found model at repository-based location", metadata: [

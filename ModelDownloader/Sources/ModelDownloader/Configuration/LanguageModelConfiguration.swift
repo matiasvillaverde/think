@@ -333,6 +333,10 @@ internal actor ModelValidator {
             if configuration.vocabSize == nil || configuration.hiddenSize == nil {
                 errors.append("CoreML format requires vocab_size and hidden_size")
             }
+
+        case .remote:
+            // Remote models don't need local file validation
+            break
         }
 
         // Check for potential issues

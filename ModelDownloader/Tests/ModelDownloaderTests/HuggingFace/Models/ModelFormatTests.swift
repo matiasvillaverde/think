@@ -31,11 +31,21 @@ internal struct BackendTests {
         #expect(patterns == expected)
     }
 
+    @Test("File patterns for remote backend")
+    func testRemoteFilePatterns() {
+        let backend: SendableModel.Backend = .remote
+        let patterns: [String] = backend.filePatterns
+
+        let expected: [String] = []
+        #expect(patterns == expected)
+    }
+
     @Test("Backend raw values")
     func testBackendRawValues() {
         #expect(SendableModel.Backend.mlx.rawValue == "mlx")
         #expect(SendableModel.Backend.gguf.rawValue == "gguf")
         #expect(SendableModel.Backend.coreml.rawValue == "coreml")
+        #expect(SendableModel.Backend.remote.rawValue == "remote")
     }
 
     @Test("Backend directory names")
@@ -44,15 +54,17 @@ internal struct BackendTests {
         #expect(SendableModel.Backend.mlx.rawValue == "mlx")
         #expect(SendableModel.Backend.gguf.rawValue == "gguf")
         #expect(SendableModel.Backend.coreml.rawValue == "coreml")
+        #expect(SendableModel.Backend.remote.rawValue == "remote")
     }
 
     @Test("All cases are covered")
     func testAllCases() {
         let allCases: [SendableModel.Backend] = SendableModel.Backend.allCases
-        #expect(allCases.count == 3)
+        #expect(allCases.count == 4)
         #expect(allCases.contains(.mlx))
         #expect(allCases.contains(.gguf))
         #expect(allCases.contains(.coreml))
+        #expect(allCases.contains(.remote))
     }
 
     @Test("Backend is Sendable")

@@ -941,6 +941,9 @@ extension APITests {
                     url.pathExtension == "mlmodel" || url.pathExtension == "mlpackage"
                 }
                 print("   CoreML files: \(coremlFiles.count) model files")
+
+            case .remote:
+                print("   Remote model: no local files to inspect")
             }
 
             // Cleanup

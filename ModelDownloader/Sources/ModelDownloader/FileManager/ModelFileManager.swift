@@ -48,7 +48,7 @@ internal actor ModelFileManager: ModelFileManagerProtocol {
         var models: [ModelInfo] = []
 
         // Iterate through backend directories
-        for backend in SendableModel.Backend.allCases {
+        for backend in SendableModel.Backend.localCases {
             let backendDir: URL = modelPath.backendDirectory(for: backend)
 
             guard directoryExists(backendDir) else { continue }
@@ -101,7 +101,7 @@ internal actor ModelFileManager: ModelFileManagerProtocol {
             "baseDirectory": modelPath.baseDirectory.path
         ])
 
-        for backend in SendableModel.Backend.allCases {
+        for backend in SendableModel.Backend.localCases {
             let dir: URL = modelDirectory(for: repositoryId, backend: backend)
             let exists: Bool = directoryExists(dir)
             await logger.debug("Checking backend directory", metadata: [
@@ -122,7 +122,7 @@ internal actor ModelFileManager: ModelFileManagerProtocol {
         await logger.info("Deleting model by repository", metadata: ["repositoryId": repositoryId])
 
         var deleted: Bool = false
-        for backend in SendableModel.Backend.allCases {
+        for backend in SendableModel.Backend.localCases {
             let dir: URL = modelDirectory(for: repositoryId, backend: backend)
             if directoryExists(dir) {
                 // Log pre-deletion state
@@ -225,7 +225,7 @@ internal actor ModelFileManager: ModelFileManagerProtocol {
 
     /// Get model size by repository ID
     internal func getModelSize(repositoryId: String) -> Int64? {
-        for backend in SendableModel.Backend.allCases {
+        for backend in SendableModel.Backend.localCases {
             let dir: URL = modelDirectory(for: repositoryId, backend: backend)
             if directoryExists(dir) {
                 return calculateDirectorySize(dir)

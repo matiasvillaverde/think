@@ -30,6 +30,10 @@ internal actor FileSelectorFactory {
         case .mlx:
             await logger.debug("Creating MLX file selector")
             return MLXFileSelectorAdapter()
+
+        case .remote:
+            await logger.debug("Remote backend has no file selector - no local files needed")
+            return nil
         }
     }
 }
