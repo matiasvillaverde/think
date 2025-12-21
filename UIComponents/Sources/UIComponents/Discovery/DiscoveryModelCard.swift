@@ -254,6 +254,9 @@ extension SendableModel.Backend {
 
         case .coreml:
             "Core ML"
+
+        case .remote:
+            "Remote"
         }
     }
 }

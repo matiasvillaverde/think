@@ -129,6 +129,10 @@ internal struct ToolSelectionSheet: View {
 
         case .braveSearch:
             chat.languageModel
+
+        case .memory:
+            // Memory tool uses the language model
+            chat.languageModel
         }
     }
 }

@@ -125,6 +125,10 @@ internal struct ToolSelectionButton: View {
 
             case .braveSearch:
                 selectedAction = .textGeneration([.braveSearch])
+
+            case .memory:
+                // Memory is an internal agent tool, not user-selectable
+                break
             }
         }
         showingToolsSheet = false

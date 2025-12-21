@@ -118,6 +118,9 @@ internal struct ToolRow: View {
 
         case .braveSearch:
             "magnifyingglass.circle"
+
+        case .memory:
+            "brain.head.profile"
         }
     }
 

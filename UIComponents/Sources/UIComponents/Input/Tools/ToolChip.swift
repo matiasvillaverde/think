@@ -81,6 +81,9 @@ internal struct ToolChip: View {
 
         case .braveSearch:
             "magnifyingglass.circle"
+
+        case .memory:
+            "brain.head.profile"
         }
     }
 }
