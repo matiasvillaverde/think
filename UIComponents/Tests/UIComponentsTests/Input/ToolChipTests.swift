@@ -18,13 +18,13 @@ internal struct ToolChipTests {
             (.healthKit, "heart.text.square")
         ]
 
-        for (tool, expectedIcon) in testCases {
-            let chip: ToolChip = ToolChip(tool: tool) {
+        for (tool, _) in testCases {
+            _ = ToolChip(tool: tool) {
                 // Remove action
             }
             // Note: We'd need a way to inspect the icon name
             // For now, this test documents the expected behavior
-            #expect(true) // Placeholder - SwiftUI view testing is limited
+            #expect(Bool(true)) // Placeholder - SwiftUI view testing is limited
         }
     }
 
@@ -32,7 +32,7 @@ internal struct ToolChipTests {
     @MainActor
     internal func testRemoveCallback() {
         var removeCalled: Bool = false
-        let chip: ToolChip = ToolChip(tool: .imageGeneration) {
+        _ = ToolChip(tool: .imageGeneration) {
             removeCalled = true
         }
 
@@ -44,11 +44,11 @@ internal struct ToolChipTests {
     @Test("ToolChip has correct accessibility label")
     @MainActor
     internal func testAccessibilityLabel() {
-        let chip: ToolChip = ToolChip(tool: .reasoning) {
+        _ = ToolChip(tool: .reasoning) {
             // Remove action
         }
         // The accessibility label should include the tool's raw value
         // Expected: "Reason selected"
-        #expect(true) // Placeholder for SwiftUI accessibility testing
+        #expect(Bool(true)) // Placeholder for SwiftUI accessibility testing
     }
 }

@@ -47,6 +47,7 @@ internal struct DownloadProgressViewTests {
 
         // View should compile with onTap parameter
         #expect(view.onTap != nil)
+        #expect(tapCalled == false)
     }
 
     @Test("View remains passive when no onTap provided")

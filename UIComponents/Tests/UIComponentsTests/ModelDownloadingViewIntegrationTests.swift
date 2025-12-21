@@ -18,7 +18,7 @@ internal struct ModelDownloadingViewIntegrationTests {
         }
 
         // When: Creating ModelActionButton with the downloading model
-        let button: ModelActionButton = ModelActionButton(model: downloadingModel)
+        _ = ModelActionButton(model: downloadingModel)
 
         // Then: Verify the model is in downloading state
         #expect(downloadingModel.state?.isDownloadingActive == true)
@@ -36,7 +36,7 @@ internal struct ModelDownloadingViewIntegrationTests {
         }
 
         // When: Creating ModelActionButton with the paused model
-        let button: ModelActionButton = ModelActionButton(model: pausedModel)
+        _ = ModelActionButton(model: pausedModel)
 
         // Then: Verify the model is in paused state
         #expect(pausedModel.state?.isDownloadingPaused == true)
@@ -55,8 +55,8 @@ internal struct ModelDownloadingViewIntegrationTests {
         }
 
         // When: Creating buttons for both models
-        let button1: ModelActionButton = ModelActionButton(model: downloadingModels[0])
-        let button2: ModelActionButton = ModelActionButton(model: downloadingModels[1])
+        _ = ModelActionButton(model: downloadingModels[0])
+        _ = ModelActionButton(model: downloadingModels[1])
 
         // Then: Both models should be in downloading state
         #expect(downloadingModels[0].state?.isDownloading == true)
@@ -75,7 +75,7 @@ internal struct ModelDownloadingViewIntegrationTests {
         }
 
         // When: Creating ModelActionButton
-        let button: ModelActionButton = ModelActionButton(model: downloadingModel)
+        _ = ModelActionButton(model: downloadingModel)
 
         // Then: Verify model has size and correct progress
         #expect(downloadingModel.size > 0)

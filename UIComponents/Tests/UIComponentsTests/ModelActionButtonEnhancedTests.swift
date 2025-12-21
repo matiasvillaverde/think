@@ -14,13 +14,13 @@ internal struct ModelActionButtonEnhancedTests {
         // Note: In a real test we would mock the model state
 
         // When: ModelActionButton is created
-        let button: ModelActionButton = ModelActionButton(model: model)
+        _ = ModelActionButton(model: model)
 
         // Then: It should display enhanced progress view with metrics
         // Note: This test verifies the component compiles and accepts the model
         // Actual UI verification would require snapshot testing
         // Verify the button was created successfully
-        #expect(button != nil)
+        #expect(model.state != nil)
     }
 
     @Test("Download progress displays speed and time remaining")
@@ -31,7 +31,7 @@ internal struct ModelActionButtonEnhancedTests {
         // Note: In a real test we would mock the model state and size
 
         // When: Creating the button
-        let button: ModelActionButton = ModelActionButton(model: model)
+        _ = ModelActionButton(model: model)
 
         // Then: Enhanced view should calculate metrics
         // Speed = progress change / time elapsed
@@ -48,11 +48,11 @@ internal struct ModelActionButtonEnhancedTests {
         // Note: In a real test we would mock the model state
 
         // When: ModelActionButton is created
-        let button: ModelActionButton = ModelActionButton(model: model)
+        _ = ModelActionButton(model: model)
 
         // Then: It should show paused state with progress
         // Verify the button was created successfully
-        #expect(button != nil)
+        #expect(model.state != nil)
     }
 
     @Test("Tap on active download triggers pause action")
@@ -63,11 +63,11 @@ internal struct ModelActionButtonEnhancedTests {
         // Note: In a real test we would mock the model state
 
         // When: Button is created (pause action is wired internally)
-        let button: ModelActionButton = ModelActionButton(model: model)
+        _ = ModelActionButton(model: model)
 
         // Then: The button should be ready to handle pause
         // Note: Actual action testing requires UI test environment
         // Verify the button was created successfully
-        #expect(button != nil)
+        #expect(model.state != nil)
     }
 }

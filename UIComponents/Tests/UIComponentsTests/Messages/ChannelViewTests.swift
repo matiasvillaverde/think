@@ -123,7 +123,7 @@ internal struct ChannelViewTests {
 
         // The view should filter to show only final type channels
         let expectedFilteredCount: Int = 2
-        #expect(channels.filter { $0.type == .final }.count == expectedFilteredCount)
+        #expect(view.filteredChannels.count == expectedFilteredCount)
     }
 
     // MARK: - Edge Cases
