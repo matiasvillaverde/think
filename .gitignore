@@ -70,6 +70,8 @@ MLXSession/Tests/MLX*/Resources/**/vocab.json
 MLXSession/Tests/MLX*/Resources/**/merges.txt
 MLXSession/Tests/MLX*/Resources/**/added_tokens.json
 MLXSession/Tests/MLX*/Resources/**/special_tokens_map.json
+# Temporary clone directories from download scripts
+MLXSession/Tests/MLX*/Resources/**/temp_clone/
 # Keep the download scripts!
 !MLXSession/Tests/MLX*/Resources/*/download.sh
 !MLXSession/Tests/MLX*/Resources/download.sh
