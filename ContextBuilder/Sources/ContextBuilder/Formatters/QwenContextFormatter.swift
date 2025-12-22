@@ -45,13 +45,9 @@ internal struct QwenContextFormatter: ContextFormatter, DateFormatting, ToolForm
                 let isLastCompleteMessage: Bool = isLastMessage &&
                     message.userInput != nil &&
                     context.toolResponses.isEmpty
-                do {
-                    let formatted: String = formatAssistantMessageFromChannels(message)
-                    if !formatted.isEmpty {
-                        result += formatAssistantMessage(formatted, isLast: isLastCompleteMessage)
-                    }
-                } catch {
-                    // Channel formatting failed, skip this message
+                let formatted: String = formatAssistantMessageFromChannels(message)
+                if !formatted.isEmpty {
+                    result += formatAssistantMessage(formatted, isLast: isLastCompleteMessage)
                 }
             }
             // No channels - skip

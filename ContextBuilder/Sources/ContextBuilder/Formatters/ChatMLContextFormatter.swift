@@ -90,17 +90,12 @@ internal struct ChatMLContextFormatter: ContextFormatter, DateFormatting, ToolFo
 
             // Use channels if available, otherwise fall back to assistant field
             if !message.channels.isEmpty {
-                do {
-                    let formatted: String = formatAssistantMessageFromChannels(message)
-                    if !formatted.isEmpty {
-                        components.append(labels.assistantLabel)
-                        components.append(formatted)
-                        components.append(labels.endLabel)
-                        components.append("\n")
-                    }
-                } catch {
-                    // Channel formatting failed, skip this message
-                    // Silently skip - channels are empty
+                let formatted: String = formatAssistantMessageFromChannels(message)
+                if !formatted.isEmpty {
+                    components.append(labels.assistantLabel)
+                    components.append(formatted)
+                    components.append(labels.endLabel)
+                    components.append("\n")
                 }
             }
             // No channels and no assistant field - skip

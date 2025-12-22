@@ -117,16 +117,10 @@ public actor ContextBuilder: ContextBuilding {
             return
         }
 
-        do {
-            let toolNames: [String] = tools.map(\.rawValue).sorted()
-            Self.logger.info("Configuring tools: \(toolNames.joined(separator: ", "))")
-            await tooling.configureTool(identifiers: tools)
-            Self.logger.info("Tools configured successfully")
-        } catch {
-            Self.logger.error("Failed to configure tools: \(error.localizedDescription)")
-            // Continue without tools rather than failing the entire build
-            // Tools are optional enhancements, not critical for basic operation
-        }
+        let toolNames: [String] = tools.map(\.rawValue).sorted()
+        Self.logger.info("Configuring tools: \(toolNames.joined(separator: ", "))")
+        await tooling.configureTool(identifiers: tools)
+        Self.logger.info("Tools configured successfully")
     }
 
     // MARK: - Logging Helpers
