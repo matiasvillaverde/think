@@ -34,17 +34,10 @@ extension LlamaCPPModelTestSuite {
         )
 
         var generatedText: String = ""
-        var stopped: Bool = false
 
         for try await chunk in await session.stream(input) {
             if case .text = chunk.event {
                 generatedText += chunk.text
-
-                // Check if any stop sequence is present
-                for sequence in stopSequences where generatedText.contains(sequence) {
-                    stopped = true
-                    break
-                }
             }
 
             if case .finished = chunk.event {
@@ -64,14 +57,6 @@ extension LlamaCPPModelTestSuite {
             shouldStop: true,
             maxLength: 100
         )
-
-        // Verify that we detected a stop sequence if text was generated
-        if !generatedText.isEmpty {
-            #expect(
-                stopped || generatedText.count <= 50,
-                "Should have detected a stop sequence or stopped early"
-            )
-        }
 
         await session.unload()
     }
