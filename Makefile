@@ -9,6 +9,8 @@
 WORKSPACE = Think.xcworkspace
 XCODE_FLAGS = -quiet
 XCODE_CI_SETTINGS = CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=
+XCODE_THIRD_PARTY_WARNING_SETTINGS = GCC_TREAT_WARNINGS_AS_ERRORS=NO CLANG_WARNINGS_AS_ERRORS=NO
+SIMULATOR_NAME ?= $(shell xcrun simctl list devices available | awk -F '[()]' '/iPhone/{print $$1; exit}' | sed 's/^[[:space:]]*//;s/[[:space:]]*$$//')
 ARCHIVE_PATH = ./build/archives
 APPSTORE_BUNDLE_ID ?= com.example.app
 APPSTORE_BUNDLE_ID_IOS ?= $(APPSTORE_BUNDLE_ID)
@@ -144,6 +146,7 @@ build-macos-ci:
 		-scheme Think \
 		-destination 'platform=macOS' \
 		-configuration Debug \
+		$(XCODE_THIRD_PARTY_WARNING_SETTINGS) \
 		$(XCODE_CI_SETTINGS) \
 		$(XCODE_FLAGS) \
 		| xcbeautify --is-ci
@@ -156,10 +159,35 @@ build-ios-ci:
 		-scheme Think \
 		-destination 'generic/platform=iOS' \
 		-configuration Debug \
+		$(XCODE_THIRD_PARTY_WARNING_SETTINGS) \
 		$(XCODE_CI_SETTINGS) \
 		$(XCODE_FLAGS) \
 		| xcbeautify --is-ci
 	@echo "✅ iOS CI build complete"
+
+build-ios-sim:
+	@if [ -z "$(SIMULATOR_NAME)" ]; then \
+		echo "❌ No available iPhone simulator found. Install a simulator in Xcode."; \
+		exit 1; \
+	fi
+	@echo "🚀 Building Think iOS for simulator: $(SIMULATOR_NAME)..."
+	@/bin/bash -lc "set -o pipefail; xcodebuild build \
+		-workspace $(WORKSPACE) \
+		-scheme Think \
+		-destination 'platform=iOS Simulator,name=$(SIMULATOR_NAME)' \
+		-configuration Debug \
+		IPHONEOS_DEPLOYMENT_TARGET=18.5 \
+		SWIFT_TREAT_WARNINGS_AS_ERRORS=NO \
+		SWIFT_STRICT_CONCURRENCY=targeted \
+		SWIFT_CONCURRENCY_CHECKS=warn \
+		CLANG_CXX_LANGUAGE_STANDARD=gnu++17 \
+		SWIFT_SUPPRESS_WARNINGS=NO \
+		ENABLE_USER_SCRIPT_SANDBOXING=NO \
+		$(XCODE_THIRD_PARTY_WARNING_SETTINGS) \
+		$(XCODE_CI_SETTINGS) \
+		$(XCODE_FLAGS) \
+		| xcbeautify --is-ci"
+	@echo "✅ iOS Simulator build complete"
 
 build-visionos-ci:
 	@echo "🚀 Building ThinkVision visionOS (CI, no signing)..."
@@ -168,6 +196,7 @@ build-visionos-ci:
 		-scheme ThinkVision \
 		-destination 'generic/platform=visionOS' \
 		-configuration Debug \
+		$(XCODE_THIRD_PARTY_WARNING_SETTINGS) \
 		$(XCODE_CI_SETTINGS) \
 		$(XCODE_FLAGS) \
 		| xcbeautify --is-ci
@@ -184,6 +213,12 @@ run-think:
 		-destination 'platform=macOS' \
 		-configuration Debug \
 		-derivedDataPath .build \
+		SWIFT_SUPPRESS_WARNINGS=NO \
+		SWIFT_STRICT_CONCURRENCY=targeted \
+		SWIFT_CONCURRENCY_CHECKS=warn \
+		CLANG_CXX_LANGUAGE_STANDARD=gnu++17 \
+		ENABLE_USER_SCRIPT_SANDBOXING=NO \
+		$(XCODE_THIRD_PARTY_WARNING_SETTINGS) \
 		$(XCODE_FLAGS) \
 		| xcbeautify --is-ci
 	@echo "🏃 Launching Think..."
@@ -200,6 +235,7 @@ run-thinkVision:
 		-destination 'generic/platform=visionOS' \
 		-configuration Debug \
 		-derivedDataPath .build \
+		$(XCODE_THIRD_PARTY_WARNING_SETTINGS) \
 		$(XCODE_FLAGS) \
 		| xcbeautify --is-ci
 	@echo "✅ ThinkVision built for visionOS"
