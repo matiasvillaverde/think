@@ -7,6 +7,9 @@ import Database
 
 /// App delegate to handle background download events
 final class ThinkAppDelegate: NSObject, UIApplicationDelegate {
+    private struct SendableCompletionHandler: @unchecked Sendable {
+        let handler: () -> Void
+    }
 
     /// Handle background URLSession events
     func application(
@@ -14,6 +17,7 @@ final class ThinkAppDelegate: NSObject, UIApplicationDelegate {
         handleEventsForBackgroundURLSession identifier: String,
         completionHandler: @escaping () -> Void
     ) {
+        let sendableHandler = SendableCompletionHandler(handler: completionHandler)
         Task {
             // Use the singleton database instance that was created by the SwiftUI environment
             // This ensures we use the same database instance throughout the app
@@ -21,7 +25,7 @@ final class ThinkAppDelegate: NSObject, UIApplicationDelegate {
             let modelDownloaderViewModel = ModelDownloaderViewModelFactory.create(database: database)
             await modelDownloaderViewModel.handleBackgroundDownloadCompletion(
                 identifier: identifier,
-                completionHandler: completionHandler
+                completionHandler: { sendableHandler.handler() }
             )
         }
     }

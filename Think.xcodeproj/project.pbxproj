@@ -479,7 +479,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/bash\n\n# This script only runs SwiftLint in Debug configuration\n# It includes output specifications to improve build performance\n\nif [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  if which swiftlint >/dev/null; then\n    # Create an output file that Xcode can track for dependency analysis\n    SCRIPT_OUTPUT_FILE_0=\"${DERIVED_FILE_DIR}/swiftlint.result\"\n    swiftlint --quiet > \"${SCRIPT_OUTPUT_FILE_0}\"\n  else\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n  fi\nfi\n";
+			shellScript = "#!/bin/bash\n\n# This script only runs SwiftLint in Debug configuration\n# It includes output specifications to improve build performance\n\nif [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  if which swiftlint >/dev/null; then\n    # Create an output file that Xcode can track for dependency analysis\n    SCRIPT_OUTPUT_FILE_0=\"${DERIVED_FILE_DIR}/swiftlint.result\"\n    swiftlint lint --quiet \"${SRCROOT}/Think\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n  else\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n  fi\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
