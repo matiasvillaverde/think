@@ -81,6 +81,7 @@ MLXSession/Tests/MLX*/Resources/**/temp_clone/
 # ===========================
 # Build products and intermediate files
 build/
+.build-mlxsession/
 DerivedData/
 *.pbxuser
 !default.pbxuser
