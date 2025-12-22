@@ -108,3 +108,19 @@ internal struct NoSystemMessageGenerator: MessageGenerator {
             .map { generate(message: $0) }
     }
 }
+
+/// Message generator for Qwen2VL-style chat templates with structured content.
+internal struct Qwen2VLMessageGenerator: MessageGenerator {
+    internal init() {}
+
+    internal func generate(message: Chat.Message) -> Message {
+        [
+            "role": message.role.rawValue,
+            "content": [
+                ["type": "text", "text": message.content]
+            ]
+                + message.images.map { _ in ["type": "image"] }
+                + message.videos.map { _ in ["type": "video"] },
+        ]
+    }
+}

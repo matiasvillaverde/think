@@ -926,9 +926,15 @@ internal class ChunkedKVCache: KVCacheSimple {
 /// Simple cache for Mamba-style state space models
 internal class MambaCache: BaseKVCache {
     private var cache: [MLXArray?] = [nil, nil]
+    private var leftPadding: MLXArray?
 
     public override init() {
         super.init()
+    }
+
+    public convenience init(leftPadding: [Int]? = nil) {
+        self.init()
+        self.leftPadding = leftPadding.map { MLXArray($0) }
     }
 
     public override func innerState() -> [MLXArray] {
@@ -938,6 +944,12 @@ internal class MambaCache: BaseKVCache {
     public subscript(index: Int) -> MLXArray? {
         get { cache[index] }
         set { cache[index] = newValue }
+    }
+
+    /// Create attention mask based on left padding when no state has been cached yet.
+    public func makeMask(N: Int) -> MLXArray? {
+        guard cache[0] == nil, let leftPadding else { return nil }
+        return MLXArray(0 ..< N) .>= leftPadding[0..., .newAxis]
     }
 
     public override func update(keys: MLXArray, values: MLXArray) -> (MLXArray, MLXArray) {

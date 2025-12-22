@@ -150,7 +150,7 @@ internal func loadWeights(
     logger.info("Model weights loaded successfully")
 }
 
-private func quantizationMode(
+internal func quantizationMode(
     for quantization: BaseConfiguration.Quantization
 ) -> QuantizationMode {
     guard let rawMode = quantization.quantizationMode?.lowercased(),
@@ -182,7 +182,7 @@ private func containsNonAffineQuantization(
     }
 }
 
-private func quantizeApplyingMode(
+internal func quantizeApplyingMode(
     module: Module,
     groupSize: Int,
     bits: Int,
