@@ -14,9 +14,9 @@ internal struct BaseProcessorConfiguration: Codable, Sendable {
 private func create<C: Decodable & Sendable, M: LanguageModel>(
     _ configurationType: C.Type,
     _ modelInit: @escaping @Sendable (C) -> M
-) -> @Sendable (URL) throws -> any LanguageModel {
+    ) -> @Sendable (URL) throws -> any LanguageModel {
     { url in
-        let data = try Data(contentsOf: url)
+        let data = try loadJSONData(from: url)
         let configuration = try JSONDecoder().decode(C.self, from: data)
         return modelInit(configuration)
     }
@@ -35,14 +35,18 @@ private func create<C: Decodable & Sendable, P>(
 internal enum VLMTypeRegistry {
     static let shared: ModelTypeRegistry = .init(
         creators: [
-            "kimi_vl": create(KimiVLConfiguration.self, KimiVLModel.init)
+            "kimi_vl": create(KimiVLConfiguration.self, KimiVLModel.init),
+            "gemma3": create(Gemma3VLMConfiguration.self, Gemma3VLMModel.init),
+            "qwen3_vl": create(Qwen3VLConfiguration.self, Qwen3VL.init)
         ] as [String: @Sendable (URL) throws -> any LanguageModel]
     )
 }
 
 internal enum VLMProcessorTypeRegistry {
     static let shared: ProcessorTypeRegistry = .init(creators: [
-        "KimiVLProcessor": create(KimiVLProcessorConfiguration.self, KimiVLProcessor.init)
+        "KimiVLProcessor": create(KimiVLProcessorConfiguration.self, KimiVLProcessor.init),
+        "Gemma3Processor": create(Gemma3VLMProcessorConfiguration.self, Gemma3VLMProcessor.init),
+        "Qwen3VLProcessor": create(Qwen3VLProcessorConfiguration.self, Qwen3VLProcessor.init)
     ])
 }
 
@@ -53,10 +57,20 @@ internal final class VLMRegistry: AbstractModelRegistry, @unchecked Sendable {
         id: "mlx-community/Kimi-VL-A3B-Thinking-4bit",
         defaultPrompt: "Describe the image in English"
     )
+    static let gemma3Vlm4bItQat3bit = ModelConfiguration(
+        id: "mlx-community/gemma-3-4b-it-qat-3bit",
+        defaultPrompt: "Describe the image in English"
+    )
+    static let qwen3Vlm4bInstruct3bit = ModelConfiguration(
+        id: "mlx-community/Qwen3-VL-4B-Instruct-3bit",
+        defaultPrompt: "Describe the image in English"
+    )
 
     static func all() -> [ModelConfiguration] {
         [
-            kimiVLA3BThinking4bit
+            kimiVLA3BThinking4bit,
+            gemma3Vlm4bItQat3bit,
+            qwen3Vlm4bInstruct3bit
         ]
     }
 }
@@ -96,7 +110,7 @@ internal final class VLMModelFactory: ModelFactory {
         let configurationURL = modelDirectory.appending(component: "config.json")
         let configData: Data
         do {
-            configData = try Data(contentsOf: configurationURL)
+            configData = try loadJSONData(from: configurationURL)
         } catch {
             throw ModelFactoryError.configurationFileError(
                 configurationURL.lastPathComponent,

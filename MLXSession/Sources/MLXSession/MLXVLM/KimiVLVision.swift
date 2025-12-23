@@ -131,7 +131,7 @@ private final class Attention: Module {
         var attnWeights = matmul(q, k.swappedAxes(-1, -2)) / sqrt(Float(headDim))
 
         if cuSeqlens.size > 1 {
-            var mask = MLXArray.ones([1, sequenceLength, sequenceLength]) * MLXArray(-1.0e9)
+            let mask = MLXArray.ones([1, sequenceLength, sequenceLength]) * MLXArray(-1.0e9)
             let boundaries = cuSeqlens.asArray(Int.self)
             for index in 1 ..< boundaries.count {
                 let start = boundaries[index - 1]

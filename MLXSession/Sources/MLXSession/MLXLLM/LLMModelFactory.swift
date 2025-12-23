@@ -7,12 +7,12 @@ import MLX
 import Tokenizers
 
 /// Creates a function that loads a configuration file and instantiates a model with the proper configuration
-private func create<C: Codable & Sendable, M>(
+private func create<C: Decodable & Sendable, M>(
     _ configurationType: C.Type, _ modelInit: @escaping @Sendable (C) -> M
 ) -> @Sendable (URL) throws -> M {
     { url in
         let configuration = try JSONDecoder().decode(
-            C.self, from: Data(contentsOf: url))
+            C.self, from: loadJSONData(from: url))
         return modelInit(configuration)
     }
 }
@@ -56,6 +56,7 @@ internal class LLMTypeRegistry: ModelTypeRegistry, @unchecked Sendable {
             "internlm2": create(InternLM2Configuration.self, InternLM2Model.init),
             "deepseek_v3": create(DeepseekV3Configuration.self, DeepseekV3Model.init),
             "granite": create(GraniteConfiguration.self, GraniteModel.init),
+            "granitemoehybrid": create(GraniteMoeHybridConfiguration.self, GraniteMoeHybridModel.init),
             "mimo": create(MiMoConfiguration.self, MiMoModel.init),
             "glm4": create(GLM4Configuration.self, GLM4Model.init),
             "acereason": create(Qwen2Configuration.self, Qwen2Model.init),
@@ -63,8 +64,12 @@ internal class LLMTypeRegistry: ModelTypeRegistry, @unchecked Sendable {
             "smollm3": create(SmolLM3Configuration.self, SmolLM3Model.init),
             "ernie4_5": create(Ernie45Configuration.self, Ernie45Model.init),
             "lfm2": create(LFM2Configuration.self, LFM2Model.init),
+            "lfm2_moe": create(LFM2MoEConfiguration.self, LFM2MoEModel.init),
             "baichuan_m1": create(BaichuanM1Configuration.self, BaichuanM1Model.init),
-            "exaone4": create(Exaone4Configuration.self, Exaone4Model.init)
+            "exaone4": create(Exaone4Configuration.self, Exaone4Model.init),
+            "mamba": create(MambaConfiguration.self, MambaModel.init),
+            "mamba2": create(Mamba2Configuration.self, Mamba2Model.init),
+            "falcon_h1": create(FalconH1Configuration.self, FalconH1Model.init)
         ]
     }
 }
@@ -313,6 +318,31 @@ internal class LLMRegistry: AbstractModelRegistry, @unchecked Sendable {
         defaultPrompt: "Why is the sky blue?"
     )
 
+    public static let lfm2Eight8bA1b4bit = ModelConfiguration(
+        id: "mlx-community/LFM2-8B-A1B-4bit",
+        defaultPrompt: "Why is the sky blue?"
+    )
+
+    public static let mamba130mF32 = ModelConfiguration(
+        id: "mlx-community/mamba-130m-hf-f32",
+        defaultPrompt: "The quick brown fox"
+    )
+
+    public static let mamba2Three7b70m = ModelConfiguration(
+        id: "mlx-community/mamba2-370m",
+        defaultPrompt: "The quick brown fox"
+    )
+
+    public static let falconH1Zero0Point5bInstruct4bit = ModelConfiguration(
+        id: "mlx-community/Falcon-H1-0.5B-Instruct-4bit",
+        defaultPrompt: "The quick brown fox"
+    )
+
+    public static let granite4Point0HTiny4bit = ModelConfiguration(
+        id: "mlx-community/granite-4.0-h-tiny-4bit",
+        defaultPrompt: "Why is the sky blue?"
+    )
+
     public static let exaone4Point0One1Point2b4bit = ModelConfiguration(
         id: "mlx-community/exaone-4.0-1.2b-4bit",
         defaultPrompt: "Why is the sky blue?"
@@ -359,6 +389,11 @@ internal class LLMRegistry: AbstractModelRegistry, @unchecked Sendable {
             smollm3Three3b4bit,
             ernie45Zero0Point3BPTBf16Ft,
             lfm2One1Point2b4bit,
+            lfm2Eight8bA1b4bit,
+            mamba130mF32,
+            mamba2Three7b70m,
+            falconH1Zero0Point5bInstruct4bit,
+            granite4Point0HTiny4bit,
             baichuanM1Fourteen14bInstruct4bit,
             exaone4Point0One1Point2b4bit
         ]
@@ -438,7 +473,7 @@ internal final class LLMModelFactory: ModelFactory {
         let baseConfig: BaseConfiguration
         do {
             baseConfig = try JSONDecoder().decode(
-                BaseConfiguration.self, from: Data(contentsOf: configurationURL))
+                BaseConfiguration.self, from: loadJSONData(from: configurationURL))
         } catch let error as DecodingError {
             throw ModelFactoryError.configurationDecodingError(
                 configurationURL.lastPathComponent, configuration.name, error)

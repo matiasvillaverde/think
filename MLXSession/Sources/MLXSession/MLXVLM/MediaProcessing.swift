@@ -1,7 +1,16 @@
+@preconcurrency import AVFoundation
 import CoreImage
 import CoreImage.CIFilterBuiltins
 import Foundation
 import MLX
+
+internal typealias VideoFrame = UserInput.VideoFrame
+
+internal struct ProcessedFrames {
+    internal let frames: [MLXArray]
+    internal let timestamps: [CMTime]
+    internal let totalDuration: CMTime
+}
 
 internal enum MediaProcessing {
 
@@ -121,4 +130,159 @@ internal enum MediaProcessing {
 
         return image
     }
+
+    private static func validateAsset(_ asset: AVAsset) async throws {
+        let tracks = try await asset.loadTracks(withMediaType: .video)
+
+        guard !tracks.isEmpty,
+            let videoTrack = tracks.first
+        else { throw VLMError.noVideoTrackFound }
+
+        let isDecodable = try await videoTrack.load(.isDecodable)
+
+        if !isDecodable {
+            throw VLMError.videoNotDecodable
+        }
+    }
+
+    internal static func asProcessedSequence(
+        _ video: UserInput.Video,
+        samplesPerSecond: Int,
+        frameProcessing: (VideoFrame) throws -> VideoFrame = { $0 }
+    ) async throws -> ProcessedFrames {
+        return try await asProcessedSequence(
+            video,
+            targetFPS: { _ in Double(samplesPerSecond) },
+            maxFrames: Int.max,
+            frameProcessing: frameProcessing
+        )
+    }
+
+    internal static func asProcessedSequence(
+        _ video: UserInput.Video,
+        targetFPS: (CMTime) -> Double,
+        maxFrames: Int = Int.max,
+        frameProcessing: (VideoFrame) throws -> VideoFrame = { $0 }
+    ) async throws -> ProcessedFrames {
+        switch video {
+        case .avAsset(let asset):
+            try await validateAsset(asset)
+            return try await _asProcessedSequence(
+                asset, maxFrames: maxFrames, targetFPS: targetFPS, frameProcessing: frameProcessing)
+        case .url(let url):
+            let asset = AVURLAsset(url: url)
+            try await validateAsset(asset)
+            return try await _asProcessedSequence(
+                asset, maxFrames: maxFrames, targetFPS: targetFPS, frameProcessing: frameProcessing)
+        case .frames(let frames):
+            return try await _asProcessedSequence(
+                frames, targetFPS: targetFPS, frameProcessing: frameProcessing)
+        }
+    }
+
+    private static func _asProcessedSequence(
+        _ asset: AVAsset,
+        maxFrames: Int,
+        targetFPS: (CMTime) -> Double,
+        frameProcessing: (VideoFrame) throws -> VideoFrame = { $0 }
+    ) async throws -> ProcessedFrames {
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.appliesPreferredTrackTransform = true
+        generator.requestedTimeToleranceBefore = .zero
+        generator.requestedTimeToleranceAfter = .zero
+
+        guard let duration = try? await asset.load(.duration) else {
+            throw VLMError.processing("Failed to load the asset's duration.")
+        }
+        let fps = targetFPS(duration)
+        let estimatedFrames = Int(round(fps * duration.seconds))
+        let desiredFrames = min(estimatedFrames, maxFrames)
+        let finalFrameCount = max(desiredFrames, 1)
+
+        let sampledTimeValues = MLXArray.linspace(
+            0, duration.value, count: Int(finalFrameCount)
+        ).asArray(Int64.self)
+
+        let timescale = duration.timescale
+        let sampledTimes = sampledTimeValues.map { CMTime(value: $0, timescale: timescale) }
+
+        var ciImages: [CIImage] = []
+        var timestamps: [CMTime] = []
+
+        for await result in generator.images(for: sampledTimes) {
+            switch result {
+            case .success(requestedTime: _, let image, actualTime: let actual):
+                let ciImage = CIImage(
+                    cgImage: image, options: [.colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!])
+                let frame = try frameProcessing(.init(frame: ciImage, timeStamp: actual))
+                ciImages.append(frame.frame)
+                timestamps.append(frame.timeStamp)
+            case .failure:
+                break
+            }
+        }
+
+        let framesAsArrays = ciImages.map { MediaProcessing.asMLXArray($0) }
+        return ProcessedFrames(
+            frames: framesAsArrays,
+            timestamps: timestamps,
+            totalDuration: duration
+        )
+    }
+
+    private static func _asProcessedSequence(
+        _ videoFrames: [VideoFrame],
+        targetFPS: (CMTime) -> Double,
+        frameProcessing: (VideoFrame) throws -> VideoFrame = { $0 }
+    ) async throws -> ProcessedFrames {
+        precondition(videoFrames.isEmpty == false)
+
+        let startTime = videoFrames.first?.timeStamp ?? .zero
+        let endTime = videoFrames.last?.timeStamp ?? .zero
+        let timeRange = CMTimeRange(start: startTime, end: endTime)
+        let duration = timeRange.duration
+
+        let fps = targetFPS(duration)
+        let estimatedFrames = Int(round(fps * duration.seconds))
+        let desiredFrames = min(estimatedFrames, videoFrames.count)
+        let finalFrameCount = max(desiredFrames, 1)
+
+        let sampledTimeValues = MLXArray.linspace(
+            0, duration.value, count: Int(finalFrameCount)
+        ).asArray(Int64.self)
+
+        let timescale = duration.timescale
+        var ciImages: [CIImage] = []
+        var timestamps: [CMTime] = []
+
+        var frameIndex = videoFrames.startIndex
+        for value in sampledTimeValues {
+            let targetTime = CMTime(value: value, timescale: timescale)
+            var targetIndex: Int?
+            while frameIndex < videoFrames.endIndex {
+                if videoFrames[frameIndex].timeStamp > targetTime {
+                    break
+                } else {
+                    targetIndex = frameIndex
+                    frameIndex += 1
+                }
+            }
+
+            if let targetIndex {
+                let videoFrame = videoFrames[targetIndex]
+                let frame = try frameProcessing(
+                    .init(frame: videoFrame.frame, timeStamp: videoFrame.timeStamp))
+                ciImages.append(frame.frame)
+                timestamps.append(frame.timeStamp)
+            }
+        }
+
+        let framesAsArrays = ciImages.map { MediaProcessing.asMLXArray($0) }
+        return ProcessedFrames(
+            frames: framesAsArrays,
+            timestamps: timestamps,
+            totalDuration: duration
+        )
+    }
+
 }
