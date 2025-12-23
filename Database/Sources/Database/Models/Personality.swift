@@ -71,6 +71,14 @@ public final class Personality: Identifiable, Equatable, ObservableObject {
     @Relationship(deleteRule: .nullify)
     public private(set) var user: User?
 
+    /// Memories associated with this personality (cascade delete when personality is deleted)
+    @Relationship(deleteRule: .cascade, inverse: \Memory.personality)
+    public internal(set) var memories: [Memory] = []
+
+    /// The chat associated with this personality (1:1 relationship, cascade delete)
+    @Relationship(deleteRule: .cascade, inverse: \Chat.personality)
+    public internal(set) var chat: Chat?
+
     // MARK: - Computed Properties
 
     /// Returns the appropriate image for display
@@ -86,8 +94,34 @@ public final class Personality: Identifiable, Equatable, ObservableObject {
         return Color.accentColor
     }
 
-    /// Whether this personality can be edited/deleted
+    /// Returns the soul memory associated with this personality (first soul-type memory)
+    public var soul: Memory? {
+        memories.first { $0.type == .soul }
+    }
+
+    /// Whether this personality has any conversation messages
+    public var hasConversation: Bool {
+        guard let chat else { return false }
+        return !chat.messages.isEmpty
+    }
+
+    /// The date of the last message in this personality's conversation
+    public var lastMessageDate: Date? {
+        chat?.messages.last?.createdAt
+    }
+
+    /// The date to use for sorting - last message date or creation date
+    public var sortDate: Date {
+        lastMessageDate ?? createdAt
+    }
+
+    /// Whether this personality can be edited (all personalities are now editable)
     public var isEditable: Bool {
+        true
+    }
+
+    /// Whether this personality can be deleted (only custom personalities can be deleted)
+    public var isDeletable: Bool {
         isCustom
     }
 

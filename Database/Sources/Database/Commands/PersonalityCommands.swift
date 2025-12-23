@@ -215,8 +215,189 @@ public enum PersonalityCommands {
                 customPersonality.customImage = imageAttachment
             }
 
-            Logger.database.info("Created custom personality with ID: \(customPersonality.id) for user: \(user.id)")
+            try context.save()
+
+            // Note: Chat is created lazily when the personality is selected via GetChat command.
+            // This allows personalities to be created even when models haven't been downloaded yet.
+
+            Logger.database.info("Created custom personality \(customPersonality.id) for user: \(user.id)")
             return customPersonality.id
+        }
+    }
+
+    /// Updates an existing personality's properties
+    public struct Update: WriteCommand {
+        public var requiresUser: Bool { false }
+        public var requiresRag: Bool { false }
+
+        private let personalityId: UUID
+        private let name: String?
+        private let description: String?
+        private let systemInstruction: String?
+        private let category: PersonalityCategory?
+        private let tintColorHex: String?
+        private let imageName: String?
+        private let customImage: Data?
+
+        /// Initialize an Update command
+        /// - Parameters:
+        ///   - personalityId: The ID of the personality to update
+        ///   - name: New name (nil to keep existing)
+        ///   - description: New description (nil to keep existing)
+        ///   - systemInstruction: New system instruction text (nil to keep existing, only for custom)
+        ///   - category: New category (nil to keep existing)
+        ///   - tintColorHex: New tint color as hex string (nil to keep existing)
+        ///   - imageName: New image name (nil to keep existing)
+        ///   - customImage: New custom image data (nil to keep existing)
+        public init(
+            personalityId: UUID,
+            name: String? = nil,
+            description: String? = nil,
+            systemInstruction: String? = nil,
+            category: PersonalityCategory? = nil,
+            tintColorHex: String? = nil,
+            imageName: String? = nil,
+            customImage: Data? = nil
+        ) {
+            self.personalityId = personalityId
+            self.name = name
+            self.description = description
+            self.systemInstruction = systemInstruction
+            self.category = category
+            self.tintColorHex = tintColorHex
+            self.imageName = imageName
+            self.customImage = customImage
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            let personality: Personality = try fetchPersonality(in: context)
+            try updateTextProperties(for: personality)
+            try updateVisualProperties(for: personality, in: context)
+            try context.save()
+            Logger.database.info("Updated personality with ID: \(personalityId)")
+            return personality.id
+        }
+
+        private func fetchPersonality(in context: ModelContext) throws -> Personality {
+            let descriptor = FetchDescriptor<Personality>(
+                predicate: #Predicate<Personality> { $0.id == personalityId }
+            )
+            guard let personality = try context.fetch(descriptor).first else {
+                Logger.database.error("PersonalityCommands.Update: personality not found")
+                throw DatabaseError.personalityNotFound
+            }
+            return personality
+        }
+
+        private func updateTextProperties(for personality: Personality) throws {
+            if let name = name {
+                let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmedName.isEmpty else {
+                    throw DatabaseError.invalidInput("Personality name cannot be empty")
+                }
+                personality.name = trimmedName
+            }
+
+            if let description = description {
+                personality.displayDescription = description
+            }
+
+            if let systemInstruction = systemInstruction {
+                try updateSystemInstruction(systemInstruction, for: personality)
+            }
+
+            if let category = category {
+                personality.category = category
+            }
+        }
+
+        private func updateSystemInstruction(_ instruction: String, for personality: Personality) throws {
+            let trimmedInstruction = instruction.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard trimmedInstruction.count >= 10 else {
+                throw DatabaseError.invalidInput("System instruction must be at least 10 characters")
+            }
+            guard trimmedInstruction.count <= 5000 else {
+                throw DatabaseError.invalidInput("System instruction must be less than 5000 characters")
+            }
+            personality.systemInstruction = .custom(trimmedInstruction)
+        }
+
+        private func updateVisualProperties(
+            for personality: Personality,
+            in context: ModelContext
+        ) throws {
+            if let tintColorHex = tintColorHex {
+                personality.tintColorHex = tintColorHex
+            }
+            if let imageName = imageName {
+                personality.imageName = imageName
+            }
+            if let customImage = customImage {
+                try updateCustomImage(customImage, for: personality, in: context)
+            }
+        }
+
+        private func updateCustomImage(
+            _ imageData: Data,
+            for personality: Personality,
+            in context: ModelContext
+        ) throws {
+            let maxImageSize: Int = 5 * 1024 * 1024 // 5MB
+            guard imageData.count <= maxImageSize else {
+                throw DatabaseError.invalidInput("Image size must be less than 5MB")
+            }
+            if let oldImage = personality.customImage {
+                context.delete(oldImage)
+            }
+            let imageAttachment = ImageAttachment(
+                image: imageData,
+                prompt: nil,
+                content: "Custom personality image for \(personality.name)"
+            )
+            context.insert(imageAttachment)
+            personality.customImage = imageAttachment
+        }
+    }
+
+    /// Deletes a custom personality (only custom personalities can be deleted)
+    public struct Delete: WriteCommand {
+        public var requiresUser: Bool { false }
+        public var requiresRag: Bool { false }
+
+        private let personalityId: UUID
+
+        public init(personalityId: UUID) {
+            self.personalityId = personalityId
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            let descriptor = FetchDescriptor<Personality>(
+                predicate: #Predicate<Personality> { $0.id == personalityId }
+            )
+
+            guard let personality = try context.fetch(descriptor).first else {
+                throw DatabaseError.personalityNotFound
+            }
+
+            guard personality.isCustom else {
+                Logger.database.error("Cannot delete system personality: \(personality.name)")
+                throw PersonalityError.cannotEditSystemPersonality
+            }
+
+            let deletedId = personality.id
+            Logger.database.info("Deleting custom personality with ID: \(personalityId)")
+            context.delete(personality)
+            try context.save()
+            Logger.database.info("Successfully deleted personality with ID: \(personalityId)")
+            return deletedId
         }
     }
 }

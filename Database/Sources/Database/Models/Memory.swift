@@ -53,6 +53,10 @@ public final class Memory: Identifiable, Equatable {
     @Relationship(deleteRule: .nullify)
     public private(set) var user: User?
 
+    /// The personality this memory is associated with (nil for user-level memories)
+    @Relationship(deleteRule: .nullify)
+    public private(set) var personality: Personality?
+
     // MARK: - Initializer
 
     init(
@@ -61,7 +65,8 @@ public final class Memory: Identifiable, Equatable {
         date: Date? = nil,
         keywords: [String] = [],
         chat: Chat? = nil,
-        user: User? = nil
+        user: User? = nil,
+        personality: Personality? = nil
     ) {
         self.typeRaw = type.rawValue
         self.content = content
@@ -69,6 +74,7 @@ public final class Memory: Identifiable, Equatable {
         self.keywords = keywords
         self.chat = chat
         self.user = user
+        self.personality = personality
     }
 
     // MARK: - Sendable Conversion

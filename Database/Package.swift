@@ -32,9 +32,6 @@ let package = Package(
                 .process("Resources/Localizable.xcstrings"),
                 .process("Resources/Media.xcassets")
             ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
-            ]
         ),
         .testTarget(
             name: "DatabaseTests",

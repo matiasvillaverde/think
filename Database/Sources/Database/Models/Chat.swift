@@ -47,7 +47,7 @@ public final class Chat: Identifiable, Equatable, ObservableObject {
     public internal(set) var languageModel: Model
 
     @Relationship()
-    public internal(set) var personality: Personality?
+    public internal(set) var personality: Personality
 
     @Relationship()
     /// Model owned by the User
