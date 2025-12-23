@@ -136,6 +136,24 @@ public protocol ModelDownloaderViewModeling: Sendable {
     /// - Returns: The UUID of the created model entry
     func createModelEntry(for discovery: DiscoveredModel) async -> UUID?
 
+    // MARK: - Local Model Support
+
+    /// Adds a locally-referenced model without downloading.
+    ///
+    /// The model is stored by reference (not copied), and is immediately marked as downloaded.
+    ///
+    /// - Parameters:
+    ///   - name: Display name for the model
+    ///   - backend: Backend format (.gguf or .mlx)
+    ///   - type: Model type (language, visualLanguage, diffusion, etc.)
+    ///   - parameters: Approximate parameter count (optional; use 1 if unknown)
+    ///   - ramNeeded: Estimated RAM needed in bytes (optional; use 0 if unknown)
+    ///   - size: Total size in bytes (optional; use 0 if unknown)
+    ///   - locationLocal: Local filesystem path
+    ///   - locationBookmark: Security-scoped bookmark data for local access
+    /// - Returns: The UUID of the created model entry
+    func addLocalModel(_ model: LocalModelImport) async -> UUID?
+
     // MARK: - Notification Support
     /// Requests notification permission for background download notifications
     ///

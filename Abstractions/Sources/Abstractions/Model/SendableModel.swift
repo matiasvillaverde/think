@@ -40,6 +40,15 @@ public struct SendableModel: Equatable, Hashable, Sendable {
     /// (e.g., "mlx-community/Llama-3.2-3B-Instruct-4bit")
     public let location: ModelLocation
 
+    /// Where this model's files are sourced from.
+    public let locationKind: ModelLocationKind
+
+    /// Optional local file path for user-selected models.
+    public let locationLocal: String?
+
+    /// Security-scoped bookmark data for local models.
+    public let locationBookmark: Data?
+
     /// Detailed memory requirements (optional for backward compatibility)
     /// 
     /// This property provides comprehensive memory requirement information
@@ -143,6 +152,9 @@ public struct SendableModel: Equatable, Hashable, Sendable {
         location: String,
         architecture: Architecture,
         backend: Backend = .mlx,
+        locationKind: ModelLocationKind = .huggingFace,
+        locationLocal: String? = nil,
+        locationBookmark: Data? = nil,
         detailedMemoryRequirements: MemoryRequirements? = nil,
         metadata: ModelMetadata? = nil
     ) {
@@ -151,6 +163,9 @@ public struct SendableModel: Equatable, Hashable, Sendable {
         self.modelType = modelType
         self.backend = backend
         self.location = location
+        self.locationKind = locationKind
+        self.locationLocal = locationLocal
+        self.locationBookmark = locationBookmark
         self.architecture = architecture
         self.detailedMemoryRequirements = detailedMemoryRequirements
         self.metadata = metadata
@@ -159,7 +174,8 @@ public struct SendableModel: Equatable, Hashable, Sendable {
     public var debugDescription: String {
         """
         Model(id: \(id), ramNeeded: \(ramNeeded), modelType: \(modelType), \
-        backend: \(backend), architecture: \(architecture), location: \(location))
+        backend: \(backend), architecture: \(architecture), location: \(location), \
+        locationKind: \(locationKind))
         """
     }
 }

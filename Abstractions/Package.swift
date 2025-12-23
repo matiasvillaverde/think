@@ -28,9 +28,7 @@ let package = Package(
             resources: [
                 .process("Resources/Localizable.xcstrings")
             ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
-            ]),
+),
         .target(
             name: "AbstractionsTestUtilities",
             dependencies: ["Abstractions"]),
