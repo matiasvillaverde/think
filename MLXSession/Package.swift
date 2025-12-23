@@ -23,6 +23,7 @@ let package = Package(
         .package(
             url: "https://github.com/huggingface/swift-transformers", .upToNextMinor(from: "1.1.6")
         ),
+        .package(url: "https://github.com/ml-explore/mlx-swift-lm", .upToNextMinor(from: "2.30.3")),
     ],
     targets: [
         .target(
@@ -34,6 +35,7 @@ let package = Package(
                 .product(name: "MLXNN", package: "mlx-swift"),
                 .product(name: "MLXOptimizers", package: "mlx-swift"),
                 .product(name: "MLXRandom", package: "mlx-swift"),
+                .product(name: "MLXLMCommon", package: "mlx-swift-lm"),
                 .product(name: "MLXLinalg", package: "mlx-swift"),
                 .product(name: "Transformers", package: "swift-transformers"),
             ]
@@ -202,6 +204,62 @@ let package = Package(
         ),
         .testTarget(
             name: "MLXKimiVLMTests",
+            dependencies: [
+                "MLXSession",
+                "MLXSessionTestUtilities"
+            ],
+            resources: [.copy("Resources")]
+        ),
+        .testTarget(
+            name: "MLXMambaTests",
+            dependencies: [
+                "MLXSession",
+                "MLXSessionTestUtilities"
+            ],
+            resources: [.copy("Resources")]
+        ),
+        .testTarget(
+            name: "MLXMamba2Tests",
+            dependencies: [
+                "MLXSession",
+                "MLXSessionTestUtilities"
+            ],
+            resources: [.copy("Resources")]
+        ),
+        .testTarget(
+            name: "MLXGemma3VLMTests",
+            dependencies: [
+                "MLXSession",
+                "MLXSessionTestUtilities"
+            ],
+            resources: [.copy("Resources")]
+        ),
+        .testTarget(
+            name: "MLXFalconH1Tests",
+            dependencies: [
+                "MLXSession",
+                "MLXSessionTestUtilities"
+            ],
+            resources: [.copy("Resources")]
+        ),
+        .testTarget(
+            name: "MLXGraniteHybridTests",
+            dependencies: [
+                "MLXSession",
+                "MLXSessionTestUtilities"
+            ],
+            resources: [.copy("Resources")]
+        ),
+        .testTarget(
+            name: "MLXLFM2MoETests",
+            dependencies: [
+                "MLXSession",
+                "MLXSessionTestUtilities"
+            ],
+            resources: [.copy("Resources")]
+        ),
+        .testTarget(
+            name: "MLXQwen3VLTests",
             dependencies: [
                 "MLXSession",
                 "MLXSessionTestUtilities"
