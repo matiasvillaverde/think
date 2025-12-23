@@ -17,10 +17,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "DataAssets",
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
-            ]),
+            name: "DataAssets"),
         .testTarget(
             name: "DataAssetsTests",
             dependencies: ["DataAssets"]
