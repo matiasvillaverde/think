@@ -30,4 +30,23 @@ public enum PersonalityCategory: String, CaseIterable, Codable, Sendable {
             return String(localized: "Productivity", bundle: .module)
         }
     }
+
+    public var iconName: String {
+        switch self {
+        case .creative:
+            return "paintbrush"
+        case .education:
+            return "book.closed"
+        case .entertainment:
+            return "gamecontroller"
+        case .health:
+            return "heart"
+        case .lifestyle:
+            return "leaf"
+        case .personal:
+            return "person"
+        case .productivity:
+            return "bolt"
+        }
+    }
 }
