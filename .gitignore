@@ -70,6 +70,13 @@ MLXSession/Tests/MLX*/Resources/**/vocab.json
 MLXSession/Tests/MLX*/Resources/**/merges.txt
 MLXSession/Tests/MLX*/Resources/**/added_tokens.json
 MLXSession/Tests/MLX*/Resources/**/special_tokens_map.json
+
+# Ignore model directories under MLXSession tests (allow download scripts)
+MLXSession/Tests/MLXFalconH1Tests/Resources/Falcon-H1-0.5B-Instruct-4bit/
+MLXSession/Tests/MLXGemma3VLMTests/Resources/gemma-3-4b-it-qat-3bit/
+MLXSession/Tests/MLXGraniteHybridTests/Resources/granite-4.0-h-tiny-4bit/
+MLXSession/Tests/MLXLFM2MoETests/Resources/LFM2-8B-A1B-4bit/
+MLXSession/Tests/MLXQwen3VLTests/Resources/Qwen3-VL-4B-Instruct-3bit/
 # Temporary clone directories from download scripts
 MLXSession/Tests/MLX*/Resources/**/temp_clone/
 # Keep the download scripts!
