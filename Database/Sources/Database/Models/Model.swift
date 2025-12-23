@@ -89,6 +89,19 @@ public final class Model: ObservableObject {
     @Attribute(.allowsCloudEncryption)
     public internal(set) var locationHuggingface: String? = ""
 
+    /// Where this model's files are sourced from.
+    @Attribute(.allowsCloudEncryption)
+    public internal(set) var locationKind: ModelLocationKind = ModelLocationKind.huggingFace
+
+    /// Local filesystem location (string) for user-selected models.
+    /// Stored as a string to preserve bookmark-resolved paths.
+    @Attribute(.allowsCloudEncryption)
+    public internal(set) var locationLocal: String?
+
+    /// Security-scoped bookmark data for local models (iOS/macOS).
+    @Attribute(.allowsCloudEncryption)
+    public internal(set) var locationBookmark: Data?
+
     // MARK: - Versioning
 
     /// Model version for tracking compatibility and migrations
@@ -117,18 +130,27 @@ public final class Model: ObservableObject {
         ramNeeded: UInt64,
         size: UInt64,
         locationHuggingface: String,
+        locationKind: ModelLocationKind = .huggingFace,
+        locationLocal: String? = nil,
+        locationBookmark: Data? = nil,
         version: Int = 1,
         architecture: Architecture = .unknown
     ) throws {
         // Validate location format before initialization
-        if locationHuggingface.isEmpty {
-            throw ModelError.missingLocation("HuggingFace location cannot be empty")
-        }
+        if locationKind == .huggingFace {
+            if locationHuggingface.isEmpty {
+                throw ModelError.missingLocation("HuggingFace location cannot be empty")
+            }
 
-        // Basic validation for HuggingFace location format (should contain '/' for org/model)
-        // Allow some flexibility for test cases but reject obvious invalid formats
-        if locationHuggingface == "no-location" || locationHuggingface == "invalid" {
-            throw ModelError.invalidLocation
+            // Basic validation for HuggingFace location format (should contain '/' for org/model)
+            // Allow some flexibility for test cases but reject obvious invalid formats
+            if locationHuggingface == "no-location" || locationHuggingface == "invalid" {
+                throw ModelError.invalidLocation
+            }
+        } else if locationKind == .localFile {
+            if locationLocal == nil || locationLocal?.isEmpty == true {
+                throw ModelError.missingLocation("Local model location cannot be empty")
+            }
         }
 
         // Initialize arrays first
@@ -154,6 +176,9 @@ public final class Model: ObservableObject {
         self.size = size
         self.version = version
         self.locationHuggingface = locationHuggingface
+        self.locationKind = locationKind
+        self.locationLocal = locationLocal
+        self.locationBookmark = locationBookmark
         self.architecture = architecture
         self.state = .notDownloaded
         self.downloadProgress = 0.0
@@ -181,7 +206,9 @@ extension Model {
             displayDescription: \(displayDescription),
             ramNeeded: \(ByteCountFormatter.string(fromByteCount: Int64(ramNeeded), countStyle: .memory)),
             size: \(ByteCountFormatter.string(fromByteCount: Int64(size), countStyle: .file)),
-            location: \(locationHuggingface.debugDescription)
+            location: \(locationHuggingface.debugDescription),
+            locationKind: \(locationKind.rawValue),
+            locationLocal: \(locationLocal.debugDescription)
         )
         """
     }

@@ -20,6 +20,9 @@ public struct ModelDTO: Decodable, Sendable {
     let ramNeeded: UInt64
     let size: UInt64
     let locationHuggingface: String
+    let locationKind: ModelLocationKind?
+    let locationLocal: String?
+    let locationBookmark: Data?
     let version: Int
     let architecture: Architecture
 
@@ -41,6 +44,9 @@ public struct ModelDTO: Decodable, Sendable {
         ramNeeded: UInt64,
         size: UInt64,
         locationHuggingface: String,
+        locationKind: ModelLocationKind = .huggingFace,
+        locationLocal: String? = nil,
+        locationBookmark: Data? = nil,
         version: Int,
         architecture: Architecture = .unknown
     ) {
@@ -62,6 +68,9 @@ public struct ModelDTO: Decodable, Sendable {
         self.size = size
         self.version = version
         self.locationHuggingface = locationHuggingface
+        self.locationKind = locationKind
+        self.locationLocal = locationLocal
+        self.locationBookmark = locationBookmark
         self.architecture = architecture
     }
 }
@@ -88,6 +97,9 @@ extension ModelDTO {
             ramNeeded: ramNeeded,
             size: size,
             locationHuggingface: locationHuggingface,
+            locationKind: locationKind ?? .huggingFace,
+            locationLocal: locationLocal,
+            locationBookmark: locationBookmark,
             version: version,
             architecture: architecture
         )

@@ -147,6 +147,9 @@ extension ModelCommands {
                     ramNeeded: sendableModel.ramNeeded,
                     size: UInt64(totalSize), // Use actual total size from files
                     locationHuggingface: sendableModel.location,
+                    locationKind: .huggingFace,
+                    locationLocal: nil,
+                    locationBookmark: nil,
                     version: 2, // Downloaded models should be version 2
                     architecture: architecture
                 )
@@ -166,6 +169,9 @@ extension ModelCommands {
 
                 // Ensure HuggingFace location is set correctly
                 model.locationHuggingface = sendableModel.location
+                model.locationKind = .huggingFace
+                model.locationLocal = nil
+                model.locationBookmark = nil
 
                 // Add ModelFile entities from DiscoveredModel files
                 for discoveredFile in discoveredModelSnapshot.files {
@@ -222,6 +228,10 @@ extension ModelCommands {
             model.type = sendableModel.modelType
             model.backend = sendableModel.backend
             model.ramNeeded = sendableModel.ramNeeded
+            model.locationHuggingface = sendableModel.location
+            model.locationKind = .huggingFace
+            model.locationLocal = nil
+            model.locationBookmark = nil
 
             // Update metadata from discovered model snapshot
             model.author = discoveredModelSnapshot.author

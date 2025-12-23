@@ -13,13 +13,23 @@ extension Model {
             version: nil // Version not stored in Model
         )
 
+        let locationValue: String
+        if locationKind == .localFile {
+            locationValue = locationLocal ?? ""
+        } else {
+            locationValue = locationHuggingface ?? ""
+        }
+
         return SendableModel(
             id: id,
             ramNeeded: ramNeeded,
             modelType: type,
-            location: locationHuggingface ?? "",
+            location: locationValue,
             architecture: architecture ?? .unknown,
             backend: backend,
+            locationKind: locationKind,
+            locationLocal: locationLocal,
+            locationBookmark: locationBookmark,
             detailedMemoryRequirements: nil,
             metadata: metadata
         )

@@ -100,6 +100,9 @@ public enum ModelCommands {
             model.size = dto.size
             model.state = .notDownloaded // Default to not Downloaded
             model.locationHuggingface = dto.locationHuggingface
+            model.locationKind = dto.locationKind ?? .huggingFace
+            model.locationLocal = dto.locationLocal
+            model.locationBookmark = dto.locationBookmark
         }
     }
 }

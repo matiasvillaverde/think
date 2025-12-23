@@ -36,6 +36,7 @@ extension ModelCommands {
             Logger.database.info("Found model: \(model.id), current state: \(String(describing: model.state))")
             Logger.database.info("Setting model state to notDownloaded")
             model.state = .notDownloaded
+            model.downloadProgress = 0.0
 
             Logger.database.info("Saving context")
             try context.save()
@@ -79,6 +80,7 @@ extension ModelCommands {
             case .downloadingActive, .downloadingPaused:
                 Logger.database.info("Model is in downloading state, resetting to notDownloaded")
                 model.state = .notDownloaded
+                model.downloadProgress = 0.0
 
                 Logger.database.info("Saving context")
                 try context.save()
