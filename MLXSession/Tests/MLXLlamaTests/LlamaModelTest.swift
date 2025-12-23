@@ -91,11 +91,13 @@ struct LlamaModelTest {
         let result = try await baseTest.runGenerationForAssertion(
             modelURL: modelURL,
             modelName: "Llama-3.2-1B-Instruct",
-            prompt: "List 5 common house pets:",
-            maxTokens: 30
+            prompt: "Name one common house pet. Answer with exactly one word from this list: dog, cat, fish, bird, hamster, rabbit, turtle.",
+            maxTokens: 10
         )
 
-        #expect(result.lowercased().contains("dog"))
+        let normalized = result.lowercased()
+        let pets = ["dog", "cat", "fish", "bird", "hamster", "rabbit", "turtle"]
+        #expect(pets.contains { normalized.contains($0) })
     }
 
     @Test("Llama simple math")

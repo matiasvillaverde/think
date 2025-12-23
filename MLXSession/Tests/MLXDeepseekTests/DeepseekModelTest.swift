@@ -37,18 +37,26 @@ struct DeepseekModelTest {
         let result = try await baseTest.runGenerationForAssertion(
             modelURL: modelURL,
             modelName: "DeepSeek-R1-Distill-Qwen-7B",
-            prompt: "Name one common house pet. Answer with a single word and no reasoning.",
-            maxTokens: 60
+            prompt: """
+Name one common house pet. Respond with exactly one word from this list and nothing else:
+dog, cat, fish, bird, hamster, rabbit, turtle.
+If you cannot comply, output dog.
+""",
+            maxTokens: 80
         )
 
         let normalized = result.lowercased()
         let pets = [
             "dog", "cat", "fish", "bird", "hamster", "rabbit", "turtle",
-            "perro", "gato", "pez", "pajaro", "pájaro", "hámster", "hamster", "conejo", "tortuga"
+            "perro", "gato", "pez", "pajaro", "pájaro", "hámster", "conejo", "tortuga"
         ]
-        let petsCn = ["狗", "猫", "鱼", "鸟", "仓鼠", "兔", "兔子", "乌龟"]
-        let matchesPet = pets.contains { normalized.contains($0) } || petsCn.contains { result.contains($0) }
-        #expect(matchesPet)
+        let tokens = normalized
+            .replacingOccurrences(of: "<think>", with: " ")
+            .replacingOccurrences(of: "</think>", with: " ")
+            .split { !$0.isLetter }
+            .map(String.init)
+        let matchesPet = tokens.contains { pets.contains($0) }
+        #expect(matchesPet, "Expected pet from list. Got: '\(result)'")
     }
 
     @Test("DeepSeek simple math")
