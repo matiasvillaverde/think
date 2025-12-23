@@ -166,7 +166,7 @@ extension ToolPolicyCommands {
             }
 
             // 2. Personality-specific policy
-            if let personalityId = chat?.personality?.id,
+            if let personalityId = chat?.personality.id,
                let personalityPolicy = allPolicies.first(where: {
                    $0.personality?.id == personalityId && $0.chat == nil
                }) {

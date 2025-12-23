@@ -244,7 +244,7 @@ extension ChatCommands {
             let chat = try ChatCommands.Read(chatId: chatId).execute(in: context, userId: userId, rag: rag)
 
             // Create configuration based on the chat's personality
-            let config = LLMConfiguration.new(personality: chat.personality ?? Personality.default)
+            let config = LLMConfiguration.new(personality: chat.personality)
 
             Logger.database.info("ChatCommands.GetLanguageModelConfiguration.execute completed successfully")
             return config.toSendable(prompt: prompt)

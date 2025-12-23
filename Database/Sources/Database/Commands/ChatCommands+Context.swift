@@ -101,6 +101,22 @@ extension ChatCommands {
                 )
             }
 
+            // Fetch personality memory context if available
+            let personalityMemoryContext: MemoryContext?
+            if let userId = userId {
+                let personality = chat.personality
+                let memoryContext = try MemoryCommands.GetPersonalityMemoryContext(
+                    personalityId: personality.id,
+                    chatId: chatId,
+                    dailyLogDays: 2
+                ).execute(in: context, userId: userId, rag: rag)
+
+                // Only include if there's actual content
+                personalityMemoryContext = memoryContext.isEmpty ? nil : memoryContext
+            } else {
+                personalityMemoryContext = nil
+            }
+
             let config = ContextConfiguration(
                 systemInstruction: systemInstruction,
                 contextMessages: contextMessages,
@@ -108,7 +124,8 @@ extension ChatCommands {
                 reasoningLevel: chat.languageModelConfig.reasoningLevel,
                 includeCurrentDate: chat.languageModelConfig.includeCurrentDate ?? true,
                 knowledgeCutoffDate: chat.languageModelConfig.knowledgeCutoffDate,
-                currentDateOverride: chat.languageModelConfig.currentDateOverride
+                currentDateOverride: chat.languageModelConfig.currentDateOverride,
+                memoryContext: personalityMemoryContext
             )
 
             Logger.database.info("ChatCommands.FetchContextData.execute completed")

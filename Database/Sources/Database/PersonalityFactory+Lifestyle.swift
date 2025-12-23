@@ -38,8 +38,7 @@ extension PersonalityFactory {
             name: String(localized: "Gen Z Bestie", bundle: .module),
             description: String(localized: "Your trendy friend who keeps you updated", bundle: .module),
             imageName: "gen-z-icon",
-            category: .lifestyle,
-            isFeature: true
+            category: .lifestyle
         )
 
         personality.prompts = createLifestylePrompts(for: personality)
@@ -52,7 +51,8 @@ extension PersonalityFactory {
             name: String(localized: "Philosopher", bundle: .module),
             description: String(localized: "Deep thoughts and existential exploration", bundle: .module),
             imageName: "philosophy-icon",
-            category: .personal
+            category: .personal,
+            isFeature: true
         )
 
         personality.prompts = createPersonalPrompts(for: personality)

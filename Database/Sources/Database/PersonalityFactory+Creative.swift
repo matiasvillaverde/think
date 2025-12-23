@@ -8,7 +8,8 @@ extension PersonalityFactory {
             name: String(localized: "Writing Coach", bundle: .module),
             description: String(localized: "Creative writing mentor and storytelling guide", bundle: .module),
             imageName: "writing-coach-icon",
-            category: .creative
+            category: .creative,
+            isFeature: true
         )
 
         personality.prompts = createCreativePrompts(for: personality)

@@ -462,6 +462,12 @@ public struct AppInitializeCommand: AnonymousCommand {
             // Get default personality
             let defaultPersonality = try getDefaultPersonality(in: context)
 
+            // Check if personality already has a chat (1:1 relationship)
+            if let existingChat = defaultPersonality.chat {
+                Self.logger.info("Default personality already has chat \(existingChat.id)")
+                return
+            }
+
             // Create chat with v2 models only
             let chat = Chat(
                 languageModelConfig: .default,
@@ -496,24 +502,9 @@ public struct AppInitializeCommand: AnonymousCommand {
                     return
                 }
                 
-                Self.logger.info("Creating launch chat - last chat has \(messageCount) messages")
-                Self.logger.info("Reusing v2 models from last chat: \(lastChat.languageModel.name)")
-
-                let defaultPersonality = try getDefaultPersonality(in: context)
-
-                let launchChat = Chat(
-                    languageModelConfig: .default,
-                    languageModel: lastChat.languageModel,
-                    imageModelConfig: .default,
-                    imageModel: lastChat.imageModel,
-                    user: user,
-                    personality: defaultPersonality
-                )
-
-                context.insert(launchChat)
-                try context.save()
-
-                Self.logger.notice("Launch chat created successfully reusing v2 models")
+                Self.logger.info("Last chat has \(messageCount) messages - launch chat not needed")
+                // In the new 1:1 architecture, we don't create multiple chats per personality
+                // The existing chat is reused
             } else {
                 Self.logger.info("No previous v2 chat found - creating initial chat with v2 models")
                 try createInitialChatWithV2Models(for: user, in: context)

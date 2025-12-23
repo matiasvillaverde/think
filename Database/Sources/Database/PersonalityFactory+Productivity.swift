@@ -9,6 +9,7 @@ extension PersonalityFactory {
             description: String(localized: "A helpful and knowledgeable assistant for everyday tasks", bundle: .module),
             imageName: "think",
             category: .productivity,
+            isFeature: true,
             isDefault: true
         )
 
@@ -22,7 +23,8 @@ extension PersonalityFactory {
             name: String(localized: "Code Reviewer", bundle: .module),
             description: String(localized: "Expert code analysis and improvement suggestions", bundle: .module),
             imageName: "code-review-icon",
-            category: .productivity
+            category: .productivity,
+            isFeature: true
         )
 
         personality.prompts = createProductivityPrompts(for: personality)
@@ -35,8 +37,7 @@ extension PersonalityFactory {
             name: String(localized: "Security Expert", bundle: .module),
             description: String(localized: "Cybersecurity guidance and threat assessment", bundle: .module),
             imageName: "security-icon",
-            category: .productivity,
-            isFeature: true
+            category: .productivity
         )
 
         personality.prompts = createProductivityPrompts(for: personality)

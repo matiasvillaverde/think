@@ -4,6 +4,28 @@ import OSLog
 import Abstractions
 import DataAssets
 
+// MARK: - Model Type Helpers
+
+private extension SendableModel.ModelType {
+    var isLanguageCapable: Bool {
+        switch self {
+        case .language, .visualLanguage, .deepLanguage, .flexibleThinker:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isImageCapable: Bool {
+        switch self {
+        case .diffusion, .diffusionXL:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 // MARK: - Chat Creation Commands
 extension ChatCommands {
     public struct Create: WriteCommand {
@@ -56,6 +78,17 @@ extension ChatCommands {
                     Logger.database.error("Failed to get/create default personality: \(error)")
                     throw DatabaseError.personalityNotFound
                 }
+            }
+
+            // Check if personality already has a chat (1:1 relationship)
+            if let existingChat = personality.chat {
+                Logger.database.info("Personality already has chat \(existingChat.id), clearing messages")
+                // Clear existing messages but keep the chat
+                for message in existingChat.messages {
+                    context.delete(message)
+                }
+                try context.save()
+                return existingChat.id
             }
 
             Logger.database.info("Creating new chat with models and personality")
@@ -153,7 +186,6 @@ extension ChatCommands {
         public init(modelId: UUID, personalityId: UUID) {
             self.personalityId = personalityId
             self.modelId = modelId
-            Logger.database.info("ChatCommands.CreateWithModel initialized - modelId: \(modelId.uuidString), personalityId: \(personalityId.uuidString)")
         }
 
         public func execute(
@@ -161,110 +193,112 @@ extension ChatCommands {
             userId: PersistentIdentifier?,
             rag: Ragging?
         ) throws -> UUID {
-            Logger.database.info("ChatCommands.CreateWithModel.execute started")
-
             guard let userId else {
-                Logger.database.error("ChatCommands.CreateWithModel.execute failed: user not found")
                 throw DatabaseError.userNotFound
             }
 
-            Logger.database.info("Fetching user with id: \(userId.id.hashValue)")
             let user = try context.getUser(id: userId)
-            Logger.database.info("Successfully fetched user: \(user.id)")
+            let specifiedModel = try fetchSpecifiedModel(in: context)
+            let models = try resolveModels(specifiedModel: specifiedModel, user: user)
+            let personality = try fetchOrCreatePersonality(in: context)
 
-            // Find the specified model
+            // Handle existing chat (1:1 relationship)
+            if let existingChat = personality.chat {
+                return try updateExistingChat(existingChat, models: models, context: context)
+            }
+
+            return try createNewChat(
+                personality: personality,
+                models: models,
+                user: user,
+                context: context
+            )
+        }
+
+        private func fetchSpecifiedModel(in context: ModelContext) throws -> Model {
             let modelDescriptor = FetchDescriptor<Model>(
                 predicate: #Predicate<Model> { $0.id == modelId }
             )
 
-            guard let specifiedModel = try context.fetch(modelDescriptor).first else {
-                Logger.database.error("Specified model not found: \(modelId)")
+            guard let model = try context.fetch(modelDescriptor).first else {
                 throw DatabaseError.modelNotFound
             }
+            return model
+        }
 
-            Logger.database.info("Found specified model: \(specifiedModel.displayName)")
-
-            // Determine models based on the specified model's type
-            let languageModel: Model
-            let imageModel: Model
-
-            switch specifiedModel.type {
-            case .language, .visualLanguage, .deepLanguage, .flexibleThinker:
-                // Use specified model as language model, find compatible image model
-                languageModel = specifiedModel
-                guard let foundImageModel = user.models.first(where: { model in
-                    switch model.type {
-                    case .diffusion, .diffusionXL:
-                        return true
-                    default:
-                        return false
-                    }
-                }) else {
-                    Logger.database.error("No compatible image model found")
-                    throw DatabaseError.modelNotFound
-                }
-                imageModel = foundImageModel
-            case .diffusion, .diffusionXL:
-                // Use specified model as image model, find compatible language model
-                imageModel = specifiedModel
-                guard let foundLanguageModel = user.models.first(where: {
-                    switch $0.type {
-                    case .language, .visualLanguage, .deepLanguage, .flexibleThinker:
-                        return true
-                    default:
-                        return false
-                    }
-                }) else {
-                    Logger.database.error("No compatible language model found")
-                    throw DatabaseError.modelNotFound
-                }
-                languageModel = foundLanguageModel
+        private func resolveModels(
+            specifiedModel: Model,
+            user: User
+        ) throws -> (language: Model, image: Model) {
+            if specifiedModel.type.isLanguageCapable {
+                let imageModel = try findImageModel(in: user.models)
+                return (specifiedModel, imageModel)
+            } else {
+                let languageModel = try findLanguageModel(in: user.models)
+                return (languageModel, specifiedModel)
             }
+        }
 
-            // Find or create personality
-            let personalityDescriptor = FetchDescriptor<Personality>(
+        private func findImageModel(in models: [Model]) throws -> Model {
+            guard let model = models.first(where: { $0.type.isImageCapable }) else {
+                throw DatabaseError.modelNotFound
+            }
+            return model
+        }
+
+        private func findLanguageModel(in models: [Model]) throws -> Model {
+            guard let model = models.first(where: { $0.type.isLanguageCapable }) else {
+                throw DatabaseError.modelNotFound
+            }
+            return model
+        }
+
+        private func fetchOrCreatePersonality(in context: ModelContext) throws -> Personality {
+            let descriptor = FetchDescriptor<Personality>(
                 predicate: #Predicate<Personality> { $0.id == personalityId }
             )
 
-            Logger.database.info("Fetching personality with id: \(personalityId.uuidString)")
-            let personality: Personality
-            if let existingPersonality = try context.fetch(personalityDescriptor).first {
-                Logger.database.info("Found existing personality: \(existingPersonality.id)")
-                personality = existingPersonality
-            } else {
-                Logger.database.info("No existing personality found, creating safe default personality")
-                // SAFE: Use factory method to get or create default personality
-                do {
-                    personality = try PersonalityFactory.getOrCreateSystemPersonality(
-                        systemInstruction: .englishAssistant,
-                        in: context
-                    )
-                    Logger.database.info("Created/found default personality with id: \(personality.id)")
-                } catch {
-                    Logger.database.error("Failed to get/create default personality: \(error)")
-                    throw DatabaseError.personalityNotFound
-                }
+            if let existing = try context.fetch(descriptor).first {
+                return existing
             }
 
-            Logger.database.info("Creating new chat with specified models")
+            return try PersonalityFactory.getOrCreateSystemPersonality(
+                systemInstruction: .englishAssistant,
+                in: context
+            )
+        }
+
+        private func updateExistingChat(
+            _ chat: Chat,
+            models: (language: Model, image: Model),
+            context: ModelContext
+        ) throws -> UUID {
+            for message in chat.messages {
+                context.delete(message)
+            }
+            chat.languageModel = models.language
+            chat.imageModel = models.image
+            try context.save()
+            return chat.id
+        }
+
+        private func createNewChat(
+            personality: Personality,
+            models: (language: Model, image: Model),
+            user: User,
+            context: ModelContext
+        ) throws -> UUID {
             let chat = Chat(
                 languageModelConfig: LLMConfiguration.new(personality: personality),
-                languageModel: languageModel,
+                languageModel: models.language,
                 imageModelConfig: DiffusorConfiguration.default,
-                imageModel: imageModel,
+                imageModel: models.image,
                 name: "New Chat",
                 user: user,
                 personality: personality
             )
             context.insert(chat)
-
-            // Chats are automatically added through the relationship
-            Logger.database.info("Chat will be added to user through relationship")
-
-            Logger.database.info("Saving context changes")
             try context.save()
-
-            Logger.database.info("ChatCommands.CreateWithModel.execute completed successfully - chat id: \(chat.id)")
             return chat.id
         }
     }
