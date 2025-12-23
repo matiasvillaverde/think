@@ -134,14 +134,24 @@ struct HaveSameModelsTests {
             let defaultPersonalityId = try await getDefaultPersonalityId(database)
             let chatId1 = try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
 
-            // Add different models for second chat
+            // Add different models
             try await addAlternativeModels(database)
 
-            // Create a new chat with the same user
-            let chatId2 = try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
+            // Create a second personality for a second chat (1:1 relationship)
+            let secondPersonalityId = try await database.write(
+                PersonalityCommands.CreateCustom(
+                    name: "Alternative Personality",
+                    description: "A second personality for testing",
+                    customSystemInstruction: "You are an alternative assistant.",
+                    category: .productivity
+                )
+            )
+            let chatId2 = try await database.write(ChatCommands.Create(personality: secondPersonalityId))
 
-            // Get all available models to assign different ones to chat2
-            let alternativeLanguageModel = try await database.read(ModelCommands.GetModel(name: "alternative-text-model"))
+            // Get alternative model to assign to chat2
+            let alternativeLanguageModel = try await database.read(
+                ModelCommands.GetModel(name: "alternative-text-model")
+            )
 
             // Modify chat2 to use different models
             try await database.write(ChatCommands.ModifyChatModelsCommand(
@@ -151,7 +161,9 @@ struct HaveSameModelsTests {
             ))
 
             // When
-            let haveSameModels = try await database.read(ChatCommands.HaveSameModels(chatId1: chatId1, chatId2: chatId2))
+            let haveSameModels = try await database.read(
+                ChatCommands.HaveSameModels(chatId1: chatId1, chatId2: chatId2)
+            )
 
             // Then
             #expect(haveSameModels == false)

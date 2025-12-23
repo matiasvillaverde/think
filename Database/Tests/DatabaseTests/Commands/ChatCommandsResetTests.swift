@@ -38,10 +38,10 @@ struct ChatCommandsResetTests {
         #expect(newChat.languageModelConfig.systemInstruction == SystemInstruction.englishAssistant)
     }
 
-    @Test("Reset all chats handles large number of chats (50)")
+    @Test("Reset all chats clears messages and resets to clean state")
     @MainActor
-    func resetAllChatsWithLargeDataset() async throws {
-        // Given
+    func resetAllChatsClearsMessages() async throws {
+        // Given: A chat with messages
         let config = DatabaseConfiguration(
             isStoredInMemoryOnly: true,
             allowsSave: true,
@@ -52,21 +52,25 @@ struct ChatCommandsResetTests {
         try await addRequiredModelsForChatCommands(database)
         let defaultPersonalityId = try await getDefaultPersonalityId(database)
 
-        // Create 50 chats with alternating system instructions
-        var createdChatIds: [UUID] = []
+        // Create a chat
+        let chatId = try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
 
-        for _ in 0..<50 {
-            let chatId = try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
-            createdChatIds.append(chatId)
-        }
+        // Add a message to the chat
+        try await database.write(MessageCommands.Create(
+            chatId: chatId,
+            userInput: "Test message",
+            isDeepThinker: false
+        ))
 
-        // Verify we have exactly 50 chats
-        let initialChatCount = try await database.read(ValidateChatCountCommand())
-        #expect(initialChatCount == 50)
+        // Verify chat has messages
+        let chatBefore = try await database.read(ChatCommands.Read(chatId: chatId))
+        #expect(chatBefore.messages.count == 1)
 
         // When - Reset all chats
         let start = ProcessInfo.processInfo.systemUptime
-        let newChatId = try await database.write(ChatCommands.ResetAllChats(systemInstruction: .englishAssistant))
+        let newChatId = try await database.write(
+            ChatCommands.ResetAllChats(systemInstruction: .englishAssistant)
+        )
         let duration = ProcessInfo.processInfo.systemUptime - start
 
         // Then - Verify only 1 chat exists after reset
@@ -79,7 +83,7 @@ struct ChatCommandsResetTests {
         #expect(newChat.languageModelConfig.systemInstruction == SystemInstruction.englishAssistant)
 
         // Performance check - should complete within reasonable time
-        #expect(duration < 2.0, "Reset operation should complete within 2 seconds even with 50 chats")
+        #expect(duration < 2.0, "Reset operation should complete quickly")
     }
 
     @Test("Reset all chats fails when no models available")

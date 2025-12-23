@@ -78,9 +78,9 @@ struct AppInitializationExistingUserTests {
         #expect(result.targetScreen == .chat)
     }
 
-    @Test("Creates launch chat when user has existing chat with multiple messages")
+    @Test("Reuses existing chat when user has chat with messages (1:1 relationship)")
     @MainActor
-    func existingUserWithNonEmptyChatCreatesLaunchChat() async throws {
+    func existingUserWithNonEmptyChatReusesExisting() async throws {
         // Given - Database with user having v2 models and existing chat with messages
         let mockRag = MockRagging()
         let config = DatabaseConfiguration(
@@ -133,7 +133,7 @@ struct AppInitializationExistingUserTests {
             user: user,
             personality: personality
         )
-        
+
         // Add messages to make it non-empty
         let message1 = Message(
             userInput: "Hello",
@@ -151,7 +151,7 @@ struct AppInitializationExistingUserTests {
             imageModel: v2ImageModel,
             metrics: Metrics()
         )
-        
+
         // Add channel to message2
         let finalChannel = Channel(type: .final, content: "Hi there!", order: 0)
         finalChannel.message = message2
@@ -171,12 +171,13 @@ struct AppInitializationExistingUserTests {
         // When - Initialize app for existing user
         let result = try await database.execute(AppCommands.Initialize())
 
-        // Then - Launch chat should be created (total 2 chats)
-        #expect(user.chats.count == 2)
+        // Then - In the 1:1 architecture, existing chat is reused (only 1 chat per personality)
+        #expect(user.chats.count == 1)
 
-        let launchChat = user.chats.last!
-        #expect(launchChat.languageModel.version == 2)
-        #expect(launchChat.imageModel.version == 2)
+        // Verify the existing chat is preserved with v2 models
+        let theChat = user.chats.first!
+        #expect(theChat.languageModel.version == 2)
+        #expect(theChat.imageModel.version == 2)
 
         // Verify existing user with existing chats returns chat screen
         #expect(result.targetScreen == .chat)

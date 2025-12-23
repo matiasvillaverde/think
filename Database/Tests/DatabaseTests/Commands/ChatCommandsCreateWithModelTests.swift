@@ -167,8 +167,8 @@ struct ChatCommandsCreateWithModelTests {
 
         // Then: Chat uses custom personality
         let chat = try await database.read(ChatCommands.Read(chatId: chatId))
-        #expect(chat.personality?.id == personalityId)
-        #expect(chat.personality?.name == "Creative Writer")
+        #expect(chat.personality.id == personalityId)
+        #expect(chat.personality.name == "Creative Writer")
     }
 
     @Test("Automatically selects compatible image model")
