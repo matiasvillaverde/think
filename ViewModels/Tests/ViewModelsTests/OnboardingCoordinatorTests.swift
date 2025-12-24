@@ -118,12 +118,14 @@ private actor MockTrackingModelDownloaderViewModel: ModelDownloaderViewModeling 
     var requestNotificationPermissionCalled: Bool = false
     var pauseActiveDownloadsCalled: Bool = false
 
-    func resumeBackgroundDownloads() {
+    func resumeBackgroundDownloads() async {
         resumeBackgroundDownloadsCalled = true
+        await Task.yield()
     }
 
-    func requestNotificationPermission() -> Bool {
+    func requestNotificationPermission() async -> Bool {
         requestNotificationPermissionCalled = true
+        await Task.yield()
         return true
     }
 
@@ -131,62 +133,96 @@ private actor MockTrackingModelDownloaderViewModel: ModelDownloaderViewModeling 
         pauseActiveDownloadsCalled = true
     }
 
-    func downloadModel(_ discoveredModel: DiscoveredModel) {
+    func downloadModel(_ discoveredModel: DiscoveredModel) async {
         // No-op
+        _ = discoveredModel
+        await Task.yield()
     }
 
-    func retryDownload(for modelId: UUID) {
+    func retryDownload(for modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
-    func pauseDownload(for modelId: UUID) {
+    func pauseDownload(for modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
-    func resumeDownload(for modelId: UUID) {
+    func resumeDownload(for modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
-    func cancelDownload(for modelId: UUID) {
+    func cancelDownload(for modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
-    func deleteModel(_ modelId: UUID) {
+    func deleteModel(_ modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
-    func save(_ discovery: DiscoveredModel) -> UUID? {
-        nil
+    func save(_ discovery: DiscoveredModel) async -> UUID? {
+        _ = discovery
+        await Task.yield()
+        return nil
     }
 
-    func download(modelId: UUID) {
+    func download(modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
-    func cancelDownload(modelId: UUID) {
+    func cancelDownload(modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
-    func delete(modelId: UUID) {
+    func delete(modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
-    func pauseDownload(modelId: UUID) {
+    func pauseDownload(modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
-    func resumeDownload(modelId: UUID) {
+    func resumeDownload(modelId: UUID) async {
         // No-op
+        _ = modelId
+        await Task.yield()
     }
 
     func handleBackgroundDownloadCompletion(
         identifier: String,
         completionHandler: @Sendable () -> Void
-    ) {
+    ) async {
+        _ = identifier
+        await Task.yield()
         completionHandler()
     }
 
-    func createModelEntry(for discovery: DiscoveredModel) -> UUID? {
-        nil
+    func createModelEntry(for discovery: DiscoveredModel) async -> UUID? {
+        _ = discovery
+        await Task.yield()
+        return nil
+    }
+
+    func addLocalModel(_ model: LocalModelImport) async -> UUID? {
+        _ = model
+        await Task.yield()
+        return nil
     }
 }

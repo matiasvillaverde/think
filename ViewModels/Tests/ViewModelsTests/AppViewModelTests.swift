@@ -281,77 +281,113 @@ internal enum AppViewModelTests {
 
 // MARK: - Mock Model Downloader
 internal struct MockModelDownloaderViewModel: ModelDownloaderViewModeling {
-    func resumeBackgroundDownloads() {
+    func resumeBackgroundDownloads() async {
         // No-op for tests
+        await Task.yield()
     }
 
-    func requestNotificationPermission() -> Bool {
-        true // Always grant for tests
+    func requestNotificationPermission() async -> Bool {
+        await Task.yield()
+        return true // Always grant for tests
     }
 
     func pauseActiveDownloads() {
         // No-op for tests
     }
 
-    func downloadModel(_ discoveredModel: DiscoveredModel) {
+    func downloadModel(_ discoveredModel: DiscoveredModel) async {
         // No-op for tests
+        _ = discoveredModel
+        await Task.yield()
     }
 
-    func retryDownload(for modelId: UUID) {
+    func retryDownload(for modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
-    func pauseDownload(for modelId: UUID) {
+    func pauseDownload(for modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
-    func resumeDownload(for modelId: UUID) {
+    func resumeDownload(for modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
-    func cancelDownload(for modelId: UUID) {
+    func cancelDownload(for modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
-    func deleteModel(_ modelId: UUID) {
+    func deleteModel(_ modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
-    func save(_ discovery: DiscoveredModel) -> UUID? {
+    func save(_ discovery: DiscoveredModel) async -> UUID? {
         // No-op for tests
-        nil
+        _ = discovery
+        await Task.yield()
+        return nil
     }
 
-    func download(modelId: UUID) {
+    func download(modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
-    func cancelDownload(modelId: UUID) {
+    func cancelDownload(modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
-    func delete(modelId: UUID) {
+    func delete(modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
-    func pauseDownload(modelId: UUID) {
+    func pauseDownload(modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
-    func resumeDownload(modelId: UUID) {
+    func resumeDownload(modelId: UUID) async {
         // No-op for tests
+        _ = modelId
+        await Task.yield()
     }
 
     func handleBackgroundDownloadCompletion(
         identifier: String,
         completionHandler: @Sendable () -> Void
-    ) {
+    ) async {
         // No-op for tests
+        _ = identifier
+        await Task.yield()
         completionHandler()
     }
 
-    func createModelEntry(for discovery: DiscoveredModel) -> UUID? {
+    func createModelEntry(for discovery: DiscoveredModel) async -> UUID? {
         // No-op for tests
-        nil
+        _ = discovery
+        await Task.yield()
+        return nil
+    }
+
+    func addLocalModel(_ model: LocalModelImport) async -> UUID? {
+        _ = model
+        await Task.yield()
+        return nil
     }
 }
