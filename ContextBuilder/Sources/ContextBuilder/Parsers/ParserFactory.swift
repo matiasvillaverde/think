@@ -11,8 +11,26 @@ internal enum ParserFactory {
 
     internal static func createParser(
         for model: SendableModel,
-        cache: ProcessingCache
+        cache: ProcessingCache,
+        output: String? = nil
     ) throws -> OutputParser {
+        if let output {
+            let detectedFormat: OutputFormat = OutputFormatDetector.detect(from: output)
+            switch detectedFormat {
+            case .harmony:
+                return HarmonyOutputParser(labels: HarmonyLabels(), cache: cache)
+
+            case .kimi:
+                return KimiOutputParser(cache: cache)
+
+            case .chatml:
+                return ChatMLOutputParser(labels: LabelFactory.createChatMLLabels(), cache: cache)
+
+            case .unknown:
+                break
+            }
+        }
+
         let labels: any StopSequenceLabels = try LabelFactory.createLabels(for: model.architecture)
 
         switch model.architecture {
