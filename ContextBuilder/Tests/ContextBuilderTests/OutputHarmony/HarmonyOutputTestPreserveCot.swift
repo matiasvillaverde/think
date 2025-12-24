@@ -31,9 +31,12 @@ internal struct HarmonyOutputTestPreserveCot {
             model: model
         )
 
-        // For output tests, we're validating the parsing works correctly
-        // The exact assertion depends on what the test is checking
-        #expect(result != nil)
+        #expect(result.channels.count == 2)
+        #expect(result.channels[0].type == .analysis)
+        #expect(result.channels[0].content ==
+            "User asks a simple question: \"What is 2 + 2?\" The answer: 4.")
+        #expect(result.channels[1].type == .final)
+        #expect(result.channels[1].content == "2 + 2 equals 4.")
     }
 
     private func loadResource(_ name: String) throws -> String {

@@ -31,9 +31,13 @@ internal struct HarmonyOutputStreaming {
             model: model
         )
 
-        // For output tests, we're validating the parsing works correctly
-        // The exact assertion depends on what the test is checking
-        #expect(result != nil)
+        #expect(result.channels.count == 3)
+        #expect(result.channels[0].type == .analysis)
+        #expect(result.channels[0].content == "Let me analyze this step by step.")
+        #expect(result.channels[1].type == .commentary)
+        #expect(result.channels[1].content == "The calculation is straightforward.")
+        #expect(result.channels[2].type == .final)
+        #expect(result.channels[2].content == "The answer is 4.")
     }
 
     private func loadResource(_ name: String) throws -> String {
