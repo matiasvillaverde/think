@@ -7,10 +7,10 @@ import Testing
 struct InternLMModelTest {
     let baseTest = BaseModelTest()
 
-    @Test("Generate text with InternLM2-1.8B model")
+    @Test("Generate text with InternLM2.5-7B model")
     func testInternLMGeneration() async throws {
         guard let modelURL: URL = baseTest.getModelURLIfAvailable(
-            resourceName: "internlm2-chat-1_8b-4bit",
+            resourceName: "internlm2_5-7b-chat-4bit",
             in: Bundle.module
         ) else {
             return
@@ -18,7 +18,7 @@ struct InternLMModelTest {
 
         try await baseTest.runBasicGenerationTest(
             modelURL: modelURL,
-            modelName: "internlm2-chat-1.8b",
+            modelName: "internlm2_5-7b-chat",
             prompt: "Explain quantum computing:",
             expectedTokens: ["quantum", "qubit", "computer", "computing"],
             maxTokens: 15

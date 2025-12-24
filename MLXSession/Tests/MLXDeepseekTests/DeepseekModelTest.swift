@@ -37,11 +37,11 @@ struct DeepseekModelTest {
         let result = try await baseTest.runGenerationForAssertion(
             modelURL: modelURL,
             modelName: "DeepSeek-R1-Distill-Qwen-7B",
-            prompt: """
-Name one common house pet. Respond with exactly one word from this list and nothing else:
-dog, cat, fish, bird, hamster, rabbit, turtle.
-If you cannot comply, output dog.
-""",
+            prompt: "Name one common house pet." +
+                " Respond with exactly one word from this list" +
+                " and nothing else:\n" +
+                "dog, cat, fish, bird, hamster, rabbit, turtle.\n" +
+                "If you cannot comply, output dog.",
             maxTokens: 80
         )
 

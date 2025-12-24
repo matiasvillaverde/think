@@ -91,7 +91,8 @@ struct LlamaModelTest {
         let result = try await baseTest.runGenerationForAssertion(
             modelURL: modelURL,
             modelName: "Llama-3.2-1B-Instruct",
-            prompt: "Name one common house pet. Answer with exactly one word from this list: dog, cat, fish, bird, hamster, rabbit, turtle.",
+            prompt: "Name one common house pet. Answer with exactly one word from this list: " +
+                "dog, cat, fish, bird, hamster, rabbit, turtle.",
             maxTokens: 10
         )
 

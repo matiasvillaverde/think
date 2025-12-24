@@ -19,35 +19,50 @@ struct KimiVLMModelTest {
 
         baseTest.verifyModelFiles(at: modelURL.path)
 
-        let config = ProviderConfiguration(
-            location: modelURL,
-            authentication: .noAuth,
-            modelName: "Kimi-VL-A3B-Thinking-4bit",
-            compute: .small
-        )
-
         let session = MLXSessionFactory.create()
-        let preloadStream = await session.preload(configuration: config)
-        for try await _ in preloadStream {
-            // Consume progress updates
-        }
+        let config = makeConfiguration(modelURL: modelURL)
+        await preload(session: session, config: config)
 
         let testImage = try makeTestImage()
-        let input = LLMInput(
-            context: "Describe the image: <|media_pad|>",
-            images: [testImage],
-            sampling: SamplingParameters(temperature: 0.2, topP: 0.9, seed: 7),
-            limits: ResourceLimits(maxTokens: 40)
-        )
+        let input = makeInput(testImage: testImage)
 
         let stream = await session.stream(input)
         let result = try await baseTest.processStream(stream)
 
         #expect(result.hasReceivedText)
         #expect(!result.text.isEmpty)
+        #expect(result.text.lowercased().contains("func "), "Expected Swift code output.")
         baseTest.verifyMetrics(result.metrics)
 
         await session.unload()
+    }
+
+    private func makeConfiguration(modelURL: URL) -> ProviderConfiguration {
+        ProviderConfiguration(
+            location: modelURL,
+            authentication: .noAuth,
+            modelName: "Kimi-VL-A3B-Thinking-4bit",
+            compute: .small
+        )
+    }
+
+    private func preload(session: MLXSession, config: ProviderConfiguration) async {
+        let preloadStream = await session.preload(configuration: config)
+        for try await _ in preloadStream {
+            // Consume progress updates
+        }
+    }
+
+    private func makeInput(testImage: CGImage) -> LLMInput {
+        LLMInput(
+            context: """
+            Provide Swift code only. Declare a function named describeImage that prints \
+            a short description of the image: <|media_pad|>
+            """,
+            images: [testImage],
+            sampling: SamplingParameters(temperature: 0.2, topP: 0.9, seed: 7),
+            limits: ResourceLimits(maxTokens: 60)
+        )
     }
 
     private func makeTestImage() throws -> CGImage {
