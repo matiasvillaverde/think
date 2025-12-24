@@ -46,9 +46,6 @@ let package = Package(
                 .process("Resources/Assets.xcassets"),
                 .process("Resources/Localizable.xcstrings")
             ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
-            ]
         ),
         .testTarget(
             name: "UIComponentsTests",

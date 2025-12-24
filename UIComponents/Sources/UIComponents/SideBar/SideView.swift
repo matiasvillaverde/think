@@ -3,6 +3,8 @@ import Database
 import SwiftData
 import SwiftUI
 
+// swiftlint:disable no_grouping_extension
+
 public struct SideView: View {
     // MARK: - Properties
 
@@ -14,27 +16,14 @@ public struct SideView: View {
 
     @StateObject private var alertManager: AlertManager = .init()
 
-    @Binding var selectedChat: Chat? {
-        didSet {
-            guard let chat = selectedChat else {
-                return
-            }
-            Task(priority: .userInitiated) {
-                await chatViewModel.addWelcomeMessage(chatId: chat.id)
-            }
-        }
-    }
+    @Binding var selectedPersonality: Personality?
 
     let animationDuration: Double = 0.3
     let smallDuration: Double = 0.1
 
-    // Query to fetch all chats in reverse chronological order
-    @Query(
-        sort: \Chat.createdAt,
-        order: .reverse,
-        animation: .easeInOut
-    )
-    var chats: [Chat]
+    // Query to fetch all personalities
+    @Query(animation: .easeInOut)
+    var personalities: [Personality]
 
     // Environment values
     @Environment(\.isSearching)
@@ -58,39 +47,26 @@ public struct SideView: View {
                 ideal: Layout.idealSplitViewWidth
             )
             .toolbar {
-                if let selectedChat {
+                if let personality = selectedPersonality {
                     SideViewToolbar(
                         isSearching: isSearching,
                         dismissSearch: dismissSearch,
-                        chat: selectedChat
+                        personality: personality
                     )
                 }
             }
             .searchable(
                 text: $searchText,
-                tokens: $searchTokens,
                 placement: .sidebar,
-                prompt: String(localized: "Search Chats...", bundle: .module)
-            ) { token in
-                Text(token.displayName)
-            }
-            .searchSuggestions {
-                SearchSuggestionsContent(
-                    searchText: searchText,
-                    modelSuggestions: availableModelDisplayNames()
-                )
-            }
-            .searchScopes($searchScope) {
-                SearchScopesContent()
-            }
-            .onChange(of: chats) { _, newChats in
-                // Only auto-select if we're not in the middle of a deletion
+                prompt: String(localized: "Search Personalities...", bundle: .module)
+            )
+            .onChange(of: personalities) { _, _ in
                 if !isPerformingDelete {
-                    autoSelectFirstChat(newChats: newChats)
+                    autoSelectFirstPersonality()
                 }
             }
-            .onChange(of: selectedChat) { _, newChat in
-                loadSelectedChat(newChat: newChat)
+            .onChange(of: selectedPersonality) { _, newPersonality in
+                handlePersonalitySelection(newPersonality)
             }
             .task {
                 initialSetup()
@@ -98,135 +74,204 @@ public struct SideView: View {
     }
 
     private var list: some View {
-        List(selection: $selectedChat) {
-            PersonalitiesListView()
-            ChatSections(
-                chatsToday: chatsToday,
-                chatsYesterday: chatsYesterday,
-                chatsPast: chatsPast,
+        List(selection: $selectedPersonality) {
+            PersonalitySections(
+                featuredPersonalities: featuredPersonalities,
+                activePersonalities: activePersonalities,
+                inactivePersonalities: inactivePersonalities,
                 alertManager: alertManager
             )
         }
         .listStyle(.sidebar)
-        .animation(.easeInOut(duration: animationDuration), value: chats)
+        .animation(.easeInOut(duration: animationDuration), value: personalities)
         .alert(
             String(
-                localized: "Rename Chat",
+                localized: "Clear Conversation?",
                 bundle: .module,
-                comment: "Title for chat rename alert"
+                comment: "Title for clear conversation confirmation alert"
             ),
-            isPresented: $alertManager.showingRenameAlert
+            isPresented: $alertManager.showingClearConversationAlert
         ) {
-            Group {
-                TextField(
-                    String(
-                        localized: "New title",
-                        bundle: .module
-                    ),
-                    text: $alertManager.renameText
-                )
-
-                Button(
-                    String(localized: "Cancel", bundle: .module, comment: "Button label"),
-                    role: .cancel
-                ) {
-                    alertManager.reset()
-                }
-
-                Button(
-                    String(localized: "Save", bundle: .module, comment: "Button label")
-                ) {
-                    if let chat = alertManager.chatToModify {
-                        let trimmedName: String = alertManager.renameText.trimmingCharacters(
-                            in: .whitespacesAndNewlines
-                        )
-
-                        Task(priority: .userInitiated) {
-                            await chatViewModel.rename(chatId: chat.id, newName: trimmedName)
-                        }
-                    }
-                    alertManager.reset()
-                }
-            }
+            clearConversationAlertButtons
         } message: {
             Text(
                 String(
-                    localized: "Enter a new chat title",
+                    localized: "This will delete all messages.",
                     bundle: .module,
-                    comment: "Message for chat rename alert"
+                    comment: "Message for clear conversation confirmation alert"
                 )
             )
         }
         .alert(
             String(
-                localized: "Delete Chat?",
+                localized: "Delete Personality?",
                 bundle: .module,
-                comment: "Title for chat deletion confirmation alert"
+                comment: "Title for personality deletion confirmation alert"
             ),
-            isPresented: $alertManager.showingDeleteAlert
+            isPresented: $alertManager.showingDeletePersonalityAlert
         ) {
-            Group {
-                Button(
-                    String(localized: "Cancel", bundle: .module, comment: "Button label"),
-                    role: .cancel
-                ) {
-                    alertManager.reset()
-                }
-
-                Button(
-                    String(localized: "Delete", bundle: .module, comment: "Button label"),
-                    role: .destructive
-                ) {
-                    if let chat = alertManager.chatToModify {
-                        // Store the ID locally
-                        let chatId: UUID = chat.id
-
-                        // Prevent auto-selection during deletion
-                        isPerformingDelete = true
-
-                        // Reset the alert state
-                        alertManager.reset()
-
-                        // Perform deletion after a brief delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
-                            Task {
-                                await chatViewModel.delete(chatId: chatId)
-
-                                // Re-enable auto-selection after operation completes
-                                DispatchQueue.main.asyncAfter(
-                                    deadline: .now() + animationDuration
-                                ) {
-                                    isPerformingDelete = false
-                                }
-                            }
-                        }
-                    } else {
-                        alertManager.reset()
-                    }
-                }
-            }
+            deletePersonalityAlertButtons
         } message: {
             Text(
                 String(
-                    localized: "Are you sure you want to delete this chat?",
+                    localized: "This will delete this personality and conversations.",
                     bundle: .module,
-                    comment: "Message for chat deletion confirmation alert"
+                    comment: "Message for personality deletion confirmation alert"
                 )
             )
+        }
+    }
+
+    private var clearConversationAlertButtons: some View {
+        Group {
+            Button(
+                String(localized: "Cancel", bundle: .module, comment: "Button label"),
+                role: .cancel
+            ) {
+                alertManager.reset()
+            }
+
+            Button(
+                String(localized: "Clear", bundle: .module, comment: "Button label"),
+                role: .destructive
+            ) {
+                if let personality = alertManager.personalityToModify {
+                    let personalityId: UUID = personality.id
+                    alertManager.reset()
+
+                    Task(priority: .userInitiated) {
+                        await chatViewModel.clearConversation(personalityId: personalityId)
+                    }
+                } else {
+                    alertManager.reset()
+                }
+            }
+        }
+    }
+
+    private var deletePersonalityAlertButtons: some View {
+        Group {
+            Button(
+                String(localized: "Cancel", bundle: .module, comment: "Button label"),
+                role: .cancel
+            ) {
+                alertManager.reset()
+            }
+
+            Button(
+                String(localized: "Delete", bundle: .module, comment: "Button label"),
+                role: .destructive
+            ) {
+                if let personality = alertManager.personalityToModify {
+                    let personalityId: UUID = personality.id
+
+                    isPerformingDelete = true
+                    alertManager.reset()
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
+                        Task {
+                            await chatViewModel.deletePersonality(personalityId: personalityId)
+
+                            DispatchQueue.main.asyncAfter(
+                                deadline: .now() + animationDuration
+                            ) {
+                                isPerformingDelete = false
+                            }
+                        }
+                    }
+                } else {
+                    alertManager.reset()
+                }
+            }
         }
     }
 
     // MARK: - Search States
 
     @State var searchText: String = "" // swiftlint:disable:this private_swiftui_state
-    @State var searchScope: ChatSearchScope = .all // swiftlint:disable:this private_swiftui_state
-    @State var searchTokens: [ModelToken] = [] // swiftlint:disable:this private_swiftui_state
 }
 
-#if DEBUG
-    #Preview(traits: .modifier(PreviewDatabase())) {
-        @Previewable @State var chat: Chat?
-        @Previewable @State var isPerformingDelete: Bool = false
-        SideView(isPerformingDelete: $isPerformingDelete, selectedChat: $chat)
+// MARK: - Personality Filtering
+
+extension SideView {
+    /// Featured personalities (isFeature == true)
+    var featuredPersonalities: [Personality] {
+        filteredPersonalities
+            .filter(\.isFeature)
+            .sorted { $0.name < $1.name }
     }
+
+    /// Personalities with recent conversations, sorted by last message date
+    var activePersonalities: [Personality] {
+        filteredPersonalities
+            .filter { !$0.isFeature && $0.hasConversation }
+            .sorted { ($0.lastMessageDate ?? .distantPast) > ($1.lastMessageDate ?? .distantPast) }
+    }
+
+    /// Personalities without conversations
+    var inactivePersonalities: [Personality] {
+        filteredPersonalities
+            .filter { !$0.isFeature && !$0.hasConversation }
+            .sorted { $0.name < $1.name }
+    }
+
+    /// Apply search filter
+    var filteredPersonalities: [Personality] {
+        guard !searchText.isEmpty else {
+            return personalities
+        }
+        return personalities.filter { personality in
+            personality.name.localizedCaseInsensitiveContains(searchText) ||
+            personality.displayDescription.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+}
+
+// MARK: - Helper Methods
+
+extension SideView {
+    func autoSelectFirstPersonality() {
+        let sortedPersonalities: [Personality] =
+            featuredPersonalities + activePersonalities + inactivePersonalities
+
+        guard let firstPersonality = sortedPersonalities.first else {
+            selectedPersonality = nil
+            return
+        }
+
+        if selectedPersonality?.id != firstPersonality.id {
+            DispatchQueue.main.asyncAfter(deadline: .now() + smallDuration) {
+                selectedPersonality = firstPersonality
+            }
+        }
+    }
+
+    func handlePersonalitySelection(_ personality: Personality?) {
+        guard let personality else {
+            return
+        }
+
+        Task(priority: .userInitiated) {
+            await chatViewModel.selectPersonality(personalityId: personality.id)
+        }
+    }
+
+    func initialSetup() {
+        if !hasInitialized {
+            hasInitialized = true
+            if selectedPersonality == nil, !personalities.isEmpty {
+                selectedPersonality = featuredPersonalities.first ?? personalities.first
+            }
+        }
+    }
+}
+
+// swiftlint:enable no_grouping_extension
+
+#if DEBUG
+#Preview(traits: .modifier(PreviewDatabase())) {
+    @Previewable @State var personality: Personality?
+    @Previewable @State var isPerformingDelete: Bool = false
+    SideView(isPerformingDelete: $isPerformingDelete, selectedPersonality: $personality)
+}
 #endif

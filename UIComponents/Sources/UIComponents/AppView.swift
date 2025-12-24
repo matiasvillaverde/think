@@ -3,7 +3,7 @@ import Database
 import SwiftData
 import SwiftUI
 #if os(iOS)
-    import UIKit
+import UIKit
 #endif
 
 public struct AppView: View {
@@ -17,8 +17,8 @@ public struct AppView: View {
     var viewModel: ChatViewModeling
 
     #if os(iOS)
-        @Environment(\.scenePhase)
-        private var scenePhase: ScenePhase
+    @Environment(\.scenePhase)
+    private var scenePhase: ScenePhase
     #endif
 
     @Query(
@@ -27,7 +27,7 @@ public struct AppView: View {
     )
     private var notifications: [NotificationAlert]
 
-    @Binding var selectedChat: Chat?
+    @Binding var selectedPersonality: Personality?
     @State private var toast: Toast?
     @State private var isPerformingDelete: Bool = false
     @State private var isInitialized: Bool = false
@@ -35,8 +35,8 @@ public struct AppView: View {
     @State private var onboardingCoordinator: OnboardingCoordinating?
     private let animationDuration: Double = 0.3
 
-    public init(selectedChat: Binding<Chat?>) {
-        _selectedChat = selectedChat
+    public init(selectedPersonality: Binding<Personality?>) {
+        _selectedPersonality = selectedPersonality
     }
 
     public var body: some View {
@@ -76,77 +76,22 @@ public struct AppView: View {
         .animation(.easeInOut(duration: animationDuration), value: appFlowState)
         .toastView(toast: $toast)
         .task {
-            // Clear notification badge when app opens
-            #if os(iOS)
-                try? await UNUserNotificationCenter.current().setBadgeCount(0)
-            #endif
-            await appViewModel.initializeDatabase()
-            await appViewModel.resumeBackgroundDownloads()
-
-            // Get the initial app flow state
-            let initialState: AppFlowState = await appViewModel.appFlowState
-
-            // Create OnboardingCoordinator if we're in onboarding
-            if initialState == .onboardingWelcome || initialState == .onboardingFeatures {
-                // OnboardingCoordinator will be created and injected by the app
-                // For now, we'll use the environment value if available
-            }
-
-            await MainActor.run {
-                appFlowState = initialState
-                isInitialized = true
-            }
+            await initializeApp()
         }
         .task {
-            // Monitor app flow state changes from the view model
-            while !Task.isCancelled {
-                let currentState: AppFlowState = await appViewModel.appFlowState
-                if currentState != appFlowState {
-                    await MainActor.run {
-                        withAnimation(.easeInOut(duration: animationDuration)) {
-                            appFlowState = currentState
-                        }
-                    }
-                }
-                try? await Task.sleep(nanoseconds: OnboardingConstants.stateMonitorNanoseconds)
-            }
+            await monitorAppFlowState()
         }
         #if os(iOS)
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 Task { @MainActor in
-                    // Clear notification badge when app becomes active
                     try? await UNUserNotificationCenter.current().setBadgeCount(0)
                 }
             }
         }
         #endif
         .onChange(of: notifications) { _, newNotifications in
-            // Check if we have a new notification
-            if let latestNotification = newNotifications.first {
-                // Create toast based on notification type
-                switch latestNotification.type {
-                case .success:
-                    toast = Toast(style: .success, message: latestNotification.localizedMessage)
-
-                case .error:
-                    toast = Toast(style: .error, message: latestNotification.localizedMessage)
-
-                case .warning:
-                    toast = Toast(style: .warning, message: latestNotification.localizedMessage)
-
-                case .information:
-                    toast = Toast(style: .info, message: latestNotification.localizedMessage)
-                }
-
-                // Mark the notification as read
-                Task(priority: .utility) {
-                    await notificationViewModel.markNotificationAsRead(latestNotification.id)
-                }
-            } else if newNotifications.isEmpty {
-                // If there are no notifications, clear the toast
-                toast = nil
-            }
+            handleNotifications(newNotifications)
         }
     }
 
@@ -175,26 +120,83 @@ public struct AppView: View {
             VStack(alignment: .leading) {
                 SideView(
                     isPerformingDelete: $isPerformingDelete,
-                    selectedChat: $selectedChat
+                    selectedPersonality: $selectedPersonality
                 )
                 SettingsButton()
                     .padding()
             }
         } detail: {
             NavigationStack {
-                if let chat = selectedChat {
+                if let personality = selectedPersonality, let chat = personality.chat {
                     ChatView(chat: chat)
+                } else if selectedPersonality != nil {
+                    // Personality selected but no chat yet - show loading
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
                 } else {
-                    Text("Select a chat to start", bundle: .module)
+                    Text("Select a personality to start", bundle: .module)
                         .foregroundColor(Color.textPrimary)
                 }
             }
         }
         .accentColor(Color.marketingSecondary)
     }
+
+    private func initializeApp() async {
+        #if os(iOS)
+        try? await UNUserNotificationCenter.current().setBadgeCount(0)
+        #endif
+        await appViewModel.initializeDatabase()
+        await appViewModel.resumeBackgroundDownloads()
+
+        let initialState: AppFlowState = await appViewModel.appFlowState
+
+        await MainActor.run {
+            appFlowState = initialState
+            isInitialized = true
+        }
+    }
+
+    private func monitorAppFlowState() async {
+        while !Task.isCancelled {
+            let currentState: AppFlowState = await appViewModel.appFlowState
+            if currentState != appFlowState {
+                await MainActor.run {
+                    withAnimation(.easeInOut(duration: animationDuration)) {
+                        appFlowState = currentState
+                    }
+                }
+            }
+            try? await Task.sleep(nanoseconds: OnboardingConstants.stateMonitorNanoseconds)
+        }
+    }
+
+    private func handleNotifications(_ newNotifications: [NotificationAlert]) {
+        if let latestNotification = newNotifications.first {
+            switch latestNotification.type {
+            case .success:
+                toast = Toast(style: .success, message: latestNotification.localizedMessage)
+
+            case .error:
+                toast = Toast(style: .error, message: latestNotification.localizedMessage)
+
+            case .warning:
+                toast = Toast(style: .warning, message: latestNotification.localizedMessage)
+
+            case .information:
+                toast = Toast(style: .info, message: latestNotification.localizedMessage)
+            }
+
+            Task(priority: .utility) {
+                await notificationViewModel.markNotificationAsRead(latestNotification.id)
+            }
+        } else if newNotifications.isEmpty {
+            toast = nil
+        }
+    }
 }
 
 #Preview {
-    @Previewable @State var selectedChat: Chat?
-    AppView(selectedChat: $selectedChat)
+    @Previewable @State var selectedPersonality: Personality?
+    AppView(selectedPersonality: $selectedPersonality)
 }

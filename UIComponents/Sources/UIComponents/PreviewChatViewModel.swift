@@ -10,6 +10,8 @@ internal final actor PreviewChatViewModel: ChatViewModeling {
         category: "UI"
     )
 
+    // MARK: - Legacy Operations
+
     func addChatWith(personality: UUID) {
         logger.warning("Default view model - Add chat called \(personality.hashValue)")
     }
@@ -36,6 +38,20 @@ internal final actor PreviewChatViewModel: ChatViewModeling {
 
     func addWelcomeMessage(chatId: UUID) {
         logger.warning("Default view model - add welcome message called: \(chatId)")
+    }
+
+    // MARK: - Personality-First Operations
+
+    func selectPersonality(personalityId: UUID) {
+        logger.warning("Default view model - Select personality called: \(personalityId)")
+    }
+
+    func clearConversation(personalityId: UUID) {
+        logger.warning("Default view model - Clear conversation called: \(personalityId)")
+    }
+
+    func deletePersonality(personalityId: UUID) {
+        logger.warning("Default view model - Delete personality called: \(personalityId)")
     }
 
     func createPersonality(

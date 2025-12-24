@@ -107,6 +107,17 @@ internal final class PreviewModelActionsViewModel: ModelDownloaderViewModeling {
         return UUID()
     }
 
+    func addLocalModel(_ model: LocalModelImport) async -> UUID? {
+        await MainActor.run {
+            logger.warning(
+                "Default view model - addLocalModel called for: \(model.name, privacy: .public)"
+            )
+            logger.warning("Default VM backend: \(model.backend.rawValue, privacy: .public)")
+        }
+        _ = model
+        return UUID()
+    }
+
     func handleBackgroundDownloadCompletion(
         identifier _: String,
         completionHandler: @Sendable () -> Void

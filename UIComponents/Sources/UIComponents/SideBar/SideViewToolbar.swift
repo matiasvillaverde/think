@@ -12,7 +12,7 @@ public struct SideViewToolbar: ToolbarContent {
     let isSearching: Bool
     let dismissSearch: DismissSearchAction
 
-    @Bindable var chat: Chat
+    @Bindable var personality: Personality
 
     private let logger: Logger = .init(
         subsystem: Bundle.main.bundleIdentifier ?? "",
@@ -32,31 +32,27 @@ public struct SideViewToolbar: ToolbarContent {
             }
 
             Button {
-                addItem()
+                clearConversation()
             } label: {
                 Label(
                     String(
-                        localized: "New Chat",
+                        localized: "Clear Conversation",
                         bundle: .module,
-                        comment: "Button label for adding a new chat"
+                        comment: "Button label for clearing the current conversation"
                     ),
-                    systemImage: "square.and.pencil"
+                    systemImage: "trash"
                 )
             }
             .foregroundColor(Color.iconPrimary)
             .tint(Color.secondary)
             .font(.title2)
-            .keyboardShortcut("n", modifiers: .command)
+            .keyboardShortcut("k", modifiers: [.command, .shift])
         }
     }
 
-    private func addItem() {
+    private func clearConversation() {
         Task(priority: .userInitiated) {
-            if let id = chat.personality?.id {
-                await viewModel.addChatWith(personality: id)
-            } else {
-                logger.error("Chat personality ID is nil")
-            }
+            await viewModel.clearConversation(personalityId: personality.id)
         }
     }
 }

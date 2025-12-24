@@ -19,24 +19,14 @@ internal struct PromptsView: View {
     internal init(chat: Chat) {
         self.chat = chat
 
-        if let personalityId = chat.personality?.id {
-            _prompts = Query(
-                filter: #Predicate<Prompt> { prompt in
-                    prompt.personality?.id == personalityId
-                },
-                sort: \Prompt.title,
-                animation: .easeInOut
-            )
-        } else {
-            // Fallback for when there's no personality - return prompts without personality
-            _prompts = Query(
-                filter: #Predicate<Prompt> { prompt in
-                    prompt.personality == nil
-                },
-                sort: \Prompt.title,
-                animation: .easeInOut
-            )
-        }
+        let personalityId: UUID = chat.personality.id
+        _prompts = Query(
+            filter: #Predicate<Prompt> { prompt in
+                prompt.personality?.id == personalityId
+            },
+            sort: \Prompt.title,
+            animation: .easeInOut
+        )
     }
 
     internal var body: some View {

@@ -38,11 +38,8 @@ public struct NewChatButton: View {
 
     private func addNewChat() {
         Task(priority: .userInitiated) {
-            if let id = chat.personality?.id {
-                await viewModel.addChatWith(personality: id)
-            } else {
-                logger.error("Chat personality ID is nil")
-            }
+            let personalityId: UUID = chat.personality.id
+            await viewModel.clearConversation(personalityId: personalityId)
         }
     }
 }
