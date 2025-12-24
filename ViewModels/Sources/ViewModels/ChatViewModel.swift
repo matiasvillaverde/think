@@ -214,8 +214,6 @@ public final actor ChatViewModel: ChatViewModeling {
     ///   - description: The description of the personality
     ///   - customSystemInstruction: The custom system instruction text
     ///   - category: The personality category
-    ///   - tintColorHex: Optional hex color string for the personality
-    ///   - imageName: Optional system image name
     ///   - customImage: Optional custom image attachment
     /// - Returns: The UUID of the newly created personality
     public func createPersonality(
@@ -239,6 +237,53 @@ public final actor ChatViewModel: ChatViewModeling {
             logger.error("Failed to create personality: \(error.localizedDescription)")
             await notify(message: error.localizedDescription, type: .error)
             return nil
+        }
+    }
+
+    // MARK: - Personality-First Operations
+
+    /// Selects a personality and ensures its chat is ready
+    public func selectPersonality(personalityId: UUID) async {
+        do {
+            // Get or create the chat for this personality
+            let chatId: UUID = try await database.write(PersonalityCommands.GetChat(personalityId: personalityId))
+            logger.info("Selected personality \(personalityId) with chat \(chatId)")
+
+            // Add welcome message if the chat is empty
+            await addWelcomeMessage(chatId: chatId)
+        } catch {
+            logger.error("Failed to select personality \(personalityId): \(error.localizedDescription)")
+            await notify(message: error.localizedDescription, type: .error)
+        }
+    }
+
+    /// Clears all messages from a personality's conversation
+    public func clearConversation(personalityId: UUID) async {
+        do {
+            try await database.write(PersonalityCommands.ClearConversation(personalityId: personalityId))
+            logger.info("Cleared conversation for personality: \(personalityId)")
+            await notify(
+                message: String(localized: "Conversation cleared", bundle: .module),
+                type: .success
+            )
+        } catch {
+            logger.error("Failed to clear conversation for \(personalityId): \(error.localizedDescription)")
+            await notify(message: error.localizedDescription, type: .error)
+        }
+    }
+
+    /// Deletes a custom personality and its associated chat
+    public func deletePersonality(personalityId: UUID) async {
+        do {
+            try await database.write(PersonalityCommands.Delete(personalityId: personalityId))
+            logger.info("Deleted personality: \(personalityId)")
+            await notify(
+                message: String(localized: "Personality deleted", bundle: .module),
+                type: .success
+            )
+        } catch {
+            logger.error("Failed to delete personality \(personalityId): \(error.localizedDescription)")
+            await notify(message: error.localizedDescription, type: .error)
         }
     }
 

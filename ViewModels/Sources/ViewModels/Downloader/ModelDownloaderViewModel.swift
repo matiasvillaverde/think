@@ -102,7 +102,39 @@ public final actor ModelDownloaderViewModel: ModelDownloaderViewModeling {
         }
     }
 
-    // MARK: - Private Methods
+    /// Adds a locally-referenced model to the database (no download)
+    public func addLocalModel(_ model: LocalModelImport) async -> UUID? {
+        logger.notice("Adding local model: \(model.name, privacy: .public)")
+
+        do {
+            let modelId: UUID = try await database.write(
+                ModelCommands.CreateLocalModel(
+                    name: model.name,
+                    backend: model.backend,
+                    type: model.type,
+                    parameters: model.parameters,
+                    ramNeeded: model.ramNeeded,
+                    size: model.size,
+                    locationLocal: model.locationLocal,
+                    locationBookmark: model.locationBookmark
+                )
+            )
+            logger.info("Local model saved: \(model.name, privacy: .public) (ID: \(modelId))")
+            return modelId
+        } catch {
+            logger.error("Local model save failed: \(error.localizedDescription)")
+            let baseMessage: String = String(localized: "Failed to add local model.", bundle: .module)
+            await createErrorNotification(
+                message: "\(baseMessage) \(error.localizedDescription)"
+            )
+            return nil
+        }
+    }
+}
+
+// MARK: - Private Methods
+
+extension ModelDownloaderViewModel {
     func processDownload(sendableModel: SendableModel, discoveryName: String) async {
         await processDownloadWithRetry(
             sendableModel: sendableModel,
@@ -212,12 +244,16 @@ public final actor ModelDownloaderViewModel: ModelDownloaderViewModeling {
                 return
             }
 
-            // Try to delete model files from disk (this might fail if files don't exist)
+            // Try to delete model files from disk (skip for local referenced models)
             do {
-                logger.info("Deleting model files from disk...")
                 let sendableModel: SendableModel = try await database.read(ModelCommands.GetSendableModel(id: modelId))
-                try await modelDownloader.deleteModel(model: sendableModel.location)
-                logger.info("Model files deleted successfully")
+                if sendableModel.locationKind == .localFile {
+                    logger.info("Local model reference removed; no files deleted from disk")
+                } else {
+                    logger.info("Deleting model files from disk...")
+                    try await modelDownloader.deleteModel(model: sendableModel.location)
+                    logger.info("Model files deleted successfully")
+                }
             } catch {
                 logger.warning("Failed to delete model files (may not exist): \(error.localizedDescription)")
                 // Continue with database cleanup even if file deletion fails
@@ -248,6 +284,7 @@ public final actor ModelDownloaderViewModel: ModelDownloaderViewModeling {
 
     // MARK: - Background Downloads
 
+    /// Handles completion for background download sessions, refreshing status in the database.
     @preconcurrency
     public func handleBackgroundDownloadCompletion(
         identifier: String,
@@ -298,6 +335,7 @@ public final actor ModelDownloaderViewModel: ModelDownloaderViewModeling {
         }
     }
 
+    /// Resumes any background downloads tracked by the downloader.
     public func resumeBackgroundDownloads() async {
         logger.notice("Resuming background downloads")
         do {
@@ -323,6 +361,7 @@ public final actor ModelDownloaderViewModel: ModelDownloaderViewModeling {
 
     // MARK: - Model Entry Creation
 
+    /// Creates a database entry for a discovery without starting a download.
     public func createModelEntry(for discovery: DiscoveredModel) async -> UUID? {
         let discoveryName: String = await discovery.name
         logger.notice("Creating model entry for: \(discoveryName, privacy: .public)")
@@ -344,6 +383,7 @@ public final actor ModelDownloaderViewModel: ModelDownloaderViewModeling {
 
     // MARK: - Notification Support
 
+    /// Requests permission for download notifications.
     public func requestNotificationPermission() async -> Bool {
         logger.info("Requesting notification permission for download notifications")
 
