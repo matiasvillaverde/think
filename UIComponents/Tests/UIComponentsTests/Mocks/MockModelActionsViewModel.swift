@@ -93,34 +93,39 @@ internal final class MockModelActionsViewModel: ModelDownloaderViewModeling {
 
     // MARK: - ModelDownloaderViewModeling Protocol Requirements
 
-    func save(_: DiscoveredModel) -> UUID? {
+    func save(_: DiscoveredModel) async -> UUID? {
         // For tests, just return a UUID
-        UUID()
-    }
-
-    func download(_ discovery: DiscoveredModel) -> UUID? {
-        downloadCalled = true
-        downloadedModel = discovery
+        await Task.yield()
         return UUID()
     }
 
-    func delete(modelId _: UUID) {
+    func delete(modelId _: UUID) async {
         // No-op for tests
+        await Task.yield()
     }
 
-    func createModelEntry(for _: DiscoveredModel) -> UUID? {
-        UUID()
+    func createModelEntry(for _: DiscoveredModel) async -> UUID? {
+        await Task.yield()
+        return UUID()
+    }
+
+    func addLocalModel(_ model: LocalModelImport) async -> UUID? {
+        await Task.yield()
+        _ = model
+        return UUID()
     }
 
     func handleBackgroundDownloadCompletion(
         identifier _: String,
         completionHandler: @Sendable () -> Void
-    ) {
+    ) async {
+        await Task.yield()
         completionHandler()
     }
 
-    func resumeBackgroundDownloads() {
+    func resumeBackgroundDownloads() async {
         // No-op for tests
+        await Task.yield()
     }
 
     func requestNotificationPermission() async -> Bool {
