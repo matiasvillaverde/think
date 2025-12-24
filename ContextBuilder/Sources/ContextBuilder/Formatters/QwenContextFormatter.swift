@@ -3,7 +3,7 @@ import Foundation
 
 /// Formatter for Qwen architecture with thinking command support
 internal struct QwenContextFormatter: ContextFormatter, DateFormatting, ToolFormatting,
-    MessageFormatting {
+    MessageFormatting, MemoryFormatting {
     internal let labels: QwenLabels
 
     // MARK: - ContextFormatter
@@ -14,10 +14,19 @@ internal struct QwenContextFormatter: ContextFormatter, DateFormatting, ToolForm
         // Determine date to use
         let currentDate: Date = determineDateToUse(context: context)
 
+        // Build system instruction with memory context if available
+        var systemContent: String = context.contextConfiguration.systemInstruction
+        if let memoryContext: MemoryContext = context.contextConfiguration.memoryContext {
+            let memorySection: String = formatMemoryContext(memoryContext)
+            if !memorySection.isEmpty {
+                systemContent += memorySection
+            }
+        }
+
         // Add system message with thinking command if reasoning
         let includeDate: Bool = context.contextConfiguration.includeCurrentDate
         result += formatSystemMessageWithThinking(
-            context.contextConfiguration.systemInstruction,
+            systemContent,
             date: currentDate,
             action: context.action,
             toolDefinitions: context.toolDefinitions,

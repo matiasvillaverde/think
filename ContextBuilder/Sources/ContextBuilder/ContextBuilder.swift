@@ -256,7 +256,11 @@ public actor ContextBuilder: ContextBuilding {
         }
 
         // Create appropriate parser based on model architecture
-        let parser: OutputParser = try ParserFactory.createParser(for: model, cache: cache)
+        let parser: OutputParser = try ParserFactory.createParser(
+            for: model,
+            cache: cache,
+            output: output
+        )
 
         // Parse the output
         let channels: [ChannelMessage] = await parser.parse(output)

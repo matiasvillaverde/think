@@ -3,7 +3,7 @@ import Foundation
 
 /// Formatter for ChatML-based architectures using protocol composition
 internal struct ChatMLContextFormatter: ContextFormatter, DateFormatting, ToolFormatting,
-    MessageFormatting {
+    MessageFormatting, MemoryFormatting {
     internal let labels: ChatMLLabels
     private static let (buildComps, convMult): (Int, Int) = (4, 3) // Pre-allocation constants
 
@@ -36,10 +36,19 @@ internal struct ChatMLContextFormatter: ContextFormatter, DateFormatting, ToolFo
         // Determine date to use
         let currentDate: Date = determineDateToUse(context: context)
 
+        // Build system instruction with memory context if available
+        var systemContent: String = context.contextConfiguration.systemInstruction
+        if let memoryContext: MemoryContext = context.contextConfiguration.memoryContext {
+            let memorySection: String = formatMemoryContext(memoryContext)
+            if !memorySection.isEmpty {
+                systemContent += memorySection
+            }
+        }
+
         // Add system message with date and knowledge cutoff
         let includeDate: Bool = context.contextConfiguration.includeCurrentDate
         var result: String = formatSystemMessage(
-            context.contextConfiguration.systemInstruction,
+            systemContent,
             date: currentDate,
             knowledgeCutoff: context.contextConfiguration.knowledgeCutoffDate,
             includeDate: includeDate
@@ -176,31 +185,8 @@ internal struct ChatMLContextFormatter: ContextFormatter, DateFormatting, ToolFo
             formatted += labels.toolLabel  // Use tool label instead of user label
             formatted += labels.toolResponseLabel
             formatted += "\n"
-
-            // Preserve original JSON string formatting to maintain field order
-            let contentString: String
-            if response.result.isEmpty {
-                // Empty result - use empty string to ensure valid JSON
-                contentString = "\"\""
-            } else if let data = response.result.data(using: .utf8),
-                (try? JSONSerialization.jsonObject(with: data)) != nil {
-                // Valid JSON - preserve original format but fix URL escaping only
-                contentString = response.result
-                    .replacingOccurrences(of: "\\/", with: "/")  // Fix URL escaping
-            } else {
-                // Invalid JSON - wrap as string
-                let escaped: String = response.result
-                    .replacingOccurrences(of: "\\", with: "\\\\")
-                    .replacingOccurrences(of: "\"", with: "\\\"")
-                    .replacingOccurrences(of: "\n", with: "\\n")
-                    .replacingOccurrences(of: "\r", with: "\\r")
-                    .replacingOccurrences(of: "\t", with: "\\t")
-                contentString = "\"\(escaped)\""
-            }
-
-            // Manually construct to ensure key order and spacing
+            let contentString: String = formatToolResponseContent(response.result)
             formatted += "{\"name\": \"\(response.toolName)\", \"content\": \(contentString)}"
-
             formatted += "\n"
             formatted += labels.toolResponseEndLabel
             formatted += labels.endLabel

@@ -2,7 +2,7 @@ import Abstractions
 import Foundation
 
 /// Formatter for Mistral architecture with [INST] format
-internal struct MistralContextFormatter: ContextFormatter, DateFormatting {
+internal struct MistralContextFormatter: ContextFormatter, DateFormatting, MemoryFormatting {
     internal let labels: MistralLabels
 
     // MARK: - ContextFormatter
@@ -14,19 +14,52 @@ internal struct MistralContextFormatter: ContextFormatter, DateFormatting {
         let currentDate: Date = determineDateToUse(context: context)
         let includeDate: Bool = context.contextConfiguration.includeCurrentDate
         let knowledgeCutoff: String? = context.contextConfiguration.knowledgeCutoffDate
+        let systemContent: String = buildSystemContent(context: context)
 
-        // Mistral uses a different format - system is part of first instruction
+        // Build conversation history
+        result += buildConversationHistory(
+            context: context,
+            systemContent: systemContent,
+            currentDate: currentDate,
+            knowledgeCutoff: knowledgeCutoff,
+            includeDate: includeDate
+        )
+
+        // Add tool responses if any
+        if !context.toolResponses.isEmpty {
+            result += formatToolResponses(context.toolResponses)
+        }
+
+        return result
+    }
+
+    private func buildSystemContent(context: BuildContext) -> String {
+        var systemContent: String = context.contextConfiguration.systemInstruction
+        if let memoryContext: MemoryContext = context.contextConfiguration.memoryContext {
+            let memorySection: String = formatMemoryContext(memoryContext)
+            if !memorySection.isEmpty {
+                systemContent += memorySection
+            }
+        }
+        return systemContent
+    }
+
+    private func buildConversationHistory(
+        context: BuildContext,
+        systemContent: String,
+        currentDate: Date,
+        knowledgeCutoff: String?,
+        includeDate: Bool
+    ) -> String {
+        var result: String = ""
         var isFirstMessage: Bool = true
         let messages: [MessageData] = context.contextConfiguration.contextMessages
 
-        // Build instruction blocks
         for (index, message) in messages.enumerated() {
             let isLastMessage: Bool = index == messages.count - 1
-
             if isFirstMessage, let userInput = message.userInput {
-                // Include system prompt with first user message
                 result += formatFirstInstruction(
-                    systemPrompt: context.contextConfiguration.systemInstruction,
+                    systemPrompt: systemContent,
                     userMessage: userInput,
                     date: currentDate,
                     toolDefinitions: context.toolDefinitions,
@@ -37,23 +70,19 @@ internal struct MistralContextFormatter: ContextFormatter, DateFormatting {
             } else if let userInput = message.userInput {
                 result += formatInstruction(userInput)
             }
-
-            // Use channels if available, otherwise fall back to assistant field
             if !message.channels.isEmpty {
                 let isLastCompleteMessage: Bool = isLastMessage && message.userInput != nil
-                let formatted: String = formatAssistantMessageFromChannels(
+                result += formatAssistantMessageFromChannels(
                     message,
                     isLast: isLastCompleteMessage
                 )
-                result += formatted
             }
-            // No channels - skip
         }
 
         // If no history, just add system and wait for user
-        if context.contextConfiguration.contextMessages.isEmpty {
+        if messages.isEmpty {
             result += formatFirstInstruction(
-                systemPrompt: context.contextConfiguration.systemInstruction,
+                systemPrompt: systemContent,
                 userMessage: "",
                 date: currentDate,
                 toolDefinitions: context.toolDefinitions,
@@ -61,14 +90,6 @@ internal struct MistralContextFormatter: ContextFormatter, DateFormatting {
                 includeDate: includeDate
             )
         }
-
-        // Add tool responses if any
-        if !context.toolResponses.isEmpty {
-            result += formatToolResponses(context.toolResponses)
-        }
-
-        // Mistral format doesn't need anything added - [/INST] already indicates assistant start
-
         return result
     }
 

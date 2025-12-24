@@ -2,7 +2,7 @@ import Abstractions
 import Foundation
 
 /// Formatter for Llama3 architecture with Python environment support
-internal struct Llama3ContextFormatter: ContextFormatter, DateFormatting {
+internal struct Llama3ContextFormatter: ContextFormatter, DateFormatting, MemoryFormatting {
     internal let labels: Llama3Labels
 
     // MARK: - ContextFormatter
@@ -13,10 +13,19 @@ internal struct Llama3ContextFormatter: ContextFormatter, DateFormatting {
         // Determine date to use
         let currentDate: Date = determineDateToUse(context: context)
 
+        // Build system instruction with memory context if available
+        var systemContent: String = context.contextConfiguration.systemInstruction
+        if let memoryContext: MemoryContext = context.contextConfiguration.memoryContext {
+            let memorySection: String = formatMemoryContext(memoryContext)
+            if !memorySection.isEmpty {
+                systemContent += memorySection
+            }
+        }
+
         // Add system message
         let includeDate: Bool = context.contextConfiguration.includeCurrentDate
         result += formatSystemMessage(
-            context.contextConfiguration.systemInstruction,
+            systemContent,
             date: currentDate,
             toolDefinitions: context.toolDefinitions,
             knowledgeCutoff: context.contextConfiguration.knowledgeCutoffDate,

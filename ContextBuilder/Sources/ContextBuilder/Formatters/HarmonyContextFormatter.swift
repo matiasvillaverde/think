@@ -2,7 +2,7 @@ import Abstractions
 import Foundation
 
 /// Formatter for Harmony/GPT architectures with channel-based formatting
-internal struct HarmonyContextFormatter: ContextFormatter, DateFormatting {
+internal struct HarmonyContextFormatter: ContextFormatter, DateFormatting, MemoryFormatting {
     internal let labels: HarmonyLabels
 
     // Pre-allocation constants to avoid magic numbers
@@ -63,8 +63,17 @@ internal struct HarmonyContextFormatter: ContextFormatter, DateFormatting {
     private func buildSystemSection(context: BuildContext, currentDate: Date) -> String {
         let includeDate: Bool = context.contextConfiguration.includeCurrentDate
         let hasConversationHistory: Bool = !context.contextConfiguration.contextMessages.isEmpty
-        let hasDeveloperSection: Bool = context.contextConfiguration.systemInstruction
-            .contains("DEVELOPER:")
+
+        // Build system instruction with memory context if available
+        var systemContent: String = context.contextConfiguration.systemInstruction
+        if let memoryContext: MemoryContext = context.contextConfiguration.memoryContext {
+            let memorySection: String = formatMemoryContext(memoryContext)
+            if !memorySection.isEmpty {
+                systemContent += memorySection
+            }
+        }
+
+        let hasDeveloperSection: Bool = systemContent.contains("DEVELOPER:")
 
         // Split tools between system and developer sections
         let toolSplit: (system: [ToolDefinition], developer: [ToolDefinition]) =
@@ -79,7 +88,7 @@ internal struct HarmonyContextFormatter: ContextFormatter, DateFormatting {
         components.reserveCapacity(Self.sysComps)
 
         components.append(formatSystemMessage(
-            context.contextConfiguration.systemInstruction,
+            systemContent,
             date: currentDate,
             action: context.action,
             toolDefinitions: systemTools,

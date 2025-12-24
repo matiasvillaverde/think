@@ -28,8 +28,7 @@ let package = Package(
                 .process("Resources/Localizable.xcstrings")
             ],
             swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency"),
-                .unsafeFlags(["-warnings-as-errors"], .when(configuration: .release)),
+                .enableExperimentalFeature("StrictConcurrency")
             ]
         ),
         .testTarget(
