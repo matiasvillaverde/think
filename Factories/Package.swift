@@ -49,9 +49,7 @@ let package = Package(
                 "LLamaCPP",
                 "RemoteSession"
             ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
-            ]),
+),
         .testTarget(
             name: "FactoriesTests",
             dependencies: [

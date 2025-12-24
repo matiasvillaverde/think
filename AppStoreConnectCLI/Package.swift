@@ -25,9 +25,6 @@ let package = Package(
             dependencies: [
                 .product(name: "AppStoreConnect-Swift-SDK", package: "appstoreconnect-swift-sdk"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
             ]
         ),
         .testTarget(

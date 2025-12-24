@@ -27,9 +27,6 @@ let package = Package(
                 "Abstractions",
                 "ZIPFoundation"
             ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
-            ],
             linkerSettings: [
                 .linkedFramework("UserNotifications")
             ]

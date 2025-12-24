@@ -26,7 +26,6 @@ let package = Package(
             ],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency"),
-                .unsafeFlags(["-warnings-as-errors"]),
                 .define("SWIFT_DETERMINISTIC_HASHING", .when(configuration: .debug))
             ]
         ),

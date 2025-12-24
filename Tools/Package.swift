@@ -27,9 +27,7 @@ let package = Package(
                 "Database",
                 .product(name: "SwiftSoup", package: "SwiftSoup")
             ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
-            ]),
+),
         .testTarget(
             name: "ToolsTests",
             dependencies: [

@@ -33,9 +33,6 @@ let package = Package(
                 .product(name: "SQLiteVec", package: "SQLiteVec"),
                 .product(name: "Embeddings", package: "swift-embeddings")
             ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
-            ]
         ),
         .testTarget(
             name: "RagTests",

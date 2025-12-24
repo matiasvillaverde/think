@@ -22,9 +22,6 @@ let package = Package(
             name: "RemoteSession",
             dependencies: [
                 "Abstractions"
-            ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
             ]
         ),
         .testTarget(

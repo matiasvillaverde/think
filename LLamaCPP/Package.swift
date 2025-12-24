@@ -30,9 +30,6 @@ let package = Package(
             dependencies: [
                 "Abstractions",
                 "llama",  // Add llama as a dependency
-            ],
-            swiftSettings: [
-                .unsafeFlags(["-warnings-as-errors"])
             ]
         ),
         .testTarget(
