@@ -8,6 +8,7 @@ internal final class GenerationState: @unchecked Sendable {
     var firstTokenTime: ContinuousClock.Instant?
     var stopReason: GenerationMetrics.StopReason = .endOfSequence
     var generatedText = ""
+    var stopDetector: StopSequenceDetector?
 
     deinit { /* Clean up */ }
 }

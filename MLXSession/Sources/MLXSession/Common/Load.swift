@@ -98,10 +98,15 @@ internal func loadWeights(
 
     // per-model cleanup
     weights = model.sanitize(weights: weights)
-    stripMXFP4QuantizationBiases(
+    stripNonAffineQuantizationBiases(
         weights: &weights,
         quantization: quantization,
         perLayerQuantization: perLayerQuantization
+    )
+    logNonAffineQuantizationWarnings(
+        quantization: quantization,
+        perLayerQuantization: perLayerQuantization,
+        logger: logger
     )
 
     // quantize if needed
@@ -160,16 +165,20 @@ internal func quantizationMode(
     return mode
 }
 
+internal func isNonAffineQuantization(_ quantization: BaseConfiguration.Quantization) -> Bool {
+    isNonAffineQuantizationMode(quantizationMode(for: quantization))
+}
+
 private func containsNonAffineQuantization(
     quantization: BaseConfiguration.Quantization?,
     perLayerQuantization: BaseConfiguration.PerLayerQuantization?
 ) -> Bool {
-    if let quantization, quantizationMode(for: quantization) != .affine {
+    if let quantization, isNonAffineQuantization(quantization) {
         return true
     }
     guard let perLayerQuantization else { return false }
     if let defaultQuantization = perLayerQuantization.quantization,
-        quantizationMode(for: defaultQuantization) != .affine {
+        isNonAffineQuantization(defaultQuantization) {
         return true
     }
     return perLayerQuantization.perLayerQuantization.values.contains { option in
@@ -177,7 +186,7 @@ private func containsNonAffineQuantization(
         case .skip:
             return false
         case .quantize(let perLayer):
-            return quantizationMode(for: perLayer) != .affine
+            return isNonAffineQuantization(perLayer)
         }
     }
 }
@@ -193,6 +202,15 @@ internal func quantizeApplyingMode(
     }
 
     if let linear = module as? Linear {
+        if !isQuantizationGroupSizeCompatible(weight: linear.weight, groupSize: groupSize) {
+            let logger = Logger(subsystem: "MLXSession", category: "Quantization")
+            let lastDim = linear.weight.shape.last ?? 0
+            logger.warning("""
+                Quantization group size \(groupSize, privacy: .public) does not divide \
+                weight last dimension \(lastDim, privacy: .public); \
+                MLX expects last dimension divisible by group_size
+                """)
+        }
         let (weight, scales, biases) = MLX.quantized(
             linear.weight,
             groupSize: groupSize,
@@ -213,24 +231,35 @@ internal func quantizeApplyingMode(
     return quantizeSingle(layer: module, groupSize: groupSize, bits: bits, mode: mode)
 }
 
-private func stripMXFP4QuantizationBiases(
+internal func isQuantizationGroupSizeCompatible(
+    weight: MLXArray,
+    groupSize: Int
+) -> Bool {
+    guard groupSize > 0 else { return false }
+    guard let lastDim = weight.shape.last else { return false }
+    return lastDim % groupSize == 0
+}
+
+private func stripNonAffineQuantizationBiases(
     weights: inout [String: MLXArray],
     quantization: BaseConfiguration.Quantization?,
     perLayerQuantization: BaseConfiguration.PerLayerQuantization?
 ) {
-    if let quantization, isMXFP4(quantization) {
+    if let quantization, isNonAffineQuantization(quantization) {
         removeQuantizationBiases(from: &weights)
         return
     }
 
     guard let perLayerQuantization else { return }
-    if let defaultQuantization = perLayerQuantization.quantization, isMXFP4(defaultQuantization) {
+    if let defaultQuantization = perLayerQuantization.quantization,
+        isNonAffineQuantization(defaultQuantization) {
         removeQuantizationBiases(from: &weights)
         return
     }
 
     for (layer, option) in perLayerQuantization.perLayerQuantization {
-        guard case .quantize(let quantization) = option, isMXFP4(quantization) else { continue }
+        guard case .quantize(let quantization) = option,
+            isNonAffineQuantization(quantization) else { continue }
         weights["\(layer).biases"] = nil
     }
 }
@@ -242,6 +271,67 @@ private func removeQuantizationBiases(from weights: inout [String: MLXArray]) {
     }
 }
 
-private func isMXFP4(_ quantization: BaseConfiguration.Quantization) -> Bool {
-    quantization.quantizationMode?.lowercased() == "mxfp4"
+private func isNonAffineQuantizationMode(_ mode: QuantizationMode) -> Bool {
+    mode != .affine
+}
+
+private func expectedGroupSize(for mode: QuantizationMode) -> Int? {
+    switch mode {
+    case .mxfp4, .mxfp8:
+        return 32
+    case .nvfp4:
+        return 16
+    default:
+        return nil
+    }
+}
+
+private func expectedBits(for mode: QuantizationMode) -> Int? {
+    switch mode {
+    case .mxfp4, .nvfp4:
+        return 4
+    case .mxfp8:
+        return 8
+    default:
+        return nil
+    }
+}
+
+private func logNonAffineQuantizationWarnings(
+    quantization: BaseConfiguration.Quantization?,
+    perLayerQuantization: BaseConfiguration.PerLayerQuantization?,
+    logger: Logger
+) {
+    func check(_ quantization: BaseConfiguration.Quantization, label: String) {
+        let mode = quantizationMode(for: quantization)
+        guard isNonAffineQuantizationMode(mode) else { return }
+        if let expectedGroupSize = expectedGroupSize(for: mode),
+            quantization.groupSize != expectedGroupSize {
+            logger.warning("""
+                Non-affine quantization \(label, privacy: .public) expects group size \
+                \(expectedGroupSize, privacy: .public) for mode \(String(describing: mode), privacy: .public); \
+                got \(quantization.groupSize, privacy: .public)
+                """)
+        }
+        if let expectedBits = expectedBits(for: mode),
+            quantization.bits != expectedBits {
+            logger.warning("""
+                Non-affine quantization \(label, privacy: .public) expects \(expectedBits, privacy: .public) bits \
+                for mode \(String(describing: mode), privacy: .public); got \(quantization.bits, privacy: .public)
+                """)
+        }
+    }
+
+    if let quantization {
+        check(quantization, label: "default")
+    }
+
+    guard let perLayerQuantization else { return }
+    if let defaultQuantization = perLayerQuantization.quantization {
+        check(defaultQuantization, label: "per-layer default")
+    }
+    for (layer, option) in perLayerQuantization.perLayerQuantization {
+        guard case .quantize(let quantization) = option else { continue }
+        check(quantization, label: "layer \(layer)")
+    }
 }

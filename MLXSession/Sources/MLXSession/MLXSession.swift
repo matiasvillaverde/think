@@ -266,6 +266,9 @@ internal actor MLXSession: LLMSession {
             continuation: genContext.continuation,
             clock: genContext.clock
         )
+        state.stopDetector = StopSequenceDetector(
+            sequences: genContext.input.sampling.stopSequences
+        )
 
         _ = try generate(
             input: mlxInput,
@@ -334,12 +337,10 @@ internal actor MLXSession: LLMSession {
             return .stop
         }
 
-        // Check stop sequences on accumulated text (avoiding full re-decode)
-        for stopSeq in tokenContext.input.sampling.stopSequences
-            where tokenContext.state.generatedText.contains(stopSeq) {
+        if tokenContext.state.stopDetector?.append(text) == true {
             tokenContext.state.stopReason = .stopSequence
             #if DEBUG
-            debugLogger.warning("Stopping: Stop sequence '\(stopSeq, privacy: .public)' detected")
+            debugLogger.warning("Stopping: Stop sequence detected")
             #endif
             return .stop
         }

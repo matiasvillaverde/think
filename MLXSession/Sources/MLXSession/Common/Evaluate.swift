@@ -657,7 +657,7 @@ extension TextGenerator {
     // exits the program right away, those tasks will still be executing and will
     // hit assertions as the mlx scheduler is torn down. Synchronize with the stream
     // to make sure it is complete.
-    Stream().synchronize()
+    StreamOrDevice.default.stream.synchronize()
 
     return GenerateResult(
         inputText: input.text, tokens: tokens,
@@ -763,7 +763,7 @@ extension TextGenerator {
         let generateTime = now - start
 
         // Synchronize with the stream to ensure tasks are completed
-        Stream().synchronize()
+        StreamOrDevice.default.stream.synchronize()
 
         return GenerateCompletionInfo(
             promptTokenCount: input.text.tokens.size,
@@ -895,7 +895,7 @@ extension TextGenerator {
                 continuation.yield(.info(info))
 
                 // Synchronize with the stream to ensure tasks are completed
-                Stream().synchronize()
+                StreamOrDevice.default.stream.synchronize()
 
                 // Finalize the stream
                 continuation.finish()
@@ -927,12 +927,14 @@ internal struct GenerateCompletionInfo: Sendable {
 
     /// The number of tokens processed per second during the prompt phase.
     internal var promptTokensPerSecond: Double {
-        Double(promptTokenCount) / promptTime
+        guard promptTime > 0 else { return 0 }
+        return Double(promptTokenCount) / promptTime
     }
 
     /// The number of tokens generated per second during the generation phase.
     internal var tokensPerSecond: Double {
-        Double(generationTokenCount) / generateTime
+        guard generateTime > 0 else { return 0 }
+        return Double(generationTokenCount) / generateTime
     }
 
     internal init(
