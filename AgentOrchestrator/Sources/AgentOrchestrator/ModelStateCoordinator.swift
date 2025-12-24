@@ -1,3 +1,4 @@
+// swiftlint:disable file_length
 import Abstractions
 import Database
 import Foundation
@@ -20,6 +21,7 @@ internal final actor ModelStateCoordinator {
     private var currentModelId: UUID?
     private var currentSession: LLMSession?
     private var isCurrentModelImage: Bool = false
+    internal var currentSecurityScopedURL: URL?
 
     /// Initialize coordinator with database, LLM sessions, and image generator
     internal init(
@@ -39,27 +41,50 @@ internal final actor ModelStateCoordinator {
     }
 
     deinit {
-        Task.detached { [currentModelId, currentSession, database, isCurrentModelImage, imageGenerator] in
+        let context: DeinitCleanupContext = DeinitCleanupContext(
+            modelId: currentModelId,
+            session: currentSession,
+            database: database,
+            isCurrentModelImage: isCurrentModelImage,
+            imageGenerator: imageGenerator,
+            securityURL: currentSecurityScopedURL
+        )
+        Self.scheduleDeinitCleanup(context)
+    }
+
+    private struct DeinitCleanupContext {
+        let modelId: UUID?
+        let session: LLMSession?
+        let database: DatabaseProtocol
+        let isCurrentModelImage: Bool
+        let imageGenerator: ImageGenerating
+        let securityURL: URL?
+    }
+
+    private static func scheduleDeinitCleanup(_ context: DeinitCleanupContext) {
+        Task.detached {
             // Unload current model if one is loaded
-            guard let modelId = currentModelId else {
+            guard let modelId = context.modelId else {
                 return
             }
 
-            if isCurrentModelImage {
+            if context.isCurrentModelImage {
                 // Cannot use self methods in deinit, create inline
-                try? await imageGenerator.unload(model: modelId)
-            } else if let session = currentSession {
+                try? await context.imageGenerator.unload(model: modelId)
+            } else if let session = context.session {
                 session.stop()
                 await session.unload()
             }
 
             // Update database state to reflect unloaded
-            _ = try? await database.write(
+            _ = try? await context.database.write(
                 ModelCommands.TransitionRuntimeState(
                     id: modelId,
                     transition: .unload
                 )
             )
+
+            context.securityURL?.stopAccessingSecurityScopedResource()
         }
     }
 
@@ -181,17 +206,50 @@ extension ModelStateCoordinator {
 
         let session: LLMSession = try selectSession(for: sendableModel.backend)
 
-        let config: ProviderConfiguration = try await createConfiguration(sendableModel: sendableModel)
-
-        for try await _ in await session.preload(configuration: config) {
-            // Progress streaming handled here
+        let config: ProviderConfiguration
+        do {
+            config = try await createConfiguration(sendableModel: sendableModel)
+        } catch {
+            await handleConfigurationError(modelId: modelId, error: error)
+            throw error
         }
+
+        try await preloadModel(session: session, config: config, modelId: modelId)
 
         try await transitionToLoaded(modelId)
 
         currentModelId = modelId
         currentSession = session
         Self.logger.info("Model \(modelId) loaded successfully")
+    }
+
+    private func preloadModel(
+        session: LLMSession,
+        config: ProviderConfiguration,
+        modelId: UUID
+    ) async throws {
+        do {
+            for try await _ in await session.preload(configuration: config) {
+                // Progress streaming handled here
+            }
+        } catch {
+            stopAccessingSecurityScopedResourceIfNeeded()
+            _ = try? await database.write(
+                ModelCommands.TransitionRuntimeState(id: modelId, transition: .failLoad)
+            )
+            throw error
+        }
+    }
+
+    private func handleConfigurationError(modelId: UUID, error: Error) async {
+        if case ModelStateCoordinatorError.modelFileMissing = error {
+            _ = try? await database.write(
+                ModelCommands.DeleteModelLocation(model: modelId)
+            )
+        }
+        _ = try? await database.write(
+            ModelCommands.TransitionRuntimeState(id: modelId, transition: .failLoad)
+        )
     }
 
     private func createConfiguration(sendableModel: SendableModel) async throws -> ProviderConfiguration {
@@ -274,6 +332,8 @@ extension ModelStateCoordinator {
             await session.unload()
         }
 
+        stopAccessingSecurityScopedResourceIfNeeded()
+
         try await database.write(
             ModelCommands.TransitionRuntimeState(id: modelId, transition: .unload)
         )
@@ -353,6 +413,10 @@ extension ModelStateCoordinator {
 
     /// Resolves the local file path for a model.
     private func resolveModelLocation(sendableModel: SendableModel) async throws -> URL {
+        if sendableModel.locationKind == .localFile {
+            return try resolveLocalModelLocation(sendableModel: sendableModel)
+        }
+
         guard !sendableModel.location.isEmpty else {
             throw ModelStateCoordinatorError.emptyModelLocation
         }
@@ -363,6 +427,8 @@ extension ModelStateCoordinator {
 
         return localPath
     }
+
+    // Local path resolution helpers are in ModelStateCoordinator+Local.swift
 
     /// Returns an optimized batch size for Apple Silicon.
     private func getBatchSizeForAppleSilicon() -> Int {

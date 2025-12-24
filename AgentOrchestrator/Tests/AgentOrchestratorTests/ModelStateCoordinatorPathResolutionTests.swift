@@ -79,6 +79,27 @@ internal struct ModelStateCoordinatorPathResolutionTests {
         )
     }
 
+    private func createLocalModel(path: String, backend: SendableModel.Backend) -> ModelDTO {
+        let megabyte: UInt64 = 1_024 * 1_024
+        return ModelDTO(
+            type: .language,
+            backend: backend,
+            name: "local-model-\(path.hashValue)",
+            displayName: "Local Model",
+            displayDescription: "Local model at \(path)",
+            skills: ["text-generation"],
+            parameters: 1,
+            ramNeeded: 10 * megabyte,
+            size: 10 * megabyte,
+            locationHuggingface: "",
+            locationKind: .localFile,
+            locationLocal: path,
+            locationBookmark: nil,
+            version: 2,
+            architecture: .llama
+        )
+    }
+
     @MainActor
     private func createChatWithModelLocation(
         _ database: Database,
@@ -108,6 +129,33 @@ internal struct ModelStateCoordinatorPathResolutionTests {
                 personalityId: personalityId
             )
         )
+    }
+
+    @MainActor
+    private func createChatWithLocalModel(
+        _ database: Database,
+        path: String,
+        backend: SendableModel.Backend
+    ) async throws -> (chatId: UUID, modelId: UUID) {
+        let model: ModelDTO = createLocalModel(path: path, backend: backend)
+        try await database.write(ModelCommands.AddModels(modelDTOs: [model]))
+
+        let models: [SendableModel] = try await database.read(ModelCommands.FetchAll())
+        guard let foundModel = models.first(
+            where: { $0.locationKind == .localFile && $0.locationLocal == path }
+        ) else {
+            throw DatabaseError.modelNotFound
+        }
+
+        let personalityId: UUID = try await database.read(PersonalityCommands.GetDefault())
+        let chatId: UUID = try await database.write(
+            ChatCommands.CreateWithModel(
+                modelId: foundModel.id,
+                personalityId: personalityId
+            )
+        )
+
+        return (chatId, foundModel.id)
     }
 
     // MARK: - Tests
@@ -235,5 +283,25 @@ internal struct ModelStateCoordinatorPathResolutionTests {
             #expect(config.location == expectedPath, "Should use resolved local path")
             #expect(config.modelName == repoId, "Should preserve original repository ID")
         }
+    }
+
+    @Test("Local Model Missing Throws Error And Resets State")
+    @MainActor
+    internal func localModelMissingResetsState() async throws {
+        let env: TestEnvironment = try await setupTestEnvironment()
+        let missingPath: String = "/tmp/think-local-model-does-not-exist.gguf"
+
+        let result: (chatId: UUID, modelId: UUID) = try await createChatWithLocalModel(
+            env.database,
+            path: missingPath,
+            backend: .gguf
+        )
+
+        await #expect(throws: ModelStateCoordinatorError.modelFileMissing(missingPath)) {
+            try await env.coordinator.load(chatId: result.chatId)
+        }
+
+        let model: Model = try await env.database.read(ModelCommands.GetModelFromId(id: result.modelId))
+        #expect(model.state == .notDownloaded)
     }
 }

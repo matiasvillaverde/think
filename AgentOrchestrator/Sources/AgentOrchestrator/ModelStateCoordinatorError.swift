@@ -4,6 +4,7 @@ import Foundation
 internal enum ModelStateCoordinatorError: LocalizedError, Equatable {
     case emptyModelLocation
     case invalidModelLocationURL(String)
+    case modelFileMissing(String)
     case modelLocationNotResolved(String)
     case modelNotDownloaded(String)
     case noChatLoaded
@@ -24,6 +25,9 @@ internal enum ModelStateCoordinatorError: LocalizedError, Equatable {
 
         case .modelNotDownloaded(let location):
             return "Model not found locally: \(location). Please download it first."
+
+        case .modelFileMissing(let path):
+            return "Local model not found at: \(path). It may have been moved or deleted."
 
         case .noChatLoaded:
             return "No chat is currently loaded. Load a chat first."
