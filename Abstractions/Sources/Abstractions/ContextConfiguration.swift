@@ -13,6 +13,10 @@ public struct ContextConfiguration: Sendable {
     public let memoryContext: MemoryContext?
     /// Skill context to inject tool usage guidance into the system prompt
     public let skillContext: SkillContext?
+    /// Allowed tools based on resolved personality tool policy (empty means no tools allowed)
+    public let allowedTools: Set<ToolIdentifier>
+    /// Whether a tool policy was explicitly set (if false, allowedTools contains all tools)
+    public let hasToolPolicy: Bool
 
     public init(
         systemInstruction: String,
@@ -23,7 +27,9 @@ public struct ContextConfiguration: Sendable {
         knowledgeCutoffDate: String? = nil,
         currentDateOverride: String? = nil,
         memoryContext: MemoryContext? = nil,
-        skillContext: SkillContext? = nil
+        skillContext: SkillContext? = nil,
+        allowedTools: Set<ToolIdentifier> = Set(ToolIdentifier.allCases),
+        hasToolPolicy: Bool = false
     ) {
         self.systemInstruction = systemInstruction
         self.contextMessages = contextMessages
@@ -34,5 +40,7 @@ public struct ContextConfiguration: Sendable {
         self.currentDateOverride = currentDateOverride
         self.memoryContext = memoryContext
         self.skillContext = skillContext
+        self.allowedTools = allowedTools
+        self.hasToolPolicy = hasToolPolicy
     }
 }
