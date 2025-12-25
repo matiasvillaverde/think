@@ -117,6 +117,27 @@ extension ChatCommands {
                 personalityMemoryContext = nil
             }
 
+            // Fetch skill context and allowed tools based on resolved tool policy
+            let skillContext: SkillContext?
+            let allowedTools: Set<ToolIdentifier>
+            let hasToolPolicy: Bool
+            if let userId = userId {
+                let resolvedPolicy = try ToolPolicyCommands.ResolveForChat(chatId: chatId)
+                    .execute(in: context, userId: userId, rag: rag)
+                let toolNames: Set<String> = Set(resolvedPolicy.allowedTools.map(\.toolName))
+                let skills = try SkillCommands.GetSkillContext(
+                    toolIdentifiers: toolNames,
+                    chatId: chatId
+                ).execute(in: context, userId: userId, rag: rag)
+                skillContext = skills.activeSkills.isEmpty ? nil : skills
+                allowedTools = resolvedPolicy.allowedTools
+                hasToolPolicy = true
+            } else {
+                skillContext = nil
+                allowedTools = Set(ToolIdentifier.allCases)
+                hasToolPolicy = false
+            }
+
             let config = ContextConfiguration(
                 systemInstruction: systemInstruction,
                 contextMessages: contextMessages,
@@ -125,7 +146,10 @@ extension ChatCommands {
                 includeCurrentDate: chat.languageModelConfig.includeCurrentDate ?? true,
                 knowledgeCutoffDate: chat.languageModelConfig.knowledgeCutoffDate,
                 currentDateOverride: chat.languageModelConfig.currentDateOverride,
-                memoryContext: personalityMemoryContext
+                memoryContext: personalityMemoryContext,
+                skillContext: skillContext,
+                allowedTools: allowedTools,
+                hasToolPolicy: hasToolPolicy
             )
 
             Logger.database.info("ChatCommands.FetchContextData.execute completed")
