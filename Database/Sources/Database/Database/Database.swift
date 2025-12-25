@@ -382,4 +382,63 @@ extension Database {
 
         return results
     }
+
+    public func indexText(
+        _ text: String,
+        id: UUID,
+        table: String
+    ) async throws {
+        precondition(Thread.isMainThread == false)
+
+        let (rag, _) = try await self.state.waitUntilReady()
+
+        let configuration = Configuration(
+            tokenUnit: .sentence,
+            strategy: .extractKeywords,
+            table: table
+        )
+
+        for try await _ in await rag.add(text: text, id: id, configuration: configuration) {
+            // Progress updates - we just wait for completion
+        }
+
+        Self.logger.info("Indexed text with id \(id) in table \(table)")
+    }
+
+    public func deleteFromIndex(
+        id: UUID,
+        table: String
+    ) async throws {
+        precondition(Thread.isMainThread == false)
+
+        let (rag, _) = try await self.state.waitUntilReady()
+
+        try await rag.delete(id: id, table: table)
+
+        Self.logger.info("Deleted indexed content with id \(id) from table \(table)")
+    }
+
+    public func searchMemories(
+        query: String,
+        userId: UUID,
+        limit: Int,
+        threshold: Double
+    ) async throws -> [UUID] {
+        precondition(Thread.isMainThread == false)
+
+        let table = RagTableName.memoryTableName(userId: userId)
+
+        let results = try await semanticSearch(
+            query: query,
+            table: table,
+            numResults: limit,
+            threshold: threshold
+        )
+
+        // Extract memory IDs from search results
+        let memoryIds = results.compactMap { $0.id }
+
+        Self.logger.info("Found \(memoryIds.count) memories for query in table \(table)")
+        return memoryIds
+    }
 }
