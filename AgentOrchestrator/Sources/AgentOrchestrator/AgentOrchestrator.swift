@@ -337,6 +337,21 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
 
     private func buildContext(for state: GenerationState) async throws -> String {
         logContextStart(for: state)
+        let prepared: (Action, ContextConfiguration) = try await prepareActionWithPolicy(state: state)
+        let parameters: BuildParameters = buildParameters(
+            for: state,
+            action: prepared.0,
+            contextConfig: prepared.1
+        )
+        let context: String = try await contextBuilder.build(parameters: parameters)
+        Self.logger.debug("Context built with \(context.count) characters")
+        return context
+    }
+
+    /// Prepares action with semantic search and applies tool policy filtering
+    private func prepareActionWithPolicy(
+        state: GenerationState
+    ) async throws -> (Action, ContextConfiguration) {
         let modifiedAction: Action = try await configureSemanticSearchIfNeeded(
             for: state.action,
             chatId: state.chatId
@@ -344,14 +359,40 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         let contextConfig: ContextConfiguration = try await fetchContextConfiguration(
             chatId: state.chatId
         )
-        let parameters: BuildParameters = buildParameters(
-            for: state,
+        let policyFilteredAction: Action = applyToolPolicy(
             action: modifiedAction,
-            contextConfig: contextConfig
+            allowedTools: contextConfig.allowedTools,
+            hasToolPolicy: contextConfig.hasToolPolicy
         )
-        let context: String = try await contextBuilder.build(parameters: parameters)
-        Self.logger.debug("Context built with \(context.count) characters")
-        return context
+        return (policyFilteredAction, contextConfig)
+    }
+
+    /// Filters the action's tools against the personality tool policy
+    private func applyToolPolicy(
+        action: Action,
+        allowedTools: Set<ToolIdentifier>,
+        hasToolPolicy: Bool
+    ) -> Action {
+        // If no explicit policy defined, allow all tools (don't filter)
+        guard hasToolPolicy else {
+            return action
+        }
+
+        let currentTools: Set<ToolIdentifier> = action.tools
+        let filteredTools: Set<ToolIdentifier> = currentTools.intersection(allowedTools)
+
+        if filteredTools.count < currentTools.count {
+            let blocked: Set<ToolIdentifier> = currentTools.subtracting(filteredTools)
+            Self.logger.info("Tool policy blocked \(blocked.count) tool(s): \(blocked.map(\.rawValue))")
+        }
+
+        switch action {
+        case .textGeneration:
+            return .textGeneration(filteredTools)
+
+        case .imageGeneration:
+            return .imageGeneration(filteredTools)
+        }
     }
 
     private func applyPromptOverride(
@@ -370,7 +411,9 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             knowledgeCutoffDate: contextConfig.knowledgeCutoffDate,
             currentDateOverride: contextConfig.currentDateOverride,
             memoryContext: contextConfig.memoryContext,
-            skillContext: contextConfig.skillContext
+            skillContext: contextConfig.skillContext,
+            allowedTools: contextConfig.allowedTools,
+            hasToolPolicy: contextConfig.hasToolPolicy
         )
     }
 
