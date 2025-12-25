@@ -312,7 +312,11 @@ internal struct ModelStateCoordinatorSwitchingTests {
             throw DatabaseError.modelNotFound
         }
 
-        let personalityId: UUID = try await database.read(PersonalityCommands.GetDefault())
+        let personalityId: UUID = try await database.write(
+            TestPersonalityCommands.CreateChatGPTTestPersonality(
+                currentDateOverride: UUID().uuidString
+            )
+        )
         return try await database.write(
             ChatCommands.CreateWithModel(
                 modelId: model.id,

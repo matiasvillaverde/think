@@ -98,7 +98,6 @@ internal final actor ModelStateCoordinator {
         )
 
         let modelId: UUID = sendableModel.id
-
         // Check if already loaded
         if let currentId = currentModelId, currentId == modelId {
             Self.logger.debug("Model \(modelId) already loaded, skipping")
