@@ -57,7 +57,7 @@ public struct SendableModel: Equatable, Hashable, Sendable {
     public let detailedMemoryRequirements: MemoryRequirements?
 
     /// Model metadata including parameters, architecture, and capabilities
-    public let metadata: ModelMetadata?
+    private let storedMetadata: ModelMetadata?
 
     /// Model architecture (e.g., llama, mistral, qwen)
     /// This determines the chat template format and other model-specific behaviors
@@ -168,7 +168,33 @@ public struct SendableModel: Equatable, Hashable, Sendable {
         self.locationBookmark = locationBookmark
         self.architecture = architecture
         self.detailedMemoryRequirements = detailedMemoryRequirements
-        self.metadata = metadata
+        self.storedMetadata = metadata
+    }
+
+    @available(*, deprecated, message: "Use init with locationKind/locationLocal/locationBookmark.")
+    public init(
+        id: UUID,
+        ramNeeded: UInt64,
+        modelType: ModelType,
+        location: String,
+        architecture: Architecture,
+        backend: Backend = .mlx,
+        detailedMemoryRequirements: MemoryRequirements? = nil,
+        metadata: ModelMetadata? = nil
+    ) {
+        self.init(
+            id: id,
+            ramNeeded: ramNeeded,
+            modelType: modelType,
+            location: location,
+            architecture: architecture,
+            backend: backend,
+            locationKind: .huggingFace,
+            locationLocal: nil,
+            locationBookmark: nil,
+            detailedMemoryRequirements: detailedMemoryRequirements,
+            metadata: metadata
+        )
     }
 
     public var debugDescription: String {
@@ -177,5 +203,15 @@ public struct SendableModel: Equatable, Hashable, Sendable {
         backend: \(backend), architecture: \(architecture), location: \(location), \
         locationKind: \(locationKind))
         """
+    }
+
+    public var metadata: ModelMetadata? {
+        storedMetadata ?? ModelMetadata(
+            parameters: ModelParameters(count: 0, formatted: "Unknown"),
+            architecture: architecture,
+            capabilities: [],
+            quantizations: [],
+            version: nil
+        )
     }
 }
