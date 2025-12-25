@@ -82,6 +82,53 @@ extension ToolPolicyCommands {
         }
     }
 
+    /// Gets the policy for a specific personality
+    public struct GetForPersonality: ReadCommand {
+        public typealias Result = ToolPolicy?
+
+        private let personalityId: UUID
+
+        public var requiresUser: Bool { true }
+        public var requiresRag: Bool { false }
+
+        /// Initialize a GetForPersonality command
+        /// - Parameter personalityId: The personality ID to get policy for
+        public init(personalityId: UUID) {
+            self.personalityId = personalityId
+            Logger.database.info(
+                "ToolPolicyCommands.GetForPersonality initialized for personality: \(personalityId)"
+            )
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> ToolPolicy? {
+            Logger.database.info("ToolPolicyCommands.GetForPersonality.execute started")
+
+            guard let userId else {
+                Logger.database.error(
+                    "ToolPolicyCommands.GetForPersonality.execute failed: user not found"
+                )
+                throw DatabaseError.userNotFound
+            }
+
+            let user = try context.getUser(id: userId)
+
+            let descriptor = FetchDescriptor<ToolPolicy>()
+            let policies = try context.fetch(descriptor)
+            let personalityPolicy = policies.first {
+                $0.personality?.id == personalityId && $0.chat == nil && $0.user?.id == user.id
+            }
+
+            Logger.database.info(
+                "ToolPolicyCommands.GetForPersonality.execute completed - found: \(personalityPolicy != nil)"
+            )
+            return personalityPolicy
+        }
+    }
+
     /// Gets the global default policy
     public struct GetGlobal: ReadCommand {
         public typealias Result = ToolPolicy?

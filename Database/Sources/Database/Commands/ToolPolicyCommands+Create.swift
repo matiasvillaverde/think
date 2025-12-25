@@ -168,6 +168,89 @@ extension ToolPolicyCommands {
         }
     }
 
+    /// Creates or updates a policy for a personality
+    public struct UpsertForPersonality: WriteCommand {
+        private let personalityId: UUID
+        private let profile: ToolProfile
+        private let allowList: [String]
+        private let denyList: [String]
+
+        public var requiresUser: Bool { true }
+        public var requiresRag: Bool { false }
+
+        /// Initialize an UpsertForPersonality command
+        public init(
+            personalityId: UUID,
+            profile: ToolProfile,
+            allowList: [String] = [],
+            denyList: [String] = []
+        ) {
+            self.personalityId = personalityId
+            self.profile = profile
+            self.allowList = allowList
+            self.denyList = denyList
+            Logger.database.info(
+                "ToolPolicyCommands.UpsertForPersonality initialized for personality: \(personalityId)"
+            )
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            Logger.database.info("ToolPolicyCommands.UpsertForPersonality.execute started")
+
+            guard let userId else {
+                Logger.database.error(
+                    "ToolPolicyCommands.UpsertForPersonality.execute failed: user not found"
+                )
+                throw DatabaseError.userNotFound
+            }
+
+            let user = try context.getUser(id: userId)
+
+            // Find the personality
+            let personalityDescriptor = FetchDescriptor<Personality>(
+                predicate: #Predicate<Personality> { $0.id == personalityId }
+            )
+            guard let personality = try context.fetch(personalityDescriptor).first else {
+                Logger.database.error(
+                    "ToolPolicyCommands.UpsertForPersonality.execute failed: personality not found"
+                )
+                throw DatabaseError.personalityNotFound
+            }
+
+            // Try to find existing policy for this personality (not linked to a chat)
+            let descriptor = FetchDescriptor<ToolPolicy>()
+            let policies = try context.fetch(descriptor)
+            let existingPolicy = policies.first {
+                $0.personality?.id == personalityId && $0.chat == nil && $0.user?.id == user.id
+            }
+
+            if let existingPolicy {
+                Logger.database.info("Updating existing policy: \(existingPolicy.id)")
+                existingPolicy.setProfile(profile)
+                existingPolicy.allowList = allowList
+                existingPolicy.denyList = denyList
+                try context.save()
+                return existingPolicy.id
+            } else {
+                Logger.database.info("Creating new policy for personality: \(personalityId)")
+                let policy = ToolPolicy(
+                    profile: profile,
+                    allowList: allowList,
+                    denyList: denyList,
+                    personality: personality,
+                    user: user
+                )
+                context.insert(policy)
+                try context.save()
+                return policy.id
+            }
+        }
+    }
+
     /// Creates or updates the global default policy
     public struct UpsertGlobal: WriteCommand {
         private let profile: ToolProfile
