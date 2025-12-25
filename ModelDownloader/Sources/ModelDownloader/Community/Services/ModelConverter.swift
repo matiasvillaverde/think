@@ -104,6 +104,7 @@ internal actor ModelConverter {
             location: discovered.id,
             architecture: architecture,
             backend: backend,
+            locationKind: .huggingFace,
             detailedMemoryRequirements: nil,
             metadata: metadata
         )

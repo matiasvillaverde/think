@@ -4,12 +4,16 @@ import Foundation
 /// Manages persistence and recovery of background download state
 internal actor DownloadStateManager {
     private let userDefaults: UserDefaults
-    private let persistenceKey: String = "ModelDownloader.BackgroundDownloads.v1"
+    private let persistenceKey: String
     private let logger: ModelDownloaderLogger
 
     /// Initialize with custom UserDefaults (mainly for testing)
-    internal init(userDefaults: UserDefaults = .standard) {
+    internal init(
+        userDefaults: UserDefaults = .standard,
+        persistenceKey: String = "ModelDownloader.BackgroundDownloads.v1"
+    ) {
         self.userDefaults = userDefaults
+        self.persistenceKey = persistenceKey
         self.logger = ModelDownloaderLogger(
             subsystem: "com.think.modeldownloader",
             category: "DownloadStateManager"

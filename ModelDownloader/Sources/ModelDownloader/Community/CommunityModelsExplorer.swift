@@ -404,6 +404,9 @@ public actor CommunityModelsExplorer: CommunityModelsExplorerProtocol {
             location: sendableModel.location,
             architecture: sendableModel.architecture,
             backend: sendableModel.backend,
+            locationKind: sendableModel.locationKind,
+            locationLocal: sendableModel.locationLocal,
+            locationBookmark: sendableModel.locationBookmark,
             detailedMemoryRequirements: quantization.memoryRequirements,
             metadata: metadata
         )

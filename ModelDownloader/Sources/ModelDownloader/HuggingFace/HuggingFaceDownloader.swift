@@ -152,7 +152,8 @@ internal actor HuggingFaceDownloader: HuggingFaceDownloaderProtocol {
                 modelType: .language, // Will be determined from config
                 location: modelId,
                 architecture: .unknown, // Will be determined from config
-                backend: backend
+                backend: backend,
+                locationKind: .huggingFace
             )
 
             // Check if model already exists

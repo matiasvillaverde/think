@@ -83,7 +83,14 @@ struct BackgroundDownloadStateRestorationTests {
     @Test("Persisted downloads restored on init")
     func testPersistedDownloadsRestoredOnInit() async {
         // Given
-        let stateManager: DownloadStateManager = DownloadStateManager()
+        let suiteName: String = "ModelDownloader.BackgroundDownloadsTests.\(UUID().uuidString)"
+        let initialDefaults: UserDefaults = UserDefaults(suiteName: suiteName)!
+        initialDefaults.removePersistentDomain(forName: suiteName)
+        let persistenceKey: String = "ModelDownloader.BackgroundDownloads.v1.\(UUID().uuidString)"
+        let stateManager: DownloadStateManager = DownloadStateManager(
+            userDefaults: UserDefaults(suiteName: suiteName)!,
+            persistenceKey: persistenceKey
+        )
 
         // Clear any existing persisted downloads from previous tests
         let existingDownloads: [PersistedDownload] = await stateManager.getAllPersistedDownloads()
@@ -125,7 +132,10 @@ struct BackgroundDownloadStateRestorationTests {
 
         // When - create new manager (simulating app restart)
         // The V2 manager should restore persisted downloads on init
-        let newStateManager: DownloadStateManager = DownloadStateManager()
+        let newStateManager: DownloadStateManager = DownloadStateManager(
+            userDefaults: UserDefaults(suiteName: suiteName)!,
+            persistenceKey: persistenceKey
+        )
         let restoredDownloads: [PersistedDownload] = await newStateManager.getAllPersistedDownloads()
 
         // Then
@@ -147,6 +157,7 @@ struct BackgroundDownloadStateRestorationTests {
 
         // Also cleanup using the new state manager to ensure it's removed
         await newStateManager.removeDownload(id: downloadId)
+        UserDefaults(suiteName: suiteName)?.removePersistentDomain(forName: suiteName)
     }
 
     @Test("Task mappings preserved across restoration")

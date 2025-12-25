@@ -142,7 +142,8 @@ public actor ModelIdentityService {
             modelType: modelType,
             location: location,
             architecture: .unknown,
-            backend: backend
+            backend: backend,
+            locationKind: .huggingFace
         )
     }
 
