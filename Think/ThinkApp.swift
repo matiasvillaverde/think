@@ -12,11 +12,11 @@ struct ThinkApp: App {
     /// Localized string so the entire app gets localized
     private let name: String = String(localized: "Think")
 
-    @State private var selectedChat: Chat?
+    @State private var selectedPersonality: Personality?
 
     var body: some Scene {
         WindowGroup {
-            AppView(selectedChat: $selectedChat)
+            AppView(selectedPersonality: $selectedPersonality)
                 .withDatabase()
                 .withGenerator() // MLX doesn't work on simulators
                 .withChatViewModel()
@@ -33,7 +33,7 @@ struct ThinkApp: App {
 
         #if os(macOS)
         Window("Discover AI Models", id: "discovery") {
-            DiscoveryWindow(selectedChat: $selectedChat)
+            DiscoveryWindow(selectedPersonality: $selectedPersonality)
                 .withDatabase()
 #if !targetEnvironment(simulator)
                 .withGenerator() // MLX doesn't work on simulators

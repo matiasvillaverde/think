@@ -7,7 +7,7 @@ import SwiftUI
 public struct DiscoveryWindow: View {
     // MARK: - Properties
 
-    @Binding var selectedChat: Chat?
+    @Binding var selectedPersonality: Personality?
     @State private var selectedSection: Section? = .discovery
 
     // MARK: - Types
@@ -27,8 +27,8 @@ public struct DiscoveryWindow: View {
         static let sidebarIdealWidth: CGFloat = 250
     }
 
-    public init(selectedChat: Binding<Chat?>) {
-        _selectedChat = selectedChat
+    public init(selectedPersonality: Binding<Personality?>) {
+        _selectedPersonality = selectedPersonality
     }
 
     public var body: some View {
@@ -64,19 +64,21 @@ public struct DiscoveryWindow: View {
             }
 
         case .myModels:
-            if let chat = selectedChat {
+            if let personality = selectedPersonality, let chat = personality.chat {
                 MyModelsView(chat: chat)
             } else {
                 ContentUnavailableView(
-                    "No Chat Selected",
-                    systemImage: "bubble.left.and.bubble.right",
-                    description: Text("Select a chat in the main window to manage its models")
+                    "No Personality Selected",
+                    systemImage: "person.circle",
+                    description: Text(
+                        "Select a personality in the main window to manage its models"
+                    )
                 )
             }
 
         case .analytics:
             AnalyticsNavigationView(
-                initialContext: selectedChat.map { chat in
+                initialContext: selectedPersonality?.chat.map { chat in
                     DashboardContext(
                         chatId: chat.id.uuidString,
                         chatTitle: chat.name
@@ -108,7 +110,7 @@ public struct DiscoveryWindow: View {
 
 #if DEBUG
     #Preview {
-        @Previewable @State var selectedChat: Chat?
-        DiscoveryWindow(selectedChat: $selectedChat)
+        @Previewable @State var selectedPersonality: Personality?
+        DiscoveryWindow(selectedPersonality: $selectedPersonality)
     }
 #endif
