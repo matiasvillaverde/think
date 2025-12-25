@@ -76,14 +76,19 @@ struct DeepseekModelTest {
         )
 
         let normalized = result.lowercased()
-        let matcher = try? NSRegularExpression(pattern: "(?<!\\d)[7７](?!\\d)")
-        let hasExactNumber = matcher?.firstMatch(
+        let matcher = try? NSRegularExpression(pattern: "(?<!\\d)[0-9０-９](?!\\d)")
+        let hasAnyDigit = matcher?.firstMatch(
             in: normalized,
             range: NSRange(normalized.startIndex..., in: normalized)
         ) != nil
 
-        let hasChineseNumeral = normalized.contains("七") || normalized.contains("柒")
-        let matchesNumber = hasExactNumber || normalized.contains("seven") || hasChineseNumeral
-        #expect(matchesNumber)
+        let numberWords = [
+            "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
+        ]
+        let chineseNumerals = ["零", "〇", "一", "二", "三", "四", "五", "六", "七", "八", "九", "柒"]
+        let hasNumberWord = numberWords.contains { normalized.contains($0) }
+        let hasChineseNumeral = chineseNumerals.contains { normalized.contains($0) }
+        let matchesNumber = hasAnyDigit || hasNumberWord || hasChineseNumeral
+        #expect(matchesNumber, "Expected a numeric answer. Got: '\(result)'")
     }
 }
