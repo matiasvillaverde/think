@@ -51,7 +51,10 @@ struct ImageGeneratorStatisticsTests {
             modelType: .diffusion,
             location: "stable-diffusion/stable-diffusion-xl-base-1.0",
             architecture: .stableDiffusion,
-            backend: .coreml
+            backend: .coreml,
+            locationKind: .huggingFace,
+            locationLocal: nil,
+            locationBookmark: nil
         )
         return (generator, model)
     }

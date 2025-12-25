@@ -187,7 +187,10 @@ struct ImageGeneratorProgressTests {
             modelType: .diffusion,
             location: "test-model",
             architecture: .stableDiffusion,
-            backend: .coreml
+            backend: .coreml,
+            locationKind: .huggingFace,
+            locationLocal: nil,
+            locationBookmark: nil
         )
 
         // Load the model

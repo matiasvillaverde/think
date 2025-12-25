@@ -27,6 +27,9 @@ extension SendableModel {
             location: name.lowercased().replacingOccurrences(of: " ", with: "-"),
             architecture: .stableDiffusion,
             backend: .coreml,
+            locationKind: .huggingFace,
+            locationLocal: nil,
+            locationBookmark: nil,
             detailedMemoryRequirements: nil,
             metadata: metadata
         )

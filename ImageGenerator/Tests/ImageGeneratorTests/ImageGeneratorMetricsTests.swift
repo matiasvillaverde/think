@@ -129,7 +129,10 @@ struct ImageGeneratorMetricsTests {
             modelType: .diffusion,
             location: "test/stable-diffusion",
             architecture: .stableDiffusion,
-            backend: .coreml
+            backend: .coreml,
+            locationKind: .huggingFace,
+            locationLocal: nil,
+            locationBookmark: nil
         )
     }
 
