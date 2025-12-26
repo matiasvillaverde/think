@@ -452,4 +452,204 @@ struct MemoryCommandsTests {
         #expect(dailyLogs.count == 1)
         #expect(dailyLogs.first?.content == "Today's log")
     }
+
+    // MARK: - Memory Context Tests for RAG Integration Preparation
+
+    @Test("Memory context returns nil when empty")
+    func memoryContextReturnsNilWhenEmpty() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        // When - No memories created
+        let context = try await database.read(MemoryCommands.GetMemoryContext())
+
+        // Then
+        #expect(context.isEmpty)
+        #expect(context.soul == nil)
+        #expect(context.longTermMemories.isEmpty)
+        #expect(context.recentDailyLogs.isEmpty)
+    }
+
+    @Test("Memory keywords can be used for filtering")
+    func memoryKeywordsCanBeUsedForFiltering() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        // Create memories with different keywords
+        let memoryId1 = try await database.write(
+            MemoryCommands.Create(
+                type: .longTerm,
+                content: "User prefers dark mode interfaces",
+                keywords: ["preferences", "interface", "theme"]
+            )
+        )
+
+        let memoryId2 = try await database.write(
+            MemoryCommands.Create(
+                type: .longTerm,
+                content: "User's favorite programming language is Swift",
+                keywords: ["preferences", "programming", "swift"]
+            )
+        )
+
+        // When
+        let memory1 = try await database.read(MemoryCommands.Read(memoryId: memoryId1))
+        let memory2 = try await database.read(MemoryCommands.Read(memoryId: memoryId2))
+
+        // Then - Keywords should be searchable for future semantic search
+        #expect(memory1.keywords.contains("theme"))
+        #expect(memory1.keywords.contains("interface"))
+        #expect(memory2.keywords.contains("swift"))
+        #expect(memory2.keywords.contains("programming"))
+
+        // Both have "preferences" keyword
+        #expect(memory1.keywords.contains("preferences"))
+        #expect(memory2.keywords.contains("preferences"))
+    }
+
+    @Test("MemoryData conversion preserves all fields for Sendable transfer")
+    func memoryDataConversionPreservesFields() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        let today = Calendar.current.startOfDay(for: Date())
+        let memoryId = try await database.write(
+            MemoryCommands.Create(
+                type: .daily,
+                content: "Test content",
+                date: today,
+                keywords: ["test", "content"]
+            )
+        )
+
+        // When
+        let context = try await database.read(MemoryCommands.GetMemoryContext())
+
+        // Then - MemoryData should have all fields for async/Sendable operations
+        let dailyLog = context.recentDailyLogs.first
+        #expect(dailyLog != nil)
+        #expect(dailyLog?.id == memoryId)
+        #expect(dailyLog?.type == .daily)
+        #expect(dailyLog?.content == "Test content")
+        #expect(dailyLog?.keywords.contains("test") == true)
+        #expect(dailyLog?.keywords.contains("content") == true)
+    }
+
+    @Test("Multiple long-term memories are returned in context")
+    func multipleLongTermMemoriesInContext() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        // Create multiple long-term memories
+        _ = try await database.write(
+            MemoryCommands.Create(type: .longTerm, content: "Fact 1: User likes coding")
+        )
+        _ = try await database.write(
+            MemoryCommands.Create(type: .longTerm, content: "Fact 2: User prefers concise answers")
+        )
+        _ = try await database.write(
+            MemoryCommands.Create(type: .longTerm, content: "Fact 3: User is learning Swift")
+        )
+
+        // When
+        let context = try await database.read(MemoryCommands.GetMemoryContext())
+
+        // Then - All long-term memories should be included
+        #expect(context.longTermMemories.count == 3)
+        let contents = context.longTermMemories.map(\.content)
+        #expect(contents.contains("Fact 1: User likes coding"))
+        #expect(contents.contains("Fact 2: User prefers concise answers"))
+        #expect(contents.contains("Fact 3: User is learning Swift"))
+    }
+
+    @Test("Only recent daily logs are included in context")
+    func onlyRecentDailyLogsInContext() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+        let fiveDaysAgo = calendar.date(byAdding: .day, value: -5, to: today)!
+
+        // Create daily logs
+        _ = try await database.write(
+            MemoryCommands.Create(type: .daily, content: "Today's log", date: today)
+        )
+        _ = try await database.write(
+            MemoryCommands.Create(type: .daily, content: "Yesterday's log", date: yesterday)
+        )
+        _ = try await database.write(
+            MemoryCommands.Create(type: .daily, content: "Old log", date: fiveDaysAgo)
+        )
+
+        // When - Get context with 2 days of logs (default)
+        let context = try await database.read(MemoryCommands.GetMemoryContext())
+
+        // Then - Only recent logs should be included
+        #expect(context.recentDailyLogs.count == 2)
+        let contents = context.recentDailyLogs.map(\.content)
+        #expect(contents.contains("Today's log"))
+        #expect(contents.contains("Yesterday's log"))
+        #expect(!contents.contains("Old log"))
+    }
+
+    @Test("Soul memory is singular per user")
+    func soulMemoryIsSingular() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        // Create soul via upsert (creates new)
+        _ = try await database.write(
+            MemoryCommands.UpsertSoul(content: "First soul content")
+        )
+
+        // Upsert again (should update)
+        _ = try await database.write(
+            MemoryCommands.UpsertSoul(content: "Updated soul content")
+        )
+
+        // When
+        let allMemories = try await database.read(MemoryCommands.GetByType(type: .soul))
+
+        // Then - Should only have one soul
+        #expect(allMemories.count == 1)
+        #expect(allMemories.first?.content == "Updated soul content")
+    }
 }

@@ -357,6 +357,223 @@ struct SkillCommandsTests {
         // Then
         #expect(skills.isEmpty)
     }
+
+    // MARK: - Skill Auto-Activation Tests
+
+    @Test("Skills should activate when matching tools are configured")
+    func skillsActivateWithMatchingTools() async throws {
+        // Given - A skill associated with "duckduckgo_search" tool
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        _ = try await database.write(
+            SkillCommands.Create(
+                name: "Web Research",
+                skillDescription: "Research topics using search engines",
+                instructions: "Use duckduckgo_search first for general queries, then browser for specific pages",
+                tools: ["duckduckgo_search", "browser.search"]
+            )
+        )
+
+        // When - Query with one of the associated tools
+        let skills = try await database.read(
+            SkillCommands.GetForTools(toolIdentifiers: Set(["duckduckgo_search"]))
+        )
+
+        // Then - Skill should be found
+        #expect(skills.count == 1)
+        #expect(skills.first?.name == "Web Research")
+    }
+
+    @Test("GetSkillContext includes all skills for multiple tools")
+    func getSkillContextIncludesMultipleSkills() async throws {
+        // Given - Multiple skills for different tools
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        _ = try await database.write(
+            SkillCommands.Create(
+                name: "Web Research",
+                skillDescription: "Web research skill",
+                instructions: "Search effectively",
+                tools: ["duckduckgo_search"]
+            )
+        )
+
+        _ = try await database.write(
+            SkillCommands.Create(
+                name: "Code Execution",
+                skillDescription: "Python coding skill",
+                instructions: "Execute Python code carefully",
+                tools: ["python_exec"]
+            )
+        )
+
+        // When - Query with both tools
+        let context = try await database.read(
+            SkillCommands.GetSkillContext(toolIdentifiers: Set(["duckduckgo_search", "python_exec"]))
+        )
+
+        // Then - Both skills should be included
+        #expect(context.activeSkills.count == 2)
+        let skillNames = Set(context.activeSkills.map(\.name))
+        #expect(skillNames.contains("Web Research"))
+        #expect(skillNames.contains("Code Execution"))
+    }
+
+    @Test("GetSkillContext returns empty when no tools match")
+    func getSkillContextReturnsEmptyForNonMatchingTools() async throws {
+        // Given - A skill that doesn't match the query
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        _ = try await database.write(
+            SkillCommands.Create(
+                name: "Web Research",
+                skillDescription: "Web research",
+                instructions: "Search effectively",
+                tools: ["duckduckgo_search"]
+            )
+        )
+
+        // When - Query with different tools
+        let context = try await database.read(
+            SkillCommands.GetSkillContext(toolIdentifiers: Set(["python_exec"]))
+        )
+
+        // Then - Should be empty
+        #expect(context.isEmpty)
+        #expect(context.activeSkills.isEmpty)
+    }
+
+    @Test("Skill matches multiple tool identifiers")
+    func skillMatchesMultipleToolIdentifiers() async throws {
+        // Given - A skill with multiple tools
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        _ = try await database.write(
+            SkillCommands.Create(
+                name: "Full Stack Research",
+                skillDescription: "Research and code",
+                instructions: "Research then implement",
+                tools: ["duckduckgo_search", "browser.search", "python_exec"]
+            )
+        )
+
+        // When - Query with any one of the tools
+        let skillsForSearch = try await database.read(
+            SkillCommands.GetForTools(toolIdentifiers: Set(["duckduckgo_search"]))
+        )
+        let skillsForPython = try await database.read(
+            SkillCommands.GetForTools(toolIdentifiers: Set(["python_exec"]))
+        )
+        let skillsForBrowser = try await database.read(
+            SkillCommands.GetForTools(toolIdentifiers: Set(["browser.search"]))
+        )
+
+        // Then - Same skill should match all
+        #expect(skillsForSearch.count == 1)
+        #expect(skillsForPython.count == 1)
+        #expect(skillsForBrowser.count == 1)
+        #expect(skillsForSearch.first?.id == skillsForPython.first?.id)
+        #expect(skillsForPython.first?.id == skillsForBrowser.first?.id)
+    }
+
+    @Test("SkillData conversion preserves all fields")
+    func skillDataConversionPreservesFields() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        let skillId = try await database.write(
+            SkillCommands.Create(
+                name: "Test Skill",
+                skillDescription: "Test description",
+                instructions: "Test instructions",
+                tools: ["tool1", "tool2"]
+            )
+        )
+
+        // When
+        let context = try await database.read(
+            SkillCommands.GetSkillContext(toolIdentifiers: Set(["tool1"]))
+        )
+
+        // Then - Verify SkillData has all expected fields
+        let skillData = context.activeSkills.first
+        #expect(skillData != nil)
+        #expect(skillData?.id == skillId)
+        #expect(skillData?.name == "Test Skill")
+        #expect(skillData?.skillDescription == "Test description")
+        #expect(skillData?.instructions == "Test instructions")
+        #expect(skillData?.tools.contains("tool1") == true)
+        #expect(skillData?.tools.contains("tool2") == true)
+    }
+
+    @Test("DeleteAllUserSkills removes only user skills")
+    func deleteAllUserSkillsRemovesOnlyUserSkills() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        // Create user skill
+        _ = try await database.write(
+            SkillCommands.Create(
+                name: "User Skill",
+                skillDescription: "User created",
+                instructions: "User instructions"
+            )
+        )
+
+        // Create system skill
+        _ = try await database.write(
+            SkillCommands.Create(
+                name: "System Skill",
+                skillDescription: "System skill",
+                instructions: "System instructions",
+                isSystem: true
+            )
+        )
+
+        // When
+        _ = try await database.write(SkillCommands.DeleteAllUserSkills())
+
+        // Then - Only system skill should remain
+        let allSkills = try await database.read(SkillCommands.GetAll())
+        #expect(allSkills.count == 1)
+        #expect(allSkills.first?.isSystem == true)
+    }
 }
 
 // MARK: - Helper Functions
