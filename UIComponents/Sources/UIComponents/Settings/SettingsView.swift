@@ -55,6 +55,12 @@ public struct SettingsView: View {
                     actionsTabLabel
                 }
 
+            // Models Tab
+            modelsView
+                .tabItem {
+                    modelsTabLabel
+                }
+
             // Analytics Tab
             analyticsView
                 .tabItem {
@@ -100,56 +106,6 @@ public struct SettingsView: View {
                 actions: deleteAlertActions,
                 message: deleteAlertMessage
             )
-    }
-
-    // MARK: - Tab Labels
-
-    private var actionsTabLabel: some View {
-        Label(
-            String(
-                localized: "Actions",
-                bundle: .module,
-                comment: "Tab label for Actions"
-            ),
-            systemImage: "hand.tap"
-        )
-        .accessibility(label: Text("Actions tab"))
-    }
-
-    private var legalTabLabel: some View {
-        Label(
-            String(
-                localized: "Legal",
-                bundle: .module,
-                comment: "Tab label for Legal"
-            ),
-            systemImage: "doc.text"
-        )
-        .accessibility(label: Text("Legal tab"))
-    }
-
-    private var aboutTabLabel: some View {
-        Label(
-            String(
-                localized: "About",
-                bundle: .module,
-                comment: "Tab label for About"
-            ),
-            systemImage: "info.circle"
-        )
-        .accessibility(label: Text("About tab"))
-    }
-
-    private var reviewTabLabel: some View {
-        Label(
-            String(
-                localized: "Review",
-                bundle: .module,
-                comment: "Tab label for Review settings"
-            ),
-            systemImage: "star"
-        )
-        .accessibility(label: Text("Review settings tab"))
     }
 
     // MARK: - Delete Alert
