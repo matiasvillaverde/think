@@ -37,6 +37,29 @@ internal struct AgentOrchestratorAcceptanceTests {
         try await verify(database: database, chatId: chatId, mlxSession: mlxSession)
     }
 
+    @Test("Remote Text Generation Flow")
+    @MainActor
+    internal func remoteTextGenerationFlow() async throws {
+        let database: Database = try await setupRemoteDB()
+        let chatId: UUID = try await setupRemoteChat(database)
+        let mlxSession: MockLLMSession = MockLLMSession()
+        let remoteSession: MockLLMSession = MockLLMSession()
+        let orchestrator: AgentOrchestrator = setupRemoteOrch(
+            database: database,
+            mlxSession: mlxSession,
+            remoteSession: remoteSession
+        )
+
+        await configRemoteSession(remoteSession)
+        try await runTest(orchestrator: orchestrator, chatId: chatId)
+        try await verifyRemote(
+            database: database,
+            chatId: chatId,
+            remoteSession: remoteSession,
+            mlxSession: mlxSession
+        )
+    }
+
     private func runTest(
         orchestrator: AgentOrchestrator,
         chatId: UUID
@@ -62,6 +85,31 @@ internal struct AgentOrchestratorAcceptanceTests {
         let model: ModelDTO = createTestModel()
         try await database.write(
             ModelCommands.AddModels(modelDTOs: [model])
+        )
+
+        return database
+    }
+
+    @MainActor
+    private func setupRemoteDB() async throws -> Database {
+        let config: DatabaseConfiguration = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+
+        let database: Database = try Database.new(configuration: config)
+        _ = try await database.execute(AppCommands.Initialize())
+
+        _ = try await database.write(
+            ModelCommands.CreateRemoteModel(
+                name: "remote-llm",
+                displayName: "Remote Test LLM",
+                displayDescription: "Remote model for testing",
+                location: "openrouter:remote-test-llm",
+                type: .language,
+                architecture: .llama
+            )
         )
 
         return database
@@ -108,6 +156,28 @@ internal struct AgentOrchestratorAcceptanceTests {
         )
     }
 
+    @MainActor
+    private func setupRemoteChat(_ database: Database) async throws -> UUID {
+        let personalityId: UUID = try await database.read(
+            PersonalityCommands.GetDefault()
+        )
+
+        let models: [SendableModel] = try await database.read(
+            ModelCommands.FetchAll()
+        )
+
+        guard let model = models.first(where: { $0.backend == .remote }) else {
+            throw DatabaseError.modelNotFound
+        }
+
+        return try await database.write(
+            ChatCommands.CreateWithModel(
+                modelId: model.id,
+                personalityId: personalityId
+            )
+        )
+    }
+
     private func setupOrch(
         database: Database,
         mlxSession: MockLLMSession
@@ -118,6 +188,31 @@ internal struct AgentOrchestratorAcceptanceTests {
             ggufSession: MockLLMSession(),
             imageGenerator: MockImageGenerating(),
             modelDownloader: MockModelDownloader.createConfiguredMock()
+        )
+
+        let persistor: MessagePersistor = MessagePersistor(
+            database: database
+        )
+
+        return AgentOrchestrator(
+            modelCoordinator: coordinator,
+            persistor: persistor,
+            contextBuilder: ContextBuilder(tooling: ToolManager())
+        )
+    }
+
+    private func setupRemoteOrch(
+        database: Database,
+        mlxSession: MockLLMSession,
+        remoteSession: MockLLMSession
+    ) -> AgentOrchestrator {
+        let coordinator: ModelStateCoordinator = ModelStateCoordinator(
+            database: database,
+            mlxSession: mlxSession,
+            ggufSession: MockLLMSession(),
+            imageGenerator: MockImageGenerating(),
+            modelDownloader: MockModelDownloader.createConfiguredMock(),
+            remoteSession: remoteSession
         )
 
         let persistor: MessagePersistor = MessagePersistor(
@@ -146,6 +241,13 @@ internal struct AgentOrchestratorAcceptanceTests {
         )
     }
 
+    private func configRemoteSession(_ remoteSession: MockLLMSession) async {
+        await remoteSession.configureForSuccessfulGeneration(
+            texts: ["Remote hello!"],
+            delay: 0.01
+        )
+    }
+
     private func verify(
         database: Database,
         chatId: UUID,
@@ -159,5 +261,30 @@ internal struct AgentOrchestratorAcceptanceTests {
         )
 
         #expect(messageCount == 1)
+    }
+
+    @MainActor
+    private func verifyRemote(
+        database: Database,
+        chatId: UUID,
+        remoteSession: MockLLMSession,
+        mlxSession: MockLLMSession
+    ) async throws {
+        #expect(await remoteSession.isModelLoaded)
+        #expect(await mlxSession.calls.isEmpty)
+
+        let messages: [Message] = try await database.read(
+            MessageCommands.GetAll(chatId: chatId)
+        )
+
+        guard let message = messages.first else {
+            throw DatabaseError.messageNotFound
+        }
+
+        let channelContents: [String] = message
+            .sortedChannels
+            .map(\.content)
+
+        #expect(channelContents.contains { $0.contains("Remote hello!") })
     }
 }

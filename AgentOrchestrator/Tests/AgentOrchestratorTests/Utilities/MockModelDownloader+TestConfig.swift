@@ -38,6 +38,8 @@ extension MockModelDownloader {
             "test/mlx-model", "test/gguf-model", "test/specific-model",
             "test/model-a", "test/model-b",
             "test/complex",
+            "test/primary", "test/fallback", "test/mlx-primary", "test/gguf-fallback",
+            "test/large", "test/small",
             "mlx-community/Qwen3-1.7B-4bit", "mlx-community/test-repo-id",
             "mlx-community/NotDownloadedModel", "test-org/test-gguf-model",
             "TheBloke/Llama-2-7B-GGUF",
