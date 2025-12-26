@@ -41,8 +41,8 @@ extension ModelCard {
     func handleModelSelection() {
         let logger: Logger = Logger(subsystem: "UIComponents", category: "ModelCard")
 
-        // Only allow selection of downloaded models, don't trigger downloads on tap
-        if model.state?.isDownloaded == true {
+        // Allow selection of remote models or downloaded local models
+        if model.backend == .remote || model.state?.isDownloaded == true {
             logger.info("Selecting model \(model.displayName) for chat \(chat.id)")
             Task(priority: .userInitiated) {
                 dismiss()

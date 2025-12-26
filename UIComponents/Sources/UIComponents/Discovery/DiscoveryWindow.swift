@@ -15,6 +15,7 @@ public struct DiscoveryWindow: View {
     enum Section: String, CaseIterable {
         case discovery = "Discover"
         case myModels = "My Models"
+        case remote = "Remote Models"
         case analytics = "Analytics"
     }
 
@@ -76,6 +77,19 @@ public struct DiscoveryWindow: View {
                 )
             }
 
+        case .remote:
+            if let personality = selectedPersonality, let chat = personality.chat {
+                RemoteModelsView(chat: chat)
+            } else {
+                ContentUnavailableView(
+                    "No Personality Selected",
+                    systemImage: "person.circle",
+                    description: Text(
+                        "Select a personality in the main window to manage its models"
+                    )
+                )
+            }
+
         case .analytics:
             AnalyticsNavigationView(
                 initialContext: selectedPersonality?.chat.map { chat in
@@ -99,6 +113,9 @@ public struct DiscoveryWindow: View {
 
         case .myModels:
             return "tray.full"
+
+        case .remote:
+            return "globe"
 
         case .analytics:
             return "chart.line.uptrend.xyaxis"

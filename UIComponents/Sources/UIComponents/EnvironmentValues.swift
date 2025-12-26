@@ -256,6 +256,10 @@ extension EnvironmentValues {
     @Entry public var modelActionsViewModel: ModelDownloaderViewModeling =
         PreviewModelActionsViewModel()
 
+    /// Environment value for accessing remote model listings.
+    @Entry public var remoteModelsViewModel: RemoteModelsViewModeling =
+        PreviewRemoteModelsViewModel()
+
     /// Environment value for accessing the onboarding coordinator
     ///
     /// This coordinator manages background model downloads during the onboarding flow,

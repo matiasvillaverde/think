@@ -12,6 +12,7 @@ import SwiftUI
         enum Tab {
             case myModels
             case discovery
+            case remote
         }
 
         internal init(chat: Chat, isPresented: Binding<Bool>) {
@@ -24,6 +25,8 @@ import SwiftUI
                 myModelsTab
 
                 discoveryTab
+
+                remoteModelsTab
             }
             .onReceive(
                 NotificationCenter.default.publisher(
@@ -82,6 +85,25 @@ import SwiftUI
                 Label("Discover", systemImage: "sparkles")
             }
             .tag(Tab.discovery)
+        }
+
+        private var remoteModelsTab: some View {
+            NavigationStack {
+                RemoteModelsView(chat: chat)
+                    .navigationTitle("Remote Models")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button("Done") {
+                                isPresented = false
+                            }
+                        }
+                    }
+            }
+            .tabItem {
+                Label("Remote", systemImage: "globe")
+            }
+            .tag(Tab.remote)
         }
     }
 
