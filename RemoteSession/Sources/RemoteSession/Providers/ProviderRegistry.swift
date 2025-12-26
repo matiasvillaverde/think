@@ -1,17 +1,5 @@
+import Abstractions
 import Foundation
-
-/// Types of remote LLM providers.
-public enum RemoteProviderType: String, CaseIterable, Sendable {
-    case openRouter
-    case openAI
-    case anthropic
-    case google
-
-    /// The keychain service identifier for this provider
-    var keychainKey: String {
-        "api_key_\(rawValue)"
-    }
-}
 
 /// Registry for resolving providers from model locations.
 ///

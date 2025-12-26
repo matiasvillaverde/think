@@ -1,4 +1,12 @@
+import Abstractions
 import Foundation
+
+extension RemoteProviderType {
+    /// The keychain service identifier for this provider
+    var keychainKey: String {
+        "api_key_\(rawValue)"
+    }
+}
 
 /// Protocol for managing API keys.
 ///
