@@ -151,6 +151,10 @@ public final class Model: ObservableObject {
             if locationLocal == nil || locationLocal?.isEmpty == true {
                 throw ModelError.missingLocation("Local model location cannot be empty")
             }
+        } else if locationKind == .remote {
+            if locationHuggingface.isEmpty {
+                throw ModelError.missingLocation("Remote model location cannot be empty")
+            }
         }
 
         // Initialize arrays first

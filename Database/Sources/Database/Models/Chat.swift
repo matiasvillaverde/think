@@ -34,6 +34,10 @@ public final class Chat: Identifiable, Equatable, ObservableObject {
     @Attribute()
     public private(set) var isFavorite: Bool
 
+    /// Ordered list of fallback model IDs to try if primary model fails to load
+    @Attribute()
+    public internal(set) var fallbackModelIds: [UUID] = []
+
     // MARK: - Relationships
 
     @Relationship(deleteRule: .cascade)

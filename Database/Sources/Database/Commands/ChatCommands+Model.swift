@@ -303,4 +303,136 @@ extension ChatCommands {
             return chatId
         }
     }
+
+    // MARK: - Fallback Model Commands
+
+    /// Gets the fallback model IDs for a chat
+    public struct GetFallbackModels: ReadCommand {
+        public typealias Result = [UUID]
+
+        private let chatId: UUID
+
+        public init(chatId: UUID) {
+            self.chatId = chatId
+            Logger.database.info("ChatCommands.GetFallbackModels initialized for chat: \(chatId)")
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> [UUID] {
+            Logger.database.info("ChatCommands.GetFallbackModels.execute started")
+
+            let chat = try ChatCommands.Read(chatId: chatId)
+                .execute(in: context, userId: userId, rag: rag)
+
+            Logger.database.info(
+                "ChatCommands.GetFallbackModels.execute completed - \(chat.fallbackModelIds.count) models"
+            )
+            return chat.fallbackModelIds
+        }
+    }
+
+    /// Sets the fallback model IDs for a chat
+    public struct SetFallbackModels: WriteCommand {
+        public typealias Result = UUID
+
+        private let chatId: UUID
+        private let fallbackModelIds: [UUID]
+
+        public init(chatId: UUID, fallbackModelIds: [UUID]) {
+            self.chatId = chatId
+            self.fallbackModelIds = fallbackModelIds
+            Logger.database.info(
+                "ChatCommands.SetFallbackModels initialized for chat: \(chatId)"
+            )
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            Logger.database.info("ChatCommands.SetFallbackModels.execute started")
+
+            let chat = try ChatCommands.Read(chatId: chatId)
+                .execute(in: context, userId: userId, rag: rag)
+
+            chat.fallbackModelIds = fallbackModelIds
+            try context.save()
+
+            Logger.database.info("ChatCommands.SetFallbackModels.execute completed")
+            return chatId
+        }
+    }
+
+    /// Adds a model to the fallback chain
+    public struct AddFallbackModel: WriteCommand {
+        public typealias Result = UUID
+
+        private let chatId: UUID
+        private let modelId: UUID
+
+        public init(chatId: UUID, modelId: UUID) {
+            self.chatId = chatId
+            self.modelId = modelId
+            Logger.database.info(
+                "ChatCommands.AddFallbackModel initialized for chat: \(chatId) model: \(modelId)"
+            )
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            Logger.database.info("ChatCommands.AddFallbackModel.execute started")
+
+            let chat = try ChatCommands.Read(chatId: chatId)
+                .execute(in: context, userId: userId, rag: rag)
+
+            // Avoid duplicates
+            if !chat.fallbackModelIds.contains(modelId) {
+                chat.fallbackModelIds.append(modelId)
+            }
+            try context.save()
+
+            Logger.database.info("ChatCommands.AddFallbackModel.execute completed")
+            return chatId
+        }
+    }
+
+    /// Removes a model from the fallback chain
+    public struct RemoveFallbackModel: WriteCommand {
+        public typealias Result = UUID
+
+        private let chatId: UUID
+        private let modelId: UUID
+
+        public init(chatId: UUID, modelId: UUID) {
+            self.chatId = chatId
+            self.modelId = modelId
+            Logger.database.info(
+                "ChatCommands.RemoveFallbackModel initialized for chat: \(chatId)"
+            )
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            Logger.database.info("ChatCommands.RemoveFallbackModel.execute started")
+
+            let chat = try ChatCommands.Read(chatId: chatId)
+                .execute(in: context, userId: userId, rag: rag)
+
+            chat.fallbackModelIds.removeAll { $0 == modelId }
+            try context.save()
+
+            Logger.database.info("ChatCommands.RemoveFallbackModel.execute completed")
+            return chatId
+        }
+    }
 }

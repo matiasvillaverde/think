@@ -14,9 +14,10 @@ extension Model {
         )
 
         let locationValue: String
-        if locationKind == .localFile {
+        switch locationKind {
+        case .localFile:
             locationValue = locationLocal ?? ""
-        } else {
+        case .huggingFace, .remote:
             locationValue = locationHuggingface ?? ""
         }
 

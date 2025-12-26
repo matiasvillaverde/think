@@ -6,4 +6,6 @@ public enum ModelLocationKind: String, Codable, Equatable, Sendable, Hashable {
     case huggingFace = "huggingFace"
     /// Model files live at a user-selected local path (not copied).
     case localFile = "localFile"
+    /// Model runs remotely via a provider API (no local files).
+    case remote = "remote"
 }
