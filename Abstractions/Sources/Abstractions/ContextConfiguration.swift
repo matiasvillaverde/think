@@ -13,6 +13,8 @@ public struct ContextConfiguration: Sendable {
     public let memoryContext: MemoryContext?
     /// Skill context to inject tool usage guidance into the system prompt
     public let skillContext: SkillContext?
+    /// Workspace context to inject bootstrap files into the system prompt
+    public let workspaceContext: WorkspaceContext?
     /// Allowed tools based on resolved personality tool policy (empty means no tools allowed)
     public let allowedTools: Set<ToolIdentifier>
     /// Whether a tool policy was explicitly set (if false, allowedTools contains all tools)
@@ -28,6 +30,7 @@ public struct ContextConfiguration: Sendable {
         currentDateOverride: String? = nil,
         memoryContext: MemoryContext? = nil,
         skillContext: SkillContext? = nil,
+        workspaceContext: WorkspaceContext? = nil,
         allowedTools: Set<ToolIdentifier> = Set(ToolIdentifier.allCases),
         hasToolPolicy: Bool = false
     ) {
@@ -40,6 +43,7 @@ public struct ContextConfiguration: Sendable {
         self.currentDateOverride = currentDateOverride
         self.memoryContext = memoryContext
         self.skillContext = skillContext
+        self.workspaceContext = workspaceContext
         self.allowedTools = allowedTools
         self.hasToolPolicy = hasToolPolicy
     }

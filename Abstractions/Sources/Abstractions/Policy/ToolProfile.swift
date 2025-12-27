@@ -23,7 +23,7 @@ public enum ToolProfile: String, Sendable, Codable, CaseIterable {
         case .research:
             return [.browser, .duckduckgo, .braveSearch, .memory]
         case .coding:
-            return [.browser, .python]
+            return [.browser, .python, .workspace]
         case .full:
             return Set(ToolIdentifier.allCases)
         }
