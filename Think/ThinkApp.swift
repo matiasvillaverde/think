@@ -28,6 +28,7 @@ struct ThinkApp: App {
                 .withAudioGenerator()
                 .withDiscoveryCarousel()
                 .withModelActions()
+                .withRemoteModelsViewModel()
                 .withOnboardingCoordinator()
         }
 
@@ -43,6 +44,7 @@ struct ThinkApp: App {
                 .withAppViewModel()
                 .withDiscoveryCarousel()
                 .withModelActions()
+                .withRemoteModelsViewModel()
         }
         .defaultSize(width: 900, height: 700)
 

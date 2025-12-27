@@ -183,6 +183,31 @@ extension View {
     }
 }
 
+// MARK: - Remote Models ViewModel Provider
+
+public struct RemoteModelsViewModelProvider: ViewModifier {
+    @Environment(\.database)
+    private var database: DatabaseProtocol
+
+    public init() {
+        // Initialize provider
+    }
+
+    public func body(content: Content) -> some View {
+        content
+            .environment(
+                \.remoteModelsViewModel,
+                RemoteModelsViewModel(database: database)
+            )
+    }
+}
+
+extension View {
+    public func withRemoteModelsViewModel() -> some View {
+        modifier(RemoteModelsViewModelProvider())
+    }
+}
+
 // MARK: - Reviews
 
 public struct ReviewRequestProvider: ViewModifier {
