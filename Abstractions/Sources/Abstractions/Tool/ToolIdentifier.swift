@@ -11,6 +11,11 @@ public enum ToolIdentifier: String, CaseIterable, Hashable, Sendable {
     case duckduckgo = "DuckDuckGo Search"
     case braveSearch = "Brave Search"
     case memory = "Memory"
+    case subAgent = "Sub-Agent"
+    case workspace = "Workspace Files"
+    case cron = "Cron"
+    case canvas = "Canvas"
+    case nodes = "Nodes"
 }
 
 extension ToolIdentifier {
@@ -20,13 +25,18 @@ extension ToolIdentifier {
         case .browser: return "browser.search"
         case .python: return "python_exec"
         case .functions: return "functions"
-        case .healthKit: return "health_kit"
+        case .healthKit: return "health_data"
         case .weather: return "weather"
         case .duckduckgo: return "duckduckgo_search"
         case .braveSearch: return "brave_search"
         case .reasoning: return "reasoning"
         case .imageGeneration: return "image_generation"
         case .memory: return "memory"
+        case .subAgent: return "sub_agent"
+        case .workspace: return "workspace"
+        case .cron: return "cron"
+        case .canvas: return "canvas"
+        case .nodes: return "nodes"
         }
     }
 
