@@ -38,6 +38,14 @@ public final class ToolExecution: Identifiable, Equatable, ObservableObject {
     /// Error message if execution failed
     @Attribute()
     public private(set) var errorMessage: String?
+
+    /// Optional progress for long-running tools (0.0 - 1.0)
+    @Attribute()
+    public private(set) var progress: Double?
+
+    /// Optional status message for progress updates
+    @Attribute()
+    public private(set) var statusMessage: String?
     
     // MARK: - Timestamps
     
@@ -146,6 +154,16 @@ public final class ToolExecution: Identifiable, Equatable, ObservableObject {
         }
         
         try transitionTo(.failed)
+    }
+
+    /// Update execution progress and optional status message.
+    public func updateProgress(_ newProgress: Double?, status: String?) {
+        if let value = newProgress {
+            progress = min(max(value, 0.0), 1.0)
+        } else {
+            progress = nil
+        }
+        statusMessage = status
     }
     
     // MARK: - Private Methods

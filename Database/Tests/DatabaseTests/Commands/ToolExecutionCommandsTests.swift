@@ -745,3 +745,109 @@ struct ToolExecutionCommandsReadTests {
         #expect(executingExecutions[0].state == .executing)
     }
 }
+
+@Suite("ToolExecutionCommands.UpdateProgress Tests")
+struct ToolExecutionCommandsUpdateProgressTests {
+    @Test("Updates progress and status message")
+    @MainActor
+    func testUpdateProgressAndStatus() async throws {
+        let database = try await setupTestDatabase()
+        let defaultPersonalityId = try await database.read(PersonalityCommands.GetDefault())
+
+        let chatId = try await database.write(
+            ChatCommands.Create(personality: defaultPersonalityId)
+        )
+
+        try await database.write(MessageCommands.Create(
+            chatId: chatId,
+            userInput: "Test message",
+            isDeepThinker: false
+        ))
+
+        let messages = try database.modelContainer.mainContext.fetch(
+            FetchDescriptor<Message>()
+        )
+        let messageId = messages[0].id
+
+        let request = ToolRequest(
+            name: "progress_tool",
+            arguments: "{}",
+            displayName: "Progress Tool"
+        )
+
+        let executionId = try await database.write(ToolExecutionCommands.Create(
+            request: request,
+            channelId: nil,
+            messageId: messageId
+        ))
+
+        _ = try await database.write(ToolExecutionCommands.UpdateProgress(
+            executionId: executionId,
+            progress: 0.6,
+            status: "Downloading"
+        ))
+
+        let execution = try await database.read(
+            ToolExecutionCommands.Get(executionId: executionId)
+        )
+
+        #expect(execution?.progress == 0.6)
+        #expect(execution?.statusMessage == "Downloading")
+    }
+
+    @Test("Clamps progress to valid range")
+    @MainActor
+    func testProgressClamp() async throws {
+        let database = try await setupTestDatabase()
+        let defaultPersonalityId = try await database.read(PersonalityCommands.GetDefault())
+
+        let chatId = try await database.write(
+            ChatCommands.Create(personality: defaultPersonalityId)
+        )
+
+        try await database.write(MessageCommands.Create(
+            chatId: chatId,
+            userInput: "Test message",
+            isDeepThinker: false
+        ))
+
+        let messages = try database.modelContainer.mainContext.fetch(
+            FetchDescriptor<Message>()
+        )
+        let messageId = messages[0].id
+
+        let request = ToolRequest(
+            name: "clamp_tool",
+            arguments: "{}",
+            displayName: "Clamp Tool"
+        )
+
+        let executionId = try await database.write(ToolExecutionCommands.Create(
+            request: request,
+            channelId: nil,
+            messageId: messageId
+        ))
+
+        _ = try await database.write(ToolExecutionCommands.UpdateProgress(
+            executionId: executionId,
+            progress: 2.4,
+            status: nil
+        ))
+
+        var execution = try await database.read(
+            ToolExecutionCommands.Get(executionId: executionId)
+        )
+        #expect(execution?.progress == 1.0)
+
+        _ = try await database.write(ToolExecutionCommands.UpdateProgress(
+            executionId: executionId,
+            progress: -0.4,
+            status: nil
+        ))
+
+        execution = try await database.read(
+            ToolExecutionCommands.Get(executionId: executionId)
+        )
+        #expect(execution?.progress == 0.0)
+    }
+}

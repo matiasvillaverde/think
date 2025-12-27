@@ -103,6 +103,38 @@ extension ToolExecutionCommands {
             return execution.id
         }
     }
+
+    // MARK: - UpdateProgress Command
+
+    public struct UpdateProgress: WriteCommand {
+        let executionId: UUID
+        let progress: Double?
+        let status: String?
+
+        public init(executionId: UUID, progress: Double?, status: String?) {
+            self.executionId = executionId
+            self.progress = progress
+            self.status = status
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            let fetch = FetchDescriptor<ToolExecution>(
+                predicate: #Predicate { $0.id == executionId }
+            )
+
+            guard let execution = try context.fetch(fetch).first else {
+                throw DatabaseError.toolExecutionNotFound
+            }
+
+            execution.updateProgress(progress, status: status)
+
+            return execution.id
+        }
+    }
     
     // MARK: - Complete Command
     
