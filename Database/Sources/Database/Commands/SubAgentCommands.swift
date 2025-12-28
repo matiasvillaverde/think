@@ -253,6 +253,38 @@ extension SubAgentCommands {
         }
     }
 
+    /// Marks a run as timed out
+    public struct MarkTimedOut: WriteCommand {
+        private let runId: UUID
+        private let durationMs: Int
+
+        public var requiresUser: Bool { false }
+        public var requiresRag: Bool { false }
+
+        public init(runId: UUID, durationMs: Int) {
+            self.runId = runId
+            self.durationMs = durationMs
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            let descriptor = FetchDescriptor<SubAgentRun>(
+                predicate: #Predicate<SubAgentRun> { $0.id == runId }
+            )
+
+            guard let run = try context.fetch(descriptor).first else {
+                throw DatabaseError.subAgentRunNotFound
+            }
+
+            run.markTimedOut(durationMs: durationMs)
+            try context.save()
+            return run.id
+        }
+    }
+
     /// Marks a run as cancelled
     public struct MarkCancelled: WriteCommand {
         private let runId: UUID

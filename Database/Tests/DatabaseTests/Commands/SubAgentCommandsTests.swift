@@ -166,6 +166,32 @@ struct SubAgentCommandsTests {
         #expect(run.errorMessage == "Network error")
     }
 
+    @Test("Mark timed out updates run status")
+    func markTimedOutUpdatesStatus() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database = try Database.new(configuration: config)
+        try await waitForStatus(database, expectedStatus: .ready)
+
+        let runId = try await database.write(
+            SubAgentCommands.Create(prompt: "Task", mode: .background)
+        )
+
+        // When
+        try await database.write(
+            SubAgentCommands.MarkTimedOut(runId: runId, durationMs: 2_000)
+        )
+
+        // Then
+        let run = try await database.read(SubAgentCommands.Read(runId: runId))
+        #expect(run.status == .timedOut)
+        #expect(run.errorMessage == "Sub-agent execution timed out")
+    }
+
     @Test("Mark cancelled updates run status")
     func markCancelledUpdatesStatus() async throws {
         // Given
