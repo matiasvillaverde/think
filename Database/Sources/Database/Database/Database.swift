@@ -66,9 +66,9 @@ public actor Database: DatabaseProtocol {
         do {
             Self.logger.info("Creating ModelContainer with SwiftData models...")
             Self.logger.info("""
-                Models to register: LLMConfiguration, DiffusorConfiguration, User, Prompt, \
-                ImageAttachment, FileAttachment, Chat, Message, Memory, Skill, ToolPolicy, SubAgentRun, Tool, Source, Model, \
-                Tag, NotificationAlert, Personality, ModelDetails
+                Models to register: LLMConfiguration, DiffusorConfiguration, User, AppSettings, Prompt, \
+                ImageAttachment, FileAttachment, Metrics, Chat, CanvasDocument, AutomationSchedule, Message, Memory, Skill, \
+                ToolPolicy, SubAgentRun, Tool, Source, Model, Tag, NotificationAlert, Personality, ModelDetails, ToolExecution
                 """)
             
             modelContainer = try ModelContainer(
@@ -76,11 +76,14 @@ public actor Database: DatabaseProtocol {
                 LLMConfiguration.self,
                 DiffusorConfiguration.self,
                 User.self,
+                AppSettings.self,
                 Prompt.self,
                 ImageAttachment.self,
                 FileAttachment.self,
                 Metrics.self,
                 Chat.self,
+                CanvasDocument.self,
+                AutomationSchedule.self,
                 Message.self,
                 Memory.self,
                 Skill.self,

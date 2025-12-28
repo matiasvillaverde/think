@@ -44,6 +44,10 @@ public final class User: Identifiable, Equatable {
     @Relationship(deleteRule: .cascade)
     public internal(set) var models: [Model]
 
+    /// User settings (singleton).
+    @Relationship(deleteRule: .cascade)
+    public internal(set) var settings: AppSettings?
+
     // MARK: - Initializer
 
     init(
@@ -52,7 +56,8 @@ public final class User: Identifiable, Equatable {
         prompts: [Prompt] = [],
         chats: [Chat] = [],
         agents: [LLMConfiguration] = [],
-        models: [Model] = []
+        models: [Model] = [],
+        settings: AppSettings? = nil
     ) {
         self.name = name
         self.profilePicture = profilePicture
@@ -60,6 +65,7 @@ public final class User: Identifiable, Equatable {
         self.chats = chats
         self.agents = agents
         self.models = Array(models)
+        self.settings = settings
     }
 }
 

@@ -60,6 +60,12 @@ public final class Chat: Identifiable, Equatable, ObservableObject {
     @Relationship(deleteRule: .cascade, inverse: \Message.chat)
     public private(set) var messages: [Message] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \AutomationSchedule.chat)
+    public private(set) var schedules: [AutomationSchedule] = []
+
+    @Relationship(deleteRule: .cascade, inverse: \CanvasDocument.chat)
+    public private(set) var canvases: [CanvasDocument] = []
+
     @Relationship(deleteRule: .nullify)
     public private(set) var user: User?
 
