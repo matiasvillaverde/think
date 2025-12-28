@@ -2,7 +2,12 @@ import Abstractions
 import Foundation
 
 /// Formatter for Llama3 architecture with Python environment support
-internal struct Llama3ContextFormatter: ContextFormatter, DateFormatting, MemoryFormatting {
+internal struct Llama3ContextFormatter:
+    ContextFormatter,
+    DateFormatting,
+    MemoryFormatting,
+    SkillFormatting,
+    WorkspaceFormatting {
     internal let labels: Llama3Labels
 
     // MARK: - ContextFormatter
@@ -14,13 +19,7 @@ internal struct Llama3ContextFormatter: ContextFormatter, DateFormatting, Memory
         let currentDate: Date = determineDateToUse(context: context)
 
         // Build system instruction with memory context if available
-        var systemContent: String = context.contextConfiguration.systemInstruction
-        if let memoryContext: MemoryContext = context.contextConfiguration.memoryContext {
-            let memorySection: String = formatMemoryContext(memoryContext)
-            if !memorySection.isEmpty {
-                systemContent += memorySection
-            }
-        }
+        let systemContent: String = buildSystemContent(context: context)
 
         // Add system message
         let includeDate: Bool = context.contextConfiguration.includeCurrentDate
@@ -34,24 +33,7 @@ internal struct Llama3ContextFormatter: ContextFormatter, DateFormatting, Memory
 
         // Add conversation history
         let messages: [MessageData] = context.contextConfiguration.contextMessages
-        for (index, message) in messages.enumerated() {
-            let isLastMessage: Bool = index == messages.count - 1
-
-            if let userInput = message.userInput {
-                result += formatUserMessage(userInput)
-            }
-
-            // Use channels if available, otherwise fall back to assistant field
-            if !message.channels.isEmpty {
-                let isLastCompleteMessage: Bool = isLastMessage && message.userInput != nil
-                let formatted: String = formatAssistantMessageFromChannels(
-                    message,
-                    isLast: isLastCompleteMessage
-                )
-                result += formatted
-            }
-            // No channels - skip
-        }
+        result += formatConversationHistory(messages: messages)
 
         // Add tool responses if any
         if !context.toolResponses.isEmpty {
@@ -63,6 +45,84 @@ internal struct Llama3ContextFormatter: ContextFormatter, DateFormatting, Memory
             result += labels.assistantLabel.trimmingCharacters(in: .newlines)
         }
 
+        return result
+    }
+
+    private func buildSystemContent(context: BuildContext) -> String {
+        var systemContent: String = context.contextConfiguration.systemInstruction
+        appendWorkspaceContext(to: &systemContent, configuration: context.contextConfiguration)
+        appendMemoryContext(to: &systemContent, configuration: context.contextConfiguration)
+        appendSkillContext(
+            to: &systemContent,
+            configuration: context.contextConfiguration,
+            actionTools: context.action.tools
+        )
+        return systemContent
+    }
+
+    private func appendWorkspaceContext(
+        to content: inout String,
+        configuration: ContextConfiguration
+    ) {
+        guard let workspaceContext: WorkspaceContext = configuration.workspaceContext else {
+            return
+        }
+        let workspaceSection: String = formatWorkspaceContext(workspaceContext)
+        guard !workspaceSection.isEmpty else {
+            return
+        }
+        content += workspaceSection
+    }
+
+    private func appendMemoryContext(
+        to content: inout String,
+        configuration: ContextConfiguration
+    ) {
+        guard let memoryContext: MemoryContext = configuration.memoryContext else {
+            return
+        }
+        let memorySection: String = formatMemoryContext(memoryContext)
+        guard !memorySection.isEmpty else {
+            return
+        }
+        content += memorySection
+    }
+
+    private func appendSkillContext(
+        to content: inout String,
+        configuration: ContextConfiguration,
+        actionTools: Set<ToolIdentifier>
+    ) {
+        guard let skillContext: SkillContext = configuration.skillContext else {
+            return
+        }
+        let skillSection: String = formatSkillContext(
+            skillContext,
+            actionTools: actionTools
+        )
+        guard !skillSection.isEmpty else {
+            return
+        }
+        content += skillSection
+    }
+
+    private func formatConversationHistory(messages: [MessageData]) -> String {
+        var result: String = ""
+        for (index, message) in messages.enumerated() {
+            let isLastMessage: Bool = index == messages.count - 1
+
+            if let userInput = message.userInput {
+                result += formatUserMessage(userInput)
+            }
+
+            if !message.channels.isEmpty {
+                let isLastCompleteMessage: Bool = isLastMessage && message.userInput != nil
+                result += formatAssistantMessageFromChannels(
+                    message,
+                    isLast: isLastCompleteMessage
+                )
+            }
+        }
         return result
     }
 

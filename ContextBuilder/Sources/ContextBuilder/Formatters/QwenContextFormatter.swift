@@ -2,8 +2,14 @@ import Abstractions
 import Foundation
 
 /// Formatter for Qwen architecture with thinking command support
-internal struct QwenContextFormatter: ContextFormatter, DateFormatting, ToolFormatting,
-    MessageFormatting, MemoryFormatting {
+internal struct QwenContextFormatter:
+    ContextFormatter,
+    DateFormatting,
+    ToolFormatting,
+    MessageFormatting,
+    MemoryFormatting,
+    SkillFormatting,
+    WorkspaceFormatting {
     internal let labels: QwenLabels
 
     // MARK: - ContextFormatter
@@ -11,19 +17,9 @@ internal struct QwenContextFormatter: ContextFormatter, DateFormatting, ToolForm
     internal func build(context: BuildContext) -> String {
         var result: String = ""
 
-        // Determine date to use
         let currentDate: Date = determineDateToUse(context: context)
+        let systemContent: String = buildSystemContent(context: context)
 
-        // Build system instruction with memory context if available
-        var systemContent: String = context.contextConfiguration.systemInstruction
-        if let memoryContext: MemoryContext = context.contextConfiguration.memoryContext {
-            let memorySection: String = formatMemoryContext(memoryContext)
-            if !memorySection.isEmpty {
-                systemContent += memorySection
-            }
-        }
-
-        // Add system message with thinking command if reasoning
         let includeDate: Bool = context.contextConfiguration.includeCurrentDate
         result += formatSystemMessageWithThinking(
             systemContent,
@@ -34,8 +30,56 @@ internal struct QwenContextFormatter: ContextFormatter, DateFormatting, ToolForm
             includeDate: includeDate
         )
 
-        // Add conversation history
+        result += buildConversationHistory(
+            context: context,
+            isReasoning: context.action.isReasoning,
+            hasToolResponses: !context.toolResponses.isEmpty
+        )
+
+        if !context.toolResponses.isEmpty {
+            result += formatToolResponses(context.toolResponses)
+            result += labels.assistantLabel
+        } else if shouldStartAssistantResponse(context: context) {
+            result += labels.assistantLabel.trimmingCharacters(in: .newlines)
+        }
+
+        return result
+    }
+
+    private func buildSystemContent(context: BuildContext) -> String {
+        var systemContent: String = context.contextConfiguration.systemInstruction
+        if let workspaceContext: WorkspaceContext = context.contextConfiguration.workspaceContext {
+            let workspaceSection: String = formatWorkspaceContext(workspaceContext)
+            if !workspaceSection.isEmpty {
+                systemContent += workspaceSection
+            }
+        }
+        if let memoryContext: MemoryContext = context.contextConfiguration.memoryContext {
+            let memorySection: String = formatMemoryContext(memoryContext)
+            if !memorySection.isEmpty {
+                systemContent += memorySection
+            }
+        }
+        if let skillContext: SkillContext = context.contextConfiguration.skillContext {
+            let skillSection: String = formatSkillContext(
+                skillContext,
+                actionTools: context.action.tools
+            )
+            if !skillSection.isEmpty {
+                systemContent += skillSection
+            }
+        }
+        return systemContent
+    }
+
+    private func buildConversationHistory(
+        context: BuildContext,
+        isReasoning: Bool,
+        hasToolResponses: Bool
+    ) -> String {
+        var result: String = ""
         let messages: [MessageData] = context.contextConfiguration.contextMessages
+
         for (index, message) in messages.enumerated() {
             let isLastMessage: Bool = index == messages.count - 1
 
@@ -43,33 +87,20 @@ internal struct QwenContextFormatter: ContextFormatter, DateFormatting, ToolForm
                 let modifiedUserInput: String = addThinkingCommandIfNeeded(
                     to: userInput,
                     isLastMessage: isLastMessage,
-                    isReasoning: context.action.isReasoning
+                    isReasoning: isReasoning
                 )
                 result += formatUserMessage(modifiedUserInput)
             }
 
-            // Use channels if available, otherwise fall back to assistant field
             if !message.channels.isEmpty {
-                // Only mark as last if there are no tool responses following
                 let isLastCompleteMessage: Bool = isLastMessage &&
                     message.userInput != nil &&
-                    context.toolResponses.isEmpty
+                    !hasToolResponses
                 let formatted: String = formatAssistantMessageFromChannels(message)
                 if !formatted.isEmpty {
                     result += formatAssistantMessage(formatted, isLast: isLastCompleteMessage)
                 }
             }
-            // No channels - skip
-        }
-
-        // Add tool responses if any
-        if !context.toolResponses.isEmpty {
-            result += formatToolResponses(context.toolResponses)
-            // Always add assistant tag after tool responses
-            result += labels.assistantLabel
-        } else if shouldStartAssistantResponse(context: context) {
-            // Start assistant response only if the last message is incomplete
-            result += labels.assistantLabel.trimmingCharacters(in: .newlines)
         }
 
         return result

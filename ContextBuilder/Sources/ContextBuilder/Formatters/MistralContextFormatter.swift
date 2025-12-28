@@ -2,7 +2,12 @@ import Abstractions
 import Foundation
 
 /// Formatter for Mistral architecture with [INST] format
-internal struct MistralContextFormatter: ContextFormatter, DateFormatting, MemoryFormatting {
+internal struct MistralContextFormatter:
+    ContextFormatter,
+    DateFormatting,
+    MemoryFormatting,
+    SkillFormatting,
+    WorkspaceFormatting {
     internal let labels: MistralLabels
 
     // MARK: - ContextFormatter
@@ -35,10 +40,25 @@ internal struct MistralContextFormatter: ContextFormatter, DateFormatting, Memor
 
     private func buildSystemContent(context: BuildContext) -> String {
         var systemContent: String = context.contextConfiguration.systemInstruction
+        if let workspaceContext: WorkspaceContext = context.contextConfiguration.workspaceContext {
+            let workspaceSection: String = formatWorkspaceContext(workspaceContext)
+            if !workspaceSection.isEmpty {
+                systemContent += workspaceSection
+            }
+        }
         if let memoryContext: MemoryContext = context.contextConfiguration.memoryContext {
             let memorySection: String = formatMemoryContext(memoryContext)
             if !memorySection.isEmpty {
                 systemContent += memorySection
+            }
+        }
+        if let skillContext: SkillContext = context.contextConfiguration.skillContext {
+            let skillSection: String = formatSkillContext(
+                skillContext,
+                actionTools: context.action.tools
+            )
+            if !skillSection.isEmpty {
+                systemContent += skillSection
             }
         }
         return systemContent
