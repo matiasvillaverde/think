@@ -156,6 +156,43 @@ extension ModelCommands {
         }
     }
 
+    public struct ModelDownloadInfo: Sendable, Equatable {
+        public let id: UUID
+        public let state: Model.State
+        public let size: UInt64
+        public let ramNeeded: UInt64
+
+        public init(id: UUID, state: Model.State, size: UInt64, ramNeeded: UInt64) {
+            self.id = id
+            self.state = state
+            self.size = size
+            self.ramNeeded = ramNeeded
+        }
+    }
+
+    public struct GetModelDownloadInfo: ReadCommand {
+        public typealias Result = ModelDownloadInfo
+        private let id: UUID
+
+        public init(id: UUID) {
+            self.id = id
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> ModelDownloadInfo {
+            let model = try GetModelFromId(id: id).execute(in: context, userId: userId, rag: rag)
+            let state = model.state ?? .notDownloaded
+            return ModelDownloadInfo(
+                id: model.id,
+                state: state,
+                size: model.size,
+                ramNeeded: model.ramNeeded
+            )
+        }
+    }
     public struct GetModelState: ReadCommand {
         // MARK: - Properties
 

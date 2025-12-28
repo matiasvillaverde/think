@@ -159,6 +159,9 @@ public struct AppInitializeCommand: AnonymousCommand {
             try context.save()
             Self.logger.info("Created new user: \(user.id)")
 
+            // Ensure settings exist
+            try ensureSettings(for: user, in: context)
+
             // Add default personalities
             try addDefaultPersonalities(in: context)
 
@@ -181,6 +184,9 @@ public struct AppInitializeCommand: AnonymousCommand {
             let userDescriptor = FetchDescriptor<User>()
             let user = try context.fetch(userDescriptor)[0]
             Self.logger.info("Using existing user: \(user.id)")
+
+            // Ensure settings exist
+            try ensureSettings(for: user, in: context)
             
             // Debug: Check existing models
             Self.logger.info("Found \(user.models.count) existing models")
@@ -218,6 +224,9 @@ public struct AppInitializeCommand: AnonymousCommand {
             let userDescriptor = FetchDescriptor<User>()
             let user = try context.fetch(userDescriptor)[0]
             Self.logger.info("Using existing user: \(user.id)")
+
+            // Ensure settings exist
+            try ensureSettings(for: user, in: context)
             
             // Debug: Check existing models
             Self.logger.info("Found \(user.models.count) existing models")
@@ -259,6 +268,20 @@ public struct AppInitializeCommand: AnonymousCommand {
             } else {
                 Self.logger.info("No models needed migration from v0 to v1")
             }
+        }
+
+        // MARK: - Settings
+
+        private func ensureSettings(for user: User, in context: ModelContext) throws {
+            if user.settings != nil {
+                return
+            }
+
+            let settings = AppSettings()
+            user.settings = settings
+            context.insert(settings)
+            try context.save()
+            Self.logger.info("Created default AppSettings for user: \(user.id)")
         }
 
         private func addV2ImageModel(for user: User, in context: ModelContext) throws {

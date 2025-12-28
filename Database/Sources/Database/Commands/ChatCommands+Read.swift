@@ -68,6 +68,71 @@ extension ChatCommands {
         }
     }
 
+    public struct FetchGatewaySession: ReadCommand {
+        public typealias Result = GatewaySession
+
+        private let chatId: UUID
+
+        public init(chatId: UUID) {
+            self.chatId = chatId
+            Logger.database.info("ChatCommands.FetchGatewaySession initialized with chatId: \(chatId)")
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> GatewaySession {
+            Logger.database.info("ChatCommands.FetchGatewaySession.execute started for chat: \(chatId)")
+
+            let chat = try ChatCommands.Read(chatId: chatId).execute(
+                in: context,
+                userId: userId,
+                rag: rag
+            )
+            let session = GatewaySession(
+                id: chat.id,
+                title: chat.name,
+                createdAt: chat.createdAt,
+                updatedAt: chat.updatedAt
+            )
+
+            Logger.database.info("ChatCommands.FetchGatewaySession.execute completed successfully")
+            return session
+        }
+    }
+
+    public struct FetchGatewaySessions: ReadCommand {
+        public typealias Result = [GatewaySession]
+
+        public init() {
+            Logger.database.info("ChatCommands.FetchGatewaySessions initialized")
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> [GatewaySession] {
+            Logger.database.info("ChatCommands.FetchGatewaySessions.execute started")
+
+            let chats = try ChatCommands.GetAll().execute(in: context, userId: userId, rag: rag)
+            let sessions = chats.map { chat in
+                GatewaySession(
+                    id: chat.id,
+                    title: chat.name,
+                    createdAt: chat.createdAt,
+                    updatedAt: chat.updatedAt
+                )
+            }
+
+            Logger.database.info(
+                "ChatCommands.FetchGatewaySessions.execute completed - found \(sessions.count) sessions"
+            )
+            return sessions
+        }
+    }
+
     public struct HasChats: ReadCommand {
         public typealias Result = Bool
 
