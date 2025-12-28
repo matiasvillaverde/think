@@ -202,7 +202,7 @@ private func addLanguageOnlyModel(_ database: Database) async throws {
     )
 
     try await database.writeInBackground(
-        ModelCommands.AddModels(models: [languageModel, diffusionModel])
+        ModelCommands.AddModels(modelDTOs: [languageModel, diffusionModel])
     )
 }
 
@@ -238,7 +238,7 @@ private func addDeepLanguageOnlyModel(_ database: Database) async throws {
     )
 
     try await database.writeInBackground(
-        ModelCommands.AddModels(models: [deepLanguageModel, diffusionModel])
+        ModelCommands.AddModels(modelDTOs: [deepLanguageModel, diffusionModel])
     )
 }
 
@@ -274,7 +274,7 @@ private func addFlexibleThinkerOnlyModel(_ database: Database) async throws {
     )
 
     try await database.writeInBackground(
-        ModelCommands.AddModels(models: [flexibleThinkerModel, diffusionModel])
+        ModelCommands.AddModels(modelDTOs: [flexibleThinkerModel, diffusionModel])
     )
 }
 
@@ -340,6 +340,8 @@ private func addAllLanguageModelTypes(_ database: Database) async throws {
     )
 
     try await database.writeInBackground(
-        ModelCommands.AddModels(models: [languageModel, deepLanguageModel, flexibleThinkerModel, diffusionModel])
+        ModelCommands.AddModels(
+            modelDTOs: [languageModel, deepLanguageModel, flexibleThinkerModel, diffusionModel]
+        )
     )
 }

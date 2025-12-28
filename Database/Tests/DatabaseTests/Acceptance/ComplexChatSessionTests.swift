@@ -130,7 +130,7 @@ struct ComplexChatSessionTests {
         try? FileManager.default.removeItem(at: fileURL)
     }
 
-    @Test("Edge cases in complex chat session", .disabled())
+    @Test("Edge cases in complex chat session")
     @MainActor
     func complexChatSessionEdgeCases() async throws {
         // Given

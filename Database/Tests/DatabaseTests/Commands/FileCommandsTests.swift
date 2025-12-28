@@ -171,7 +171,7 @@ struct FileCommandsTests {
     @Suite(.tags(.state))
     @MainActor
     struct StateTests {
-        @Test("File progress updates correctly", .disabled())
+        @Test("File progress updates correctly")
         func fileProgressUpdates() async throws {
             // Given
             let config = DatabaseConfiguration(
