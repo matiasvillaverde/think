@@ -70,7 +70,8 @@ struct DownloadCoordinatingTests {
             modelType: .language,
             location: "test/model",
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         try await coordinator.start(model: model)
@@ -133,7 +134,8 @@ struct DownloadCoordinatingTests {
             modelType: .language,
             location: "test/model",
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         let testError: ModelDownloadError = ModelDownloadError.networkError(NSError(domain: "test", code: -1))
@@ -206,7 +208,8 @@ struct DefaultDownloadCoordinatorTests {
             modelType: .language,
             location: "test/model",
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         // Configure mock to succeed
@@ -222,7 +225,7 @@ struct DefaultDownloadCoordinatorTests {
         #expect(hasTask == true)
     }
 
-    @Test("Pause updates state correctly", .disabled())
+    @Test("Pause updates state correctly")
     func testPauseUpdatesState() async throws {
         let taskManager: DownloadTaskManager = DownloadTaskManager()
         let identityService: ModelIdentityService = ModelIdentityService()
@@ -242,29 +245,47 @@ struct DefaultDownloadCoordinatorTests {
             modelType: .language,
             location: "test/model",
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
-        // Configure mock to pause at 0.5 progress
-        await mockDownloader.setProgressValues([0.1, 0.2, 0.3, 0.4, 0.5])
+        // Configure mock to emit multiple progress updates
+        await mockDownloader.setProgressValues([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
 
         // Start download
         try await coordinator.start(model: model)
 
-        // Wait for download to progress
-        try await Task.sleep(nanoseconds: 30_000_000) // 30ms
+        // Wait for download to enter downloading state
+        var state: DownloadStatus = await coordinator.state(for: model.location)
+        var attempts: Int = 0
+        while !state.isDownloading, attempts < 20 {
+            try await Task.sleep(nanoseconds: 10_000_000) // 10ms
+            state = await coordinator.state(for: model.location)
+            attempts += 1
+        }
 
         // Pause the download
         try await coordinator.pause(repositoryId: model.location)
 
         // Check state is now paused
-        let state: DownloadStatus = await coordinator.state(for: model.location)
+        attempts = 0
+        state = await coordinator.state(for: model.location)
+        while !state.isPaused, attempts < 20 {
+            try await Task.sleep(nanoseconds: 10_000_000) // 10ms
+            state = await coordinator.state(for: model.location)
+            attempts += 1
+        }
+
+        #expect(state.isPaused)
         if case .paused(let progress) = state {
             // Progress should be around 0.5 or less
             #expect(progress >= 0.0 && progress <= 1.0)
         } else {
             Issue.record("Expected paused state but got \(state)")
         }
+
+        // Clean up to avoid lingering tasks
+        await coordinator.cancel(repositoryId: model.location)
     }
 
     @Test("Cancel removes task and resets state")
@@ -287,7 +308,8 @@ struct DefaultDownloadCoordinatorTests {
             modelType: .language,
             location: "test/model",
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         // Start a download with slow progress
@@ -330,6 +352,9 @@ actor MockStreamingDownloaderForCoordinator: StreamingDownloaderProtocol {
     var resumeCalled: Bool = false
     var cancelCalled: Bool = false
     var progressValues: [Double] = []
+    private var isPaused: Bool = false
+    private var isCancelled: Bool = false
+    private var pauseContinuations: [CheckedContinuation<Void, Never>] = []
 
     func setProgressValues(_ values: [Double]) {
         progressValues = values
@@ -347,8 +372,17 @@ actor MockStreamingDownloaderForCoordinator: StreamingDownloaderProtocol {
     ) async throws -> URL {
         // Simulate progress updates
         for progress in progressValues {
-            progressHandler(progress)
             try await Task.sleep(nanoseconds: 10_000_000) // 10ms
+
+            if isCancelled {
+                throw CancellationError()
+            }
+
+            if isPaused {
+                await waitWhilePaused()
+            }
+
+            progressHandler(progress)
         }
 
         if let error = downloadError {
@@ -369,6 +403,8 @@ actor MockStreamingDownloaderForCoordinator: StreamingDownloaderProtocol {
 
     func cancel(url _: URL) {
         cancelCalled = true
+        isCancelled = true
+        resumePausedDownloads()
     }
 
     func cancelAll() {
@@ -377,6 +413,7 @@ actor MockStreamingDownloaderForCoordinator: StreamingDownloaderProtocol {
 
     func pause(url _: URL) {
         pauseCalled = true
+        isPaused = true
     }
 
     func pauseAll() {
@@ -385,10 +422,29 @@ actor MockStreamingDownloaderForCoordinator: StreamingDownloaderProtocol {
 
     func resume(url _: URL) {
         resumeCalled = true
+        isPaused = false
+        resumePausedDownloads()
     }
 
     func resumeAll() {
         // Not used in tests
+    }
+
+    private func waitWhilePaused() async {
+        while isPaused, !isCancelled {
+            await withCheckedContinuation { continuation in
+                pauseContinuations.append(continuation)
+            }
+        }
+    }
+
+    private func resumePausedDownloads() {
+        guard !pauseContinuations.isEmpty else { return }
+        let continuations: [CheckedContinuation<Void, Never>] = pauseContinuations
+        pauseContinuations.removeAll()
+        for continuation in continuations {
+            continuation.resume()
+        }
     }
 }
 

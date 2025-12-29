@@ -65,7 +65,7 @@ struct BackgroundDownloadProgressTests {
         let progressCollector: ProgressCollector = ProgressCollector()
 
         // Start download with progress callback
-        let handle: BackgroundDownloadHandle = try await testManager.downloadModel(
+        let handle: BackgroundDownloadHandle = try testManager.downloadModel(
             modelId: "test/progress-model-\(UUID().uuidString)",
             backend: SendableModel.Backend.mlx,
             files: testFiles,
@@ -81,7 +81,7 @@ struct BackgroundDownloadProgressTests {
         #expect(handle.backend == SendableModel.Backend.mlx)
 
         // Check active downloads
-        let activeDownloads: [BackgroundDownloadStatus] = await testManager.getActiveDownloads()
+        let activeDownloads: [BackgroundDownloadStatus] = testManager.getActiveDownloads()
         let foundDownload: BackgroundDownloadStatus? = activeDownloads.first { $0.handle.id == handle.id }
         #expect(foundDownload != nil)
 
@@ -148,7 +148,7 @@ struct BackgroundDownloadProgressTests {
             relativePath: "small.bin"
         )
 
-        let handle: BackgroundDownloadHandle = try await testManager.downloadModel(
+        let handle: BackgroundDownloadHandle = try testManager.downloadModel(
             modelId: "test/cleanup-model-\(UUID().uuidString)",
             backend: SendableModel.Backend.mlx,
             files: [testFile],
@@ -163,7 +163,7 @@ struct BackgroundDownloadProgressTests {
         await testManager.cancelDownload(id: handle.id)
 
         // Verify download was cancelled (it may still be in active downloads with cancelled state)
-        let finalDownloads: [BackgroundDownloadStatus] = await testManager.getActiveDownloads()
+        let finalDownloads: [BackgroundDownloadStatus] = testManager.getActiveDownloads()
         let foundDownload: BackgroundDownloadStatus? = finalDownloads.first { $0.handle.id == handle.id }
         #expect(foundDownload?.state == .cancelled || foundDownload == nil)
     }

@@ -20,16 +20,20 @@ struct BackgroundDownloadStateRestorationTests {
         let taskDescriptionData: Data = try JSONEncoder().encode(taskDescription)
         let taskDescriptionString: String = String(data: taskDescriptionData, encoding: .utf8)!
 
-        // Create a mock download task
-        let mockTask: MockURLSessionDownloadTask = MockURLSessionDownloadTask()
-        mockTask.mockTaskIdentifier = 42
-        mockTask.taskDescription = taskDescriptionString
+        let session: URLSession = URLSession(configuration: .ephemeral)
+        defer { session.invalidateAndCancel() }
+
+        // Create a real download task (no network request is started)
+        let task: URLSessionDownloadTask = session.downloadTask(
+            with: URL(string: "https://example.com/test-model.bin")!
+        )
+        task.taskDescription = taskDescriptionString
 
         // When - simulate state restoration
         let manager: BackgroundDownloadManager = BackgroundDownloadManager.shared
 
         // The manager should be able to restore mappings from task description
-        let restoredInfo: TaskDescriptionInfo? = manager.restoreTaskDescription(from: mockTask)
+        let restoredInfo: TaskDescriptionInfo? = manager.restoreTaskDescription(from: task)
 
         // Then
         #expect(restoredInfo != nil)
@@ -46,7 +50,9 @@ struct BackgroundDownloadStateRestorationTests {
             (UUID(), "models/llama-3.2-1b/tokenizer.json")
         ]
 
-        var mockTasks: [MockURLSessionDownloadTask] = []
+        let session: URLSession = URLSession(configuration: .ephemeral)
+        defer { session.invalidateAndCancel() }
+        var tasksToRestore: [URLSessionDownloadTask] = []
 
         for (index, taskInfo): (Int, (UUID, String)) in tasks.enumerated() {
             let (downloadId, filePath): (UUID, String) = taskInfo
@@ -56,18 +62,18 @@ struct BackgroundDownloadStateRestorationTests {
             )
 
             let data: Data = try JSONEncoder().encode(taskDescription)
-            let mockTask: MockURLSessionDownloadTask = MockURLSessionDownloadTask()
-            mockTask.mockTaskIdentifier = index + 1
-            mockTask.taskDescription = String(data: data, encoding: .utf8)
-            mockTasks.append(mockTask)
+            let task: URLSessionDownloadTask = session.downloadTask(
+                with: URL(string: "https://example.com/file-\(index).bin")!
+            )
+            task.taskDescription = String(data: data, encoding: .utf8)
+            tasksToRestore.append(task)
         }
 
         // When
         let manager: BackgroundDownloadManager = BackgroundDownloadManager.shared
         var restoredCount: Int = 0
 
-        for (index, mockTask): (Int, Any) in mockTasks.enumerated() {
-            guard let task: MockURLSessionDownloadTask = mockTask as? MockURLSessionDownloadTask else { continue }
+        for (index, task): (Int, URLSessionDownloadTask) in tasksToRestore.enumerated() {
             if let restored: TaskDescriptionInfo = manager.restoreTaskDescription(from: task) {
                 restoredCount += 1
                 #expect(restored.downloadId == tasks[index].0.uuidString)
@@ -191,26 +197,6 @@ struct BackgroundDownloadStateRestorationTests {
 
         // Cleanup
         manager.state.removeTaskMapping(for: taskId)
-    }
-}
-
-// MARK: - Mock URLSession Task
-
-class MockURLSessionDownloadTask: URLSessionDownloadTask, @unchecked Sendable {
-    var mockTaskIdentifier: Int = 0
-    var mockTaskDescription: String?
-
-    override var taskIdentifier: Int {
-        mockTaskIdentifier
-    }
-
-    override var taskDescription: String? {
-        get { mockTaskDescription }
-        set { mockTaskDescription = newValue }
-    }
-
-    deinit {
-        // No cleanup required
     }
 }
 

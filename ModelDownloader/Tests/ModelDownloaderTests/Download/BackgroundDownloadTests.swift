@@ -16,16 +16,16 @@ struct BackgroundDownloadTests {
     // MARK: - BackgroundDownloadManager Tests
 
     @Test("BackgroundDownloadManager can be initialized")
-    func testBackgroundDownloadManagerInit() async {
-        let downloads: [BackgroundDownloadStatus] = await testManager.getActiveDownloads()
+    func testBackgroundDownloadManagerInit() {
+        let downloads: [BackgroundDownloadStatus] = testManager.getActiveDownloads()
         // Note: In a real environment, there might be active downloads
-        #expect(downloads is [BackgroundDownloadStatus])
+        #expect(downloads.allSatisfy { !$0.handle.id.uuidString.isEmpty })
     }
 
     @Test("BackgroundDownloadManager handles empty file list")
-    func testBackgroundDownloadManagerEmptyFiles() async {
+    func testBackgroundDownloadManagerEmptyFiles() {
         do {
-            _ = try await testManager.downloadModel(
+            _ = try testManager.downloadModel(
                 modelId: "test/model",
                 backend: .mlx,
                 files: [],
@@ -47,7 +47,7 @@ struct BackgroundDownloadTests {
             relativePath: "test.bin"
         )
 
-        let handle: BackgroundDownloadHandle = try await testManager.downloadModel(
+        let handle: BackgroundDownloadHandle = try testManager.downloadModel(
             modelId: "test/model-\(UUID().uuidString)",
             backend: .mlx,
             files: [testFile],
@@ -71,14 +71,14 @@ struct BackgroundDownloadTests {
             relativePath: "test2.bin"
         )
 
-        let handle: BackgroundDownloadHandle = try await testManager.downloadModel(
+        let handle: BackgroundDownloadHandle = try testManager.downloadModel(
             modelId: "test/model-track-\(UUID().uuidString)",
             backend: .mlx,
             files: [testFile],
             options: BackgroundDownloadOptions()
         )
 
-        let activeDownloads: [BackgroundDownloadStatus] = await testManager.getActiveDownloads()
+        let activeDownloads: [BackgroundDownloadStatus] = testManager.getActiveDownloads()
         let foundDownload: BackgroundDownloadStatus? = activeDownloads.first { $0.handle.id == handle.id }
         #expect(foundDownload != nil)
 

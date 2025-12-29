@@ -10,7 +10,7 @@ struct BackgroundDownloadNotificationTests {
     func testNoGenericNotificationOnSessionCompletion() async {
         // Given
         let mockNotificationCenter: MockNotificationCenter = MockNotificationCenter()
-        let notificationManager: DownloadNotificationManager = DownloadNotificationManager(
+        _ = DownloadNotificationManager(
             notificationCenter: mockNotificationCenter
         )
 

@@ -33,7 +33,8 @@ struct DownloadFinalizationTests {
             modelType: .language,
             location: testModelLocation,
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         // Create coordinator
@@ -86,7 +87,7 @@ struct DownloadFinalizationTests {
             identityService: sharedIdentityService
         )
 
-        let downloader: HuggingFaceDownloader = HuggingFaceDownloader(
+        _ = HuggingFaceDownloader(
             fileManager: fileManager,
             enableProductionFeatures: false,
             identityService: sharedIdentityService
@@ -155,9 +156,9 @@ struct DownloadFinalizationTests {
         #expect(modelInfo.name == repositoryId)
         #expect(modelInfo.backend == SendableModel.Backend.mlx)
         #expect(modelInfo.totalSize == Int64(testContent.count))
-        #expect(modelInfo.metadata["repositoryId"] as? String == repositoryId)
-        #expect(modelInfo.metadata["source"] as? String == "huggingface")
-        #expect(modelInfo.metadata["downloadType"] as? String == "repository-based")
+        #expect(modelInfo.metadata["repositoryId"] == repositoryId)
+        #expect(modelInfo.metadata["source"] == "huggingface")
+        #expect(modelInfo.metadata["downloadType"] == "repository-based")
 
         // UUID should be deterministic based on repository ID
         let expectedUUID: UUID = await identityService.generateModelId(for: repositoryId)
@@ -245,7 +246,8 @@ struct DownloadFinalizationTests {
             modelType: .language,
             location: testLocation,
             architecture: .llama,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         // Create mock downloader that simulates successful download

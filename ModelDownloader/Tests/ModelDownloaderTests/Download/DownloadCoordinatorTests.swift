@@ -50,7 +50,8 @@ extension APITests {
         }
 
         #expect(results.count == 2)
-        #expect(try results.allSatisfy(\.success))
+        let allSuccessful: Bool = results.allSatisfy(\.success)
+        #expect(allSuccessful)
         #expect(!collectedProgress.isEmpty)
 
         // Should have initial progress
@@ -112,7 +113,7 @@ extension APITests {
         }
 
         let task: Task<Void, Error> = Task {
-            try await coordinator.downloadFiles(
+            _ = try await coordinator.downloadFiles(
                 files,
                 headers: [:]
             ) { _ in }
@@ -124,8 +125,8 @@ extension APITests {
 
         do {
             try await task.value
-            // If we reach here, the downloads completed successfully
-            #expect(true)
+            // If we reach here, the task should have been cancelled
+            #expect(task.isCancelled)
         } catch {
             #expect(error is CancellationError)
         }
