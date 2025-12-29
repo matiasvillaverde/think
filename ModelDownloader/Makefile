@@ -15,11 +15,6 @@ PLATFORM ?= macos
 SWIFT_BUILD_FLAGS = --configuration $(CONFIGURATION)
 SWIFT_TEST_FLAGS = --configuration $(CONFIGURATION) --parallel
 
-# Test filtering - exclude slow acceptance tests from regular test run
-# Excluded tests:
-# - RealModelDownloadTests: Downloads actual models from HuggingFace
-# - PublicAPIDocumentationTests: Downloads real models for documentation examples
-FAST_TEST_FILTER = --filter "^(?!.*(RealModelDownloadTests|PublicAPIDocumentationTests)).*$$"
 
 # Colors for output
 GREEN = \033[0;32m
@@ -45,9 +40,9 @@ build-ci: lint ## Build with warnings as errors for CI
 
 # MARK: - Test Targets
 
-test: build ## Run fast unit tests (excludes acceptance tests)
+test: build ## Run unit tests
 	@echo "🧪 Testing ModelDownloader..."
-	@swift test $(SWIFT_TEST_FLAGS) $(FAST_TEST_FILTER)
+	@swift test $(SWIFT_TEST_FLAGS)
 
 test-acceptance: ## Run acceptance tests (downloads real models - slow!)
 	@echo "$(YELLOW)⚠️  Running acceptance tests - this will download real models and may take time!$(NC)"

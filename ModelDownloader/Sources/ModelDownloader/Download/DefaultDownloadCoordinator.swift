@@ -170,6 +170,9 @@ public actor DefaultDownloadCoordinator: DownloadCoordinating {
 
     // Private helper to update download progress
     private func updateDownloadProgress(repositoryId: String, progress: Double) async {
+        guard case .downloading = downloadStates[repositoryId] else {
+            return
+        }
         downloadStates[repositoryId] = .downloading(progress: progress)
         await logger.debug("Download progress for model \(repositoryId): \(progress)")
     }

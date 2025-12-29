@@ -27,6 +27,12 @@ public struct ModelDownloader: ModelDownloaderProtocol {
     /// HuggingFace downloader for fetching models
     private let downloader: HuggingFaceDownloaderProtocol
 
+    /// Background download manager
+    private let backgroundDownloadManager: BackgroundDownloadManaging
+
+    /// Community explorer for backend detection
+    private let communityExplorer: CommunityModelsExplorerProtocol
+
     /// Logger for this component
     private let logger: ModelDownloaderLogger
 
@@ -56,10 +62,31 @@ public struct ModelDownloader: ModelDownloaderProtocol {
             identityService: identityService
         )
 
+        self.backgroundDownloadManager = BackgroundDownloadManager.shared
+        self.communityExplorer = CommunityModelsExplorer()
+
         self.logger = ModelDownloaderLogger(
             subsystem: "ModelDownloader",
             category: "ModelDownloader"
         )
+    }
+
+    /// Internal initializer for testing with custom dependencies
+    internal init(
+        fileManager: ModelFileManagerProtocol,
+        downloader: HuggingFaceDownloaderProtocol,
+        backgroundDownloadManager: BackgroundDownloadManaging,
+        communityExplorer: CommunityModelsExplorerProtocol,
+        logger: ModelDownloaderLogger = ModelDownloaderLogger(
+            subsystem: "ModelDownloader",
+            category: "ModelDownloader"
+        )
+    ) {
+        self.fileManager = fileManager
+        self.downloader = downloader
+        self.backgroundDownloadManager = backgroundDownloadManager
+        self.communityExplorer = communityExplorer
+        self.logger = logger
     }
 
     /// Download a model using SendableModel configuration
@@ -396,7 +423,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
     public func resumeBackgroundDownloads() async throws -> [BackgroundDownloadHandle] {
         await logger.info("Resuming background downloads")
         try Task.checkCancellation()
-        let handles: [BackgroundDownloadHandle] = await BackgroundDownloadManager.shared.resumeAllDownloads()
+        let handles: [BackgroundDownloadHandle] = await backgroundDownloadManager.resumeAllDownloads()
 
         await logger.info("Background downloads resumed", metadata: [
             "count": handles.count
@@ -438,7 +465,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
                 "identifier": identifier
             ])
 
-            await BackgroundDownloadManager.shared.handleBackgroundCompletion(
+            await backgroundDownloadManager.handleBackgroundCompletion(
                 identifier: identifier,
                 completionHandler: completionHandler
             )
@@ -463,7 +490,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
     ///
     /// - Returns: Array of `BackgroundDownloadStatus` objects for all active downloads
     public func backgroundDownloadStatus() async -> [BackgroundDownloadStatus] {
-        let statuses: [BackgroundDownloadStatus] = BackgroundDownloadManager.shared.getActiveDownloads()
+        let statuses: [BackgroundDownloadStatus] = backgroundDownloadManager.getActiveDownloads()
 
         await logger.debug("Retrieved background download statuses", metadata: [
             "count": statuses.count
@@ -494,7 +521,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
             "modelId": handle.modelId
         ])
 
-        await handle.cancel()
+        await backgroundDownloadManager.cancelDownload(id: handle.id)
 
         await logger.info("Background download cancelled", metadata: [
             "downloadId": handle.id.uuidString
@@ -889,7 +916,7 @@ public struct ModelDownloader: ModelDownloaderProtocol {
 
                     // Start download with progress callback
                     // Note: We use repository ID as the modelId for consistency
-                    let handle: BackgroundDownloadHandle = try BackgroundDownloadManager.shared.downloadModel(
+                    let handle: BackgroundDownloadHandle = try backgroundDownloadManager.downloadModel(
                         modelId: sendableModel,
                         backend: recommendedBackend,
                         files: updatedFiles,
@@ -1036,10 +1063,13 @@ public struct ModelDownloader: ModelDownloaderProtocol {
         // Check if model is already downloaded
         let exists: Bool = await fileManager.modelExists(repositoryId: model)
         if exists {
+            let identityService: ModelIdentityService = ModelIdentityService()
+            let modelId: UUID = await identityService.generateModelId(for: model)
             await logger.warning("Model already downloaded", metadata: [
-                "modelLocation": model
+                "modelLocation": model,
+                "modelId": modelId.uuidString
             ])
-            throw ModelDownloadError.invalidRepositoryIdentifier("Model '\(model)' already exists")
+            throw ModelDownloadError.modelAlreadyDownloaded(modelId)
         }
 
         // Return basic validation result (no complex model type compatibility needed)
@@ -1095,9 +1125,8 @@ public struct ModelDownloader: ModelDownloaderProtocol {
     }
 
     private func detectAvailableBackends(for model: ModelLocation) async -> [SendableModel.Backend]? {
-        let explorer: CommunityModelsExplorer = CommunityModelsExplorer()
         do {
-            let discovered: DiscoveredModel = try await explorer.discoverModel(model)
+            let discovered: DiscoveredModel = try await communityExplorer.discoverModel(model)
             return await MainActor.run {
                 discovered.detectedBackends
             }
