@@ -4,7 +4,7 @@ import Foundation
 import Testing
 
 extension APITests {
-    @Test("End-to-end: Explore, discover, and prepare for download", .disabled())
+    @Test("End-to-end: Explore, discover, and prepare for download")
     @MainActor
     func testCompleteModelDiscoveryFlow() async throws {
         // Setup comprehensive mock responses
@@ -28,7 +28,30 @@ extension APITests {
             headers: [:]
         )
 
-        // Mock model files for discovery
+        // Mock detailed model info for discoverModel
+        mockClient.responses["/api/models/mlx-community/Llama-3.2-1B-Instruct-4bit"] = HTTPClientResponse(
+            data: Data("""
+            {
+                "modelId": "mlx-community/Llama-3.2-1B-Instruct-4bit",
+                "author": "mlx-community",
+                "downloads": 25000,
+                "likes": 450,
+                "tags": ["text-generation", "llama", "instruct", "4bit", "mlx"],
+                "lastModified": "2024-01-25T10:00:00Z",
+                "siblings": [
+                    {"rfilename": "model.safetensors", "size": 1073741824},
+                    {"rfilename": "config.json", "size": 2048},
+                    {"rfilename": "tokenizer.json", "size": 512000},
+                    {"rfilename": "tokenizer_config.json", "size": 1024},
+                    {"rfilename": "README.md", "size": 4096}
+                ]
+            }
+            """.utf8),
+            statusCode: 200,
+            headers: [:]
+        )
+
+        // Mock model files for discovery (tree API used during search)
         mockClient.responses["/api/models/mlx-community/Llama-3.2-1B-Instruct-4bit/tree/main"] = HTTPClientResponse(
             data: Data("""
             [
@@ -86,7 +109,7 @@ extension APITests {
         // Step 2: Discover specific model details
         let discoveredModel: DiscoveredModel = try await explorer.discoverModel(models[0].id)
 
-        #expect(discoveredModel.files.count == 5)
+        #expect(discoveredModel.files.count == 4)
         #expect(discoveredModel.modelCard != nil)
         #expect(discoveredModel.modelCard?.contains("4GB minimum") == true)
         #expect(discoveredModel.detectedBackends.contains(SendableModel.Backend.mlx))
@@ -102,26 +125,12 @@ extension APITests {
 
     @Test("ModelDownloader integration: Explorer creation and download")
     @MainActor
-    func testModelDownloaderIntegration() {
-        let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
-
-        // Setup basic model response
-        mockClient.responses["/api/models/test-org/test-model/tree/main"] = HTTPClientResponse(
-            data: Data("""
-            [
-                {"path": "model.gguf", "size": 2000000000, "type": "file"},
-                {"path": "config.json", "size": 1024, "type": "file"}
-            ]
-            """.utf8),
-            statusCode: 200,
-            headers: [:]
-        )
-
-        // Create ModelDownloader (would use real one in production)
-        let downloader: ModelDownloader = ModelDownloader()
+    func testModelDownloaderIntegration() async {
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
 
         // Get explorer from downloader
-        _ = downloader.explorer()
+        _ = context.downloader.explorer()
 
         // Create discovered model
         let discovered: DiscoveredModel = DiscoveredModel(
@@ -139,10 +148,39 @@ extension APITests {
         )
         discovered.detectedBackends = [SendableModel.Backend.gguf]
 
-        // Use the download integration method
-        _ = downloader.download(discovered)
+        let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+            modelId: discovered.id,
+            backend: .gguf,
+            name: discovered.name,
+            files: [
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "model.gguf",
+                    data: Data(repeating: 0x1, count: 64),
+                    size: 64
+                ),
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "config.json",
+                    data: Data("{}".utf8),
+                    size: 2
+                )
+            ]
+        )
+        await context.mockDownloader.registerFixture(fixture)
 
-        // The stream should be created (stream is not nil by definition)
+        // Use the download integration method
+        let stream: AsyncThrowingStream<DownloadEvent, Error> = context.downloader.download(discovered)
+        var completedInfo: ModelInfo?
+        do {
+            for try await event in stream {
+                if case .completed(let info) = event {
+                    completedInfo = info
+                }
+            }
+        } catch {
+            Issue.record("Unexpected error: \(error)")
+        }
+
+        #expect(completedInfo?.backend == .gguf)
     }
 
     @Test("Search and download helper method")
@@ -150,11 +188,30 @@ extension APITests {
     func testSearchAndDownloadHelper() async {
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
 
-        // Mock model discovery
+        // Mock model discovery (detailed + tree)
+        mockClient.responses["/api/models/mlx-community/test-model"] = HTTPClientResponse(
+            data: Data("""
+            {
+                "modelId": "mlx-community/test-model",
+                "author": "mlx-community",
+                "downloads": 100,
+                "likes": 5,
+                "tags": ["mlx"],
+                "lastModified": "2024-01-01T00:00:00Z",
+                "siblings": [
+                    {"rfilename": "model.safetensors", "size": 1000},
+                    {"rfilename": "config.json", "size": 1024}
+                ]
+            }
+            """.utf8),
+            statusCode: 200,
+            headers: [:]
+        )
+
         mockClient.responses["/api/models/mlx-community/test-model/tree/main"] = HTTPClientResponse(
             data: Data("""
             [
-                {"path": "model.safetensors", "size": 1000000000, "type": "file"},
+                {"path": "model.safetensors", "size": 1000, "type": "file"},
                 {"path": "config.json", "size": 1024, "type": "file"}
             ]
             """.utf8),
@@ -163,13 +220,44 @@ extension APITests {
         )
 
         let explorer: CommunityModelsExplorer = CommunityModelsExplorer(httpClient: mockClient)
-        let downloader: ModelDownloader = ModelDownloader()
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+
+        let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+            modelId: "mlx-community/test-model",
+            backend: .mlx,
+            name: "test-model",
+            files: [
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "model.safetensors",
+                    data: Data(repeating: 0x2, count: 32),
+                    size: 32
+                ),
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "config.json",
+                    data: Data("{}".utf8),
+                    size: 2
+                )
+            ]
+        )
+        await context.mockDownloader.registerFixture(fixture)
 
         // Test searchAndDownload
-        _ = await explorer.searchAndDownload(
+        let stream: AsyncThrowingStream<DownloadEvent, Error> = await explorer.searchAndDownload(
             modelId: "mlx-community/test-model",
-            using: downloader
+            using: context.downloader
         )
+        var completedInfo: ModelInfo?
+        do {
+            for try await event in stream {
+                if case .completed(let info) = event {
+                    completedInfo = info
+                }
+            }
+        } catch {
+            Issue.record("Unexpected error: \(error)")
+        }
+        #expect(completedInfo?.backend == .mlx)
     }
 
     @Test("Paginated search integration")
@@ -398,18 +486,26 @@ extension APITests {
         }
     }
 
-    @Test("Error handling: No supported backends", .disabled())
+    @Test("Error handling: No supported backends")
     @MainActor
     func testNoSupportedBackendsError() async throws {
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
 
         // Mock model with only unsupported files
-        mockClient.responses["/api/models/test/unsupported-model/tree/main"] = HTTPClientResponse(
+        mockClient.responses["/api/models/test/unsupported-model"] = HTTPClientResponse(
             data: Data("""
-            [
-                {"path": "pytorch_model.bin", "size": 5000000000, "type": "file"},
-                {"path": "model.h5", "size": 3000000000, "type": "file"}
-            ]
+            {
+                "modelId": "test/unsupported-model",
+                "author": "test",
+                "downloads": 0,
+                "likes": 0,
+                "tags": ["pytorch"],
+                "lastModified": "2024-01-01T00:00:00Z",
+                "siblings": [
+                    {"rfilename": "pytorch_model.bin", "size": 5000000000},
+                    {"rfilename": "model.h5", "size": 3000000000}
+                ]
+            }
             """.utf8),
             statusCode: 200,
             headers: [:]

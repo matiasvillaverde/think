@@ -13,10 +13,11 @@ extension APITests {
         #expect(type(of: explorer) == CommunityModelsExplorer.self)
     }
 
-    @Test("Download discovered model through ModelDownloader extension", .disabled())
+    @Test("Download discovered model through ModelDownloader extension")
     @MainActor
     func testDownloadDiscoveredModel() async throws {
-        let downloader: ModelDownloader = ModelDownloader()
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
 
         // Create a discovered model
         let discovered: DiscoveredModel = DiscoveredModel(
@@ -35,32 +36,71 @@ extension APITests {
         discovered.modelCard = "RAM: 8GB"
         discovered.detectedBackends = [SendableModel.Backend.mlx, SendableModel.Backend.gguf]
 
-        // Test download with default backend
-        let defaultStream: AsyncThrowingStream<DownloadEvent, Error> = downloader.download(discovered)
+        let mlxFixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+            modelId: discovered.id,
+            backend: .mlx,
+            name: discovered.name,
+            files: [
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "model.safetensors",
+                    data: Data(repeating: 0x1, count: 32),
+                    size: 32
+                ),
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "config.json",
+                    data: Data("{}".utf8),
+                    size: 2
+                )
+            ]
+        )
 
-        var eventCount: Int = 0
-        for try await _ in defaultStream {
-            eventCount += 1
-            // In real tests, would verify actual download events
-            // For now, just verify stream is created
-            break // Exit early in test
+        let ggufFixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+            modelId: discovered.id,
+            backend: .gguf,
+            name: discovered.name,
+            files: [
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "model.gguf",
+                    data: Data(repeating: 0x2, count: 64),
+                    size: 64
+                ),
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "config.json",
+                    data: Data("{}".utf8),
+                    size: 2
+                )
+            ]
+        )
+
+        await context.mockDownloader.registerFixture(mlxFixture)
+        await context.mockDownloader.registerFixture(ggufFixture)
+
+        // Test download with default backend
+        let defaultStream: AsyncThrowingStream<DownloadEvent, Error> = context.downloader.download(discovered)
+
+        var defaultInfo: ModelInfo?
+        for try await event in defaultStream {
+            if case .completed(let info) = event {
+                defaultInfo = info
+            }
         }
 
-        #expect(eventCount > 0 || true) // Stream was created successfully
+        #expect(defaultInfo?.backend == .mlx)
 
         // Test download with preferred backend
-        let ggufStream: AsyncThrowingStream<DownloadEvent, Error> = downloader.download(
+        let ggufStream: AsyncThrowingStream<DownloadEvent, Error> = context.downloader.download(
             discovered,
             preferredBackend: SendableModel.Backend.gguf
         )
 
-        eventCount = 0
-        for try await _ in ggufStream {
-            eventCount += 1
-            break // Exit early in test
+        var ggufInfo: ModelInfo?
+        for try await event in ggufStream {
+            if case .completed(let info) = event {
+                ggufInfo = info
+            }
         }
 
-        #expect(eventCount > 0 || true) // Stream was created successfully
+        #expect(ggufInfo?.backend == .gguf)
     }
 
     @Test("Download discovered model with no backends fails")
@@ -104,11 +144,12 @@ extension APITests {
         }
     }
 
-    @Test("CommunityModelsExplorer.downloadModel helper", .disabled())
+    @Test("CommunityModelsExplorer.downloadModel helper")
     @MainActor
     func testExplorerDownloadHelper() async throws {
         let explorer: CommunityModelsExplorer = CommunityModelsExplorer()
-        let downloader: ModelDownloader = ModelDownloader()
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
 
         let discovered: DiscoveredModel = DiscoveredModel(
             id: "mlx-community/Llama-3.2-3B-Instruct-4bit",
@@ -125,20 +166,40 @@ extension APITests {
         )
         discovered.detectedBackends = [SendableModel.Backend.mlx]
 
+        let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+            modelId: discovered.id,
+            backend: .mlx,
+            name: discovered.name,
+            files: [
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "model.safetensors",
+                    data: Data(repeating: 0x3, count: 16),
+                    size: 16
+                ),
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "config.json",
+                    data: Data("{}".utf8),
+                    size: 2
+                )
+            ]
+        )
+        await context.mockDownloader.registerFixture(fixture)
+
         // Test download helper
         let stream: AsyncThrowingStream<DownloadEvent, Error> = await explorer.downloadModel(
             discovered,
-            using: downloader
+            using: context.downloader
         )
 
         // Verify stream is created
-        var hasEvents: Bool = false
-        for try await _ in stream {
-            hasEvents = true
-            break // Exit early in test
+        var completedInfo: ModelInfo?
+        for try await event in stream {
+            if case .completed(let info) = event {
+                completedInfo = info
+            }
         }
 
-        #expect(hasEvents || true) // Stream created successfully
+        #expect(completedInfo?.backend == .mlx)
     }
 
     @Test("CommunityModelsExplorer.searchAndDownload integration")
@@ -147,14 +208,22 @@ extension APITests {
         // Create mock HTTP client
         let mockClient: CommunityMockHTTPClient = CommunityMockHTTPClient()
 
-        // Mock model discovery response
-        mockClient.responses["/api/models/mlx-community/Llama-3B-4bit/tree/main"] = HTTPClientResponse(
+        // Mock detailed model info for discoverModel
+        mockClient.responses["/api/models/mlx-community/Llama-3B-4bit"] = HTTPClientResponse(
             data: Data("""
-            [
-                {"path": "model.safetensors", "size": 3000000000, "type": "file"},
-                {"path": "config.json", "size": 2048, "type": "file"},
-                {"path": "tokenizer.json", "size": 512000, "type": "file"}
-            ]
+            {
+                "modelId": "mlx-community/Llama-3B-4bit",
+                "author": "mlx-community",
+                "downloads": 1000,
+                "likes": 50,
+                "tags": ["mlx"],
+                "lastModified": "2024-01-01T00:00:00Z",
+                "siblings": [
+                    {"rfilename": "model.safetensors", "size": 3000},
+                    {"rfilename": "config.json", "size": 2048},
+                    {"rfilename": "tokenizer.json", "size": 512}
+                ]
+            }
             """.utf8),
             statusCode: 200,
             headers: [:]
@@ -168,28 +237,53 @@ extension APITests {
         )
 
         let explorer: CommunityModelsExplorer = CommunityModelsExplorer(httpClient: mockClient)
-        let downloader: ModelDownloader = ModelDownloader()
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+
+        let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+            modelId: "mlx-community/Llama-3B-4bit",
+            backend: .mlx,
+            name: "Llama-3B-4bit",
+            files: [
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "model.safetensors",
+                    data: Data(repeating: 0x4, count: 48),
+                    size: 48
+                ),
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "config.json",
+                    data: Data("{}".utf8),
+                    size: 2
+                ),
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "tokenizer.json",
+                    data: Data(repeating: 0x5, count: 16),
+                    size: 16
+                )
+            ]
+        )
+        await context.mockDownloader.registerFixture(fixture)
 
         // Test searchAndDownload
         let stream: AsyncThrowingStream<DownloadEvent, Error> = await explorer.searchAndDownload(
             modelId: "mlx-community/Llama-3B-4bit",
-            using: downloader,
+            using: context.downloader,
             preferredBackend: SendableModel.Backend.mlx
         )
 
         // Verify stream events
-        var receivedEvents: Bool = false
+        var completedInfo: ModelInfo?
         do {
-            for try await _ in stream {
-                receivedEvents = true
-                break // Exit early in test
+            for try await event in stream {
+                if case .completed(let info) = event {
+                    completedInfo = info
+                }
             }
         } catch {
-            // In integration test, might fail if actual download is attempted
-            // This is expected in test environment
+            Issue.record("Unexpected error: \(error)")
         }
 
-        #expect(receivedEvents || true) // Stream was created
+        #expect(completedInfo?.backend == .mlx)
     }
 
     @Test("SearchAndDownload with invalid model ID")
@@ -232,10 +326,11 @@ extension APITests {
         }
     }
 
-    @Test("Download with preferred backend selection", .disabled())
+    @Test("Download with preferred backend selection")
     @MainActor
     func testPreferredBackendSelection() async throws {
-        let downloader: ModelDownloader = ModelDownloader()
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
 
         // Model with multiple backends
         let multiBackendModel: DiscoveredModel = DiscoveredModel(
@@ -260,6 +355,64 @@ extension APITests {
             SendableModel.Backend.coreml
         ]
 
+        let fixtures: [MockHuggingFaceDownloader.FixtureModel] = [
+            MockHuggingFaceDownloader.FixtureModel(
+                modelId: multiBackendModel.id,
+                backend: .mlx,
+                name: multiBackendModel.name,
+                files: [
+                    MockHuggingFaceDownloader.FixtureFile(
+                        path: "model.safetensors",
+                        data: Data(repeating: 0x6, count: 24),
+                        size: 24
+                    ),
+                    MockHuggingFaceDownloader.FixtureFile(
+                        path: "config.json",
+                        data: Data("{}".utf8),
+                        size: 2
+                    )
+                ]
+            ),
+            MockHuggingFaceDownloader.FixtureModel(
+                modelId: multiBackendModel.id,
+                backend: .gguf,
+                name: multiBackendModel.name,
+                files: [
+                    MockHuggingFaceDownloader.FixtureFile(
+                        path: "model.gguf",
+                        data: Data(repeating: 0x7, count: 24),
+                        size: 24
+                    ),
+                    MockHuggingFaceDownloader.FixtureFile(
+                        path: "config.json",
+                        data: Data("{}".utf8),
+                        size: 2
+                    )
+                ]
+            ),
+            MockHuggingFaceDownloader.FixtureModel(
+                modelId: multiBackendModel.id,
+                backend: .coreml,
+                name: multiBackendModel.name,
+                files: [
+                    MockHuggingFaceDownloader.FixtureFile(
+                        path: "TextEncoder.mlmodelc/model.mil",
+                        data: Data(repeating: 0x8, count: 16),
+                        size: 16
+                    ),
+                    MockHuggingFaceDownloader.FixtureFile(
+                        path: "config.json",
+                        data: Data("{}".utf8),
+                        size: 2
+                    )
+                ]
+            )
+        ]
+
+        for fixture in fixtures {
+            await context.mockDownloader.registerFixture(fixture)
+        }
+
         // Test each backend preference
         let backends: [SendableModel.Backend] = [
             SendableModel.Backend.mlx,
@@ -268,26 +421,27 @@ extension APITests {
         ]
 
         for preferredBackend in backends {
-            let stream: AsyncThrowingStream<DownloadEvent, Error> = downloader.download(
+            let stream: AsyncThrowingStream<DownloadEvent, Error> = context.downloader.download(
                 multiBackendModel,
                 preferredBackend: preferredBackend
             )
 
-            // In actual implementation, would verify the correct backend is used
-            var streamCreated: Bool = false
-            for try await _ in stream {
-                streamCreated = true
-                break // Exit early
+            var completedInfo: ModelInfo?
+            for try await event in stream {
+                if case .completed(let info) = event {
+                    completedInfo = info
+                }
             }
 
-            #expect(streamCreated || true) // Stream created for backend: \(preferredBackend)
+            #expect(completedInfo?.backend == preferredBackend)
         }
     }
 
     @Test("Download progress tracking simulation")
     @MainActor
     func testDownloadProgressEvents() async {
-        let downloader: ModelDownloader = ModelDownloader()
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
 
         let discovered: DiscoveredModel = DiscoveredModel(
             id: "test/progress-model",
@@ -303,25 +457,41 @@ extension APITests {
         )
         discovered.detectedBackends = [SendableModel.Backend.gguf]
 
-        let stream: AsyncThrowingStream<DownloadEvent, Error> = downloader.download(discovered)
+        let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+            modelId: discovered.id,
+            backend: .gguf,
+            name: discovered.name,
+            files: [
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "model.gguf",
+                    data: Data(repeating: 0x9, count: 32),
+                    size: 32
+                )
+            ]
+        )
+        await context.mockDownloader.registerFixture(fixture)
 
-        var progressEvents: [Any] = []
+        let stream: AsyncThrowingStream<DownloadEvent, Error> = context.downloader.download(discovered)
+
+        var sawProgress: Bool = false
+        var completedInfo: ModelInfo?
 
         do {
             for try await event in stream {
-                progressEvents.append(event)
+                switch event {
+                case .progress:
+                    sawProgress = true
 
-                // In test, just verify we can receive events
-                if progressEvents.count >= 1 {
-                    break // Exit after first event
+                case .completed(let info):
+                    completedInfo = info
                 }
             }
         } catch {
-            // Expected in test environment
+            Issue.record("Unexpected error: \(error)")
         }
 
-        // Verify stream was created and could potentially emit events
-        #expect(progressEvents.isEmpty) // May be 0 in test environment
+        #expect(sawProgress)
+        #expect(completedInfo?.backend == .gguf)
     }
 
     @Test("Integration with model preview")

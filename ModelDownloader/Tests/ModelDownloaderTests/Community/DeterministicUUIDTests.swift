@@ -27,7 +27,7 @@ extension APITests {
         )
 
         // Enrich with detected backends
-        await discoveredModel1.enrich(with: EnrichedModelDetails(
+        discoveredModel1.enrich(with: EnrichedModelDetails(
             detectedBackends: [.mlx]
         ))
 
@@ -48,7 +48,7 @@ extension APITests {
         )
 
         // Enrich with detected backends
-        await discoveredModel2.enrich(with: EnrichedModelDetails(
+        discoveredModel2.enrich(with: EnrichedModelDetails(
             detectedBackends: [.mlx]
         ))
 
@@ -83,7 +83,7 @@ extension APITests {
             ]
         )
 
-        await discoveredModel1.enrich(with: EnrichedModelDetails(
+        discoveredModel1.enrich(with: EnrichedModelDetails(
             detectedBackends: [.mlx]
         ))
 
@@ -103,7 +103,7 @@ extension APITests {
             ]
         )
 
-        await discoveredModel2.enrich(with: EnrichedModelDetails(
+        discoveredModel2.enrich(with: EnrichedModelDetails(
             detectedBackends: [.mlx]
         ))
 
@@ -138,7 +138,7 @@ extension APITests {
             ]
         )
 
-        await discoveredModel.enrich(with: EnrichedModelDetails(
+        discoveredModel.enrich(with: EnrichedModelDetails(
             detectedBackends: [.mlx]
         ))
 

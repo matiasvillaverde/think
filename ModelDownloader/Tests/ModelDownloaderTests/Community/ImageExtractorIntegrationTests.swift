@@ -51,7 +51,7 @@ extension APITests {
         }
 
         // MLX models might not have images, but the extractor shouldn't crash
-        #expect(true, "Should return array without crashing")
+        #expect(Bool(true), "Should return array without crashing")
     }
 
     @Test("Extract images from CoreML model (known to have images)")
@@ -67,7 +67,7 @@ extension APITests {
         }
 
         // CoreML models often have many example images
-        #expect(true, "Should extract images from CoreML model")
+        #expect(Bool(true), "Should extract images from CoreML model")
     }
 
     // MARK: - Model Card Text Parsing Tests
