@@ -7,7 +7,7 @@ extension AudioGenerationTests {
     @Test("Test execution completes quickly")
     func testExecutionSpeed() async {
         // Given
-        let engine: AudioEngine = AudioEngine()
+        let engine: AudioEngine = TestAudioEngineFactory.makeEngine()
         let text: String = "Quick test."
         _ = await engine.generateAudio(text: text)
         let startTime: Date = Date()
@@ -21,6 +21,6 @@ extension AudioGenerationTests {
         #expect(executionTime < 4.0) // Warm cache should complete within 4 seconds
         #expect(!sentences.isEmpty)
         #expect(!audioData.isEmpty)
-        #expect(audioData.count == 36_600) // Exact audio length for "Quick test."
+        #expect(audioData.count == TestAudioEngineFactory.expectedSampleCount(for: text))
     }
 }

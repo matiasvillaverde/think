@@ -6,9 +6,9 @@ import Testing
 @Suite("Audio Generation Tests", .serialized)
 internal struct AudioGenerationTests {
     @Test("Generate audio for valid text")
-    func testGenerateAudioValidText() async {
+    func testGenerateAudioValidText() async throws {
         // Given
-        let engine: AudioEngine = AudioEngine()
+        let engine: AudioEngine = TestAudioEngineFactory.makeEngine()
         let text: String = "Hello world"
 
         // When
@@ -16,29 +16,29 @@ internal struct AudioGenerationTests {
 
         // Then
         #expect(!audioData.isEmpty)
-        #expect(audioData.count == 37_800) // Exact audio length for "Hello world"
-        #expect(audioData.allSatisfy { $0.isFinite }) // swiftlint:disable:this prefer_key_path
+        #expect(audioData.count == TestAudioEngineFactory.expectedSampleCount(for: text))
+        #expect(try audioData.allSatisfy(\.isFinite))
         #expect(audioData.allSatisfy { abs($0) <= 1.0 }) // Audio should be normalized
     }
 
     @Test("Handle empty text in audio generation")
     func testGenerateAudioEmptyText() async {
         // Given
-        let engine: AudioEngine = AudioEngine()
+        let engine: AudioEngine = TestAudioEngineFactory.makeEngine()
         let text: String = ""
 
         // When
         let audioData: [Float] = await engine.generateAudio(text: text)
 
         // Then
-        #expect(!audioData.isEmpty) // KokoroTTS generates minimal audio for empty text
-        #expect(audioData.count == 9_000) // Exact audio length for empty text
+        #expect(!audioData.isEmpty)
+        #expect(audioData.count == TestAudioEngineFactory.expectedSampleCount(for: text))
     }
 
     @Test("Process single character text")
-    func testGenerateAudioSingleCharacter() async {
+    func testGenerateAudioSingleCharacter() async throws {
         // Given
-        let engine: AudioEngine = AudioEngine()
+        let engine: AudioEngine = TestAudioEngineFactory.makeEngine()
         let text: String = "A"
 
         // When
@@ -46,14 +46,14 @@ internal struct AudioGenerationTests {
 
         // Then
         #expect(!audioData.isEmpty)
-        #expect(audioData.count == 31_800) // Exact audio length for "A"
-        #expect(audioData.allSatisfy { $0.isFinite }) // swiftlint:disable:this prefer_key_path
+        #expect(audioData.count == TestAudioEngineFactory.expectedSampleCount(for: text))
+        #expect(try audioData.allSatisfy(\.isFinite))
     }
 
     @Test("Generate audio for long text")
-    func testGenerateAudioLongText() async {
+    func testGenerateAudioLongText() async throws {
         // Given
-        let engine: AudioEngine = AudioEngine()
+        let engine: AudioEngine = TestAudioEngineFactory.makeEngine()
         let text: String = "This is a longer piece of text that should generate a longer audio sample. " +
                     "It contains multiple words and should test the audio generation capabilities."
 
@@ -62,14 +62,14 @@ internal struct AudioGenerationTests {
 
         // Then
         #expect(!audioData.isEmpty)
-        #expect(audioData.count == 255_600) // Exact audio length for long text
-        #expect(audioData.allSatisfy { $0.isFinite }) // swiftlint:disable:this prefer_key_path
+        #expect(audioData.count == TestAudioEngineFactory.expectedSampleCount(for: text))
+        #expect(try audioData.allSatisfy(\.isFinite))
     }
 
     @Test("Handle special characters in audio generation")
-    func testGenerateAudioSpecialCharacters() async {
+    func testGenerateAudioSpecialCharacters() async throws {
         // Given
-        let engine: AudioEngine = AudioEngine()
+        let engine: AudioEngine = TestAudioEngineFactory.makeEngine()
         let text: String = "Hello! How are you? 123."
 
         // When
@@ -77,14 +77,14 @@ internal struct AudioGenerationTests {
 
         // Then
         #expect(!audioData.isEmpty)
-        #expect(audioData.count == 61_800) // Exact audio length for "Hello! How are you? 123."
-        #expect(audioData.allSatisfy { $0.isFinite }) // swiftlint:disable:this prefer_key_path
+        #expect(audioData.count == TestAudioEngineFactory.expectedSampleCount(for: text))
+        #expect(try audioData.allSatisfy(\.isFinite))
     }
 
     @Test("Verify audio data validity")
     func testAudioDataValidity() async {
         // Given
-        let engine: AudioEngine = AudioEngine()
+        let engine: AudioEngine = TestAudioEngineFactory.makeEngine()
         let text: String = "Test audio generation"
 
         // When
@@ -92,7 +92,7 @@ internal struct AudioGenerationTests {
 
         // Then
         #expect(!audioData.isEmpty)
-        #expect(audioData.count == 51_600) // Exact audio length for "Test audio generation"
+        #expect(audioData.count == TestAudioEngineFactory.expectedSampleCount(for: text))
 
         // Check for reasonable audio characteristics
         let maxValue: Float = audioData.max() ?? 0
