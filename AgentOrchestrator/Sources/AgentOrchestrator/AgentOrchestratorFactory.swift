@@ -47,6 +47,24 @@ public enum AgentOrchestratorFactory {
         return newInstance
     }
 
+    /// Creates a new AgentOrchestrator instance without caching.
+    /// Use this for background tasks to avoid interfering with the shared orchestrator.
+    public static func make(
+        database: DatabaseProtocol,
+        mlxSession: LLMSession,
+        ggufSession: LLMSession,
+        remoteSession: LLMSession? = nil,
+        modelDownloader: ModelDownloaderProtocol? = nil
+    ) -> AgentOrchestrating {
+        createOrchestrator(
+            database: database,
+            mlxSession: mlxSession,
+            ggufSession: ggufSession,
+            remoteSession: remoteSession,
+            modelDownloader: modelDownloader ?? ModelDownloader.shared
+        )
+    }
+
     /// Creates a new AgentOrchestrator instance
     /// Internal method that builds all dependencies
     private static func createOrchestrator(
@@ -56,36 +74,168 @@ public enum AgentOrchestratorFactory {
         remoteSession: LLMSession?,
         modelDownloader: ModelDownloaderProtocol
     ) -> AgentOrchestrating {
-        // Create image generator
-        let imageGenerator: ImageGenerating = ImageGenerator(
-            modelDownloader: modelDownloader
-        )
-
-        // Create model coordinator
-        let modelCoordinator: ModelStateCoordinator = ModelStateCoordinator(
+        let workspaceRoot: URL? = resolveWorkspaceRoot()
+        let inputs: OrchestratorInputs = OrchestratorInputs(
             database: database,
             mlxSession: mlxSession,
             ggufSession: ggufSession,
-            imageGenerator: imageGenerator,
+            remoteSession: remoteSession,
             modelDownloader: modelDownloader,
-            remoteSession: remoteSession
+            workspaceRoot: workspaceRoot
+        )
+        let components: OrchestratorComponents = createComponents(inputs: inputs)
+        return AgentOrchestrator(
+            modelCoordinator: components.modelCoordinator,
+            persistor: components.persistor,
+            contextBuilder: ContextBuilder(tooling: components.tooling),
+            tooling: components.tooling,
+            workspaceContextProvider: components.workspaceProviders.contextProvider,
+            workspaceSkillLoader: components.workspaceProviders.skillLoader,
+            workspaceMemoryLoader: components.workspaceProviders.memoryLoader
+        )
+    }
+
+    internal struct OrchestratorInputs {
+        internal let database: DatabaseProtocol
+        internal let mlxSession: LLMSession
+        internal let ggufSession: LLMSession
+        internal let remoteSession: LLMSession?
+        internal let modelDownloader: ModelDownloaderProtocol
+        internal let workspaceRoot: URL?
+    }
+
+    internal struct OrchestratorComponents {
+        internal let modelCoordinator: ModelStateCoordinator
+        internal let persistor: MessagePersistor
+        internal let tooling: Tooling
+        internal let workspaceProviders: WorkspaceProviders
+    }
+
+    private static func createComponents(
+        inputs: OrchestratorInputs
+    ) -> OrchestratorComponents {
+        let dependencies: ModelCoordinatorDependencies = createModelCoordinatorDependencies(inputs: inputs)
+        let modelCoordinator: ModelStateCoordinator = createModelCoordinator(dependencies: dependencies)
+        let persistor: MessagePersistor = createPersistor(database: inputs.database)
+        let subAgentCoordinator: SubAgentCoordinator = createSubAgentCoordinator(
+            database: inputs.database,
+            modelCoordinator: modelCoordinator,
+            workspaceRoot: inputs.workspaceRoot
+        )
+        let tooling: Tooling = createTooling(
+            subAgentCoordinator: subAgentCoordinator,
+            workspaceRoot: inputs.workspaceRoot,
+            database: inputs.database
+        )
+        let workspaceProviders: WorkspaceProviders = createWorkspaceProviders(
+            workspaceRoot: inputs.workspaceRoot
         )
 
-        // Create message persistor
-        let persistor: MessagePersistor = MessagePersistor(database: database as DatabaseProtocol)
-
-        // Create tooling manager
-        let tooling: Tooling = ToolManager()
-
-        // Create context builder with tooling
-        let contextBuilder: ContextBuilder = ContextBuilder(tooling: tooling)
-
-        // Create and return the orchestrator
-        return AgentOrchestrator(
+        return OrchestratorComponents(
             modelCoordinator: modelCoordinator,
             persistor: persistor,
-            contextBuilder: contextBuilder,
-            tooling: tooling
+            tooling: tooling,
+            workspaceProviders: workspaceProviders
+        )
+    }
+
+    private static func createModelCoordinatorDependencies(
+        inputs: OrchestratorInputs
+    ) -> ModelCoordinatorDependencies {
+        let imageGenerator: ImageGenerating = createImageGenerator(
+            modelDownloader: inputs.modelDownloader
+        )
+        return ModelCoordinatorDependencies(
+            database: inputs.database,
+            mlxSession: inputs.mlxSession,
+            ggufSession: inputs.ggufSession,
+            imageGenerator: imageGenerator,
+            modelDownloader: inputs.modelDownloader,
+            remoteSession: inputs.remoteSession
+        )
+    }
+
+    private static func resolveWorkspaceRoot() -> URL? {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+    }
+
+    private static func createSubAgentCoordinator(
+        database: DatabaseProtocol,
+        modelCoordinator: ModelStateCoordinator,
+        workspaceRoot: URL?
+    ) -> SubAgentCoordinator {
+        SubAgentCoordinator(
+            database: database,
+            modelCoordinator: modelCoordinator,
+            workspaceRoot: workspaceRoot
+        )
+    }
+
+    internal struct WorkspaceProviders {
+        internal let contextProvider: WorkspaceContextProvider?
+        internal let skillLoader: WorkspaceSkillLoader?
+        internal let memoryLoader: WorkspaceMemoryLoader?
+    }
+
+    private static func createWorkspaceProviders(
+        workspaceRoot: URL?
+    ) -> WorkspaceProviders {
+        guard let workspaceRoot else {
+            return WorkspaceProviders(
+                contextProvider: nil,
+                skillLoader: nil,
+                memoryLoader: nil
+            )
+        }
+
+        return WorkspaceProviders(
+            contextProvider: WorkspaceContextProvider(rootURL: workspaceRoot),
+            skillLoader: WorkspaceSkillLoader(rootURL: workspaceRoot),
+            memoryLoader: WorkspaceMemoryLoader(rootURL: workspaceRoot)
+        )
+    }
+
+    private struct ModelCoordinatorDependencies {
+        let database: DatabaseProtocol
+        let mlxSession: LLMSession
+        let ggufSession: LLMSession
+        let imageGenerator: ImageGenerating
+        let modelDownloader: ModelDownloaderProtocol
+        let remoteSession: LLMSession?
+    }
+
+    private static func createImageGenerator(
+        modelDownloader: ModelDownloaderProtocol
+    ) -> ImageGenerating {
+        ImageGenerator(modelDownloader: modelDownloader)
+    }
+
+    private static func createModelCoordinator(
+        dependencies: ModelCoordinatorDependencies
+    ) -> ModelStateCoordinator {
+        ModelStateCoordinator(
+            database: dependencies.database,
+            mlxSession: dependencies.mlxSession,
+            ggufSession: dependencies.ggufSession,
+            imageGenerator: dependencies.imageGenerator,
+            modelDownloader: dependencies.modelDownloader,
+            remoteSession: dependencies.remoteSession
+        )
+    }
+
+    private static func createPersistor(database: DatabaseProtocol) -> MessagePersistor {
+        MessagePersistor(database: database as DatabaseProtocol)
+    }
+
+    private static func createTooling(
+        subAgentCoordinator: SubAgentCoordinator,
+        workspaceRoot: URL?,
+        database: DatabaseProtocol
+    ) -> Tooling {
+        ToolManager(
+            subAgentOrchestrator: subAgentCoordinator,
+            workspaceRoot: workspaceRoot,
+            database: database
         )
     }
 

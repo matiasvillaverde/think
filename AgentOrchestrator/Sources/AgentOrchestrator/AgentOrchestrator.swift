@@ -33,6 +33,9 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
     private let decisionChain: DecisionHandler
     private let contextBuilder: ContextBuilder
     private let tooling: Tooling?
+    private let workspaceContextProvider: WorkspaceContextProvider?
+    private let workspaceSkillLoader: WorkspaceSkillLoader?
+    private let workspaceMemoryLoader: WorkspaceMemoryLoader?
     private var currentChatId: UUID?
     private var eventEmitter: EventEmitter = EventEmitter()
     private let steeringCoordinator: SteeringCoordinator = SteeringCoordinator()
@@ -148,13 +151,19 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         modelCoordinator: ModelStateCoordinator,
         persistor: MessagePersistor,
         contextBuilder: ContextBuilder,
-        tooling: Tooling? = nil
+        tooling: Tooling? = nil,
+        workspaceContextProvider: WorkspaceContextProvider? = nil,
+        workspaceSkillLoader: WorkspaceSkillLoader? = nil,
+        workspaceMemoryLoader: WorkspaceMemoryLoader? = nil
     ) {
         self.modelCoordinator = modelCoordinator
         self.persistor = persistor
         self.database = persistor.database
         self.contextBuilder = contextBuilder
         self.tooling = tooling
+        self.workspaceContextProvider = workspaceContextProvider
+        self.workspaceSkillLoader = workspaceSkillLoader
+        self.workspaceMemoryLoader = workspaceMemoryLoader
         self.decisionChain = buildDecisionChain()
     }
 
@@ -356,8 +365,11 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             for: state.action,
             chatId: state.chatId
         )
-        let contextConfig: ContextConfiguration = try await fetchContextConfiguration(
+        let baseConfig: ContextConfiguration = try await fetchContextConfiguration(
             chatId: state.chatId
+        )
+        let contextConfig: ContextConfiguration = applyWorkspaceContextAndSkills(
+            baseConfig
         )
         let policyFilteredAction: Action = applyToolPolicy(
             action: modifiedAction,
@@ -365,6 +377,75 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             hasToolPolicy: contextConfig.hasToolPolicy
         )
         return (policyFilteredAction, contextConfig)
+    }
+
+    private func applyWorkspaceContextAndSkills(
+        _ contextConfig: ContextConfiguration
+    ) -> ContextConfiguration {
+        let workspaceContext: WorkspaceContext? = workspaceContextProvider?.loadContext()
+        let mergedMemoryContext: MemoryContext? = mergeWorkspaceMemory(from: contextConfig)
+        let mergedSkillContext: SkillContext? = mergeWorkspaceSkills(from: contextConfig)
+
+        return mergeContextConfiguration(
+            base: contextConfig,
+            workspaceContext: workspaceContext,
+            memoryContext: mergedMemoryContext,
+            skillContext: mergedSkillContext
+        )
+    }
+
+    private func mergeWorkspaceMemory(from contextConfig: ContextConfiguration) -> MemoryContext? {
+        let workspaceMemory: MemoryContext? = workspaceMemoryLoader?.loadContext()
+        return MemoryContextMerger.merge(
+            primary: contextConfig.memoryContext,
+            secondary: workspaceMemory
+        )
+    }
+
+    private func mergeWorkspaceSkills(from contextConfig: ContextConfiguration) -> SkillContext? {
+        let workspaceSkills: [SkillData] = workspaceSkillLoader?.loadSkills() ?? []
+        return mergeSkillContext(current: contextConfig.skillContext, additional: workspaceSkills)
+    }
+
+    private func mergeContextConfiguration(
+        base: ContextConfiguration,
+        workspaceContext: WorkspaceContext?,
+        memoryContext: MemoryContext?,
+        skillContext: SkillContext?
+    ) -> ContextConfiguration {
+        ContextConfiguration(
+            systemInstruction: base.systemInstruction,
+            contextMessages: base.contextMessages,
+            maxPrompt: base.maxPrompt,
+            reasoningLevel: base.reasoningLevel,
+            includeCurrentDate: base.includeCurrentDate,
+            knowledgeCutoffDate: base.knowledgeCutoffDate,
+            currentDateOverride: base.currentDateOverride,
+            memoryContext: memoryContext,
+            skillContext: skillContext,
+            workspaceContext: workspaceContext ?? base.workspaceContext,
+            allowedTools: base.allowedTools,
+            hasToolPolicy: base.hasToolPolicy
+        )
+    }
+
+    private func mergeSkillContext(
+        current: SkillContext?,
+        additional: [SkillData]
+    ) -> SkillContext? {
+        guard !additional.isEmpty else {
+            return current
+        }
+
+        let existingSkills: [SkillData] = current?.activeSkills ?? []
+        var merged: [SkillData] = existingSkills
+        let existingNames: Set<String> = Set(existingSkills.map { $0.name.lowercased() })
+
+        for skill in additional where !existingNames.contains(skill.name.lowercased()) {
+            merged.append(skill)
+        }
+
+        return merged.isEmpty ? nil : SkillContext(activeSkills: merged)
     }
 
     /// Filters the action's tools against the personality tool policy
@@ -412,6 +493,7 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             currentDateOverride: contextConfig.currentDateOverride,
             memoryContext: contextConfig.memoryContext,
             skillContext: contextConfig.skillContext,
+            workspaceContext: contextConfig.workspaceContext,
             allowedTools: contextConfig.allowedTools,
             hasToolPolicy: contextConfig.hasToolPolicy
         )
@@ -500,6 +582,14 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         let throttleInterval: Duration
     }
 
+    private struct StreamChunkContext {
+        let state: GenerationState
+        let throttleInterval: Duration
+        var currentText: String
+        var currentMetrics: ChunkMetrics?
+        var lastUpdate: ContinuousClock.Instant
+    }
+
     private func initializeStreamState() -> StreamState {
         StreamState(
             accumulatedText: "",
@@ -516,31 +606,45 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         state: GenerationState,
         streamState: StreamState
     ) async throws -> (String, ChunkMetrics?) {
-        var currentText: String = streamState.accumulatedText
-        var currentMetrics: ChunkMetrics? = streamState.metrics
-        var lastUpdate: ContinuousClock.Instant = streamState.lastUpdateTime
-        let throttleInterval: Duration = streamState.throttleInterval
+        var chunkContext: StreamChunkContext = StreamChunkContext(
+            state: state,
+            throttleInterval: streamState.throttleInterval,
+            currentText: streamState.accumulatedText,
+            currentMetrics: streamState.metrics,
+            lastUpdate: streamState.lastUpdateTime
+        )
 
         let streamSequence: AsyncThrowingStream<LLMStreamChunk, Error> =
             await modelCoordinator.stream(input)
 
         for try await streamChunk in streamSequence {
-            currentText += streamChunk.text
-            currentMetrics = streamChunk.metrics
-
-            let now: ContinuousClock.Instant = ContinuousClock.now
-            let elapsed: Duration = lastUpdate.duration(to: now)
-
-            if elapsed >= throttleInterval {
-                try await updatePartialOutput(
-                    accumulatedText: currentText,
-                    state: state
-                )
-                lastUpdate = now
-            }
+            try await handleStreamChunk(streamChunk, context: &chunkContext)
         }
 
-        return (currentText, currentMetrics)
+        return (chunkContext.currentText, chunkContext.currentMetrics)
+    }
+
+    private func handleStreamChunk(
+        _ streamChunk: LLMStreamChunk,
+        context: inout StreamChunkContext
+    ) async throws {
+        if !streamChunk.text.isEmpty {
+            await eventEmitter.emitTextDelta(text: streamChunk.text)
+        }
+
+        context.currentText += streamChunk.text
+        context.currentMetrics = streamChunk.metrics
+
+        let now: ContinuousClock.Instant = ContinuousClock.now
+        let elapsed: Duration = context.lastUpdate.duration(to: now)
+
+        if elapsed >= context.throttleInterval {
+            try await updatePartialOutput(
+                accumulatedText: context.currentText,
+                state: context.state
+            )
+            context.lastUpdate = now
+        }
     }
 
     private func finalizeStreamUpdates(
@@ -640,15 +744,17 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         toolCalls: [ToolRequest],
         state: GenerationState
     ) async throws -> GenerationState {
-        Self.logger.notice(
-            "Executing \(toolCalls.count) tool calls: \(toolCalls.map(\.name).joined(separator: ", "))"
-        )
-
-        // Emit state update showing tools are executing
+        logToolExecution(toolCalls)
         await emitStateUpdate(for: state, isExecutingTools: true)
 
+        let toolPolicy: ToolPolicySnapshot = await fetchToolPolicy(chatId: state.chatId)
+        let toolCallsWithContext: [ToolRequest] = attachToolContext(
+            toolCalls: toolCalls,
+            state: state,
+            toolPolicy: toolPolicy
+        )
         let results: [ToolResponse] = await getToolResultsWithEvents(
-            toolCalls: toolCalls
+            toolCalls: toolCallsWithContext
         )
         Self.logger.info("Tool execution completed, \(results.count) results received")
         try await persistor.saveToolResults(
@@ -656,6 +762,59 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             results: results
         )
         return state.continueWithTools(results)
+    }
+
+    private func logToolExecution(_ toolCalls: [ToolRequest]) {
+        let toolNames: [String] = toolCalls.map(\.name)
+        Self.logger.notice(
+            "Executing \(toolCalls.count) tool calls: \(toolNames.joined(separator: ", "))"
+        )
+    }
+
+    private func attachToolContext(
+        toolCalls: [ToolRequest],
+        state: GenerationState,
+        toolPolicy: ToolPolicySnapshot
+    ) -> [ToolRequest] {
+        toolCalls.map { toolCall in
+            toolCall.withContext(
+                chatId: state.chatId,
+                messageId: state.messageId,
+                hasToolPolicy: toolPolicy.hasToolPolicy,
+                allowedToolNames: toolPolicy.allowedToolNames
+            )
+        }
+    }
+
+    private struct ToolPolicySnapshot {
+        let hasToolPolicy: Bool
+        let allowedToolNames: [String]
+
+        static let allowAll: ToolPolicySnapshot = ToolPolicySnapshot(
+            hasToolPolicy: false,
+            allowedToolNames: []
+        )
+    }
+
+    private func fetchToolPolicy(chatId: UUID) async -> ToolPolicySnapshot {
+        do {
+            let contextConfig: ContextConfiguration = try await fetchContextConfiguration(
+                chatId: chatId
+            )
+            guard contextConfig.hasToolPolicy else {
+                return .allowAll
+            }
+            return ToolPolicySnapshot(
+                hasToolPolicy: true,
+                allowedToolNames: contextConfig.allowedTools.map(\.toolName)
+            )
+        } catch {
+            let errorDescription: String = error.localizedDescription
+            Self.logger.warning(
+                "Tool policy fetch failed for chat \(chatId, privacy: .public): \(errorDescription)"
+            )
+            return .allowAll
+        }
     }
 
     // swiftlint:disable:next function_body_length

@@ -21,6 +21,15 @@ internal struct MemoryFlushDecisionHandler: DecisionHandler {
     }
 
     internal func decide(_ state: GenerationState) async throws -> GenerationDecision? {
+        // Hard threshold check - always enforce
+        let utilization: Double = state.contextUtilization
+        if utilization >= config.hardThresholdPercent {
+            Self.logger.error(
+                "Context utilization at \(Int(utilization * 100))%, exceeding hard threshold"
+            )
+            return .error(ModelStateCoordinatorError.contextLimitExceeded)
+        }
+
         // Skip if auto-flush is disabled
         guard config.enableAutoFlush else {
             return try await next?.decide(state)
@@ -32,7 +41,6 @@ internal struct MemoryFlushDecisionHandler: DecisionHandler {
         }
 
         // Check if context utilization exceeds soft threshold
-        let utilization: Double = state.contextUtilization
         if utilization >= config.softThresholdPercent {
             Self.logger.info(
                 "Context utilization at \(Int(utilization * 100))%, triggering memory flush prompt"
