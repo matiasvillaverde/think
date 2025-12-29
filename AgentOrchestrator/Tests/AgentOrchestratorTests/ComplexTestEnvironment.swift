@@ -57,7 +57,7 @@ internal struct ComplexTestEnvironment {
         )
 
         let (orchestrator, mockSession): (AgentOrchestrator, MockLLMSession) =
-            try await ComplexOrchestratorFactory.createOrchestratorWithMocks(database: database)
+            await ComplexOrchestratorFactory.createOrchestratorWithMocks(database: database)
 
         try await orchestrator.load(chatId: chatId)
         return (orchestrator, mockSession)
