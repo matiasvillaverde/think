@@ -11,9 +11,13 @@
 # Configuration
 CONFIGURATION ?= debug
 PLATFORM ?= macos
+DESTINATION ?= platform=macOS,arch=arm64
+ONLY_TESTING ?=
+ONLY_TESTING_FLAG := $(if $(ONLY_TESTING),-only-testing:$(ONLY_TESTING),)
 SWIFT_BUILD_FLAGS = --configuration $(CONFIGURATION)
 SWIFT_TEST_FLAGS = --configuration $(CONFIGURATION)
 XCODEBUILD_SETTINGS = SWIFT_SUPPRESS_WARNINGS=NO
+XCODEBUILD_TEST_FLAGS = -parallel-testing-enabled NO -parallel-testing-worker-count 1
 
 # Colors for output
 GREEN = \033[0;32m
@@ -44,10 +48,11 @@ test: build test-macos ## Run unit tests on macOS (default)
 test-macos: ## Run tests on macOS
 	@echo "🧪 Testing AudioGenerator..."
 	@set -o pipefail; \
-	cd .. && xcodebuild test $(XCODEBUILD_SETTINGS) \
+	cd .. && xcodebuild test $(XCODEBUILD_SETTINGS) $(XCODEBUILD_TEST_FLAGS) \
 		-workspace Think.xcworkspace \
 		-scheme AudioGenerator \
-		-destination 'platform=macOS' \
+		-destination '$(DESTINATION)' \
+		$(ONLY_TESTING_FLAG) \
 		2>&1 | tee /tmp/test_output.log; \
 	TEST_EXIT_CODE=$$?; \
 	if [ $$TEST_EXIT_CODE -eq 0 ]; then \

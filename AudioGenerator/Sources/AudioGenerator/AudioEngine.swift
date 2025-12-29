@@ -6,6 +6,9 @@ import OSLog
 import SwiftUI
 
 public actor AudioEngine: AudioGenerating {
+    typealias PlaybackHandler = @Sendable ([Float]) async -> Void
+    typealias AudioGenerator = @Sendable (String) async -> [Float]
+
     // MARK: - Logging
     private static let logger: Logger = Logger(subsystem: "AudioGenerator", category: "AudioEngine")
 
@@ -29,10 +32,28 @@ public actor AudioEngine: AudioGenerating {
     private var audioResources: AudioResources?
     private var initializationTask: Task<AudioResources, Error>?
     private var initializationCount: Int = 0
+    private let playbackHandler: PlaybackHandler?
+    private let audioGenerator: AudioGenerator?
 
     // MARK: - Initialization
     public init() {
+        self.playbackHandler = nil
+        self.audioGenerator = nil
         // Lazy initialization - resources created on first use
+    }
+
+    // Internal initializer for injecting handlers (testing)
+    internal init(
+        playbackHandler: @escaping PlaybackHandler,
+        audioGenerator: AudioGenerator? = nil
+    ) {
+        self.playbackHandler = playbackHandler
+        self.audioGenerator = audioGenerator
+    }
+
+    internal init(audioGenerator: @escaping AudioGenerator) {
+        self.playbackHandler = nil
+        self.audioGenerator = audioGenerator
     }
 
     // MARK: - Lazy Initialization
@@ -110,51 +131,96 @@ public actor AudioEngine: AudioGenerating {
 
         Self.logger.info("Processing \(sentences.count) sentences")
 
-        // Initialize resources if needed
-        guard let resources = try? await ensureInitialized() else {
-            Self.logger.error("Failed to initialize audio resources for TTS")
+        if let playbackHandler, let audioGenerator {
+            for sentence in sentences {
+                let audio: [Float] = await audioGenerator(sentence)
+                await playbackHandler(audio)
+            }
+            Self.logger.notice("Text-to-speech completed successfully")
+            return
+        }
+
+        let needsResources: Bool = playbackHandler == nil || audioGenerator == nil
+        let resources: AudioResources? = await resolveResourcesIfNeeded(needsResources: needsResources)
+        if needsResources, resources == nil {
             return
         }
 
         // Create a queue to manage audios that need to be played
-        let audioQueue: AsyncQueue = AsyncQueue()
+        let audioQueue: AudioEngineAsyncQueue = AudioEngineAsyncQueue()
 
         // Create a task completion tracker
         await audioQueue.setTotalItems(sentences.count)
 
-        // Start a background task to generate all audio
-        Task.detached {
+        startBackgroundGeneration(sentences: sentences, resources: resources, queue: audioQueue)
+
+        let shouldManageSession: Bool = playbackHandler == nil
+        #if os(iOS)
+        if shouldManageSession {
+            activateAudioSession()
+        }
+        #endif
+
+        await playAudioQueue(audioQueue, resources: resources)
+
+        #if os(iOS)
+        if shouldManageSession {
+            deactivateAudioSession()
+        }
+        #endif
+    }
+
+    private func resolveResourcesIfNeeded(needsResources: Bool) async -> AudioResources? {
+        guard needsResources else {
+            return nil
+        }
+        guard let loadedResources = try? await ensureInitialized() else {
+            Self.logger.error("Failed to initialize audio resources for TTS")
+            return nil
+        }
+        return loadedResources
+    }
+
+    private func startBackgroundGeneration(
+        sentences: [String],
+        resources: AudioResources?,
+        queue: AudioEngineAsyncQueue
+    ) {
+        Task.detached { [self] in
             Self.logger.info("Starting background audio generation for \(sentences.count) sentences")
             for (index, sentence) in sentences.enumerated() {
                 Self.logger.debug("Generating audio for sentence \(index + 1)/\(sentences.count)")
-                // Generate audio for each sentence
-                let audio: [Float] = await self.generateAudio(text: sentence, resources: resources)
-                // Add it to the queue
-                await audioQueue.enqueue(audio)
+                let audio: [Float] = await audioSamples(for: sentence, resources: resources)
+                await queue.enqueue(audio)
             }
-            // Mark that all sentences have been processed
-            await audioQueue.markAsComplete()
+            await queue.markAsComplete()
             Self.logger.info("Background audio generation completed")
         }
+    }
 
-        #if os(iOS)
-        activateAudioSession()
-        #endif
+    private func audioSamples(for sentence: String, resources: AudioResources?) async -> [Float] {
+        if let audioGenerator {
+            return await audioGenerator(sentence)
+        }
+        guard let resources else {
+            return []
+        }
+        return generateAudio(text: sentence, resources: resources)
+    }
 
-        // Start playback process in the main task
+    private func playAudioQueue(_ queue: AudioEngineAsyncQueue, resources: AudioResources?) async {
         Self.logger.info("Starting audio playback")
         var playedCount: Int = 0
-        while let audio = await audioQueue.dequeueUntilComplete() {
+        while let audio = await queue.dequeueUntilComplete() {
             playedCount += 1
             Self.logger.debug("Playing audio segment \(playedCount)")
-            // Play each audio and wait until it completes before moving to the next
-            await playAudioBufferAndWait(audio: audio, resources: resources)
+            if let playbackHandler {
+                await playbackHandler(audio)
+            } else if let resources {
+                await playAudioBufferAndWait(audio: audio, resources: resources)
+            }
         }
         Self.logger.notice("Text-to-speech completed successfully")
-
-        #if os(iOS)
-        deactivateAudioSession()
-        #endif
     }
 
     // Helper to make playing audio awaitable
@@ -238,73 +304,14 @@ public actor AudioEngine: AudioGenerating {
 
     // Expose generateAudio with backward compatibility for tests
     internal func generateAudio(text: String) async -> [Float] {
+        if let audioGenerator {
+            return await audioGenerator(text)
+        }
         guard let resources = try? await ensureInitialized() else {
             Self.logger.error("Failed to initialize resources for test audio generation")
             return []
         }
         return generateAudio(text: text, resources: resources)
-    }
-
-    // Simple async queue implementation
-    private actor AsyncQueue {
-        private var items: [[Float]] = []
-        private var dequeueTasks: [CheckedContinuation<[Float]?, Never>] = []
-        private var isComplete: Bool = false
-        private var processedItems: Int = 0
-        private var totalItems: Int = 0
-
-        func setTotalItems(_ count: Int) {
-            totalItems = count
-        }
-
-        func markAsComplete() {
-            isComplete = true
-            // Resume any waiting dequeue tasks with nil if the queue is empty
-            if items.isEmpty {
-                for continuation in dequeueTasks {
-                    continuation.resume(returning: nil)
-                }
-                dequeueTasks.removeAll()
-            }
-        }
-
-        func enqueue(_ item: [Float]) {
-            if let continuation: CheckedContinuation<[Float]?, Never> = dequeueTasks.first {
-                dequeueTasks.removeFirst()
-                continuation.resume(returning: item)
-            } else {
-                items.append(item)
-            }
-        }
-
-        func dequeue() async -> [Float]? {
-            if let item: [Float] = items.first {
-                items.removeFirst()
-                processedItems += 1
-                return item
-            }
-            return await withCheckedContinuation { continuation in
-                dequeueTasks.append(continuation)
-            }
-        }
-
-        // New method that waits until complete if queue is empty
-        func dequeueUntilComplete() async -> [Float]? {
-            if let item: [Float] = items.first {
-                items.removeFirst()
-                processedItems += 1
-                return item
-            }
-            if isComplete,
-                processedItems >= totalItems {
-                // All items have been processed and played
-                return nil
-            }
-            // Wait for more items or completion
-            return await withCheckedContinuation { continuation in
-                dequeueTasks.append(continuation)
-            }
-        }
     }
 
     internal func breakTextIntoSentences(_ text: String) -> [String] {
