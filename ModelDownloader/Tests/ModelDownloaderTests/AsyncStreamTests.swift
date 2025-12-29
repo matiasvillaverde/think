@@ -92,7 +92,7 @@ struct AsyncStreamTests {
             Issue.record("Task should have been cancelled")
         } catch is CancellationError {
             // Expected
-            #expect(true)
+            #expect(Bool(true))
         }
     }
 
@@ -136,7 +136,7 @@ struct AsyncStreamTests {
             Issue.record("Expected CancellationError but got result: \(result)")
         } catch is CancellationError {
             // This is expected
-            #expect(true)
+            #expect(Bool(true))
         } catch {
             Issue.record("Expected CancellationError but got: \(error)")
         }
@@ -201,7 +201,7 @@ struct AsyncStreamTests {
 
         // Verify last event is completed
         if case .completed = events.last {
-            #expect(true)
+            #expect(Bool(true))
         } else {
             Issue.record("Expected last event to be completed")
         }
@@ -209,18 +209,23 @@ struct AsyncStreamTests {
 
     // MARK: - Error Propagation Tests
 
-    @Test("Stream propagates download errors", .disabled())
+    @Test("Stream propagates download errors")
     func testStreamErrorPropagation() async {
-        // Create a mock that will fail
+        // Create a coordinator that fails immediately
         let mockFileManager: MockFileManager = MockFileManager()
-        let _: HubAPI = createFailingMockHubAPI()
+        let expectedError: ModelDownloadError = ModelDownloadError.networkError(
+            NSError(domain: "test", code: -1)
+        )
+        let failingCoordinator: FailingDownloadCoordinator = FailingDownloadCoordinator(error: expectedError)
 
         let downloader: HuggingFaceDownloader = HuggingFaceDownloader(
             fileManager: mockFileManager,
-            enableProductionFeatures: false
+            enableProductionFeatures: false,
+            downloadCoordinator: failingCoordinator
         )
 
         var receivedError: Error?
+        var eventCount: Int = 0
 
         do {
             for try await _ in downloader.download(
@@ -228,27 +233,24 @@ struct AsyncStreamTests {
                 backend: SendableModel.Backend.mlx
             ) {
                 // Should not yield any events
-                Issue.record("Should not receive events from failing download")
+                eventCount += 1
             }
         } catch {
             receivedError = error
         }
 
+        #expect(eventCount == 0)
         #expect(receivedError != nil)
-        // The error could be either HuggingFaceError or URLError depending on where it fails
-        #expect(receivedError is HuggingFaceError || receivedError is URLError)
+        #expect(receivedError is ModelDownloadError)
     }
 
     // MARK: - Concurrent Stream Tests
 
     @Test("Multiple concurrent downloads work correctly")
+    @MainActor
     func testConcurrentStreams() async throws {
-        // Create a mock downloader instead of using shared instance
-        let mockFileManager: MockFileManager = MockFileManager()
-        let downloader: ModelDownloader = ModelDownloader(
-            modelsDirectory: mockFileManager.modelsDirectory,
-            temporaryDirectory: mockFileManager.temporaryDirectory
-        )
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
 
         // Create multiple models
         let models: [SendableModel] = (0..<3).map { index in
@@ -258,8 +260,30 @@ struct AsyncStreamTests {
                 modelType: .language,
                 location: "test/model-\(index)",
                 architecture: .unknown,
-                backend: SendableModel.Backend.mlx
+                backend: SendableModel.Backend.mlx,
+                locationKind: .huggingFace
             )
+        }
+
+        for model in models {
+            let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+                modelId: model.location,
+                backend: .mlx,
+                name: model.location,
+                files: [
+                    MockHuggingFaceDownloader.FixtureFile(
+                        path: "model.safetensors",
+                        data: Data(repeating: 0x1, count: 8),
+                        size: 8
+                    ),
+                    MockHuggingFaceDownloader.FixtureFile(
+                        path: "config.json",
+                        data: Data("{}".utf8),
+                        size: 2
+                    )
+                ]
+            )
+            await context.mockDownloader.registerFixture(fixture)
         }
 
         // Start concurrent downloads
@@ -267,7 +291,7 @@ struct AsyncStreamTests {
             Task { () -> ModelInfo? in
                 var result: ModelInfo?
 
-                for try await event in downloader.downloadModel(sendableModel: model) {
+                for try await event in context.downloader.downloadModel(sendableModel: model) {
                     switch event {
                     case .progress(let progress):
                         print("Model \(model.location) progress: \(progress.percentage)%")
@@ -302,22 +326,18 @@ struct AsyncStreamTests {
             }
         }
 
-        #expect(true) // If we get here, concurrent handling worked
+        #expect(Bool(true)) // If we get here, concurrent handling worked
     }
 
     // MARK: - Backpressure Tests
 
     @Test("Stream handles slow consumer (backpressure)")
+    @MainActor
     func testBackpressure() async {
         // This test verifies that the stream doesn't accumulate unlimited events
         // when the consumer is slow
-
-        // Create a mock downloader instead of using shared instance
-        let mockFileManager: MockFileManager = MockFileManager()
-        let downloader: ModelDownloader = ModelDownloader(
-            modelsDirectory: mockFileManager.modelsDirectory,
-            temporaryDirectory: mockFileManager.temporaryDirectory
-        )
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
 
         let sendableModel: SendableModel = SendableModel(
             id: UUID(),
@@ -325,14 +345,34 @@ struct AsyncStreamTests {
             modelType: .language,
             location: "test/backpressure-model",
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
+
+        let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+            modelId: sendableModel.location,
+            backend: .mlx,
+            name: sendableModel.location,
+            files: [
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "model.safetensors",
+                    data: Data(repeating: 0x2, count: 16),
+                    size: 16
+                ),
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "config.json",
+                    data: Data("{}".utf8),
+                    size: 2
+                )
+            ]
+        )
+        await context.mockDownloader.registerFixture(fixture)
 
         var eventCount: Int = 0
         let startTime: Date = Date()
 
         do {
-            for try await event in downloader.downloadModel(sendableModel: sendableModel) {
+            for try await event in context.downloader.downloadModel(sendableModel: sendableModel) {
                 eventCount += 1
 
                 // Simulate slow consumer
@@ -359,30 +399,34 @@ struct AsyncStreamTests {
 
 // MARK: - Mock Helpers
 
-private func createMockHubAPI() -> HubAPI {
-    let httpClient: MockHTTPClient = MockHTTPClient()
-    let tokenManager: HFTokenManager = HFTokenManager(httpClient: httpClient)
-    return HubAPI(
-        endpoint: "https://huggingface.co",
-        httpClient: httpClient,
-        tokenManager: tokenManager
-    )
-}
+private actor FailingDownloadCoordinator: DownloadCoordinating {
+    private let error: Error
 
-private func createFailingMockHubAPI() -> HubAPI {
-    let httpClient: FailingMockHTTPClient = FailingMockHTTPClient()
-    let tokenManager: HFTokenManager = HFTokenManager(httpClient: httpClient)
-    return HubAPI(
-        endpoint: "https://huggingface.co",
-        httpClient: httpClient,
-        tokenManager: tokenManager
-    )
-}
+    init(error: Error) {
+        self.error = error
+    }
 
-private func createMockDownloadCoordinator() -> DownloadCoordinator {
-    let mockDownloader: MockStreamingDownloader = MockStreamingDownloader()
-    return DownloadCoordinator(
-        downloader: mockDownloader,
-        maxConcurrentDownloads: 2
-    )
+    func start(model _: SendableModel) async throws {
+        try await Task.sleep(nanoseconds: 0)
+        throw error
+    }
+
+    func pause(repositoryId _: String) async throws {
+        try await Task.sleep(nanoseconds: 0)
+        throw error
+    }
+
+    func resume(repositoryId _: String) async throws {
+        try await Task.sleep(nanoseconds: 0)
+        throw error
+    }
+
+    func cancel(repositoryId _: String) async {
+        await Task.yield()
+    }
+
+    func state(for _: String) async -> DownloadStatus {
+        await Task.yield()
+        return .notStarted
+    }
 }

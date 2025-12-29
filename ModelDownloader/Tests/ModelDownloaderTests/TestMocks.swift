@@ -72,18 +72,6 @@ internal struct MockHTTPClient: HTTPClientProtocol {
     }
 }
 
-// MARK: - Failing Mock HTTP Client
-
-internal struct FailingMockHTTPClient: HTTPClientProtocol {
-    func get(url _: URL, headers _: [String: String]) throws -> HTTPClientResponse {
-        throw URLError(.networkConnectionLost)
-    }
-
-    func head(url _: URL, headers _: [String: String]) throws -> HTTPClientResponse {
-        throw URLError(.networkConnectionLost)
-    }
-}
-
 // MARK: - Configurable Mock HTTP Client
 
 internal final class ConfigurableMockHTTPClient: HTTPClientProtocol, @unchecked Sendable {
