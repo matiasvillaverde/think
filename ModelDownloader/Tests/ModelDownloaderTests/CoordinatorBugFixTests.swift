@@ -114,10 +114,7 @@ struct CoordinatorBugFixTests {
 
     // MARK: - Bug Fix Tests
 
-    @Test(
-        "Bug #57 Fix: DefaultDownloadCoordinator calls finalizeDownload",
-        .disabled("It is a bit flaky with bad internet")
-    )
+    @Test("Bug #57 Fix: DefaultDownloadCoordinator calls finalizeDownload")
     func testCoordinatorCallsFinalizeDownload() async throws {
         // Given - Setup coordinator with mock dependencies
         let taskManager: DownloadTaskManager = DownloadTaskManager()
@@ -139,7 +136,8 @@ struct CoordinatorBugFixTests {
             modelType: .language,
             location: testRepositoryId,
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         // Verify finalization hasn't been called yet
@@ -152,9 +150,12 @@ struct CoordinatorBugFixTests {
         // Wait for download to complete
         var state: DownloadStatus = await coordinator.state(for: testModel.location)
         var attempts: Int = 0
-        while !state.isCompleted, attempts < 20 {
+        while !state.isCompleted, attempts < 40 {
             try await Task.sleep(nanoseconds: 50_000_000) // 50ms
             state = await coordinator.state(for: testModel.location)
+            if case .failed = state {
+                break
+            }
             attempts += 1
         }
 
@@ -188,7 +189,8 @@ struct CoordinatorBugFixTests {
             modelType: .language,
             location: "test/state-tracking",
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         // When - Start download and track state changes
@@ -251,7 +253,8 @@ struct CoordinatorBugFixTests {
             modelType: .language,
             location: testLocation,
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         try await coordinator.start(model: testModel)

@@ -8,7 +8,7 @@ import Testing
 struct MigrationIntegrationTests {
     // Test helper to create models
     func createTestModel() -> DiscoveredModel {
-        DiscoveredModel(
+        let model: DiscoveredModel = DiscoveredModel(
             id: "test/migration-model",
             name: "Migration Test Model",
             author: "test-author",
@@ -29,58 +29,68 @@ struct MigrationIntegrationTests {
                 )
             ]
         )
+        model.detectedBackends = [SendableModel.Backend.gguf]
+        model.modelCard = "RAM: 1GB"
+        return model
     }
 
     @Test("Both implementations handle download events consistently")
+    @MainActor
     func testDownloadEventConsistency() async {
         let testModel: DiscoveredModel = createTestModel()
 
-        // Create downloader instances
-        let downloader1: ModelDownloader = ModelDownloader()
-        let downloader2: ModelDownloader = ModelDownloader()
-
-        // Track events from both streams
-        var originalEvents: [DownloadEvent] = []
-        var refactoredEvents: [DownloadEvent] = []
-
-        // Collect a few events from each stream
-        let originalStream: AsyncThrowingStream<DownloadEvent, Error> = downloader1.download(testModel)
-        let refactoredStream: AsyncThrowingStream<DownloadEvent, Error> = downloader2.download(testModel)
-
-        // Collect events from original (limited to prevent hanging)
-        var originalIterator: AsyncThrowingStream<DownloadEvent, Error>.AsyncIterator =
-            originalStream.makeAsyncIterator()
-        for _ in 0..<3 {
-            do {
-                if let event = try await originalIterator.next() {
-                    originalEvents.append(event)
-                }
-            } catch {
-                // Expected - download might fail for test URLs
-                break
-            }
+        let context1: TestDownloaderContext = TestDownloaderContext()
+        let context2: TestDownloaderContext = TestDownloaderContext()
+        defer {
+            context1.cleanup()
+            context2.cleanup()
         }
 
-        // Collect events from refactored (limited to prevent hanging)
-        var refactoredIterator: AsyncThrowingStream<DownloadEvent, Error>.AsyncIterator =
-            refactoredStream.makeAsyncIterator()
-        for _ in 0..<3 {
-            do {
-                if let event = try await refactoredIterator.next() {
-                    refactoredEvents.append(event)
-                }
-            } catch {
-                // Expected - download might fail for test URLs
-                break
-            }
-        }
+        let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+            modelId: testModel.id,
+            backend: .gguf,
+            name: testModel.name,
+            files: [
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "model.gguf",
+                    data: Data(repeating: 0x1, count: 12),
+                    size: 12
+                ),
+                MockHuggingFaceDownloader.FixtureFile(
+                    path: "config.json",
+                    data: Data("{}".utf8),
+                    size: 2
+                )
+            ]
+        )
+        await context1.mockDownloader.registerFixture(fixture)
+        await context2.mockDownloader.registerFixture(fixture)
 
-        // Both implementations should behave similarly
-        // Note: We can't expect exact equality due to timing differences
-        // but both should either emit events or fail consistently
+        let events1: [DownloadEvent] = await collectEvents(
+            from: context1.downloader.download(testModel)
+        )
+        let events2: [DownloadEvent] = await collectEvents(
+            from: context2.downloader.download(testModel)
+        )
+
+        #expect(events1.count == events2.count)
+        let isCompleted1: Bool
+        if case .completed = events1.last {
+            isCompleted1 = true
+        } else {
+            isCompleted1 = false
+        }
+        #expect(isCompleted1)
+        let isCompleted2: Bool
+        if case .completed = events2.last {
+            isCompleted2 = true
+        } else {
+            isCompleted2 = false
+        }
+        #expect(isCompleted2)
     }
 
-    @Test("Both implementations create consistent SendableModel", .disabled())
+    @Test("Both implementations create consistent SendableModel")
     func testSendableModelCreation() async throws {
         let testModel: DiscoveredModel = createTestModel()
 
@@ -174,7 +184,8 @@ struct MigrationIntegrationTests {
             modelType: .language,
             location: "test/model",
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         // Both should report same model existence (false for new model)
@@ -280,4 +291,19 @@ struct MigrationIntegrationTests {
         // The fact it runs without crashing indicates integration works
         #expect(eventCount >= 0)
     }
+}
+
+@MainActor
+private func collectEvents(
+    from stream: AsyncThrowingStream<DownloadEvent, Error>
+) async -> [DownloadEvent] {
+    var events: [DownloadEvent] = []
+    do {
+        for try await event in stream {
+            events.append(event)
+        }
+    } catch {
+        Issue.record("Unexpected error: \(error)")
+    }
+    return events
 }
