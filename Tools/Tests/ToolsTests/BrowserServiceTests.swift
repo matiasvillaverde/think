@@ -52,12 +52,14 @@ internal struct BrowserServiceTests {
 @Suite("BrowserService Acceptance Tests", .serialized, .tags(.acceptance))
 internal struct BrowserServiceAcceptanceTests {
     @Test("BrowserService executes search with query")
-    func testBrowserServiceExecutesSearch() async throws {
-        // Add delay to prevent rate limiting when running tests in sequence
-        try await Task.sleep(for: .seconds(1))
-
+    func testBrowserServiceExecutesSearch() async {
         // Given
-        let service: BrowserService = BrowserService()
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
+        let service: BrowserService = BrowserService(
+            searchStrategy: BrowserSearchStrategy(searchEngine: searchEngine)
+        )
         let toolManager: ToolManager = ToolManager()
         await service.registerTools(with: toolManager)
 
@@ -78,13 +80,15 @@ internal struct BrowserServiceAcceptanceTests {
         #expect(responses.first?.result.isEmpty == false)
     }
 
-    @Test("BrowserService search with site filter", .disabled("DuckDuckGo bot detection causing failures"))
-    func testBrowserServiceSearchWithSiteFilter() async throws {
-        // Add delay to prevent rate limiting when running tests in sequence
-        try await Task.sleep(for: .seconds(1))
-
+    @Test("BrowserService search with site filter")
+    func testBrowserServiceSearchWithSiteFilter() async {
         // Given
-        let service: BrowserService = BrowserService()
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
+        let service: BrowserService = BrowserService(
+            searchStrategy: BrowserSearchStrategy(searchEngine: searchEngine)
+        )
         let toolManager: ToolManager = ToolManager()
         await service.registerTools(with: toolManager)
 

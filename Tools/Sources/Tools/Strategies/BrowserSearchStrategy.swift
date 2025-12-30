@@ -6,7 +6,7 @@ import OSLog
 public struct BrowserSearchStrategy: ToolStrategy {
     /// Logger for browser search operations
     private static let logger: Logger = Logger(subsystem: "Tools", category: "BrowserSearchStrategy")
-    private let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch()
+    private let searchEngine: DuckDuckGoSearch
 
     public let definition: ToolDefinition = ToolDefinition(
         name: "browser.search",
@@ -38,10 +38,15 @@ public struct BrowserSearchStrategy: ToolStrategy {
 
     /// Initialize a new BrowserSearchStrategy
     public init() {
-        // No initialization required
+        self.searchEngine = DuckDuckGoSearch()
     }
 
-    public func execute(request: ToolRequest) -> ToolResponse {
+    /// Internal initializer for injecting a custom search engine (testing)
+    internal init(searchEngine: DuckDuckGoSearch) {
+        self.searchEngine = searchEngine
+    }
+
+    public func execute(request: ToolRequest) async -> ToolResponse {
         Self.logger.debug("Processing browser search request for request ID: \(request.id)")
 
         // Parse arguments
@@ -50,11 +55,11 @@ public struct BrowserSearchStrategy: ToolStrategy {
             return BaseToolStrategy.errorResponse(request: request, error: error.message)
 
         case .success(let json):
-            return executeSearch(request: request, json: json)
+            return await executeSearch(request: request, json: json)
         }
     }
 
-    private func executeSearch(request: ToolRequest, json: [String: Any]) -> ToolResponse {
+    private func executeSearch(request: ToolRequest, json: [String: Any]) async -> ToolResponse {
         // Validate required query parameter
         guard let query = json["query"] as? String, !query.isEmpty else {
             Self.logger.warning("Browser search request missing query parameter")
@@ -71,47 +76,32 @@ public struct BrowserSearchStrategy: ToolStrategy {
         Self.logger.info("Performing browser search for query: \(query, privacy: .public)")
         Self.logger.debug("Search parameters - site: \(site ?? "none"), resultCount: \(resultCount)")
 
-        // Use a semaphore to bridge async to sync
-        let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
-        var response: ToolResponse?
-
-        Task {
-            do {
-                let searchResults: [WebSearchResult] = try await searchEngine.search(
-                    query: query,
-                    site: site,
-                    resultCount: resultCount
-                )
-
-                let formattedResult: String = formatSearchResults(
-                    query: query,
-                    site: site,
-                    results: searchResults,
-                    count: resultCount
-                )
-
-                Self.logger.notice("Browser search completed successfully with \(searchResults.count) results")
-                response = BaseToolStrategy.successResponse(
-                    request: request,
-                    result: formattedResult
-                )
-            } catch {
-                Self.logger.error("Browser search failed: \(error.localizedDescription)")
-                response = BaseToolStrategy.errorResponse(
-                    request: request,
-                    error: "Search failed: \(error.localizedDescription)"
-                )
-            }
-            semaphore.signal()
-        }
-
-        let timeoutSeconds: Double = 30.0
-        _ = semaphore.wait(timeout: .now() + timeoutSeconds)
-        return response
-            ?? BaseToolStrategy.errorResponse(
-                request: request,
-                error: "Search timed out"
+        do {
+            let searchResults: [WebSearchResult] = try await searchEngine.search(
+                query: query,
+                site: site,
+                resultCount: resultCount
             )
+
+            let formattedResult: String = formatSearchResults(
+                query: query,
+                site: site,
+                results: searchResults,
+                count: resultCount
+            )
+
+            Self.logger.notice("Browser search completed successfully with \(searchResults.count) results")
+            return BaseToolStrategy.successResponse(
+                request: request,
+                result: formattedResult
+            )
+        } catch {
+            Self.logger.error("Browser search failed: \(error.localizedDescription)")
+            return BaseToolStrategy.errorResponse(
+                request: request,
+                error: "Search failed: \(error.localizedDescription)"
+            )
+        }
     }
 
     private func formatSearchResults(
