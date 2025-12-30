@@ -32,6 +32,7 @@ let package = Package(
             name: "ToolsTests",
             dependencies: [
                 "Tools",
+                "Database",
                 .product(name: "AbstractionsTestUtilities", package: "Abstractions")
             ]
         )
