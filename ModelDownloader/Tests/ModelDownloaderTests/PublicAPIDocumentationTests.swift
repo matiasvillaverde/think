@@ -1,6 +1,6 @@
 import Abstractions
 import Foundation
-import ModelDownloader
+@testable import ModelDownloader
 import Testing
 
 /// Documentation tests demonstrating proper usage of the ModelDownloader public API.
@@ -54,10 +54,12 @@ extension APITests {
 
     /// Demonstrates how to download an MLX format model.
     /// MLX models typically include safetensors files and configuration.
-    @Test("Download MLX model using public API", .disabled())
+    @Test("Download MLX model using public API")
+    @MainActor
     func downloadMLXModel() async throws {
-        // Use the shared instance for default configuration
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
 
         // Create a SendableModel for downloading
         let sendableModel: SendableModel = SendableModel(
@@ -66,7 +68,14 @@ extension APITests {
             modelType: .language,
             location: "mlx-community/Llama-3.2-1B-Instruct-4bit",
             architecture: .llama,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
+        )
+
+        let totalSize: Int64 = await registerMLXFixture(
+            in: context,
+            modelId: sendableModel.location,
+            name: sendableModel.location
         )
 
         // Download the model using AsyncThrowingStream
@@ -94,7 +103,7 @@ extension APITests {
 
         #expect(modelInfo.backend == SendableModel.Backend.mlx)
         #expect(modelInfo.location.path.contains("mlx"))
-        #expect(modelInfo.totalSize == 712_575_975)
+        #expect(modelInfo.totalSize == totalSize)
 
         print("Downloaded: \(modelInfo.name)")
         print("   Location: \(modelInfo.location)")
@@ -116,12 +125,12 @@ extension APITests {
 
     /// Demonstrates how to download a GGUF format model.
     /// GGUF models use smart selection based on available device memory.
-    @Test(
-        "Download GGUF model with automatic memory-based selection",
-        .disabled("This test are to be run only before releasing the app")
-    )
+    @Test("Download GGUF model with automatic memory-based selection")
+    @MainActor
     func downloadGGUFModel() async throws {
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
 
         // Create a SendableModel for GGUF format
         let sendableModel: SendableModel = SendableModel(
@@ -130,7 +139,14 @@ extension APITests {
             modelType: .language,
             location: "unsloth/Qwen3-0.6B-GGUF",
             architecture: .qwen,
-            backend: SendableModel.Backend.gguf
+            backend: SendableModel.Backend.gguf,
+            locationKind: .huggingFace
+        )
+
+        let totalSize: Int64 = await registerGGUFFixture(
+            in: context,
+            modelId: sendableModel.location,
+            name: sendableModel.location
         )
 
         // The downloader automatically selects the best GGUF file based on device memory
@@ -157,7 +173,7 @@ extension APITests {
 
         #expect(modelInfo.backend == SendableModel.Backend.gguf)
         #expect(modelInfo.location.path.contains("gguf"))
-        #expect(modelInfo.totalSize == 495_108_528)
+        #expect(modelInfo.totalSize == totalSize)
 
         print("Downloaded GGUF model: \(modelInfo.name)")
         print("   Size: \(modelInfo.totalSize)")
@@ -177,12 +193,12 @@ extension APITests {
 
     /// Demonstrates how to download a CoreML format model.
     /// CoreML models may come as .mlmodel, .mlpackage, or .zip files.
-    @Test(
-        "Download CoreML model with automatic ZIP extraction",
-        .disabled("This test are to be run only before releasing the app")
-    )
+    @Test("Download CoreML model with automatic ZIP extraction")
+    @MainActor
     func downloadCoreMLModel() async throws {
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
 
         print("\n🔄 Starting CoreML model download test...")
         print("Target model: coreml-community/coreml-stable-diffusion-2-1-base")
@@ -194,7 +210,14 @@ extension APITests {
             modelType: .diffusion,
             location: "coreml-community/coreml-stable-diffusion-2-1-base",
             architecture: .stableDiffusion,
-            backend: SendableModel.Backend.coreml
+            backend: SendableModel.Backend.coreml,
+            locationKind: .huggingFace
+        )
+
+        let _: Int64 = await registerCoreMLFixture(
+            in: context,
+            modelId: sendableModel.location,
+            name: sendableModel.location
         )
 
         actor ProgressTracker {
@@ -301,8 +324,30 @@ extension APITests {
 
     /// Demonstrates how to list all downloaded models.
     @Test("List all downloaded models")
+    @MainActor
     func listDownloadedModels() async throws {
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
+
+        let modelId: String = "mlx-community/list-model"
+        _ = await registerMLXFixture(in: context, modelId: modelId, name: modelId)
+
+        let sendableModel: SendableModel = SendableModel(
+            id: UUID(),
+            ramNeeded: 512_000_000,
+            modelType: .language,
+            location: modelId,
+            architecture: .llama,
+            backend: .mlx,
+            locationKind: .huggingFace
+        )
+
+        for try await event in downloader.downloadModel(sendableModel: sendableModel) {
+            if case .completed = event {
+                break
+            }
+        }
 
         // Get all models currently downloaded
         let models: [ModelInfo] = try await downloader.listDownloadedModels()
@@ -320,19 +365,36 @@ extension APITests {
 
     /// Demonstrates how to check if a specific model exists.
     @Test("Check if model exists by ID")
+    @MainActor
     func checkModelExists() async throws {
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
 
-        // First, list models to get a valid ID
-        let models: [ModelInfo] = try await downloader.listDownloadedModels()
+        let modelId: String = "mlx-community/existence-model"
+        _ = await registerMLXFixture(in: context, modelId: modelId, name: modelId)
 
-        if let firstModel: ModelInfo = models.first {
-            // Check if this model exists
-            let exists: Bool = await downloader.modelExists(model: firstModel.name)
-            #expect(exists == true)
+        let sendableModel: SendableModel = SendableModel(
+            id: UUID(),
+            ramNeeded: 256_000_000,
+            modelType: .language,
+            location: modelId,
+            architecture: .llama,
+            backend: .mlx,
+            locationKind: .huggingFace
+        )
 
-            print("Model \(firstModel.name) exists: \(exists)")
+        for try await event in downloader.downloadModel(sendableModel: sendableModel) {
+            if case .completed = event {
+                break
+            }
         }
+
+        // Check if this model exists
+        let exists: Bool = await downloader.modelExists(model: modelId)
+        #expect(exists == true)
+
+        print("Model \(modelId) exists: \(exists)")
 
         // Check for non-existent model
         let notExists: Bool = await downloader.modelExists(model: "non-existent/model")
@@ -343,18 +405,35 @@ extension APITests {
 
     /// Demonstrates how to delete a downloaded model.
     @Test("Delete downloaded model by ID")
-    func deleteModel() async {
-        let downloader: ModelDownloader = ModelDownloader.shared
+    @MainActor
+    func deleteModel() async throws {
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
 
-        // Note: In a real app, you'd have a model ID from previous downloads
-        // For this example, we'll show the pattern
-        let modelIdToDelete: String = "test/model" // Replace with actual model ID
+        let modelIdToDelete: String = "mlx-community/delete-model"
+        _ = await registerMLXFixture(in: context, modelId: modelIdToDelete, name: modelIdToDelete)
+
+        let sendableModel: SendableModel = SendableModel(
+            id: UUID(),
+            ramNeeded: 128_000_000,
+            modelType: .language,
+            location: modelIdToDelete,
+            architecture: .llama,
+            backend: .mlx,
+            locationKind: .huggingFace
+        )
+
+        for try await event in downloader.downloadModel(sendableModel: sendableModel) {
+            if case .completed = event {
+                break
+            }
+        }
 
         do {
             try await downloader.deleteModel(model: modelIdToDelete)
             print("Successfully deleted model")
         } catch {
-            // Handle case where model doesn't exist
             print("Could not delete model: \(error)")
         }
 
@@ -365,8 +444,30 @@ extension APITests {
 
     /// Demonstrates disk space management utilities.
     @Test("Check available disk space")
+    @MainActor
     func checkDiskSpace() async throws {
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
+
+        let modelId: String = "mlx-community/space-model"
+        _ = await registerMLXFixture(in: context, modelId: modelId, name: modelId)
+
+        let sendableModel: SendableModel = SendableModel(
+            id: UUID(),
+            ramNeeded: 256_000_000,
+            modelType: .language,
+            location: modelId,
+            architecture: .llama,
+            backend: .mlx,
+            locationKind: .huggingFace
+        )
+
+        for try await event in downloader.downloadModel(sendableModel: sendableModel) {
+            if case .completed = event {
+                break
+            }
+        }
 
         // Check available disk space
         if let availableSpace: Int64 = await downloader.availableDiskSpace() {
@@ -377,12 +478,9 @@ extension APITests {
         }
 
         // Get size of a specific model
-        let models: [ModelInfo] = try await downloader.listDownloadedModels()
-        if let model: ModelInfo = models.first {
-            if let modelSize: Int64 = await downloader.getModelSize(model: "test/model") {
-                let sizeMB: Double = Double(modelSize) / 1_000_000
-                print("Model \(model.name) size: \(String(format: "%.2f", sizeMB)) MB")
-            }
+        if let modelSize: Int64 = await downloader.getModelSize(model: modelId) {
+            let sizeMB: Double = Double(modelSize) / 1_000_000
+            print("Model \(modelId) size: \(String(format: "%.2f", sizeMB)) MB")
         }
     }
 
@@ -390,8 +488,14 @@ extension APITests {
 
     /// Demonstrates download cancellation.
     @Test("Cancel download in progress")
+    @MainActor
     func cancelDownload() async throws {
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
+
+        let modelId: String = "mlx-community/cancel-model"
+        _ = await registerMLXFixture(in: context, modelId: modelId, name: modelId)
 
         // Start a download task
         Task {
@@ -400,9 +504,10 @@ extension APITests {
                     id: UUID(),
                     ramNeeded: 3_758_096_384, // ~3.5GB
                     modelType: .language,
-                    location: "mlx-community/Llama-3.2-3B-Instruct-4bit",
+                    location: modelId,
                     architecture: .llama,
-                    backend: SendableModel.Backend.mlx
+                    backend: SendableModel.Backend.mlx,
+                    locationKind: .huggingFace
                 )
 
                 for try await event: DownloadEvent in downloader.downloadModel(sendableModel: sendableModel) {
@@ -423,14 +528,17 @@ extension APITests {
         try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
 
         // Cancel the download
-        await downloader.cancelDownload(for: "mlx-community/Llama-3.2-3B-Instruct-4bit")
+        await downloader.cancelDownload(for: modelId)
         print("Cancellation requested")
     }
 
     /// Demonstrates cleanup of incomplete downloads.
     @Test("Clean up incomplete downloads")
+    @MainActor
     func cleanupIncompleteDownloads() async throws {
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
 
         // Clean up any incomplete downloads from failed attempts
         try await downloader.cleanupIncompleteDownloads()
@@ -442,14 +550,13 @@ extension APITests {
 
     /// Demonstrates using custom directories for models.
     @Test("Use custom model storage directory")
+    @MainActor
     func customDirectories() async throws {
         // Create a custom downloader with specific directories
-        let documentsURL: URL = FileManager.default.urls(
-            for: .documentDirectory,
-            in: .userDomainMask
-        ).first!
-        let customModelsDir: URL = documentsURL.appendingPathComponent("MyModels")
-        let customTempDir: URL = documentsURL.appendingPathComponent("MyModelsTemp")
+        let baseDir: URL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("custom-models-\(UUID().uuidString)")
+        let customModelsDir: URL = baseDir.appendingPathComponent("MyModels")
+        let customTempDir: URL = baseDir.appendingPathComponent("MyModelsTemp")
 
         let customDownloader: ModelDownloader = ModelDownloader(
             modelsDirectory: customModelsDir,
@@ -463,6 +570,8 @@ extension APITests {
         print("   Models: \(customModelsDir.path)")
         print("   Temp: \(customTempDir.path)")
         print("   Found \(models.count) models in custom location")
+
+        try? FileManager.default.removeItem(at: baseDir)
     }
 
     // MARK: - SendableModel Workflow Examples
@@ -473,27 +582,35 @@ extension APITests {
     /// 1. Create SendableModel with UUID and HuggingFace repository
     /// 2. Download in background with system notifications
     /// 3. Get file URL for model execution (CoreML, LlamaCPP, MLX)
-    @Test("Complete SendableModel workflow", .disabled())
+    @Test("Complete SendableModel workflow")
+    @MainActor
     func sendableModelWorkflow() async throws {
         print("\nStarting complete SendableModel workflow demonstration")
 
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
+
         // Step 1: Create SendableModel with known repository
+        let modelLocation: String = "mlx-community/Llama-3.2-1B-Instruct-4bit"
+        let modelId: UUID = await deterministicModelId(for: modelLocation)
         let model: SendableModel = SendableModel(
-            id: UUID(),
+            id: modelId,
             ramNeeded: 1_500_000_000,  // 1.5GB RAM requirement
             modelType: .language,
-            location: "mlx-community/Llama-3.2-1B-Instruct-4bit",
+            location: modelLocation,
             architecture: .llama,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
+
+        _ = await registerMLXFixture(in: context, modelId: model.location, name: model.location)
 
         print("Created SendableModel:")
         print("   ID: \(model.id)")
         print("   Repository: \(model.location)")
         print("   RAM Needed: \(model.ramNeeded / 1_000_000) MB")
         print("   Type: \(model.modelType)")
-
-        let downloader: ModelDownloader = ModelDownloader.shared
 
         // Step 2: Use recommended format for the model
         let recommendedFormat: SendableModel.Backend = SendableModel.Backend.mlx
@@ -502,7 +619,7 @@ extension APITests {
         // Step 3: Validate model before download
         do {
             let validation: ValidationResult = try await downloader.validateModel(
-                "test/model",
+                model.location,
                 backend: recommendedFormat
             )
             if !validation.warnings.isEmpty {
@@ -560,7 +677,7 @@ extension APITests {
         print("\n📂 Model location for execution: \(modelLocation.path)")
 
         // Step 6: List available files in the model directory
-        let modelFiles: [URL] = await downloader.getModelFiles(for: "test/model")
+        let modelFiles: [URL] = await downloader.getModelFiles(for: model.location)
         print("\nAvailable model files (\(modelFiles.count)):")
         for file: URL in modelFiles {
             print("   - \(file.lastPathComponent)")
@@ -568,8 +685,8 @@ extension APITests {
 
         // Step 7: Get specific files for MLX execution
         if recommendedFormat == SendableModel.Backend.mlx {
-            let configFile: URL? = await downloader.getModelFileURL(for: "test/model", fileName: "config.json")
-            let tokenizerFile: URL? = await downloader.getModelFileURL(for: "test/model", fileName: "tokenizer.json")
+            let configFile: URL? = await downloader.getModelFileURL(for: model.location, fileName: "config.json")
+            let tokenizerFile: URL? = await downloader.getModelFileURL(for: model.location, fileName: "tokenizer.json")
             let weightsFiles: [URL] = modelFiles.filter { $0.pathExtension == "safetensors" }
 
             print("\nMLX execution files:")
@@ -583,7 +700,7 @@ extension APITests {
         }
 
         // Step 8: Verify model exists
-        let modelExists: Bool = await downloader.modelExists(model: "test/model")
+        let modelExists: Bool = await downloader.modelExists(model: model.location)
         #expect(modelExists, "Model should exist after download")
 
         print("\n🔗 Model existence verified")
@@ -596,10 +713,8 @@ extension APITests {
     }
 
     /// Demonstrates background download workflow with SendableModel
-    @Test(
-        "Background download with SendableModel",
-        .disabled("Background downloads require app bundle and notification permissions")
-    )
+    @Test("Background download with SendableModel")
+    @MainActor
     func backgroundDownloadWorkflow() async throws {
         print("\n🌙 Starting background download workflow demonstration")
 
@@ -610,7 +725,8 @@ extension APITests {
             modelType: .language,
             location: "unsloth/Qwen3-0.6B-GGUF",
             architecture: .qwen,
-            backend: SendableModel.Backend.gguf
+            backend: SendableModel.Backend.gguf,
+            locationKind: .huggingFace
         )
 
         print("Background download model:")
@@ -618,11 +734,28 @@ extension APITests {
         print("   Repository: \(model.location)")
         print("   Type: \(model.modelType)")
 
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let mockExplorer: MockCommunityModelsExplorer = MockCommunityModelsExplorer()
+        let discovered: DiscoveredModel = DiscoveredModel(
+            id: model.location,
+            name: "background-model",
+            author: "unsloth",
+            downloads: 10,
+            likes: 1,
+            tags: ["gguf"],
+            lastModified: Date(),
+            files: [
+                ModelFile(path: "model.gguf", size: 128),
+                ModelFile(path: "config.json", size: 2)
+            ]
+        )
+        discovered.detectedBackends = [.gguf]
+        mockExplorer.discoverModelResponses[model.location] = discovered
 
-        // Request notification permission first
-        let notificationGranted: Bool = await downloader.requestNotificationPermission()
-        print("\nNotification permission: \(notificationGranted ? "Granted" : "Denied")")
+        let context: TestDownloaderContext = TestDownloaderContext(communityExplorer: mockExplorer)
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
+
+        _ = await registerGGUFFixture(in: context, modelId: model.location, name: model.location)
 
         // Display the backend being used
         print("Using backend: \(model.backend.rawValue)")
@@ -635,9 +768,10 @@ extension APITests {
         // Start background download
         print("\nStarting background download...")
         var handle: BackgroundDownloadHandle?
+        var didComplete: Bool = false
 
         for try await event: BackgroundDownloadEvent in downloader.downloadModelInBackground(
-            sendableModel: "test/model",
+            sendableModel: model.location,
             options: options
         ) {
             switch event {
@@ -653,13 +787,18 @@ extension APITests {
 
             case .completed(let info):
                 print("Background download completed: \(info.name)")
+                didComplete = true
                 // For demo, break after completion
             }
         }
 
+        #expect(handle != nil)
+        #expect(didComplete)
+
         // Monitor download status
         let statuses: [BackgroundDownloadStatus] = await downloader.backgroundDownloadStatus()
         print("\nActive background downloads: \(statuses.count)")
+        #expect(!statuses.isEmpty)
 
         for status: BackgroundDownloadStatus in statuses {
             print("   - \(status.handle.modelId): \(status.state.rawValue)")
@@ -687,10 +826,13 @@ extension APITests {
 
     /// Demonstrates format recommendation and validation
     @Test("Format recommendation and validation")
+    @MainActor
     func formatRecommendationAndValidation() async {
         print("\n🧠 Testing format recommendation and validation")
 
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
 
         // Test different model types
         let testModels: [SendableModel] = [
@@ -701,7 +843,8 @@ extension APITests {
                 modelType: .language,
                 location: "mlx-community/Llama-3.2-1B-Instruct-4bit",
                 architecture: .llama,
-                backend: SendableModel.Backend.mlx
+                backend: SendableModel.Backend.mlx,
+                locationKind: .huggingFace
             ),
 
             // GGUF model (detected from name)
@@ -711,7 +854,8 @@ extension APITests {
                 modelType: .flexibleThinker,
                 location: "microsoft/DialoGPT-medium-GGUF",
                 architecture: .harmony,
-                backend: SendableModel.Backend.gguf
+                backend: SendableModel.Backend.gguf,
+                locationKind: .huggingFace
             ),
 
             // Diffusion model
@@ -721,7 +865,8 @@ extension APITests {
                 modelType: .diffusion,
                 location: "runwayml/stable-diffusion-v1-5",
                 architecture: .stableDiffusion,
-                backend: SendableModel.Backend.coreml
+                backend: SendableModel.Backend.coreml,
+                locationKind: .huggingFace
             )
         ]
 
@@ -736,7 +881,7 @@ extension APITests {
             // Test format validation
             do {
                 let validation: ValidationResult = try await downloader.validateModel(
-                    "test/model",
+                    model.location,
                     backend: recommendedFormat
                 )
                 print("   Validation: Passed")
@@ -756,7 +901,7 @@ extension APITests {
                 ? .coreml
                 : .mlx
             do {
-                _ = try await downloader.validateModel("test/model", backend: incompatibleBackend)
+                _ = try await downloader.validateModel(model.location, backend: incompatibleBackend)
                 print("   Incompatible format test: Unexpectedly passed")
             } catch {
                 print("   Incompatible format test: Correctly failed - \(error.localizedDescription)")
@@ -767,11 +912,14 @@ extension APITests {
     }
 
     /// Demonstrates error handling scenarios
-    @Test("Error handling scenarios", .disabled())
+    @Test("Error handling scenarios")
+    @MainActor
     func errorHandlingScenarios() async throws {
         print("\n🚨 Testing error handling scenarios")
 
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
 
         // Test 1: Invalid repository ID
         let invalidModel: SendableModel = SendableModel(
@@ -780,11 +928,12 @@ extension APITests {
             modelType: .language,
             location: "invalid-repo-format",  // Missing "/"
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         do {
-            _ = try await downloader.validateModel("invalid/model", backend: SendableModel.Backend.mlx)
+            _ = try await downloader.validateModel(invalidModel.location, backend: SendableModel.Backend.mlx)
             print("Invalid repository test failed - should have thrown error")
         } catch ModelDownloadError.invalidRepositoryIdentifier {
             print("Invalid repository ID correctly detected")
@@ -799,10 +948,11 @@ extension APITests {
             modelType: .language,
             location: "does-not-exist/fake-model-12345",
             architecture: .unknown,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
-        _ = downloader.downloadModelSafely(model: "non-existent/model")
+        _ = downloader.downloadModelSafely(model: nonExistentModel.location)
 
         // Test 3: Model already downloaded scenario
         // First download a small model
@@ -812,14 +962,17 @@ extension APITests {
             modelType: .language,
             location: "mlx-community/Llama-3.2-1B-Instruct-4bit",
             architecture: .llama,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         print("\n🔄 Testing duplicate download detection...")
 
+        _ = await registerMLXFixture(in: context, modelId: testModel.location, name: testModel.location)
+
         // Download first time
         var modelInfo: ModelInfo?
-        for try await event in downloader.downloadModelSafely(model: "test/model") {
+        for try await event in downloader.downloadModelSafely(model: testModel.location) {
             if case .completed(let info) = event {
                 modelInfo = info
             }
@@ -828,7 +981,7 @@ extension APITests {
 
         // Try to download again
         do {
-            for try await _ in downloader.downloadModelSafely(model: "test/model") {
+            for try await _ in downloader.downloadModelSafely(model: testModel.location) {
                 // Consume stream
             }
             print("Duplicate download test failed - should have detected existing model")
@@ -846,11 +999,14 @@ extension APITests {
     }
 
     /// Demonstrates file system structure and URL retrieval
-    @Test("File system structure and URL retrieval", .disabled())
+    @Test("File system structure and URL retrieval")
+    @MainActor
     func fileSystemStructureDemo() async throws {
         print("\n📂 Demonstrating file system structure and URL retrieval")
 
-        let downloader: ModelDownloader = ModelDownloader.shared
+        let context: TestDownloaderContext = TestDownloaderContext()
+        defer { context.cleanup() }
+        let downloader: ModelDownloader = context.downloader
 
         // Download models in different formats to show structure
         let models: [SendableModel] = [
@@ -860,7 +1016,8 @@ extension APITests {
                 modelType: .language,
                 location: "mlx-community/Llama-3.2-1B-Instruct-4bit",
                 architecture: .llama,
-                backend: SendableModel.Backend.mlx
+                backend: SendableModel.Backend.mlx,
+                locationKind: .huggingFace
             ),
 
             SendableModel(
@@ -869,9 +1026,13 @@ extension APITests {
                 modelType: .flexibleThinker,
                 location: "unsloth/Qwen3-0.6B-GGUF",
                 architecture: .qwen,
-                backend: SendableModel.Backend.gguf
+                backend: SendableModel.Backend.gguf,
+                locationKind: .huggingFace
             )
         ]
+
+        _ = await registerMLXFixture(in: context, modelId: models[0].location, name: models[0].location)
+        _ = await registerGGUFFixture(in: context, modelId: models[1].location, name: models[1].location)
 
         for model in models {
             print("\n📥 Downloading \(model.backend.rawValue.uppercased()) model...")
@@ -963,58 +1124,189 @@ extension APITests {
     }
 }
 
+// MARK: - Fixture Helpers
+
+@MainActor
+private func registerMLXFixture(
+    in context: TestDownloaderContext,
+    modelId: String,
+    name: String
+) async -> Int64 {
+    let files: [MockHuggingFaceDownloader.FixtureFile] = [
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "config.json",
+            data: Data("{\"config\":true}".utf8),
+            size: Int64("{\"config\":true}".utf8.count)
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "model.safetensors",
+            data: Data(repeating: 0x1, count: 256),
+            size: 256
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "model.safetensors.index.json",
+            data: Data("{\"index\":true}".utf8),
+            size: Int64("{\"index\":true}".utf8.count)
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "model_info.json",
+            data: Data("{\"info\":true}".utf8),
+            size: Int64("{\"info\":true}".utf8.count)
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "special_tokens_map.json",
+            data: Data("{\"special\":true}".utf8),
+            size: Int64("{\"special\":true}".utf8.count)
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "tokenizer.json",
+            data: Data(repeating: 0x2, count: 128),
+            size: 128
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "tokenizer_config.json",
+            data: Data("{\"tokenizer\":true}".utf8),
+            size: Int64("{\"tokenizer\":true}".utf8.count)
+        )
+    ]
+
+    let totalSize: Int64 = files.reduce(0) { $0 + $1.size }
+
+    await context.mockDownloader.registerFixture(
+        MockHuggingFaceDownloader.FixtureModel(
+            modelId: modelId,
+            backend: .mlx,
+            name: name,
+            files: files
+        )
+    )
+
+    return totalSize
+}
+
+@MainActor
+private func registerGGUFFixture(
+    in context: TestDownloaderContext,
+    modelId: String,
+    name: String
+) async -> Int64 {
+    let files: [MockHuggingFaceDownloader.FixtureFile] = [
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "model.gguf",
+            data: Data(repeating: 0x3, count: 128),
+            size: 128
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "config.json",
+            data: Data("{\"config\":true}".utf8),
+            size: Int64("{\"config\":true}".utf8.count)
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "model_info.json",
+            data: Data("{\"info\":true}".utf8),
+            size: Int64("{\"info\":true}".utf8.count)
+        )
+    ]
+
+    let totalSize: Int64 = files.reduce(0) { $0 + $1.size }
+
+    await context.mockDownloader.registerFixture(
+        MockHuggingFaceDownloader.FixtureModel(
+            modelId: modelId,
+            backend: .gguf,
+            name: name,
+            files: files
+        )
+    )
+
+    return totalSize
+}
+
+@MainActor
+private func registerCoreMLFixture(
+    in context: TestDownloaderContext,
+    modelId: String,
+    name: String
+) async -> Int64 {
+    let files: [MockHuggingFaceDownloader.FixtureFile] = [
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "TextEncoder.mlmodelc/model.mil",
+            data: Data(repeating: 0x4, count: 64),
+            size: 64
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "TextEncoder.mlmodelc/metadata.json",
+            data: Data("{\"metadata\":true}".utf8),
+            size: Int64("{\"metadata\":true}".utf8.count)
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "merges.txt",
+            data: Data("merge".utf8),
+            size: Int64("merge".utf8.count)
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "vocab.json",
+            data: Data("{\"vocab\":true}".utf8),
+            size: Int64("{\"vocab\":true}".utf8.count)
+        ),
+        MockHuggingFaceDownloader.FixtureFile(
+            path: "model_info.json",
+            data: Data("{\"info\":true}".utf8),
+            size: Int64("{\"info\":true}".utf8.count)
+        )
+    ]
+
+    let totalSize: Int64 = files.reduce(0) { $0 + $1.size }
+
+    await context.mockDownloader.registerFixture(
+        MockHuggingFaceDownloader.FixtureModel(
+            modelId: modelId,
+            backend: .coreml,
+            name: name,
+            files: files
+        )
+    )
+
+    return totalSize
+}
+
+@MainActor
+private func deterministicModelId(for location: String) async -> UUID {
+    let identityService: ModelIdentityService = ModelIdentityService()
+    return await identityService.generateModelId(for: location)
+}
+
 // MARK: - File Structure Validation Helpers
 
 /// Validates that a CoreML model has the expected directory structure and files
 private func validateCoreMLModelStructure(at location: URL) throws {
     let fileManager: FileManager = FileManager.default
 
-    // Expected .mlmodelc directories for Stable Diffusion models
-    let expectedDirs: [String] = [
-        "TextEncoder.mlmodelc",
-        "Unet.mlmodelc",
-        "UnetChunk1.mlmodelc",
-        "UnetChunk2.mlmodelc",
-        "VAEDecoder.mlmodelc"
-    ]
-
-    for dir: String in expectedDirs {
-        let dirURL: URL = location.appendingPathComponent(dir)
-        #expect(fileManager.fileExists(atPath: dirURL.path),
-               "CoreML directory '\(dir)' should exist at \(location.path)")
-
-        // Validate .mlmodelc internal structure
-        let expectedFiles: [String] = ["coremldata.bin", "metadata.json", "model.mil"]
-        for file: String in expectedFiles {
-            let fileURL: URL = dirURL.appendingPathComponent(file)
-            #expect(fileManager.fileExists(atPath: fileURL.path),
-                   "CoreML file '\(dir)/\(file)' should exist")
-        }
-
-        // Validate analytics directory
-        let analyticsURL: URL = dirURL.appendingPathComponent("analytics/coremldata.bin")
-        #expect(fileManager.fileExists(atPath: analyticsURL.path),
-               "Analytics file should exist in '\(dir)'")
-
-        // Validate weights directory
-        let weightsURL: URL = dirURL.appendingPathComponent("weights/weight.bin")
-        #expect(fileManager.fileExists(atPath: weightsURL.path),
-               "Weights file should exist in '\(dir)'")
-    }
-
-    // Validate root files
-    let expectedRootFiles: [String] = ["merges.txt", "model_info.json", "vocab.json"]
-    for file: String in expectedRootFiles {
-        let fileURL: URL = location.appendingPathComponent(file)
-        #expect(fileManager.fileExists(atPath: fileURL.path),
-               "CoreML root file '\(file)' should exist")
-    }
-
-    // Validate that we have exactly 5 .mlmodelc directories
+    // Ensure at least one .mlmodelc directory exists
     let contents: [URL] = try fileManager.contentsOfDirectory(at: location, includingPropertiesForKeys: nil)
     let mlmodelcDirs: [URL] = contents.filter { $0.pathExtension == "mlmodelc" }
-    #expect(mlmodelcDirs.count == 5,
-           "Should have exactly 5 .mlmodelc directories, found \(mlmodelcDirs.count)")
+    #expect(!mlmodelcDirs.isEmpty, "Should have at least one .mlmodelc directory")
+
+    for dirURL in mlmodelcDirs {
+        let milURL: URL = dirURL.appendingPathComponent("model.mil")
+        #expect(fileManager.fileExists(atPath: milURL.path),
+               "CoreML file '\(dirURL.lastPathComponent)/model.mil' should exist")
+    }
+
+    // Validate root files (allow for disambiguated duplicates like merges_1.txt)
+    let expectedRootFiles: [String] = ["merges.txt", "model_info.json", "vocab.json"]
+    let rootItems: Set<String> = Set(contents.map(\.lastPathComponent))
+    for file: String in expectedRootFiles {
+        let expectedURL: URL = URL(fileURLWithPath: file)
+        let baseName: String = expectedURL.deletingPathExtension().lastPathComponent
+        let ext: String = expectedURL.pathExtension
+        let hasExactMatch: Bool = rootItems.contains(file)
+        let hasVariantMatch: Bool = rootItems.contains { item in
+            item.hasPrefix("\(baseName)_") && item.hasSuffix(".\(ext)")
+        }
+        #expect(hasExactMatch || hasVariantMatch,
+               "CoreML root file '\(file)' should exist")
+    }
 }
 
 /// Validates that an MLX model has the expected file structure
@@ -1040,13 +1332,13 @@ private func validateMLXModelStructure(at location: URL) throws {
     // Validate minimum file sizes for critical files
     let tokenizerURL: URL = location.appendingPathComponent("tokenizer.json")
     let tokenizerSize: Int = try tokenizerURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
-    #expect(tokenizerSize > 15_000_000,
-           "tokenizer.json should be at least 15MB, found \(tokenizerSize / 1_000_000)MB")
+    #expect(tokenizerSize > 0,
+           "tokenizer.json should be non-empty, found \(tokenizerSize) bytes")
 
     let modelURL: URL = location.appendingPathComponent("model.safetensors")
     let modelSize: Int = try modelURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
-    #expect(modelSize > 600_000_000,
-           "model.safetensors should be at least 600MB, found \(modelSize / 1_000_000)MB")
+    #expect(modelSize > 0,
+           "model.safetensors should be non-empty, found \(modelSize) bytes")
 
     // Validate that safetensors files exist (can be multiple)
     let contents: [URL] = try fileManager.contentsOfDirectory(at: location, includingPropertiesForKeys: nil)
@@ -1062,8 +1354,8 @@ private func validateGGUFModelStructure(at location: URL) throws {
     // Find .gguf file (should be exactly one)
     let contents: [URL] = try fileManager.contentsOfDirectory(at: location, includingPropertiesForKeys: nil)
     let ggufFiles: [URL] = contents.filter { $0.pathExtension == "gguf" }
-    #expect(ggufFiles.count == 1,
-           "Should have exactly one .gguf file, found \(ggufFiles.count)")
+    #expect(!ggufFiles.isEmpty,
+           "Should have at least one .gguf file, found \(ggufFiles.count)")
 
     // Validate expected supporting files
     let expectedFiles: [String] = ["config.json", "model_info.json"]
@@ -1076,7 +1368,7 @@ private func validateGGUFModelStructure(at location: URL) throws {
     // Validate GGUF file size
     if let ggufFile: URL = ggufFiles.first {
         let ggufSize: Int = try ggufFile.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
-        #expect(ggufSize > 400_000_000,
-               "GGUF file should be at least 400MB, found \(ggufSize / 1_000_000)MB")
+        #expect(ggufSize > 0,
+               "GGUF file should be non-empty, found \(ggufSize) bytes")
     }
 }

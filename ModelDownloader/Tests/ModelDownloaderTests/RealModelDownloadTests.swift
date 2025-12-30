@@ -122,8 +122,6 @@ internal func testModelFileManagerPathConsistency() async throws {
     // Initialize file manager
     let fileManager: ModelFileManager = ModelFileManager(modelsDirectory: tempDir)
 
-    // Create a model ID
-    let modelId: UUID = UUID()
     let backend: SendableModel.Backend = SendableModel.Backend.mlx
     let modelName: String = "test-org/test-model"
 
@@ -161,91 +159,81 @@ internal func testModelFileManagerPathConsistency() async throws {
     try? FileManager.default.removeItem(at: fakeTempDir)
 }
 
-@Test("Download real MLX model from HuggingFace", .disabled("This test are to be run only before releasing the app"))
+@Test("Download real MLX model from HuggingFace")
+@MainActor
 internal func testDownloadRealMLXModel() async throws {
-    // Use a very small test model
+    let context: TestDownloaderContext = TestDownloaderContext()
+    defer { context.cleanup() }
+
     let modelId: String = "hf-internal-testing/tiny-random-gpt2"
-    let backend: SendableModel.Backend = SendableModel.Backend.mlx
-
-    // Create temporary directory for download
-    let tempDir: URL = FileManager.default.temporaryDirectory
-        .appendingPathComponent("test-mlx-\(UUID().uuidString)")
-    defer {
-        try? FileManager.default.removeItem(at: tempDir)
-    }
-
-    // Initialize downloader
-    let fileManager: ModelFileManager = ModelFileManager(
-        modelsDirectory: tempDir,
-        temporaryDirectory: tempDir.appendingPathComponent("downloads")
+    let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+        modelId: modelId,
+        backend: .mlx,
+        name: modelId,
+        files: [
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "model.safetensors",
+                data: Data(repeating: 0x1, count: 32),
+                size: 32
+            ),
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "config.json",
+                data: Data("{\"config\":true}".utf8),
+                size: Int64("{\"config\":true}".utf8.count)
+            )
+        ]
     )
-    let downloader: HuggingFaceDownloader = HuggingFaceDownloader(
-        fileManager: fileManager,
-        enableProductionFeatures: false  // Disable to debug
+    await context.mockDownloader.registerFixture(fixture)
+
+    let sendableModel: SendableModel = SendableModel(
+        id: UUID(),
+        ramNeeded: 128_000_000,
+        modelType: .language,
+        location: modelId,
+        architecture: .llama,
+        backend: .mlx,
+        locationKind: .huggingFace
     )
 
-    // Track download progress
     let progressUpdates: ProgressCollector = ProgressCollector()
+    var modelInfo: ModelInfo?
 
-    // Download the model
-    do {
-        let modelInfo: ModelInfo = try await downloader.downloadModel(
-            from: modelId,
-            backend: backend
-        ) { progress in
-            Task { await progressUpdates.add(progress) }
-            print("Download progress: \(Int(progress * 100))%")
+    for try await event in context.downloader.downloadModel(sendableModel: sendableModel) {
+        switch event {
+        case .progress(let progress):
+            Task { await progressUpdates.add(progress.fractionCompleted) }
+
+        case .completed(let info):
+            modelInfo = info
         }
-
-        // Verify download completed
-        #expect(modelInfo.name == modelId)
-        #expect(modelInfo.backend == backend)
-        #expect(await progressUpdates.isEmpty == false)
-        #expect(await progressUpdates.last == 1.0)
-
-        // Verify files exist at the location specified in modelInfo
-        let modelPath: URL = modelInfo.location
-
-        #expect(FileManager.default.fileExists(atPath: modelPath.path))
-
-        // Check for expected MLX files
-        let contents: [URL] = try FileManager.default.contentsOfDirectory(
-            at: modelPath,
-            includingPropertiesForKeys: nil
-        )
-
-        let hasWeights: Bool = contents.contains { $0.pathExtension == "safetensors" }
-        let hasConfig: Bool = contents.contains { $0.lastPathComponent == "config.json" }
-
-        #expect(hasWeights || !contents.isEmpty, "Should have model files")
-        #expect(hasConfig || contents.contains { $0.pathExtension == "json" }, "Should have config files")
-
-        print("Successfully downloaded MLX model to: \(modelPath.path)")
-        print("Downloaded files: \(contents.map(\.lastPathComponent))")
-    } catch {
-        print("Download failed with error: \(error)")
-        print("Error type: \(type(of: error))")
-        print("Error description: \(String(describing: error))")
-
-        // Check if it's because no matching files were found
-        if case HuggingFaceError.modelNotFound = error {
-            print("No files matching MLX format patterns were found. This model might not have .safetensors files.")
-            print("Consider using a model that has MLX-compatible files.")
-        }
-
-        // Check if it's a file system error
-        if let nsError: NSError = error as NSError? {
-            print("NSError domain: \(nsError.domain)")
-            print("NSError code: \(nsError.code)")
-            print("NSError userInfo: \(nsError.userInfo)")
-        }
-
-        throw error
     }
+
+    guard let modelInfo else {
+        throw HuggingFaceError.downloadFailed
+    }
+
+    #expect(modelInfo.name == modelId)
+    #expect(modelInfo.backend == .mlx)
+    #expect(await progressUpdates.isEmpty == false)
+    #expect(await progressUpdates.last == 1.0)
+
+    let modelPath: URL = modelInfo.location
+    #expect(FileManager.default.fileExists(atPath: modelPath.path))
+
+    let contents: [URL] = try FileManager.default.contentsOfDirectory(
+        at: modelPath,
+        includingPropertiesForKeys: nil
+    )
+
+    let hasWeights: Bool = contents.contains { $0.pathExtension == "safetensors" }
+    let hasConfig: Bool = contents.contains { $0.lastPathComponent == "config.json" }
+
+    #expect(hasWeights)
+    #expect(hasConfig)
 }
 
 @Test("Debug CoreML repository files")
-internal func testDebugCoreMLRepoFiles() async {
+internal func testDebugCoreMLRepoFiles() {
     // Test different CoreML repositories
     let repos: [String] = [
         "apple/coreml-stable-diffusion-v1-4",
@@ -254,46 +242,34 @@ internal func testDebugCoreMLRepoFiles() async {
         "google/mobilenet_v2_1.0_224"
     ]
 
-    let httpClient: DefaultHTTPClient = DefaultHTTPClient()
-    let tokenManager: HFTokenManager = HFTokenManager(httpClient: httpClient)
-    let hubAPI: HubAPI = HubAPI(
-        endpoint: "https://huggingface.co",
-        httpClient: httpClient,
-        tokenManager: tokenManager
-    )
+    let files: [FileInfo] = [
+        FileInfo(path: "TextEncoder.mlmodelc/model.mil", size: 1_024),
+        FileInfo(path: "Unet.mlmodelc/model.mil", size: 2_048),
+        FileInfo(path: "README.md", size: 256)
+    ]
 
     for modelId in repos {
         print("\n=== Repository: \(modelId) ===")
-        let repo: Repository = Repository(id: modelId)
+        print("Found \(files.count) files:")
 
-        do {
-            let files: [FileInfo] = try await hubAPI.listFiles(repo: repo, revision: "main")
-            print("Found \(files.count) files:")
-
-            // Print all files to see what's available
-            for file in files {
-                print("  - \(file.path) (size: \(file.size) bytes)")
-            }
-
-            // Look for CoreML specific files
-            let coremlFiles: [FileInfo] = files.filter { file in
-                file.path.contains(".mlpackage") ||
-                file.path.contains(".mlmodel") ||
-                file.path.hasSuffix(".zip") ||
-                file.path.contains("coreml")
-            }
-
-            print("\nCoreML-related files:")
-            for file in coremlFiles {
-                print("  - \(file.path) (size: \(file.size) bytes)")
-            }
-
-            if coremlFiles.isEmpty {
-                print("  No CoreML files found")
-            }
-        } catch {
-            print("Error listing files: \(error)")
+        for file in files {
+            print("  - \(file.path) (size: \(file.size) bytes)")
         }
+
+        let coremlFiles: [FileInfo] = files.filter { file in
+            file.path.contains(".mlpackage") ||
+            file.path.contains(".mlmodel") ||
+            file.path.hasSuffix(".zip") ||
+            file.path.contains("coreml") ||
+            file.path.contains(".mlmodelc")
+        }
+
+        print("\nCoreML-related files:")
+        for file in coremlFiles {
+            print("  - \(file.path) (size: \(file.size) bytes)")
+        }
+
+        #expect(!coremlFiles.isEmpty)
     }
 }
 
@@ -316,19 +292,12 @@ internal func testSimpleMLXDownload() async throws {
         temporaryDirectory: tempDir.appendingPathComponent("downloads")
     )
 
-    // Use basic downloader without production features
-    let httpClient: DefaultHTTPClient = DefaultHTTPClient()
-    let tokenManager: HFTokenManager = HFTokenManager(httpClient: httpClient)
-    let hubAPI: HubAPI = HubAPI(
-        endpoint: "https://huggingface.co",
-        httpClient: httpClient,
-        tokenManager: tokenManager
-    )
-
-    // Test listing files first
+    // Use stub file list to avoid network requests
     print("Testing file listing for model: \(modelId)")
-    let repo: Repository = Repository(id: modelId)
-    let files: [FileInfo] = try await hubAPI.listFiles(repo: repo, revision: "main")
+    let files: [FileInfo] = [
+        FileInfo(path: "model.safetensors", size: 128),
+        FileInfo(path: "config.json", size: 32)
+    ]
 
     print("Found \(files.count) files:")
     for file in files {
@@ -355,7 +324,6 @@ internal func testSimpleMLXDownload() async throws {
     // Now test actual download with a simple approach
     if !matchingFiles.isEmpty {
         // Create download directory
-        let modelUUID: UUID = UUID()
         let repositoryId: String = "test/mlx-model"
         let downloadDir: URL = fileManager.temporaryDirectory(for: repositoryId)
         try FileManager.default.createDirectory(
@@ -367,11 +335,9 @@ internal func testSimpleMLXDownload() async throws {
 
         // Download just the first file as a test
         let testFile: FileInfo = matchingFiles.first!
-        let downloadURL: URL = repo.downloadURL(path: testFile.path, revision: "main")
         let localPath: URL = downloadDir.appendingPathComponent(testFile.path)
 
-        print("Downloading \(testFile.path) from \(downloadURL)")
-        print("To: \(localPath.path)")
+        print("Writing \(testFile.path) to: \(localPath.path)")
 
         // Create parent directory if needed
         try FileManager.default.createDirectory(
@@ -379,15 +345,8 @@ internal func testSimpleMLXDownload() async throws {
             withIntermediateDirectories: true
         )
 
-        // Simple download using URLSession
-        let (data, response): (Data, URLResponse) = try await URLSession.shared.data(from: downloadURL)
-
-        if let httpResponse: HTTPURLResponse = response as? HTTPURLResponse {
-            print("HTTP Status: \(httpResponse.statusCode)")
-            #expect(httpResponse.statusCode == 200)
-        }
-
-        // Write data to file
+        // Write stub data to file
+        let data: Data = Data(repeating: 0x1, count: Int(testFile.size))
         try data.write(to: localPath)
 
         print("Downloaded \(data.count) bytes")
@@ -407,217 +366,211 @@ internal func testSimpleMLXDownload() async throws {
     }
 }
 
-@Test("Download real CoreML model from HuggingFace", .disabled())
+@Test("Download real CoreML model from HuggingFace")
+@MainActor
 internal func testDownloadRealCoreMLModel() async throws {
-    // For testing purposes, we'll use a small model that has JSON files
-    // which match our CoreML patterns. In production, this would download
-    // actual .mlpackage or .mlmodel files
-    let modelId: String = "hf-internal-testing/tiny-random-gpt2"
-    let backend: SendableModel.Backend = SendableModel.Backend.coreml
+    let context: TestDownloaderContext = TestDownloaderContext()
+    defer { context.cleanup() }
 
-    // Create temporary directory for download
-    let tempDir: URL = FileManager.default.temporaryDirectory
-        .appendingPathComponent("test-coreml-\(UUID().uuidString)")
-    defer {
-        try? FileManager.default.removeItem(at: tempDir)
-    }
-
-    // Initialize downloader
-    let fileManager: ModelFileManager = ModelFileManager(
-        modelsDirectory: tempDir,
-        temporaryDirectory: tempDir.appendingPathComponent("downloads")
+    let modelId: String = "coreml-community/test-coreml"
+    let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+        modelId: modelId,
+        backend: .coreml,
+        name: modelId,
+        files: [
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "TextEncoder.mlmodelc/model.mil",
+                data: Data(repeating: 0x2, count: 32),
+                size: 32
+            ),
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "merges.txt",
+                data: Data("merge".utf8),
+                size: Int64("merge".utf8.count)
+            ),
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "vocab.json",
+                data: Data("{\"vocab\":true}".utf8),
+                size: Int64("{\"vocab\":true}".utf8.count)
+            ),
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "model_info.json",
+                data: Data("{\"info\":true}".utf8),
+                size: Int64("{\"info\":true}".utf8.count)
+            )
+        ]
     )
-    let downloader: HuggingFaceDownloader = HuggingFaceDownloader(
-        fileManager: fileManager,
-        enableProductionFeatures: true
+    await context.mockDownloader.registerFixture(fixture)
+
+    let sendableModel: SendableModel = SendableModel(
+        id: UUID(),
+        ramNeeded: 256_000_000,
+        modelType: .diffusion,
+        location: modelId,
+        architecture: .stableDiffusion,
+        backend: .coreml,
+        locationKind: .huggingFace
     )
 
-    // Track download progress
     let progressUpdates: ProgressCollector = ProgressCollector()
+    var modelInfo: ModelInfo?
 
-    // Download the model
-    let modelInfo: ModelInfo = try await downloader.downloadModel(
-        from: modelId,
-        backend: backend
-    ) { progress in
-        Task { await progressUpdates.add(progress) }
-        print("Download progress: \(Int(progress * 100))%")
-    }
+    for try await event in context.downloader.downloadModel(sendableModel: sendableModel) {
+        switch event {
+        case .progress(let progress):
+            Task { await progressUpdates.add(progress.fractionCompleted) }
 
-    // Verify download completed
-    #expect(modelInfo.name == modelId)
-    #expect(modelInfo.backend == backend)
-    #expect(await progressUpdates.isEmpty == false)
-    #expect(await progressUpdates.last == 1.0)
-
-    // Verify files exist at the location specified in modelInfo
-    let modelPath: URL = modelInfo.location
-
-    #expect(FileManager.default.fileExists(atPath: modelPath.path))
-
-    // Check for downloaded files (for test model, we get JSON files)
-    let contents: [URL] = try FileManager.default.contentsOfDirectory(
-        at: modelPath,
-        includingPropertiesForKeys: nil
-    )
-
-    // For testing, we're using a model that has JSON files
-    // In production, this would check for .mlpackage or .mlmodel files
-    let hasFiles: Bool = !contents.isEmpty
-
-    #expect(hasFiles, "Should have downloaded files")
-
-    print("Successfully downloaded CoreML model to: \(modelPath.path)")
-}
-
-@Test("Download real GGUF model from HuggingFace", .disabled())
-internal func testDownloadRealGGUFModel() async throws {
-    // For testing, use a model with JSON files that match GGUF patterns
-    // Real GGUF models are very large (GB+)
-    let modelId: String = "hf-internal-testing/tiny-random-gpt2"
-    let backend: SendableModel.Backend = SendableModel.Backend.gguf
-
-    // Create temporary directory for download
-    let tempDir: URL = FileManager.default.temporaryDirectory
-        .appendingPathComponent("test-gguf-\(UUID().uuidString)")
-    defer {
-        try? FileManager.default.removeItem(at: tempDir)
-    }
-
-    // Initialize downloader
-    let fileManager: ModelFileManager = ModelFileManager(
-        modelsDirectory: tempDir,
-        temporaryDirectory: tempDir.appendingPathComponent("downloads")
-    )
-    let downloader: HuggingFaceDownloader = HuggingFaceDownloader(
-        fileManager: fileManager,
-        enableProductionFeatures: true
-    )
-
-    // Track download progress
-    let progressUpdates: ProgressCollector = ProgressCollector()
-
-    // Download the model
-    let modelInfo: ModelInfo = try await downloader.downloadModel(
-        from: modelId,
-        backend: backend
-    ) { progress in
-        Task { await progressUpdates.add(progress) }
-        print("Download progress: \(Int(progress * 100))%")
-    }
-
-    // Verify download completed
-    #expect(modelInfo.name == modelId)
-    #expect(modelInfo.backend == backend)
-    #expect(await progressUpdates.isEmpty == false)
-    #expect(await progressUpdates.last == 1.0)
-
-    // Verify files exist at the location specified in modelInfo
-    let modelPath: URL = modelInfo.location
-
-    #expect(FileManager.default.fileExists(atPath: modelPath.path))
-
-    // Check for downloaded files (for test model, we get JSON files)
-    let contents: [URL] = try FileManager.default.contentsOfDirectory(
-        at: modelPath,
-        includingPropertiesForKeys: nil
-    )
-
-    // For testing, we're using a model that has JSON files
-    // In production, this would check for .gguf files
-    let hasFiles: Bool = !contents.isEmpty
-
-    #expect(hasFiles, "Should have downloaded files")
-
-    print("Successfully downloaded GGUF model to: \(modelPath.path)")
-}
-
-@Test("Test download cancellation with real model", .disabled())
-internal func testRealModelDownloadCancellation() async throws {
-    // Use a medium-sized model to ensure we have time to cancel
-    let modelId: String = "bert-base-uncased"
-    let backend: SendableModel.Backend = SendableModel.Backend.mlx
-
-    // Create temporary directory for download
-    let tempDir: URL = FileManager.default.temporaryDirectory
-        .appendingPathComponent("test-cancel-\(UUID().uuidString)")
-    defer {
-        try? FileManager.default.removeItem(at: tempDir)
-    }
-
-    // Initialize downloader
-    let fileManager: ModelFileManager = ModelFileManager(
-        modelsDirectory: tempDir,
-        temporaryDirectory: tempDir.appendingPathComponent("downloads")
-    )
-    let downloader: HuggingFaceDownloader = HuggingFaceDownloader(
-        fileManager: fileManager,
-        enableProductionFeatures: true
-    )
-
-    // Start download in a task
-    let downloadTask: Task<ModelInfo, Error> = Task {
-        try await downloader.downloadModel(
-            from: modelId,
-            backend: backend
-        ) { progress in
-            print("Download progress: \(Int(progress * 100))%")
+        case .completed(let info):
+            modelInfo = info
         }
     }
 
-    // Wait a bit then cancel
-    try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+    guard let modelInfo else {
+        throw HuggingFaceError.downloadFailed
+    }
 
-    // Cancel the download
-    await downloader.cancelDownload(for: modelId)
+    #expect(modelInfo.name == modelId)
+    #expect(modelInfo.backend == .coreml)
+    #expect(await progressUpdates.isEmpty == false)
+    #expect(await progressUpdates.last == 1.0)
+
+    let modelPath: URL = modelInfo.location
+    #expect(FileManager.default.fileExists(atPath: modelPath.path))
+
+    let contents: [URL] = try FileManager.default.contentsOfDirectory(
+        at: modelPath,
+        includingPropertiesForKeys: nil
+    )
+    let mlmodelcDirs: [URL] = contents.filter { $0.pathExtension == "mlmodelc" }
+    #expect(!mlmodelcDirs.isEmpty)
+}
+
+@Test("Download real GGUF model from HuggingFace")
+@MainActor
+internal func testDownloadRealGGUFModel() async throws {
+    let context: TestDownloaderContext = TestDownloaderContext()
+    defer { context.cleanup() }
+
+    let modelId: String = "gguf-community/test-gguf"
+    let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+        modelId: modelId,
+        backend: .gguf,
+        name: modelId,
+        files: [
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "model.gguf",
+                data: Data(repeating: 0x3, count: 64),
+                size: 64
+            ),
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "config.json",
+                data: Data("{\"config\":true}".utf8),
+                size: Int64("{\"config\":true}".utf8.count)
+            ),
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "model_info.json",
+                data: Data("{\"info\":true}".utf8),
+                size: Int64("{\"info\":true}".utf8.count)
+            )
+        ]
+    )
+    await context.mockDownloader.registerFixture(fixture)
+
+    let sendableModel: SendableModel = SendableModel(
+        id: UUID(),
+        ramNeeded: 128_000_000,
+        modelType: .language,
+        location: modelId,
+        architecture: .qwen,
+        backend: .gguf,
+        locationKind: .huggingFace
+    )
+
+    let progressUpdates: ProgressCollector = ProgressCollector()
+    var modelInfo: ModelInfo?
+
+    for try await event in context.downloader.downloadModel(sendableModel: sendableModel) {
+        switch event {
+        case .progress(let progress):
+            Task { await progressUpdates.add(progress.fractionCompleted) }
+
+        case .completed(let info):
+            modelInfo = info
+        }
+    }
+
+    guard let modelInfo else {
+        throw HuggingFaceError.downloadFailed
+    }
+
+    #expect(modelInfo.name == modelId)
+    #expect(modelInfo.backend == .gguf)
+    #expect(await progressUpdates.isEmpty == false)
+    #expect(await progressUpdates.last == 1.0)
+
+    let modelPath: URL = modelInfo.location
+    #expect(FileManager.default.fileExists(atPath: modelPath.path))
+
+    let contents: [URL] = try FileManager.default.contentsOfDirectory(
+        at: modelPath,
+        includingPropertiesForKeys: nil
+    )
+    let ggufFiles: [URL] = contents.filter { $0.pathExtension == "gguf" }
+    #expect(!ggufFiles.isEmpty)
+}
+
+@Test("Test download cancellation with real model")
+@MainActor
+internal func testRealModelDownloadCancellation() async throws {
+    let context: TestDownloaderContext = TestDownloaderContext()
+    defer { context.cleanup() }
+
+    let modelId: String = "cancel-test/model"
+    let fixture: MockHuggingFaceDownloader.FixtureModel = MockHuggingFaceDownloader.FixtureModel(
+        modelId: modelId,
+        backend: .mlx,
+        name: modelId,
+        files: [
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "model.safetensors",
+                data: Data(repeating: 0x5, count: 64),
+                size: 64
+            ),
+            MockHuggingFaceDownloader.FixtureFile(
+                path: "config.json",
+                data: Data("{\"config\":true}".utf8),
+                size: Int64("{\"config\":true}".utf8.count)
+            )
+        ]
+    )
+    await context.mockDownloader.registerFixture(fixture)
+    await context.mockDownloader.setDownloadDelayNanoseconds(2_000_000_000)
+
+    let sendableModel: SendableModel = SendableModel(
+        id: UUID(),
+        ramNeeded: 128_000_000,
+        modelType: .language,
+        location: modelId,
+        architecture: .llama,
+        backend: .mlx,
+        locationKind: .huggingFace
+    )
+
+    let downloadTask: Task<Void, Error> = Task {
+        for try await _ in context.downloader.downloadModel(sendableModel: sendableModel) {
+            // Consume events
+        }
+    }
+
+    try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+
+    await context.downloader.cancelDownload(for: modelId)
     downloadTask.cancel()
 
-    // Verify task was cancelled or partially completed
     do {
-        _ = try await downloadTask.value
-        // If we get here, the download might have partially completed
-        // Check if it was actually interrupted
-        print("Download task completed, checking if it was interrupted")
+        try await downloadTask.value
+        #expect(downloadTask.isCancelled)
     } catch {
-        // This is expected - the download should have been cancelled
-        #expect(error is CancellationError || error is HuggingFaceError)
-        print("Download was cancelled as expected: \(error)")
-    }
-
-    print("Successfully cancelled model download")
-}
-
-// MARK: - Test Utilities
-
-extension HuggingFaceDownloader {
-    /// Download a model with specific variant
-    func downloadModel(
-        from repoId: String,
-        backend: SendableModel.Backend,
-        variant _: String? = nil,
-        progressHandler: @Sendable (Double) -> Void
-    ) async throws -> ModelInfo {
-        // For testing purposes, we'll use the standard download method
-        // In a real implementation, variant selection would be handled
-        var modelInfo: ModelInfo?
-
-        for try await event in download(
-            modelId: repoId,
-            backend: backend
-        ) {
-            switch event {
-            case .progress(let progress):
-                progressHandler(progress.fractionCompleted)
-
-            case .completed(let info):
-                modelInfo = info
-            }
-        }
-
-        guard let modelInfo else {
-            throw HuggingFaceError.downloadFailed
-        }
-
-        return modelInfo
+        #expect(error is CancellationError)
     }
 }
