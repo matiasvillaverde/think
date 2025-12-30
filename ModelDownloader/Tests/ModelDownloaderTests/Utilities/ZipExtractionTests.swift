@@ -155,6 +155,6 @@ struct ZipExtractionTests {
 
         print(workflow)
 
-        #expect(true) // Workflow documentation test
+        #expect(Bool(true)) // Workflow documentation test
     }
 }

@@ -32,7 +32,7 @@ internal func testRateLimiterIntegration() async throws {
     await rateLimiter.logStatus(isAuthenticated: false)
 
     // Should complete without errors
-    #expect(true)
+    #expect(Bool(true))
 }
 
 @Test("Download coordinator with retry logic")
@@ -80,7 +80,7 @@ internal func testDownloadCoordinatorWithRetry() async throws {
 }
 
 @Test("Model validation integration")
-internal func testModelValidationIntegration() async throws {
+internal func testModelValidationIntegration() async {
     let validator: ModelValidator = ModelValidator()
     let extractor: ModelMetadataExtractor = ModelMetadataExtractor()
 
@@ -106,7 +106,7 @@ internal func testModelValidationIntegration() async throws {
     )
 
     // Validate for different formats
-    let mlxValidation: ModelValidationResult = try await validator.validateModel(
+    let mlxValidation: ModelValidationResult = await validator.validateModel(
         configuration: config,
         backend: SendableModel.Backend.mlx
     )
@@ -119,7 +119,7 @@ internal func testModelValidationIntegration() async throws {
     ]
 
     // Extract metadata - use explicit variable to satisfy SwiftLint
-    let extractedData: Any = try await extractor.extractMetadata(
+    let extractedData: Any = await extractor.extractMetadata(
         configuration: config,
         files: files,
         modelId: "gpt2"
@@ -192,7 +192,7 @@ internal func testLoggerIntegration() async {
     )
 
     // Should complete without errors
-    #expect(true)
+    #expect(Bool(true))
 }
 
 // MARK: - Mock Types

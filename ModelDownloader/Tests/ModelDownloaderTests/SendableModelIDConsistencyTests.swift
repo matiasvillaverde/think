@@ -35,7 +35,8 @@ struct SendableModelIDConsistencyTests {
             modelType: .language,
             location: "mlx-community/test-model",
             architecture: .llama,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         // Create a downloader to verify API exists
@@ -51,13 +52,12 @@ struct SendableModelIDConsistencyTests {
     }
 
     @Test
-    func testFileManagerFinalizeDownloadUsesProvidedID() async throws {
+    func testFileManagerFinalizeDownloadUsesProvidedID() async {
         // Given
-        let modelId: UUID = UUID()
         let fileManager: MockFileManager = MockFileManager()
 
         // When
-        let modelInfo: ModelInfo = try await fileManager.finalizeDownload(
+        let modelInfo: ModelInfo = await fileManager.finalizeDownload(
             repositoryId: "test/model",
             name: "test-model",
             backend: SendableModel.Backend.mlx,
@@ -105,7 +105,8 @@ struct SendableModelIDConsistencyTests {
             modelType: .language,
             location: "apple/test-model",
             architecture: .unknown,
-            backend: SendableModel.Backend.coreml
+            backend: SendableModel.Backend.coreml,
+            locationKind: .huggingFace
         )
 
         // Then - Backend should be accessible and correct
