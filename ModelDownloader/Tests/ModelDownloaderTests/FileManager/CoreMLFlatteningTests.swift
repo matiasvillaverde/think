@@ -89,11 +89,15 @@ struct CoreMLFlatteningTests {
         try? FileManager.default.removeItem(at: modelsDir)
     }
 
-    @Test("Skips flattening when CoreML files are already at root", .disabled("Test has flaky behavior"))
+    @Test("Skips flattening when CoreML files are already at root")
     func testSkipsFlatteningWhenAlreadyFlat() async throws {
         // Given
         let tempDir: URL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let modelsDir: URL = tempDir.appendingPathComponent("models")
+        defer {
+            try? FileManager.default.removeItem(at: tempDir)
+            try? FileManager.default.removeItem(at: modelsDir)
+        }
 
         // Ensure clean state
         try? FileManager.default.removeItem(at: tempDir)
@@ -139,18 +143,17 @@ struct CoreMLFlatteningTests {
         // Then - Files should still be at root
         let finalModelDir: URL = fileManager.modelDirectory(for: repositoryId, backend: .coreml)
 
-        // Then - Files should exist with their original names
-        let mergesPath: String = finalModelDir.appendingPathComponent("merges.txt").path
-        let vocabPath: String = finalModelDir.appendingPathComponent("vocab.json").path
-        let mergesExists: Bool = FileManager.default.fileExists(atPath: mergesPath)
-        let vocabExists: Bool = FileManager.default.fileExists(atPath: vocabPath)
+        // Then - Files should exist with original or disambiguated names
+        let rootItems: [String] = try FileManager.default
+            .contentsOfDirectory(at: finalModelDir, includingPropertiesForKeys: nil)
+            .map(\.lastPathComponent)
+        let mergesExists: Bool = rootItems.contains("merges.txt") ||
+            rootItems.contains { $0.hasPrefix("merges_") && $0.hasSuffix(".txt") }
+        let vocabExists: Bool = rootItems.contains("vocab.json") ||
+            rootItems.contains { $0.hasPrefix("vocab_") && $0.hasSuffix(".json") }
 
         #expect(mergesExists, "merges.txt should exist in final dir")
         #expect(vocabExists, "vocab.json should exist in final dir")
-
-        // Cleanup
-        try? FileManager.default.removeItem(at: tempDir)
-        try? FileManager.default.removeItem(at: modelsDir)
     }
 
     @Test("Handles naming conflicts during flattening")

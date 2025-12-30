@@ -37,7 +37,8 @@ struct RefactoringIntegrationTests {
             modelType: .language,
             location: location,
             architecture: .llama,
-            backend: SendableModel.Backend.mlx
+            backend: SendableModel.Backend.mlx,
+            locationKind: .huggingFace
         )
 
         // 4. Configure mock for successful download

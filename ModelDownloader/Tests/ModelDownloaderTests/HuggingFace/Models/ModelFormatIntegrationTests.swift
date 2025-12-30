@@ -33,10 +33,9 @@ private actor ProgressCollector {
 }
 
 @Test("MLX model file tracking")
-internal func testMLXModelFileTracking() async throws {
+internal func testMLXModelFileTracking() async {
     // Setup mock file manager
     let mockFileManager: MockFileManager = MockFileManager()
-    let modelId: UUID = UUID()
     let backend: SendableModel.Backend = SendableModel.Backend.mlx
 
     // Simulate downloading MLX files
@@ -53,7 +52,7 @@ internal func testMLXModelFileTracking() async throws {
 
     // Simulate finalize download
     let repositoryId: String = "test-org/test-mlx-model"
-    let modelInfo: ModelInfo = try await mockFileManager.finalizeDownload(
+    let modelInfo: ModelInfo = await mockFileManager.finalizeDownload(
         repositoryId: repositoryId,
         name: "test-org/test-mlx-model",
         backend: backend,
@@ -73,10 +72,9 @@ internal func testMLXModelFileTracking() async throws {
 }
 
 @Test("CoreML model file tracking")
-internal func testCoreMLModelFileTracking() async throws {
+internal func testCoreMLModelFileTracking() async {
     // Setup mock file manager
     let mockFileManager: MockFileManager = MockFileManager()
-    let modelId: UUID = UUID()
     let backend: SendableModel.Backend = SendableModel.Backend.coreml
 
     // Simulate downloading CoreML files
@@ -93,7 +91,7 @@ internal func testCoreMLModelFileTracking() async throws {
 
     // Simulate finalize download
     let repositoryId: String = "test-org/test-coreml-model"
-    let modelInfo: ModelInfo = try await mockFileManager.finalizeDownload(
+    let modelInfo: ModelInfo = await mockFileManager.finalizeDownload(
         repositoryId: repositoryId,
         name: "test-org/test-coreml-model",
         backend: backend,
@@ -111,10 +109,9 @@ internal func testCoreMLModelFileTracking() async throws {
 }
 
 @Test("GGUF model file tracking")
-internal func testGGUFModelFileTracking() async throws {
+internal func testGGUFModelFileTracking() async {
     // Setup mock file manager
     let mockFileManager: MockFileManager = MockFileManager()
-    let modelId: UUID = UUID()
     let backend: SendableModel.Backend = SendableModel.Backend.gguf
 
     // Simulate downloading GGUF files
@@ -130,7 +127,7 @@ internal func testGGUFModelFileTracking() async throws {
 
     // Simulate finalize download
     let repositoryId: String = "test-org/test-gguf-model"
-    let modelInfo: ModelInfo = try await mockFileManager.finalizeDownload(
+    let modelInfo: ModelInfo = await mockFileManager.finalizeDownload(
         repositoryId: repositoryId,
         name: "test-org/test-gguf-model",
         backend: backend,
@@ -149,17 +146,16 @@ internal func testGGUFModelFileTracking() async throws {
 }
 
 @Test("Multi-format model file tracking")
-internal func testMultiFormatModelFileTracking() async throws {
+internal func testMultiFormatModelFileTracking() async {
     // Setup mock file manager
     let mockFileManager: MockFileManager = MockFileManager()
 
     // Test MLX format
-    let _: UUID = UUID()
     mockFileManager.addDownloadedFile("mlx/config.json")
     mockFileManager.addDownloadedFile("mlx/model.safetensors")
 
     let mlxRepositoryId: String = "test-org/multi-format-model-mlx"
-    let mlxInfo: ModelInfo = try await mockFileManager.finalizeDownload(
+    let mlxInfo: ModelInfo = await mockFileManager.finalizeDownload(
         repositoryId: mlxRepositoryId,
         name: "test-org/multi-format-model",
         backend: SendableModel.Backend.mlx,
@@ -171,11 +167,10 @@ internal func testMultiFormatModelFileTracking() async throws {
 
     // Reset for GGUF format
     mockFileManager.reset()
-    let _: UUID = UUID()
     mockFileManager.addDownloadedFile("gguf/model-q4_0.gguf")
 
     let ggufRepositoryId: String = "test-org/multi-format-model-gguf"
-    let ggufInfo: ModelInfo = try await mockFileManager.finalizeDownload(
+    let ggufInfo: ModelInfo = await mockFileManager.finalizeDownload(
         repositoryId: ggufRepositoryId,
         name: "test-org/multi-format-model",
         backend: SendableModel.Backend.gguf,
