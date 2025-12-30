@@ -57,7 +57,7 @@ public struct HealthKitStrategy: ToolStrategy {
     /// Execute the health data request
     /// - Parameter request: The tool request
     /// - Returns: The tool response with health data
-    public func execute(request: ToolRequest) -> ToolResponse {
+    public func execute(request: ToolRequest) async -> ToolResponse {
         Self.logger.debug("Processing health data request for request ID: \(request.id)")
 
         // Parse arguments
@@ -66,12 +66,12 @@ public struct HealthKitStrategy: ToolStrategy {
             return BaseToolStrategy.errorResponse(request: request, error: error.message)
 
         case .success(let json):
-            return executeHealthDataRequest(request: request, json: json)
+            return await executeHealthDataRequest(request: request, json: json)
         }
     }
 
     /// Execute health data request with validation and fetching
-    private func executeHealthDataRequest(request: ToolRequest, json: [String: Any]) -> ToolResponse {
+    private func executeHealthDataRequest(request: ToolRequest, json: [String: Any]) async -> ToolResponse {
         // Validate and extract parameters
         guard let dataType = json["dataType"] as? String else {
             Self.logger.warning("Health data request missing dataType parameter")
@@ -101,7 +101,7 @@ public struct HealthKitStrategy: ToolStrategy {
             "Health data parameters - startDate: \(startDate ?? "nil"), endDate: \(endDate ?? "nil"), limit: \(limit)"
         )
 
-        return performHealthDataFetch(
+        return await performHealthDataFetch(
             request: request,
             dataType: dataType,
             startDate: startDate,
@@ -117,40 +117,26 @@ public struct HealthKitStrategy: ToolStrategy {
         startDate: String?,
         endDate: String?,
         limit: Int
-    ) -> ToolResponse {
-        let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
-        var response: ToolResponse?
-
-        Task {
-            do {
-                let result: String = try await fetchHealthData(
-                    dataType: dataType,
-                    startDate: startDate,
-                    endDate: endDate,
-                    limit: limit
-                )
-                Self.logger.notice("Health data fetched successfully")
-                response = BaseToolStrategy.successResponse(
-                    request: request,
-                    result: result
-                )
-            } catch {
-                Self.logger.error("Health data fetch failed: \(error.localizedDescription)")
-                response = BaseToolStrategy.errorResponse(
-                    request: request,
-                    error: "Failed to fetch health data: \(error.localizedDescription)"
-                )
-            }
-            semaphore.signal()
+    ) async -> ToolResponse {
+        do {
+            let result: String = try await fetchHealthData(
+                dataType: dataType,
+                startDate: startDate,
+                endDate: endDate,
+                limit: limit
+            )
+            Self.logger.notice("Health data fetched successfully")
+            return BaseToolStrategy.successResponse(
+                request: request,
+                result: result
+            )
+        } catch {
+            Self.logger.error("Health data fetch failed: \(error.localizedDescription)")
+            return BaseToolStrategy.errorResponse(
+                request: request,
+                error: "Failed to fetch health data: \(error.localizedDescription)"
+            )
         }
-
-        let timeoutSeconds: Double = 10.0
-        _ = semaphore.wait(timeout: .now() + timeoutSeconds)
-
-        return response ?? BaseToolStrategy.errorResponse(
-            request: request,
-            error: "Health data fetch timed out"
-        )
     }
 
     /// Fetch health data using HealthKitManager
