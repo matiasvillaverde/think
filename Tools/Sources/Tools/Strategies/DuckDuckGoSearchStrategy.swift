@@ -3,7 +3,7 @@ import Foundation
 
 /// Strategy for DuckDuckGo search engine
 public struct DuckDuckGoSearchStrategy: ToolStrategy {
-    private let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch()
+    private let searchEngine: DuckDuckGoSearch
 
     /// The tool definition
     public let definition: ToolDefinition = ToolDefinition(
@@ -47,24 +47,29 @@ public struct DuckDuckGoSearchStrategy: ToolStrategy {
 
     /// Initialize a new DuckDuckGoSearchStrategy
     public init() {
-        // No initialization required
+        self.searchEngine = DuckDuckGoSearch()
+    }
+
+    /// Internal initializer for injecting a custom search engine (testing)
+    internal init(searchEngine: DuckDuckGoSearch) {
+        self.searchEngine = searchEngine
     }
 
     /// Execute the search request
     /// - Parameter request: The tool request
     /// - Returns: The tool response with search results
-    public func execute(request: ToolRequest) -> ToolResponse {
+    public func execute(request: ToolRequest) async -> ToolResponse {
         // Parse arguments
         switch BaseToolStrategy.parseArguments(request) {
         case .failure(let error):
             return BaseToolStrategy.errorResponse(request: request, error: error.message)
 
         case .success(let json):
-            return executeSearch(request: request, parameters: json)
+            return await executeSearch(request: request, parameters: json)
         }
     }
 
-    private func executeSearch(request: ToolRequest, parameters: [String: Any]) -> ToolResponse {
+    private func executeSearch(request: ToolRequest, parameters: [String: Any]) async -> ToolResponse {
         // Validate required query parameter
         guard let query = parameters["query"] as? String, !query.isEmpty else {
             return BaseToolStrategy.errorResponse(
@@ -76,42 +81,28 @@ public struct DuckDuckGoSearchStrategy: ToolStrategy {
         // Extract optional parameters
         let searchParams: SearchParameters = extractParameters(from: parameters)
 
-        // Use a semaphore to bridge async to sync
-        let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
-        var response: ToolResponse?
+        do {
+            let searchResults: [WebSearchResult] = try await searchEngine.search(
+                query: query,
+                resultCount: searchParams.count
+            )
 
-        Task {
-            do {
-                let searchResults: [WebSearchResult] = try await searchEngine.search(
-                    query: query,
-                    resultCount: searchParams.count
-                )
+            let formattedResult: String = formatSearchResults(
+                query: query,
+                results: searchResults,
+                params: searchParams
+            )
 
-                let formattedResult: String = formatSearchResults(
-                    query: query,
-                    results: searchResults,
-                    params: searchParams
-                )
-
-                response = BaseToolStrategy.successResponse(
-                    request: request,
-                    result: formattedResult
-                )
-            } catch {
-                response = BaseToolStrategy.errorResponse(
-                    request: request,
-                    error: "Search failed: \(error.localizedDescription)"
-                )
-            }
-            semaphore.signal()
+            return BaseToolStrategy.successResponse(
+                request: request,
+                result: formattedResult
+            )
+        } catch {
+            return BaseToolStrategy.errorResponse(
+                request: request,
+                error: "Search failed: \(error.localizedDescription)"
+            )
         }
-
-        let timeoutSeconds: Double = 30.0
-        _ = semaphore.wait(timeout: .now() + timeoutSeconds)
-        return response ?? BaseToolStrategy.errorResponse(
-            request: request,
-            error: "Search timed out"
-        )
     }
 
     private struct SearchParameters {

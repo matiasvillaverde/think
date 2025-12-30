@@ -20,9 +20,12 @@ internal struct DuckDuckGoSearchStrategyTests {
     }
 
     @Test("DuckDuckGoSearchStrategy executes search with query")
-    func testExecuteSearch() {
+    func testExecuteSearch() async {
         // Given
-        let strategy: DuckDuckGoSearchStrategy = DuckDuckGoSearchStrategy()
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
+        let strategy: DuckDuckGoSearchStrategy = DuckDuckGoSearchStrategy(searchEngine: searchEngine)
         let request: ToolRequest = ToolRequest(
             name: "duckduckgo_search",
             arguments: """
@@ -35,7 +38,7 @@ internal struct DuckDuckGoSearchStrategyTests {
         )
 
         // When
-        let response: ToolResponse = strategy.execute(request: request)
+        let response: ToolResponse = await strategy.execute(request: request)
 
         // Then
         #expect(response.requestId == request.id)
@@ -46,9 +49,12 @@ internal struct DuckDuckGoSearchStrategyTests {
     }
 
     @Test("DuckDuckGoSearchStrategy handles missing query")
-    func testMissingQuery() {
+    func testMissingQuery() async {
         // Given
-        let strategy: DuckDuckGoSearchStrategy = DuckDuckGoSearchStrategy()
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
+        let strategy: DuckDuckGoSearchStrategy = DuckDuckGoSearchStrategy(searchEngine: searchEngine)
         let request: ToolRequest = ToolRequest(
             name: "duckduckgo_search",
             arguments: "{}",
@@ -56,7 +62,7 @@ internal struct DuckDuckGoSearchStrategyTests {
         )
 
         // When
-        let response: ToolResponse = strategy.execute(request: request)
+        let response: ToolResponse = await strategy.execute(request: request)
 
         // Then
         #expect(response.error != nil)
@@ -64,9 +70,12 @@ internal struct DuckDuckGoSearchStrategyTests {
     }
 
     @Test("DuckDuckGoSearchStrategy supports instant answers")
-    func testInstantAnswers() {
+    func testInstantAnswers() async {
         // Given
-        let strategy: DuckDuckGoSearchStrategy = DuckDuckGoSearchStrategy()
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
+        let strategy: DuckDuckGoSearchStrategy = DuckDuckGoSearchStrategy(searchEngine: searchEngine)
         let request: ToolRequest = ToolRequest(
             name: "duckduckgo_search",
             arguments: """
@@ -79,7 +88,7 @@ internal struct DuckDuckGoSearchStrategyTests {
         )
 
         // When
-        let response: ToolResponse = strategy.execute(request: request)
+        let response: ToolResponse = await strategy.execute(request: request)
 
         // Then
         #expect(response.error == nil)
@@ -87,9 +96,12 @@ internal struct DuckDuckGoSearchStrategyTests {
     }
 
     @Test("DuckDuckGoSearchStrategy respects no_redirect option")
-    func testNoRedirectOption() {
+    func testNoRedirectOption() async {
         // Given
-        let strategy: DuckDuckGoSearchStrategy = DuckDuckGoSearchStrategy()
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
+        let strategy: DuckDuckGoSearchStrategy = DuckDuckGoSearchStrategy(searchEngine: searchEngine)
         let request: ToolRequest = ToolRequest(
             name: "duckduckgo_search",
             arguments: """
@@ -102,7 +114,7 @@ internal struct DuckDuckGoSearchStrategyTests {
         )
 
         // When
-        let response: ToolResponse = strategy.execute(request: request)
+        let response: ToolResponse = await strategy.execute(request: request)
 
         // Then
         #expect(response.error == nil)

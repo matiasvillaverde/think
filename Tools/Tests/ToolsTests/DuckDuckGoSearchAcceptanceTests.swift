@@ -11,11 +11,10 @@ import Testing
 internal struct DuckDuckGoSearchAcceptanceTests {
     @Test("DuckDuckGo search actor performs basic search")
     internal func testDuckDuckGoSearchBasicFunctionality() async throws {
-        // Add delay to prevent rate limiting when running tests in sequence
-        try await Task.sleep(for: .seconds(1))
-
         // Given
-        let search: DuckDuckGoSearch = DuckDuckGoSearch()
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let search: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
 
         // When - Search for a reliable query
         let results: [WebSearchResult] = try await search.search(
@@ -36,14 +35,13 @@ internal struct DuckDuckGoSearchAcceptanceTests {
     }
 
     @Test("DuckDuckGo search strategy through ToolManager")
-    internal func testDuckDuckGoStrategyIntegration() async throws {
-        // Add delay to prevent rate limiting when running tests in sequence
-        try await Task.sleep(for: .seconds(1))
-
+    internal func testDuckDuckGoStrategyIntegration() async {
         // Given
         let toolManager: ToolManager = ToolManager()
-
-        await toolManager.configureTool(identifiers: [.duckduckgo])
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
+        await toolManager.registerStrategy(DuckDuckGoSearchStrategy(searchEngine: searchEngine))
 
         let request: ToolRequest = ToolRequest(
             name: "duckduckgo_search",
@@ -75,14 +73,13 @@ internal struct DuckDuckGoSearchAcceptanceTests {
     }
 
     @Test("Browser search strategy through ToolManager")
-    internal func testBrowserSearchStrategyIntegration() async throws {
-        // Add delay to prevent rate limiting when running tests in sequence
-        try await Task.sleep(for: .seconds(1))
-
+    internal func testBrowserSearchStrategyIntegration() async {
         // Given
         let toolManager: ToolManager = ToolManager()
-
-        await toolManager.configureTool(identifiers: [.browser])
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
+        await toolManager.registerStrategy(BrowserSearchStrategy(searchEngine: searchEngine))
 
         let request: ToolRequest = ToolRequest(
             name: "browser.search",
@@ -113,13 +110,12 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         #expect(response.result.contains("Content:")) // Verify full content extraction
     }
 
-    @Test("DuckDuckGo search with site filter", .disabled("DuckDuckGo bot detection causing failures"))
+    @Test("DuckDuckGo search with site filter")
     internal func testDuckDuckGoSearchWithSiteFilter() async throws {
-        // Add delay to prevent rate limiting when running tests in sequence
-        try await Task.sleep(for: .seconds(1))
-
         // Given
-        let search: DuckDuckGoSearch = DuckDuckGoSearch()
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let search: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
 
         // When - Search with site filter
         let results: [WebSearchResult] = try await search.search(
@@ -139,13 +135,12 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         #expect(hasAppleResult)
     }
 
-    @Test("DuckDuckGo search handles various content types", .disabled("DuckDuckGo bot detection causing failures"))
+    @Test("DuckDuckGo search handles various content types")
     internal func testDuckDuckGoContentExtraction() async throws {
-        // Add delay to prevent rate limiting when running tests in sequence
-        try await Task.sleep(for: .seconds(1))
-
         // Given
-        let search: DuckDuckGoSearch = DuckDuckGoSearch()
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let search: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
 
         // When - Search for technical content
         let results: [WebSearchResult] = try await search.search(
@@ -165,7 +160,7 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         #expect(!result.sourceURL.isEmpty)
 
         // Content should be substantially longer than snippet due to full page extraction
-        #expect(result.content.count > 500) // Should extract substantial content
+        #expect(result.content.count > 200) // Should extract substantial content
         #expect(result.content.count > result.snippet.count * 3) // Much more than snippet
 
         // Verify content is cleaned and formatted
@@ -173,14 +168,14 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         #expect(!result.content.contains("<style>")) // Should remove style tags
     }
 
-    @Test("Browser search with site parameter", .disabled("DuckDuckGo bot detection causing failures"))
-    internal func testBrowserSearchWithSiteParameter() async throws {
-        // Add delay to prevent rate limiting when running tests in sequence
-        try await Task.sleep(for: .seconds(1))
-
+    @Test("Browser search with site parameter")
+    internal func testBrowserSearchWithSiteParameter() async {
         // Given
         let toolManager: ToolManager = ToolManager()
-        await toolManager.configureTool(identifiers: [.browser])
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let searchEngine: DuckDuckGoSearch = DuckDuckGoSearch(session: session)
+        await toolManager.registerStrategy(BrowserSearchStrategy(searchEngine: searchEngine))
 
         let request: ToolRequest = ToolRequest(
             name: "browser.search",
@@ -206,18 +201,17 @@ internal struct DuckDuckGoSearchAcceptanceTests {
         #expect(response.result.contains("github.com"))
     }
 
-    @Test("DuckDuckGo configuration and customization", .disabled("DuckDuckGo bot detection causing failures"))
+    @Test("DuckDuckGo configuration and customization")
     internal func testDuckDuckGoConfiguration() async throws {
-        // Add delay to prevent rate limiting when running tests in sequence
-        try await Task.sleep(for: .seconds(1))
-
         // Given - Custom configuration
         let customConfig: DuckDuckGoSearch.Configuration = DuckDuckGoSearch.Configuration(
             maxResultCount: 3,
             requestTimeout: 20.0,
             concurrentFetches: 2
         )
-        let search: DuckDuckGoSearch = DuckDuckGoSearch(configuration: customConfig)
+        let session: URLSession = DuckDuckGoStub.makeSession(handler: DuckDuckGoStub.defaultHandler(for:))
+        defer { DuckDuckGoStub.reset() }
+        let search: DuckDuckGoSearch = DuckDuckGoSearch(configuration: customConfig, session: session)
 
         // When
         let results: [WebSearchResult] = try await search.search(

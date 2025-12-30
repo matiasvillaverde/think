@@ -118,14 +118,18 @@ internal final actor DuckDuckGoSearch {
 
     /// Initialize the search service with custom configuration
     /// - Parameter configuration: Service configuration options
-    init(configuration: Configuration = Configuration()) {
-        let sessionConfig: URLSessionConfiguration = URLSessionConfiguration.default
-        sessionConfig.timeoutIntervalForRequest = configuration.requestTimeout
-        let resourceTimeoutMultiplier: Double = 2.0
-        sessionConfig.timeoutIntervalForResource =
-            configuration.requestTimeout * resourceTimeoutMultiplier
+    init(configuration: Configuration = Configuration(), session: URLSession? = nil) {
+        if let session {
+            self.session = session
+        } else {
+            let sessionConfig: URLSessionConfiguration = URLSessionConfiguration.default
+            sessionConfig.timeoutIntervalForRequest = configuration.requestTimeout
+            let resourceTimeoutMultiplier: Double = 2.0
+            sessionConfig.timeoutIntervalForResource =
+                configuration.requestTimeout * resourceTimeoutMultiplier
 
-        self.session = URLSession(configuration: sessionConfig)
+            self.session = URLSession(configuration: sessionConfig)
+        }
         self.config = configuration
     }
 
