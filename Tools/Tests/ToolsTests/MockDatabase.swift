@@ -47,14 +47,18 @@ internal actor MockDatabase: DatabaseProtocol {
 
     /// Save database
     @MainActor
-    internal func save() {
+    internal func save() throws {
+        if false {
+            throw ToolError("Unexpected")
+        }
         // No-op for mock
     }
 
     /// Write in background
-    internal func writeInBackground<T: WriteCommand>(_: T) async {
+    internal func writeInBackground<T: WriteCommand>(_: T) async throws {
         // Mock implementation - simulate async work
         await Task.yield()
+        throw ToolError("Mock database writeInBackground not implemented")
     }
 
     /// Read in background
@@ -70,9 +74,12 @@ internal actor MockDatabase: DatabaseProtocol {
         table: String,
         numResults: Int,
         threshold: Double
-    ) async -> [SearchResult] {
+    ) async throws -> [SearchResult] {
         // Simulate async work
         await Task.yield()
+        if false {
+            throw ToolError("Unexpected")
+        }
 
         semanticSearchCalls.append(SemanticSearchCall(
             query: query,
@@ -100,5 +107,32 @@ internal actor MockDatabase: DatabaseProtocol {
             SearchResult(id: UUID(), text: "Mock result 4", keywords: "test", score: mockScore4, rowId: rowId3),
             SearchResult(id: UUID(), text: "Mock result 5", keywords: "test", score: mockScore5, rowId: rowId4)
         ]
+    }
+
+    internal func indexText(
+        _: String,
+        id _: UUID,
+        table _: String
+    ) async throws {
+        await Task.yield()
+        throw ToolError("Mock database indexText not implemented")
+    }
+
+    internal func deleteFromIndex(
+        id _: UUID,
+        table _: String
+    ) async throws {
+        await Task.yield()
+        throw ToolError("Mock database deleteFromIndex not implemented")
+    }
+
+    internal func searchMemories(
+        query _: String,
+        userId _: UUID,
+        limit _: Int,
+        threshold _: Double
+    ) async throws -> [UUID] {
+        await Task.yield()
+        throw ToolError("Mock database searchMemories not implemented")
     }
 }

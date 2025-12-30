@@ -3,8 +3,31 @@ import Foundation
 import Testing
 @testable import Tools
 
+private actor CaptureStore {
+    private var request: MemoryWriteRequest?
+
+    func set(_ request: MemoryWriteRequest) {
+        self.request = request
+    }
+
+    func get() -> MemoryWriteRequest? {
+        request
+    }
+}
+
 @Suite("MemoryStrategy Tests")
 internal struct MemoryStrategyTests {
+    private actor MemoryTypeCapture {
+        private var value: MemoryType?
+
+        func set(_ newValue: MemoryType?) {
+            value = newValue
+        }
+
+        func get() -> MemoryType? {
+            value
+        }
+    }
     @Test("MemoryStrategy has correct tool definition")
     func testToolDefinition() {
         // Given
@@ -23,9 +46,9 @@ internal struct MemoryStrategyTests {
     @Test("MemoryStrategy writes long-term memory successfully")
     func testWriteLongTermMemory() async {
         // Given
-        var capturedRequest: MemoryWriteRequest?
+        let captureStore: CaptureStore = CaptureStore()
         let strategy: MemoryStrategy = MemoryStrategy { request in
-            capturedRequest = request
+            await captureStore.set(request)
             return .success(UUID())
         }
         let request: ToolRequest = ToolRequest(
@@ -46,6 +69,7 @@ internal struct MemoryStrategyTests {
         // Then
         #expect(response.error == nil)
         #expect(response.result.contains("saved successfully"))
+        let capturedRequest: MemoryWriteRequest? = await captureStore.get()
         #expect(capturedRequest != nil)
         #expect(capturedRequest?.type == .longTerm)
         #expect(capturedRequest?.content == "User prefers dark mode")
@@ -55,9 +79,9 @@ internal struct MemoryStrategyTests {
     @Test("MemoryStrategy writes daily memory successfully")
     func testWriteDailyMemory() async {
         // Given
-        var capturedRequest: MemoryWriteRequest?
+        let captureStore: CaptureStore = CaptureStore()
         let strategy: MemoryStrategy = MemoryStrategy { request in
-            capturedRequest = request
+            await captureStore.set(request)
             return .success(UUID())
         }
         let request: ToolRequest = ToolRequest(
@@ -76,6 +100,7 @@ internal struct MemoryStrategyTests {
 
         // Then
         #expect(response.error == nil)
+        let capturedRequest: MemoryWriteRequest? = await captureStore.get()
         #expect(capturedRequest?.type == .daily)
         #expect(capturedRequest?.content == "Discussed project requirements")
     }
@@ -219,9 +244,9 @@ internal struct MemoryStrategyTests {
     @Test("MemoryStrategy accepts alternative type formats")
     func testAlternativeTypeFormats() async {
         // Given - Test "long_term" variant
-        var capturedType: MemoryType?
+        let capturedType: MemoryTypeCapture = MemoryTypeCapture()
         let strategy: MemoryStrategy = MemoryStrategy { request in
-            capturedType = request.type
+            await capturedType.set(request.type)
             return .success(UUID())
         }
         let request: ToolRequest = ToolRequest(
@@ -240,7 +265,8 @@ internal struct MemoryStrategyTests {
 
         // Then
         #expect(response.error == nil)
-        #expect(capturedType == .longTerm)
+        let storedType: MemoryType? = await capturedType.get()
+        #expect(storedType == .longTerm)
     }
 
     @Test("MemoryStrategy response includes memory ID")
