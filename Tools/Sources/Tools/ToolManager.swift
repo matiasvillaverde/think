@@ -1,4 +1,5 @@
 import Abstractions
+import Database
 import Foundation
 import OSLog
 
@@ -8,10 +9,19 @@ public actor ToolManager: Tooling {
     private let logger: Logger = Logger(subsystem: "Tools", category: "ToolManager")
     private var configuredIdentifiers: Set<ToolIdentifier> = []
     private let executor: ToolExecutor = ToolExecutor()
+    private let subAgentOrchestrator: SubAgentOrchestrating?
+    private let workspaceRoot: URL?
+    private let database: DatabaseProtocol?
 
     /// Initialize a new ToolManager
-    public init() {
-        // Initialize with empty executor
+    public init(
+        subAgentOrchestrator: SubAgentOrchestrating? = nil,
+        workspaceRoot: URL? = nil,
+        database: DatabaseProtocol? = nil
+    ) {
+        self.subAgentOrchestrator = subAgentOrchestrator
+        self.workspaceRoot = workspaceRoot
+        self.database = database
     }
 
     /// Register a tool strategy
@@ -35,37 +45,95 @@ public actor ToolManager: Tooling {
 
         // Register strategies for each identifier
         for identifier in identifiers {
-            switch identifier {
-            case .browser:
-                await executor.registerStrategy(BrowserSearchStrategy())
-
-            case .python:
-                await executor.registerStrategy(PythonStrategy())
-
-            case .functions:
-                await executor.registerStrategy(FunctionsStrategy())
-
-            case .healthKit:
-                await executor.registerStrategy(HealthKitStrategy())
-
-            case .weather:
-                await executor.registerStrategy(WeatherStrategy())
-
-            case .duckduckgo:
-                await executor.registerStrategy(DuckDuckGoSearchStrategy())
-
-            case .braveSearch:
-                await executor.registerStrategy(BraveSearchStrategy())
-
-            case .reasoning, .imageGeneration, .memory:
-                // These tools are either handled by the LLM itself (reasoning),
-                // by separate modules (imageGeneration), or require special
-                // configuration (memory via configureMemory method)
-                break
-            }
+            await registerStrategy(for: identifier)
         }
 
         logger.notice("Tool configuration completed successfully with \(identifiers.count) tools")
+    }
+
+    private func registerStrategy(for identifier: ToolIdentifier) async {
+        if let strategy = basicStrategy(for: identifier) {
+            await executor.registerStrategy(strategy)
+            return
+        }
+
+        if let strategy = databaseStrategy(for: identifier) {
+            await executor.registerStrategy(strategy)
+            return
+        }
+
+        switch identifier {
+        case .subAgent:
+            if let orchestrator = subAgentOrchestrator {
+                await executor.registerStrategy(SubAgentStrategy(orchestrator: orchestrator))
+            } else {
+                logger.warning("Sub-agent tool requested but orchestrator not configured")
+            }
+
+        case .workspace:
+            if let workspaceRoot {
+                await executor.registerStrategy(
+                    WorkspaceFileStrategy(rootURL: workspaceRoot)
+                )
+            } else {
+                logger.warning("Workspace tool requested but root not configured")
+            }
+
+        case .reasoning, .imageGeneration, .memory, .cron, .canvas, .nodes:
+            break
+
+        case .browser, .python, .functions, .healthKit, .weather, .duckduckgo, .braveSearch:
+            break
+        }
+    }
+
+    private func basicStrategy(for identifier: ToolIdentifier) -> ToolStrategy? {
+        switch identifier {
+        case .browser:
+            return BrowserSearchStrategy()
+
+        case .python:
+            return PythonStrategy()
+
+        case .functions:
+            return FunctionsStrategy()
+
+        case .healthKit:
+            return HealthKitStrategy()
+
+        case .weather:
+            return WeatherStrategy()
+
+        case .duckduckgo:
+            return DuckDuckGoSearchStrategy()
+
+        case .braveSearch:
+            return BraveSearchStrategy()
+
+        case .subAgent, .workspace, .reasoning, .imageGeneration, .memory:
+            return nil
+        case .cron, .canvas, .nodes:
+            return nil
+        }
+    }
+
+    private func databaseStrategy(for identifier: ToolIdentifier) -> ToolStrategy? {
+        guard let database else {
+            logger.warning("Tool \(identifier.rawValue) requires database but none configured")
+            return nil
+        }
+
+        switch identifier {
+        case .cron:
+            return CronStrategy(database: database)
+        case .canvas:
+            return CanvasStrategy(database: database)
+        case .nodes:
+            return NodesStrategy(database: database)
+        case .browser, .python, .functions, .healthKit, .weather, .duckduckgo, .braveSearch,
+            .subAgent, .workspace, .reasoning, .imageGeneration, .memory:
+            return nil
+        }
     }
 
     public func clearTools() async {
@@ -97,14 +165,60 @@ public actor ToolManager: Tooling {
         logger.info("Executing \(toolRequests.count) tool request(s)")
         logger.debug("Tool requests: \(toolRequests.map(\.name).joined(separator: ", "))")
 
+        var allowedRequests: [ToolRequest] = []
+        var blockedResponses: [UUID: ToolResponse] = [:]
+        for request in toolRequests {
+            if isAllowed(request) {
+                allowedRequests.append(request)
+            } else {
+                let response: ToolResponse = ToolResponse(
+                    requestId: request.id,
+                    toolName: request.name,
+                    result: "",
+                    error: "Tool blocked by policy: \(request.name)"
+                )
+                blockedResponses[request.id] = response
+            }
+        }
+
+        if !blockedResponses.isEmpty {
+            logger.notice("Blocked \(blockedResponses.count) tool(s) due to policy")
+        }
+
         // Delegate to executor for batch execution
-        let responses: [ToolResponse] = await executor.executeBatch(requests: toolRequests)
+        let allowedResponses: [ToolResponse] = await executor.executeBatch(
+            requests: allowedRequests
+        )
+        var allowedById: [UUID: ToolResponse] = [:]
+        for response in allowedResponses {
+            allowedById[response.requestId] = response
+        }
+
+        var responses: [ToolResponse] = []
+        responses.reserveCapacity(toolRequests.count)
+        for request in toolRequests {
+            if let response = allowedById[request.id] {
+                responses.append(response)
+            } else if let blocked = blockedResponses[request.id] {
+                responses.append(blocked)
+            }
+        }
 
         let errorCount: Int = responses.count { $0.error != nil }
         let successCount: Int = responses.count - errorCount
         logger.notice("Tool execution completed: \(successCount) successful, \(errorCount) failed")
 
         return responses
+    }
+
+    private func isAllowed(_ request: ToolRequest) -> Bool {
+        guard let context = request.context, context.hasToolPolicy else {
+            return true
+        }
+        if context.allowedToolNames.contains(request.name) {
+            return true
+        }
+        return ToolIdentifier.from(toolName: request.name) == nil
     }
 
     // MARK: - Semantic Search (Special Case)

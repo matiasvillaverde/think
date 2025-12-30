@@ -156,4 +156,56 @@ internal struct ToolManagerTests {
         #expect(responses.contains { $0.requestId == request1.id })
         #expect(responses.contains { $0.requestId == request2.id })
     }
+
+    @Test("Blocked tool request returns policy error")
+    func testBlockedToolRequestReturnsPolicyError() async {
+        // Given
+        let toolManager: ToolManager = ToolManager()
+        await toolManager.configureTool(identifiers: [.functions, .python])
+
+        let context: ToolRequestContext = ToolRequestContext(
+            chatId: nil,
+            messageId: nil,
+            hasToolPolicy: true,
+            allowedToolNames: ["functions"]
+        )
+        let request: ToolRequest = ToolRequest(
+            name: "python_exec",
+            arguments: "{\"code\": \"print('hi')\"}",
+            context: context
+        )
+
+        // When
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
+
+        // Then
+        #expect(responses.count == 1)
+        #expect(responses.first?.error?.contains("blocked by policy") == true)
+    }
+
+    @Test("Allowed tool request executes normally with policy")
+    func testAllowedToolRequestExecutesWithPolicy() async {
+        // Given
+        let toolManager: ToolManager = ToolManager()
+        await toolManager.configureTool(identifiers: [.functions])
+
+        let context: ToolRequestContext = ToolRequestContext(
+            chatId: nil,
+            messageId: nil,
+            hasToolPolicy: true,
+            allowedToolNames: ["functions"]
+        )
+        let request: ToolRequest = ToolRequest(
+            name: "functions",
+            arguments: "{\"function_name\": \"get_timestamp\"}",
+            context: context
+        )
+
+        // When
+        let responses: [ToolResponse] = await toolManager.executeTools(toolRequests: [request])
+
+        // Then
+        #expect(responses.count == 1)
+        #expect(responses.first?.error == nil)
+    }
 }
