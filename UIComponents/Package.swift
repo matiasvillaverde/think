@@ -25,7 +25,7 @@ let package = Package(
         .package(url: "https://github.com/raspu/Highlightr/", from: "2.3.0"),
         .package(url: "https://github.com/vibeprogrammer/LaTeXSwiftUI", branch: "main"),
         .package(url: "https://github.com/CSolanaM/SkeletonUI.git", branch: "master"),
-        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.6.2")
+        .package(path: "../ThirdParty/Kingfisher")
     ],
     targets: [
         .target(
