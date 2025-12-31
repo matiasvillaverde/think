@@ -101,39 +101,10 @@ internal struct ToolSelectionSheet: View {
     }
 
     private func getModelForTool(_ tool: ToolIdentifier) -> Model {
-        switch tool {
-        case .imageGeneration:
-            chat.imageModel
-
-        case .reasoning:
-            // Use the unified language model for reasoning
-            chat.languageModel
-
-        case .browser:
-            chat.languageModel
-
-        case .python:
-            chat.languageModel
-
-        case .functions:
-            chat.languageModel
-
-        case .healthKit:
-            chat.languageModel
-
-        case .weather:
-            chat.languageModel
-
-        case .duckduckgo:
-            chat.languageModel
-
-        case .braveSearch:
-            chat.languageModel
-
-        case .memory:
-            // Memory tool uses the language model
-            chat.languageModel
+        if tool == .imageGeneration {
+            return chat.imageModel
         }
+        return chat.languageModel
     }
 }
 

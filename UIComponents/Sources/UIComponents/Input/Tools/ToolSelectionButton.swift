@@ -15,6 +15,20 @@ internal struct ToolSelectionButton: View {
     @Environment(\.modelActionsViewModel)
     private var modelActions: ModelDownloaderViewModeling
 
+    private static let toolActionMap: [ToolIdentifier: Action] = [
+        .imageGeneration: .imageGeneration([.imageGeneration]),
+        .reasoning: .textGeneration([.reasoning]),
+        .browser: .textGeneration([.browser]),
+        .python: .textGeneration([.python]),
+        .functions: .textGeneration([.functions]),
+        .healthKit: .textGeneration([.healthKit]),
+        .weather: .textGeneration([.weather]),
+        .duckduckgo: .textGeneration([.duckduckgo]),
+        .braveSearch: .textGeneration([.braveSearch]),
+        .subAgent: .textGeneration([.subAgent]),
+        .workspace: .textGeneration([.workspace])
+    ]
+
     var body: some View {
         Button {
             showingToolsSheet = true
@@ -98,40 +112,16 @@ internal struct ToolSelectionButton: View {
 
     private func selectTool(_ tool: ToolIdentifier) {
         withAnimation(.easeInOut(duration: ToolConstants.animationDuration)) {
-            switch tool {
-            case .imageGeneration:
-                selectedAction = .imageGeneration([.imageGeneration])
-
-            case .reasoning:
-                selectedAction = .textGeneration([.reasoning])
-
-            case .browser:
-                selectedAction = .textGeneration([.browser])
-
-            case .python:
-                selectedAction = .textGeneration([.python])
-
-            case .functions:
-                selectedAction = .textGeneration([.functions])
-
-            case .healthKit:
-                selectedAction = .textGeneration([.healthKit])
-
-            case .weather:
-                selectedAction = .textGeneration([.weather])
-
-            case .duckduckgo:
-                selectedAction = .textGeneration([.duckduckgo])
-
-            case .braveSearch:
-                selectedAction = .textGeneration([.braveSearch])
-
-            case .memory:
-                // Memory is an internal agent tool, not user-selectable
-                break
+            guard let action = action(for: tool) else {
+                return
             }
+            selectedAction = action
         }
         showingToolsSheet = false
+    }
+
+    private func action(for tool: ToolIdentifier) -> Action? {
+        Self.toolActionMap[tool]
     }
 
     private func handleToolConfirmationNeeded(_ tool: ToolIdentifier, _ model: Model) {

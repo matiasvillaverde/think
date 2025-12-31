@@ -84,6 +84,12 @@ internal struct ToolChip: View {
 
         case .memory:
             "brain.head.profile"
+
+        case .subAgent:
+            "person.2"
+
+        case .workspace:
+            "folder"
         }
     }
 }
