@@ -10,6 +10,7 @@ import UIKit
 public final actor ViewModelGenerator: ViewModelGenerating {
     private let orchestrator: AgentOrchestrating
     private let database: DatabaseProtocol
+    private let eventAdapter: AgentEventStreamAdapter
 
     public init(
         orchestrator: AgentOrchestrating,
@@ -17,11 +18,16 @@ public final actor ViewModelGenerator: ViewModelGenerating {
     ) {
         self.orchestrator = orchestrator
         self.database = database
+        self.eventAdapter = AgentEventStreamAdapter(
+            orchestrator: orchestrator,
+            database: database
+        )
     }
 
     public func load(chatId: UUID) async {
         do {
             try await orchestrator.load(chatId: chatId)
+            await eventAdapter.start()
         } catch {
             await notify(message: error.localizedDescription, type: .error)
         }
@@ -30,6 +36,7 @@ public final actor ViewModelGenerator: ViewModelGenerating {
     public func unload() async {
         do {
             try await orchestrator.unload()
+            await eventAdapter.stop()
             await notify(message: String(localized: "Unloaded models successfully", bundle: .module), type: .success)
         } catch {
             await notify(message: error.localizedDescription, type: .error)
