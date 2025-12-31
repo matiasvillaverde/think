@@ -27,6 +27,18 @@ extension SettingsView {
         .accessibility(label: Text("Models tab"))
     }
 
+    var pluginsTabLabel: some View {
+        Label(
+            String(
+                localized: "Plugins",
+                bundle: .module,
+                comment: "Tab label for Plugins"
+            ),
+            systemImage: "puzzlepiece.extension"
+        )
+        .accessibility(label: Text("Plugins tab"))
+    }
+
     var legalTabLabel: some View {
         Label(
             String(
@@ -67,5 +79,11 @@ extension SettingsView {
 
     var modelsView: some View {
         APIKeySettingsView()
+    }
+
+    // MARK: - Plugins View
+
+    var pluginsView: some View {
+        PluginApprovalSettingsView()
     }
 }

@@ -61,6 +61,12 @@ public struct SettingsView: View {
                     modelsTabLabel
                 }
 
+            // Plugins Tab
+            pluginsView
+                .tabItem {
+                    pluginsTabLabel
+                }
+
             // Analytics Tab
             analyticsView
                 .tabItem {
