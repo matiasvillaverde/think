@@ -3,6 +3,7 @@ import AgentOrchestrator
 import AudioGenerator
 import ContextBuilder
 import Database
+import Foundation
 import ImageGenerator
 import LLamaCPP
 import MLXSession
@@ -12,6 +13,7 @@ import SwiftData
 import SwiftUI
 import UIComponents
 import ViewModels
+import Tools
 
 /// Providers namespace for SwiftUI view modifiers
 public enum Providers {}
@@ -74,6 +76,31 @@ public struct ChatViewModelProvider: ViewModifier {
 extension View {
     public func withChatViewModel() -> some View {
         modifier(ChatViewModelProvider())
+    }
+}
+
+// MARK: - Tool Validator Provider
+
+public struct ToolValidatorProvider: ViewModifier {
+    @Environment(\.database)
+    private var database: DatabaseProtocol
+
+    public init() {
+        // Initialize provider
+    }
+
+    public func body(content: Content) -> some View {
+        content
+            .environment(
+                \.toolValidator,
+                ToolValidator(database: database)
+            )
+    }
+}
+
+extension View {
+    public func withToolValidator() -> some View {
+        modifier(ToolValidatorProvider())
     }
 }
 
