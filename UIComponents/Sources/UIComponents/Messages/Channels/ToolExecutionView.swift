@@ -7,7 +7,7 @@ import SwiftUI
 internal struct ToolExecutionView: View {
     // MARK: - Constants
 
-    private enum Constants {
+    enum Constants {
         static let cornerRadius: CGFloat = 8
         static let padding: CGFloat = 12
         static let spacing: CGFloat = 8
@@ -30,6 +30,7 @@ internal struct ToolExecutionView: View {
         static let resultSpacing: CGFloat = 4
         static let errorSpacing: CGFloat = 6
         static let iconSizeReduction: CGFloat = 2
+        static let statusLineLimit: Int = 2
     }
 
     // MARK: - Properties
@@ -40,7 +41,7 @@ internal struct ToolExecutionView: View {
 
     // MARK: - Computed Properties
 
-    private var statusColor: Color {
+    var statusColor: Color {
         switch toolExecution.state {
         case .parsing, .pending:
             return .gray
@@ -56,7 +57,7 @@ internal struct ToolExecutionView: View {
         }
     }
 
-    private var statusIcon: String {
+    var statusIcon: String {
         switch toolExecution.state {
         case .parsing:
             return "ellipsis.circle"
@@ -75,7 +76,7 @@ internal struct ToolExecutionView: View {
         }
     }
 
-    private var statusText: String {
+    var statusText: String {
         switch toolExecution.state {
         case .parsing:
             return "Parsing"
@@ -94,14 +95,18 @@ internal struct ToolExecutionView: View {
         }
     }
 
-    private var hasContent: Bool {
+    var hasContent: Bool {
         toolExecution.response != nil
         || toolExecution.errorMessage != nil
         || (toolExecution.sources?.isEmpty == false)
     }
 
-    private var toolDisplayName: String {
+    var toolDisplayName: String {
         toolExecution.request?.displayName ?? toolExecution.toolName
+    }
+
+    var isExpandedValue: Bool {
+        isExpanded
     }
 
     // MARK: - Body
@@ -109,6 +114,13 @@ internal struct ToolExecutionView: View {
     internal var body: some View {
         VStack(alignment: .leading, spacing: Constants.spacing) {
             toolHeader
+
+            if shouldShowStatusMessage {
+                Text(statusMessage)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(Constants.statusLineLimit)
+            }
 
             if isExpanded,
                 hasContent {
@@ -143,61 +155,6 @@ internal struct ToolExecutionView: View {
 
     // MARK: - Subviews
 
-    private var toolHeader: some View {
-        HStack(spacing: Constants.headerSpacing) {
-            // Status icon
-            Image(systemName: statusIcon)
-                .font(.system(size: Constants.iconSize, weight: .medium))
-                .foregroundColor(statusColor)
-                .opacity(Constants.iconOpacity)
-                .accessibilityHidden(true)
-
-            // Tool name
-            Text(toolDisplayName)
-                .font(.system(.subheadline, design: .rounded))
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-
-            // Status text
-            Text("·")
-                .foregroundColor(.secondary.opacity(Constants.secondaryOpacity))
-
-            Text(statusText)
-                .font(.caption)
-                .foregroundColor(statusColor)
-
-            Spacer()
-
-            // Progress or expand indicator
-            if toolExecution.state == .executing {
-                ProgressView()
-                    .scaleEffect(Constants.progressScale)
-                    .accessibilityLabel("Executing")
-            } else if hasContent {
-                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                    .font(.system(size: Constants.chevronSize, weight: .medium))
-                    .foregroundColor(.secondary)
-                    .accessibilityHidden(true)
-            }
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            if hasContent {
-                withAnimation(
-                    .spring(
-                        response: Constants.animationResponse,
-                        dampingFraction: Constants.animationDamping
-                    )
-                ) {
-                    isExpanded.toggle()
-                }
-            }
-        }
-        .accessibilityAddTraits(.isButton)
-        .accessibilityLabel("\(toolDisplayName), \(statusText)")
-        .accessibilityHint(hasContent ? "Tap to \(isExpanded ? "collapse" : "expand") details" : "")
-    }
-
     @ViewBuilder
     private func toolResultView(_ response: ToolResponse) -> some View {
         VStack(alignment: .leading, spacing: Constants.resultSpacing) {
@@ -230,6 +187,14 @@ internal struct ToolExecutionView: View {
                 .buttonStyle(.plain)
             }
         }
+    }
+
+    private var statusMessage: String {
+        toolExecution.statusMessage ?? ""
+    }
+
+    private var shouldShowStatusMessage: Bool {
+        toolExecution.state == .executing && toolExecution.statusMessage?.isEmpty == false
     }
 
     @ViewBuilder
@@ -276,5 +241,9 @@ internal struct ToolExecutionView: View {
     private var borderOverlay: some View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
             .stroke(statusColor.opacity(Constants.borderOpacity), lineWidth: Constants.borderWidth)
+    }
+
+    func toggleExpanded() {
+        isExpanded.toggle()
     }
 }
