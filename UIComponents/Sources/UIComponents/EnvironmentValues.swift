@@ -135,6 +135,10 @@ extension EnvironmentValues {
     /// ViewModel to ask for reviews
     @Entry public var reviewPromptViewModel: ReviewPromptManaging = PreviewReviewViewModel()
 
+    /// ViewModel for plugin approval management
+    @Entry public var pluginApprovalViewModel: PluginApprovalViewModeling =
+        PreviewPluginApprovalViewModel()
+
     /// ViewModel for generating audio
     @Entry public var audioViewModel: AudioViewModeling = PreviewAudioGenerator()
 

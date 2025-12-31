@@ -147,3 +147,31 @@ internal final actor PreviewAudioGenerator: AudioViewModeling {
 
     func stopListening() { logger.warning("Default view model - stopListening") }
 }
+
+internal final actor PreviewPluginApprovalViewModel: PluginApprovalViewModeling {
+    private let logger: Logger = .init(
+        subsystem: Bundle.main.bundleIdentifier ?? "",
+        category: "UI"
+    )
+
+    private var internalPlugins: [PluginCatalogEntry] = []
+
+    var plugins: [PluginCatalogEntry] { internalPlugins }
+    var isLoading: Bool { false }
+    var errorMessage: String? { nil }
+
+    func loadPlugins() async {
+        await Task.yield()
+        logger.warning("Default view model - loadPlugins called")
+    }
+
+    func approve(pluginId: String) async {
+        await Task.yield()
+        logger.warning("Default view model - approve called for \(pluginId)")
+    }
+
+    func deny(pluginId: String) async {
+        await Task.yield()
+        logger.warning("Default view model - deny called for \(pluginId)")
+    }
+}
