@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import AbstractionsTestUtilities
 @testable import Abstractions
 @testable import AgentOrchestrator
 @testable import ContextBuilder
@@ -21,7 +22,7 @@ import Testing
 /// 1. First Install User Journey - Complete onboarding through model selection
 /// 2. Model Discovery and Selection - Browse and save community models
 /// 3. Basic ViewModel Wiring - Verify all ViewModels can be created with real dependencies
-@Suite("ViewModel Integration Tests", .serialized, .tags(.acceptance), .disabled())
+@Suite("ViewModel Integration Tests", .serialized, .tags(.acceptance))
 internal struct ViewModelIntegrationTests {
     // MARK: - Test Infrastructure
 
@@ -57,27 +58,38 @@ internal struct ViewModelIntegrationTests {
 
     /// Creates a fresh in-memory database for testing
     /// - Returns: A configured database instance with in-memory storage
-    private func createTestDatabase() -> DatabaseProtocol {
+    private func createTestDatabase() throws -> DatabaseProtocol {
         print("Creating fresh in-memory database for testing")
-        let config: DatabaseConfiguration = DatabaseConfiguration.inMemoryOnly
-        let database: DatabaseProtocol = Database.instance(configuration: config)
+        let config: DatabaseConfiguration = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+        let database: DatabaseProtocol = try Database.new(configuration: config)
         print("Database created successfully")
         return database
     }
 
-    /// Creates all ViewModels with real dependencies
+    /// Creates all ViewModels with deterministic test dependencies
     /// - Parameter database: The database instance to use
     /// - Returns: A struct containing all configured ViewModels
+    @MainActor
     private func createAllViewModels(
         database: DatabaseProtocol
     ) -> ViewModels {
-        print("🏭 Creating ViewModels with real dependencies")
+        print("🏭 Creating ViewModels with deterministic dependencies")
+
+        let mockCommunityExplorer: MockCommunityModelsExplorer = makeMockCommunityExplorer()
+        let mockModelDownloader: MockModelDownloader = MockModelDownloader()
+        let mockDeviceChecker: MockDeviceCompatibilityChecker = makeMockDeviceChecker()
+        let mockVRAMCalculator: MockVRAMCalculator = MockVRAMCalculator()
+        let mockOrchestrator: MockAgentOrchestrator = MockAgentOrchestrator()
 
         // Create ModelDownloader ViewModel
         let modelDownloader: ModelDownloaderViewModel = ModelDownloaderViewModel(
             database: database,
-            modelDownloader: ModelDownloader(),
-            communityExplorer: CommunityModelsExplorer()
+            modelDownloader: mockModelDownloader,
+            communityExplorer: mockCommunityExplorer
         )
         print("  ✓ ModelDownloaderViewModel created")
 
@@ -90,20 +102,15 @@ internal struct ViewModelIntegrationTests {
 
         // Create DiscoveryCarouselViewModel
         let discovery: DiscoveryCarouselViewModel = DiscoveryCarouselViewModel(
-            communityExplorer: CommunityModelsExplorer(),
-            deviceChecker: DeviceCompatibilityChecker(),
-            vramCalculator: VRAMCalculator()
+            communityExplorer: mockCommunityExplorer,
+            deviceChecker: mockDeviceChecker,
+            vramCalculator: mockVRAMCalculator
         )
         print("  ✓ DiscoveryCarouselViewModel created")
 
-        // Create ViewModelGenerator with all dependencies
+        // Create ViewModelGenerator with a mock orchestrator
         let generator: ViewModelGenerator = ViewModelGenerator(
-            orchestrator: AgentOrchestratorFactory.shared(
-                database: database,
-                mlxSession: MLXSessionFactory.create(),
-                ggufSession: LlamaCPPFactory.createSession(),
-                modelDownloader: ModelDownloader.shared
-            ),
+            orchestrator: mockOrchestrator,
             database: database
         )
         print("  ✓ ViewModelGenerator created")
@@ -120,17 +127,17 @@ internal struct ViewModelIntegrationTests {
     // MARK: - Test Cases
 
     @Test("First install flow - onboarding state transitions")
-    func testFirstInstallOnboardingFlow() async {
+    func testFirstInstallOnboardingFlow() async throws {
         print("\nTEST: First Install Onboarding Flow")
         print("======================================")
 
         // Step 1: Initialize fresh database
         print("\nStep 1: Initialize fresh database")
-        let database: DatabaseProtocol = createTestDatabase()
+        let database: DatabaseProtocol = try createTestDatabase()
 
         // Step 2: Create ViewModels
         print("\nStep 2: Create ViewModels")
-        let viewModels: ViewModels = createAllViewModels(database: database)
+        let viewModels: ViewModels = await createAllViewModels(database: database)
 
         // Step 3: Initialize app - should show onboarding
         print("\nStep 3: Initialize app and verify onboarding state")
@@ -169,14 +176,14 @@ internal struct ViewModelIntegrationTests {
     }
 
     @Test("Model discovery - find recommended models")
-    func testModelDiscovery() async {
+    func testModelDiscovery() async throws {
         print("\nTEST: Model Discovery")
         print("========================")
 
         // Step 1: Create database and ViewModels
         print("\nStep 1: Setup test environment")
-        let database: DatabaseProtocol = createTestDatabase()
-        let viewModels: ViewModels = createAllViewModels(database: database)
+        let database: DatabaseProtocol = try createTestDatabase()
+        let viewModels: ViewModels = await createAllViewModels(database: database)
 
         // Step 2: Discover recommended models
         print("\nStep 2: Discover recommended models")
@@ -219,8 +226,8 @@ internal struct ViewModelIntegrationTests {
 
         // Step 1: Setup
         print("\nStep 1: Setup test environment")
-        let database: DatabaseProtocol = createTestDatabase()
-        let viewModels: ViewModels = createAllViewModels(database: database)
+        let database: DatabaseProtocol = try createTestDatabase()
+        let viewModels: ViewModels = await createAllViewModels(database: database)
 
         // Initialize database
         await viewModels.app.initializeDatabase()
@@ -262,4 +269,65 @@ internal struct ViewModelIntegrationTests {
 
         print("Save model test passed!")
     }
+}
+
+@MainActor
+private func makeMockCommunityExplorer() -> MockCommunityModelsExplorer {
+    let mockCommunityExplorer: MockCommunityModelsExplorer = MockCommunityModelsExplorer()
+    let recommendedId: String = "mlx-community/Llama-3.2-1B-Instruct-4bit"
+    let discoveredModel: DiscoveredModel = DiscoveredModel(
+        id: recommendedId,
+        name: "Llama-3.2-1B-Instruct-4bit",
+        author: "mlx-community",
+        downloads: ViewModelIntegrationConstants.downloads,
+        likes: ViewModelIntegrationConstants.likes,
+        tags: ["text-generation", "mlx"],
+        lastModified: Date(),
+        files: [
+            ModelFile(path: "model.safetensors", size: ViewModelIntegrationConstants.modelSize),
+            ModelFile(path: "config.json", size: ViewModelIntegrationConstants.configSize)
+        ]
+    )
+    discoveredModel.detectedBackends = [SendableModel.Backend.mlx]
+    mockCommunityExplorer.discoverModelResponses[recommendedId] = discoveredModel
+
+    let sendableModel: SendableModel = SendableModel(
+        id: UUID(),
+        ramNeeded: ViewModelIntegrationConstants.ramNeeded,
+        modelType: .language,
+        location: recommendedId,
+        architecture: .llama,
+        backend: .mlx,
+        locationKind: .huggingFace
+    )
+    mockCommunityExplorer.prepareForDownloadResult = sendableModel
+
+    return mockCommunityExplorer
+}
+
+private func makeMockDeviceChecker() -> MockDeviceCompatibilityChecker {
+    let mockDeviceChecker: MockDeviceCompatibilityChecker = MockDeviceCompatibilityChecker()
+    mockDeviceChecker.memoryInfo = DeviceMemoryInfo(
+        totalMemory: ViewModelIntegrationConstants.fourGB,
+        availableMemory: ViewModelIntegrationConstants.fourGB,
+        usedMemory: ViewModelIntegrationConstants.zeroMemory,
+        platform: .macOS,
+        hasUnifiedMemory: true
+    )
+    return mockDeviceChecker
+}
+
+private enum ViewModelIntegrationConstants {
+    static let downloads: Int = 1_000
+    static let likes: Int = 100
+    static let modelSize: Int64 = 1_000_000_000
+    static let configSize: Int64 = 2_048
+    static let ramNeeded: UInt64 = 1_000_000_000
+    // Binary byte conversion constant for test memory sizing.
+    // swiftlint:disable:next no_magic_numbers
+    static let bytesPerGB: UInt64 = 1_024 * 1_024 * 1_024
+    // Test-only 4 GB memory baseline.
+    // swiftlint:disable:next no_magic_numbers
+    static let fourGB: UInt64 = 4 * bytesPerGB
+    static let zeroMemory: UInt64 = 0
 }
