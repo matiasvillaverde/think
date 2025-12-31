@@ -33,6 +33,8 @@ actor RemoteSession: LLMSession {
 
     /// Current model identifier (parsed from location)
     private var currentModelId: String?
+    /// Current context window size for metrics
+    private var currentContextWindowSize: Int?
 
     /// Creates a new remote session.
     ///
@@ -86,6 +88,7 @@ actor RemoteSession: LLMSession {
         currentLocation = location
         currentProvider = provider
         currentModelId = modelId
+        currentContextWindowSize = configuration.compute.contextSize
     }
 
     func stream(_ input: LLMInput) -> AsyncThrowingStream<LLMStreamChunk, Error> {
@@ -134,6 +137,7 @@ actor RemoteSession: LLMSession {
         await stopFlag.reset()
 
         // Stream response
+        var latestMetrics: ChunkMetrics?
         for try await data in httpClient.stream(request) {
             // Check for stop
             if await stopFlag.isStopped {
@@ -147,7 +151,11 @@ actor RemoteSession: LLMSession {
             for event in events {
                 // Check for done marker
                 if SSEParser.isDone(event.data) {
-                    continuation.yield(LLMStreamChunk(text: "", event: .finished))
+                    continuation.yield(LLMStreamChunk(
+                        text: "",
+                        event: .finished,
+                        metrics: latestMetrics
+                    ))
                     continuation.finish()
                     return
                 }
@@ -155,17 +163,24 @@ actor RemoteSession: LLMSession {
                 // Parse chunk
                 do {
                     let result = try provider.parseStreamChunk(event.data)
+                    let metrics = result.usage.map(buildMetrics)
+                    if let metrics {
+                        latestMetrics = metrics
+                    }
 
                     if !result.content.isEmpty {
                         continuation.yield(LLMStreamChunk(
                             text: result.content,
-                            event: .text
+                            event: .text,
+                            metrics: metrics
                         ))
                     }
 
                     if result.isDone {
-                        continuation.yield(LLMStreamChunk(text: "", event: .finished))
-                        continuation.finish()
+                        finishStreaming(
+                            continuation: continuation,
+                            metrics: metrics ?? latestMetrics
+                        )
                         return
                     }
                 } catch {
@@ -175,6 +190,18 @@ actor RemoteSession: LLMSession {
             }
         }
 
+        continuation.finish()
+    }
+
+    private func finishStreaming(
+        continuation: AsyncThrowingStream<LLMStreamChunk, Error>.Continuation,
+        metrics: ChunkMetrics?
+    ) {
+        continuation.yield(LLMStreamChunk(
+            text: "",
+            event: .finished,
+            metrics: metrics
+        ))
         continuation.finish()
     }
 
@@ -189,6 +216,7 @@ actor RemoteSession: LLMSession {
         currentLocation = nil
         currentProvider = nil
         currentModelId = nil
+        currentContextWindowSize = nil
     }
 }
 
@@ -208,5 +236,21 @@ private actor StopFlag {
 
     func reset() {
         stopped = false
+    }
+}
+
+// MARK: - Metrics
+
+extension RemoteSession {
+    private func buildMetrics(from usage: ChatCompletionResponse.Usage) -> ChunkMetrics {
+        ChunkMetrics(
+            usage: UsageMetrics(
+                generatedTokens: usage.completionTokens,
+                totalTokens: usage.totalTokens,
+                promptTokens: usage.promptTokens,
+                contextWindowSize: currentContextWindowSize,
+                contextTokensUsed: usage.totalTokens
+            )
+        )
     }
 }
