@@ -257,6 +257,9 @@ extension View {
 // MARK: - AudioGenerator
 
 public struct AudioGeneratorProvider: ViewModifier {
+    @Environment(\.database)
+    private var database: DatabaseProtocol
+
     public init() {
         // Initialize provider
     }
@@ -267,7 +270,8 @@ public struct AudioGeneratorProvider: ViewModifier {
                 \.audioViewModel,
                 AudioViewModel(
                     audio: AudioEngine(),
-                    speech: SpeechRecognizer()
+                    speech: SpeechRecognizer(),
+                    database: database
                 )
             )
     }
