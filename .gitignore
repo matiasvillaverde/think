@@ -295,3 +295,5 @@ Localizable.xcstrings.original
 **/Localizable.xcstrings.original
 
 # End of .gitignore
+# Generated icons - should not be tracked
+scripts/icon-generator/output/
