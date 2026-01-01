@@ -1,6 +1,6 @@
 import Testing
 
-@Suite("Legacy MLXSessionTests Placeholder", .disabled("Legacy target placeholder"))
+@Suite("Legacy MLXSessionTests Placeholder")
 struct MLXSessionTestsPlaceholder {
     @Test("Placeholder")
     func placeholder() {
