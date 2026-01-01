@@ -74,16 +74,22 @@ public struct CronStrategy: ToolStrategy {
             switch action {
             case "create":
                 return await createSchedule(json: json, request: request)
+
             case "list":
                 return await listSchedules(json: json, request: request)
+
             case "enable":
                 return await setScheduleEnabled(json: json, request: request, enabled: true)
+
             case "disable":
                 return await setScheduleEnabled(json: json, request: request, enabled: false)
+
             case "delete":
                 return await deleteSchedule(json: json, request: request)
+
             case "update":
                 return await updateSchedule(json: json, request: request)
+
             default:
                 return BaseToolStrategy.errorResponse(
                     request: request,
@@ -91,6 +97,48 @@ public struct CronStrategy: ToolStrategy {
                 )
             }
         }
+    }
+
+    private struct CreateScheduleInput {
+        let title: String
+        let prompt: String
+        let scheduleKind: AutomationScheduleKind
+        let actionType: AutomationActionType
+        let cronExpression: String
+        let timezoneIdentifier: String?
+        let toolNames: [String]
+        let chatId: UUID?
+    }
+
+    private func buildCreateInput(
+        json: [String: Any],
+        request: ToolRequest,
+        prompt: String,
+        cron: String
+    ) -> CreateScheduleInput {
+        let title: String? = (json["title"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let scheduleKind: AutomationScheduleKind = parseScheduleKind(json["schedule_kind"] as? String)
+        let actionType: AutomationActionType = parseActionType(json["action_type"] as? String)
+        let timezone: String? = json["timezone"] as? String
+        let tools: [String] = json["tools"] as? [String] ?? []
+        let chatId: UUID? = parseChatId(json["chat_id"], request: request)
+        let resolvedTitle: String = {
+            if let title, !title.isEmpty {
+                return title
+            }
+            return "Scheduled Task"
+        }()
+
+        return CreateScheduleInput(
+            title: resolvedTitle,
+            prompt: prompt,
+            scheduleKind: scheduleKind,
+            actionType: actionType,
+            cronExpression: cron,
+            timezoneIdentifier: timezone,
+            toolNames: tools,
+            chatId: chatId
+        )
     }
 
     private func createSchedule(
@@ -110,39 +158,20 @@ public struct CronStrategy: ToolStrategy {
             )
         }
 
-        let title = (json["title"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let scheduleKind = parseScheduleKind(json["schedule_kind"] as? String)
-        let actionType = parseActionType(json["action_type"] as? String)
-        let timezone = json["timezone"] as? String
-        let tools = json["tools"] as? [String] ?? []
-        let chatId = parseChatId(json["chat_id"], request: request)
+        let input: CreateScheduleInput = buildCreateInput(
+            json: json,
+            request: request,
+            prompt: prompt,
+            cron: cron
+        )
 
         do {
-            let scheduleId = try await database.write(
-                AutomationScheduleCommands.Create(
-                    title: title?.isEmpty == false ? title! : "Scheduled Task",
-                    prompt: prompt,
-                    scheduleKind: scheduleKind,
-                    actionType: actionType,
-                    cronExpression: cron,
-                    timezoneIdentifier: timezone,
-                    toolNames: tools,
-                    isEnabled: true,
-                    chatId: chatId
-                )
-            )
-
-            let schedule = try await database.read(
-                AutomationScheduleCommands.Get(id: scheduleId)
-            )
-
-            let payload = [
-                "id": scheduleId.uuidString,
-                "next_run_at": schedule.nextRunAt?.iso8601String() ?? ""
-            ]
+            let payload: [String: Any] = try await createSchedulePayload(input: input)
+            let scheduleId: String = payload["id"] as? String ?? ""
+            let fallbackResult: String = scheduleId.isEmpty ? "Schedule created" : "Scheduled \(scheduleId)"
             return BaseToolStrategy.successResponse(
                 request: request,
-                result: payload.jsonString() ?? "Scheduled \(scheduleId.uuidString)"
+                result: jsonString(from: payload) ?? fallbackResult
             )
         } catch {
             Self.logger.error("Failed to create schedule: \(error.localizedDescription)")
@@ -153,30 +182,58 @@ public struct CronStrategy: ToolStrategy {
         }
     }
 
+    private func createSchedulePayload(
+        input: CreateScheduleInput
+    ) async throws -> [String: Any] {
+        let scheduleId: UUID = try await database.write(
+            AutomationScheduleCommands.Create(
+                title: input.title,
+                prompt: input.prompt,
+                scheduleKind: input.scheduleKind,
+                actionType: input.actionType,
+                cronExpression: input.cronExpression,
+                timezoneIdentifier: input.timezoneIdentifier,
+                toolNames: input.toolNames,
+                isEnabled: true,
+                chatId: input.chatId
+            )
+        )
+
+        let schedule: AutomationSchedule = try await database.read(
+            AutomationScheduleCommands.Get(id: scheduleId)
+        )
+        let nextRunAt: String = schedule.nextRunAt.map { iso8601String(from: $0) } ?? ""
+        return [
+            "id": scheduleId.uuidString,
+            "next_run_at": nextRunAt
+        ]
+    }
+
     private func listSchedules(
         json: [String: Any],
         request: ToolRequest
     ) async -> ToolResponse {
         do {
-            let chatId = parseChatId(json["chat_id"], request: request)
-            let schedules = try await database.read(
+            let chatId: UUID? = parseChatId(json["chat_id"], request: request)
+            let schedules: [AutomationSchedule] = try await database.read(
                 AutomationScheduleCommands.List(chatId: chatId)
             )
 
             let payload: [[String: Any]] = schedules.map { schedule in
+                let nextRunAt: String = schedule.nextRunAt.map { iso8601String(from: $0) } ?? ""
                 [
                     "id": schedule.id.uuidString,
                     "title": schedule.title,
                     "enabled": schedule.isEnabled,
                     "running": schedule.isRunning,
-                    "next_run_at": schedule.nextRunAt?.iso8601String() ?? "",
+                    "next_run_at": nextRunAt,
                     "action_type": schedule.actionType.rawValue
                 ]
             }
 
             return BaseToolStrategy.successResponse(
                 request: request,
-                result: payload.jsonString() ?? "[]"
+                result: jsonString(from: payload) ?? "[]"
             )
         } catch {
             Self.logger.error("Failed to list schedules: \(error.localizedDescription)")
@@ -192,7 +249,7 @@ public struct CronStrategy: ToolStrategy {
         request: ToolRequest,
         enabled: Bool
     ) async -> ToolResponse {
-        guard let scheduleId = parseScheduleId(json["schedule_id"]) else {
+        guard let scheduleId: UUID = parseScheduleId(json["schedule_id"]) else {
             return BaseToolStrategy.errorResponse(
                 request: request,
                 error: "Missing required parameter: schedule_id"
@@ -220,7 +277,7 @@ public struct CronStrategy: ToolStrategy {
         json: [String: Any],
         request: ToolRequest
     ) async -> ToolResponse {
-        guard let scheduleId = parseScheduleId(json["schedule_id"]) else {
+        guard let scheduleId: UUID = parseScheduleId(json["schedule_id"]) else {
             return BaseToolStrategy.errorResponse(
                 request: request,
                 error: "Missing required parameter: schedule_id"
@@ -257,7 +314,7 @@ public struct CronStrategy: ToolStrategy {
         json: [String: Any],
         request: ToolRequest
     ) async -> ToolResponse {
-        guard let scheduleId = parseScheduleId(json["schedule_id"]) else {
+        guard let scheduleId: UUID = parseScheduleId(json["schedule_id"]) else {
             return BaseToolStrategy.errorResponse(
                 request: request,
                 error: "Missing required parameter: schedule_id"
@@ -285,13 +342,16 @@ public struct CronStrategy: ToolStrategy {
         switch value?.lowercased() {
         case "one_shot", "oneshot":
             return .oneShot
+
         default:
             return .cron
         }
     }
 
     private func parseOptionalScheduleKind(_ value: String?) -> AutomationScheduleKind? {
-        guard let value else { return nil }
+        guard let value else {
+            return nil
+        }
         return parseScheduleKind(value)
     }
 
@@ -299,13 +359,16 @@ public struct CronStrategy: ToolStrategy {
         switch value?.lowercased() {
         case "image":
             return .image
+
         default:
             return .text
         }
     }
 
     private func parseOptionalActionType(_ value: String?) -> AutomationActionType? {
-        guard let value else { return nil }
+        guard let value else {
+            return nil
+        }
         return parseActionType(value)
     }
 
@@ -322,34 +385,27 @@ public struct CronStrategy: ToolStrategy {
         }
         return UUID(uuidString: string)
     }
-}
-
-private extension Date {
-    func iso8601String() -> String {
-        let formatter = ISO8601DateFormatter()
+    private func iso8601String(from date: Date) -> String {
+        let formatter: ISO8601DateFormatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return formatter.string(from: self)
+        return formatter.string(from: date)
     }
-}
 
-private extension Dictionary where Key == String, Value == Any {
-    func jsonString() -> String? {
-        guard JSONSerialization.isValidJSONObject(self) else {
+    private func jsonString(from payload: [String: Any]) -> String? {
+        guard JSONSerialization.isValidJSONObject(payload) else {
             return nil
         }
-        guard let data = try? JSONSerialization.data(withJSONObject: self, options: []) else {
+        guard let data: Data = try? JSONSerialization.data(withJSONObject: payload, options: []) else {
             return nil
         }
         return String(data: data, encoding: .utf8)
     }
-}
 
-private extension Array where Element == [String: Any] {
-    func jsonString() -> String? {
-        guard JSONSerialization.isValidJSONObject(self) else {
+    private func jsonString(from payload: [[String: Any]]) -> String? {
+        guard JSONSerialization.isValidJSONObject(payload) else {
             return nil
         }
-        guard let data = try? JSONSerialization.data(withJSONObject: self, options: []) else {
+        guard let data: Data = try? JSONSerialization.data(withJSONObject: payload, options: []) else {
             return nil
         }
         return String(data: data, encoding: .utf8)

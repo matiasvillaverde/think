@@ -1,19 +1,19 @@
 import Abstractions
 import AbstractionsTestUtilities
+@testable import Database
 import Foundation
 import Testing
-@testable import Database
 @testable import Tools
 
 @Suite("Cron Strategy Tests")
-struct CronStrategyTests {
+internal struct CronStrategyTests {
     @Test("Create schedule via tool")
     @MainActor
     func createScheduleViaTool() async throws {
-        let database = try await Self.makeDatabase()
-        let strategy = CronStrategy(database: database)
+        let database: Database = try await Self.makeDatabase()
+        let strategy: CronStrategy = CronStrategy(database: database)
 
-        let request = ToolRequest(
+        let request: ToolRequest = ToolRequest(
             name: "cron",
             arguments: """
             {"action":"create","prompt":"Ping","cron":"*/5 * * * *"}
@@ -21,10 +21,12 @@ struct CronStrategyTests {
             context: ToolRequestContext(chatId: nil, messageId: nil)
         )
 
-        let response = await strategy.execute(request: request)
+        let response: ToolResponse = await strategy.execute(request: request)
         #expect(response.error == nil)
 
-        let schedules = try await database.read(AutomationScheduleCommands.List())
+        let schedules: [AutomationSchedule] = try await database.read(
+            AutomationScheduleCommands.List()
+        )
         #expect(schedules.count == 1)
         #expect(schedules.first?.prompt == "Ping")
     }
@@ -32,7 +34,7 @@ struct CronStrategyTests {
     @Test("List schedules via tool")
     @MainActor
     func listSchedulesViaTool() async throws {
-        let database = try await Self.makeDatabase()
+        let database: Database = try await Self.makeDatabase()
         _ = try await database.write(
             AutomationScheduleCommands.Create(
                 title: "Test",
@@ -44,25 +46,25 @@ struct CronStrategyTests {
             )
         )
 
-        let strategy = CronStrategy(database: database)
-        let request = ToolRequest(
+        let strategy: CronStrategy = CronStrategy(database: database)
+        let request: ToolRequest = ToolRequest(
             name: "cron",
             arguments: "{\"action\":\"list\"}",
             context: ToolRequestContext(chatId: nil, messageId: nil)
         )
 
-        let response = await strategy.execute(request: request)
+        let response: ToolResponse = await strategy.execute(request: request)
         #expect(response.error == nil)
         #expect(response.result.contains("Ping"))
     }
 
     private static func makeDatabase() async throws -> Database {
-        let config = DatabaseConfiguration(
+        let config: DatabaseConfiguration = DatabaseConfiguration(
             isStoredInMemoryOnly: true,
             allowsSave: true,
             ragFactory: MockRagFactory(mockRag: MockRagging())
         )
-        let database = try Database.new(configuration: config)
+        let database: Database = try Database.new(configuration: config)
         _ = try await database.execute(AppCommands.Initialize())
         return database
     }

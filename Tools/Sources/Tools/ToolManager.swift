@@ -112,6 +112,7 @@ public actor ToolManager: Tooling {
 
         case .subAgent, .workspace, .reasoning, .imageGeneration, .memory:
             return nil
+
         case .cron, .canvas, .nodes:
             return nil
         }
@@ -126,10 +127,13 @@ public actor ToolManager: Tooling {
         switch identifier {
         case .cron:
             return CronStrategy(database: database)
+
         case .canvas:
             return CanvasStrategy(database: database)
+
         case .nodes:
             return NodesStrategy(database: database)
+
         case .browser, .python, .functions, .healthKit, .weather, .duckduckgo, .braveSearch,
             .subAgent, .workspace, .reasoning, .imageGeneration, .memory:
             return nil

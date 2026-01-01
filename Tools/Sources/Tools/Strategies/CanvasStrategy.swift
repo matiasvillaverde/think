@@ -54,14 +54,19 @@ public struct CanvasStrategy: ToolStrategy {
             switch action {
             case "create":
                 return await createCanvas(json: json, request: request)
+
             case "update":
                 return await updateCanvas(json: json, request: request, append: false)
+
             case "append":
                 return await updateCanvas(json: json, request: request, append: true)
+
             case "get":
                 return await getCanvas(json: json, request: request)
+
             case "list":
                 return await listCanvases(json: json, request: request)
+
             default:
                 return BaseToolStrategy.errorResponse(
                     request: request,
@@ -75,10 +80,10 @@ public struct CanvasStrategy: ToolStrategy {
         json: [String: Any],
         request: ToolRequest
     ) async -> ToolResponse {
-        let title = (json["title"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let title: String = (json["title"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
             ?? "Canvas"
-        let content = json["content"] as? String ?? ""
-        let chatId = parseChatId(json["chat_id"], request: request)
+        let content: String = json["content"] as? String ?? ""
+        let chatId: UUID? = parseChatId(json["chat_id"], request: request)
 
         guard let chatId else {
             return BaseToolStrategy.errorResponse(
@@ -88,7 +93,7 @@ public struct CanvasStrategy: ToolStrategy {
         }
 
         do {
-            let canvasId = try await database.write(
+            let canvasId: UUID = try await database.write(
                 CanvasCommands.Create(title: title, content: content, chatId: chatId)
             )
             return BaseToolStrategy.successResponse(
@@ -109,7 +114,7 @@ public struct CanvasStrategy: ToolStrategy {
         request: ToolRequest,
         append: Bool
     ) async -> ToolResponse {
-        guard let content = json["content"] as? String else {
+        guard let content: String = json["content"] as? String else {
             return BaseToolStrategy.errorResponse(
                 request: request,
                 error: "Missing required parameter: content"
@@ -117,11 +122,11 @@ public struct CanvasStrategy: ToolStrategy {
         }
 
         do {
-            let canvasId = try await resolveCanvasId(json: json, request: request)
-            let existing = try await database.read(CanvasCommands.Get(id: canvasId))
+            let canvasId: UUID = try await resolveCanvasId(json: json, request: request)
+            let existing: CanvasDocument = try await database.read(CanvasCommands.Get(id: canvasId))
             let newContent: String
             if append {
-                let separator = existing.content.isEmpty ? "" : "\n"
+                let separator: String = existing.content.isEmpty ? "" : "\n"
                 newContent = existing.content + separator + content
             } else {
                 newContent = content
@@ -152,17 +157,17 @@ public struct CanvasStrategy: ToolStrategy {
         request: ToolRequest
     ) async -> ToolResponse {
         do {
-            let canvasId = try await resolveCanvasId(json: json, request: request)
-            let canvas = try await database.read(CanvasCommands.Get(id: canvasId))
+            let canvasId: UUID = try await resolveCanvasId(json: json, request: request)
+            let canvas: CanvasDocument = try await database.read(CanvasCommands.Get(id: canvasId))
             let payload: [String: Any] = [
                 "id": canvas.id.uuidString,
                 "title": canvas.title,
                 "content": canvas.content,
-                "updated_at": canvas.updatedAt.iso8601String()
+                "updated_at": iso8601String(from: canvas.updatedAt)
             ]
             return BaseToolStrategy.successResponse(
                 request: request,
-                result: payload.jsonString() ?? canvas.content
+                result: jsonString(from: payload) ?? canvas.content
             )
         } catch {
             Self.logger.error("Failed to fetch canvas: \(error.localizedDescription)")
@@ -178,18 +183,20 @@ public struct CanvasStrategy: ToolStrategy {
         request: ToolRequest
     ) async -> ToolResponse {
         do {
-            let chatId = parseChatId(json["chat_id"], request: request)
-            let canvases = try await database.read(CanvasCommands.List(chatId: chatId))
+            let chatId: UUID? = parseChatId(json["chat_id"], request: request)
+            let canvases: [CanvasDocument] = try await database.read(
+                CanvasCommands.List(chatId: chatId)
+            )
             let payload: [[String: Any]] = canvases.map { canvas in
                 [
                     "id": canvas.id.uuidString,
                     "title": canvas.title,
-                    "updated_at": canvas.updatedAt.iso8601String()
+                    "updated_at": iso8601String(from: canvas.updatedAt)
                 ]
             }
             return BaseToolStrategy.successResponse(
                 request: request,
-                result: payload.jsonString() ?? "[]"
+                result: jsonString(from: payload) ?? "[]"
             )
         } catch {
             Self.logger.error("Failed to list canvases: \(error.localizedDescription)")
@@ -204,19 +211,18 @@ public struct CanvasStrategy: ToolStrategy {
         json: [String: Any],
         request: ToolRequest
     ) async throws -> UUID {
-        if let idString = json["canvas_id"] as? String,
-           let id = UUID(uuidString: idString) {
+        if let idString: String = json["canvas_id"] as? String,
+            let id: UUID = UUID(uuidString: idString) {
             return id
         }
 
-        guard let chatId = parseChatId(json["chat_id"], request: request) else {
+        guard let chatId: UUID = parseChatId(json["chat_id"], request: request) else {
             throw DatabaseError.invalidInput("Missing chat for canvas")
         }
 
-        let canvasId = try await database.write(
+        return try await database.write(
             CanvasCommands.GetOrCreateDefault(chatId: chatId)
         )
-        return canvasId
     }
 
     private func parseChatId(_ value: Any?, request: ToolRequest) -> UUID? {
@@ -225,34 +231,27 @@ public struct CanvasStrategy: ToolStrategy {
         }
         return request.context?.chatId
     }
-}
-
-private extension Date {
-    func iso8601String() -> String {
-        let formatter = ISO8601DateFormatter()
+    private func iso8601String(from date: Date) -> String {
+        let formatter: ISO8601DateFormatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return formatter.string(from: self)
+        return formatter.string(from: date)
     }
-}
 
-private extension Dictionary where Key == String, Value == Any {
-    func jsonString() -> String? {
-        guard JSONSerialization.isValidJSONObject(self) else {
+    private func jsonString(from payload: [String: Any]) -> String? {
+        guard JSONSerialization.isValidJSONObject(payload) else {
             return nil
         }
-        guard let data = try? JSONSerialization.data(withJSONObject: self, options: []) else {
+        guard let data: Data = try? JSONSerialization.data(withJSONObject: payload, options: []) else {
             return nil
         }
         return String(data: data, encoding: .utf8)
     }
-}
 
-private extension Array where Element == [String: Any] {
-    func jsonString() -> String? {
-        guard JSONSerialization.isValidJSONObject(self) else {
+    private func jsonString(from payload: [[String: Any]]) -> String? {
+        guard JSONSerialization.isValidJSONObject(payload) else {
             return nil
         }
-        guard let data = try? JSONSerialization.data(withJSONObject: self, options: []) else {
+        guard let data: Data = try? JSONSerialization.data(withJSONObject: payload, options: []) else {
             return nil
         }
         return String(data: data, encoding: .utf8)

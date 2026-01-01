@@ -26,7 +26,7 @@ public struct NodesStrategy: ToolStrategy {
 
     public func execute(request: ToolRequest) async -> ToolResponse {
         do {
-            let settings = try await database.read(SettingsCommands.GetOrCreate())
+            let settings: AppSettings = try await database.read(SettingsCommands.GetOrCreate())
             let payload: [String: Any] = [
                 "enabled": settings.nodeModeEnabled,
                 "port": settings.nodeModePort,
@@ -34,7 +34,7 @@ public struct NodesStrategy: ToolStrategy {
             ]
             return BaseToolStrategy.successResponse(
                 request: request,
-                result: payload.jsonString() ?? "Node mode status"
+                result: jsonString(from: payload) ?? "Node mode status"
             )
         } catch {
             Self.logger.error("Failed to read node settings: \(error.localizedDescription)")
@@ -44,14 +44,12 @@ public struct NodesStrategy: ToolStrategy {
             )
         }
     }
-}
 
-private extension Dictionary where Key == String, Value == Any {
-    func jsonString() -> String? {
-        guard JSONSerialization.isValidJSONObject(self) else {
+    private func jsonString(from payload: [String: Any]) -> String? {
+        guard JSONSerialization.isValidJSONObject(payload) else {
             return nil
         }
-        guard let data = try? JSONSerialization.data(withJSONObject: self, options: []) else {
+        guard let data: Data = try? JSONSerialization.data(withJSONObject: payload, options: []) else {
             return nil
         }
         return String(data: data, encoding: .utf8)
