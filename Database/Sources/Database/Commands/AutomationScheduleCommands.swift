@@ -250,10 +250,15 @@ extension AutomationScheduleCommands {
 
             switch schedule.scheduleKind {
             case .cron:
-                let expression = try CronExpression(schedule.cronExpression)
-                let calendar = Calendar(identifier: .gregorian)
-                    .withTimeZone(identifier: schedule.timezoneIdentifier)
-                schedule.nextRunAt = expression.nextDate(after: finishedAt, calendar: calendar)
+                do {
+                    let expression = try CronExpression(schedule.cronExpression)
+                    let calendar = Calendar(identifier: .gregorian)
+                        .withTimeZone(identifier: schedule.timezoneIdentifier)
+                    schedule.nextRunAt = expression.nextDate(after: finishedAt, calendar: calendar)
+                } catch {
+                    schedule.nextRunAt = nil
+                    schedule.isEnabled = false
+                }
 
             case .oneShot:
                 schedule.nextRunAt = nil

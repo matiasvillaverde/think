@@ -5,6 +5,11 @@ import OSLog
 /// Commands for managing application settings.
 public enum SettingsCommands {}
 
+public enum SettingUpdate<Value> {
+    case noChange
+    case set(Value)
+}
+
 extension SettingsCommands {
     /// Fetches settings for the current user, creating defaults if missing.
     public struct GetOrCreate: ReadCommand {
@@ -37,14 +42,14 @@ extension SettingsCommands {
 
     /// Updates voice-related settings.
     public struct UpdateVoice: WriteCommand {
-        private let talkModeEnabled: Bool?
-        private let wakeWordEnabled: Bool?
-        private let wakePhrase: String?
+        private let talkModeEnabled: SettingUpdate<Bool>
+        private let wakeWordEnabled: SettingUpdate<Bool>
+        private let wakePhrase: SettingUpdate<String>
 
         public init(
-            talkModeEnabled: Bool? = nil,
-            wakeWordEnabled: Bool? = nil,
-            wakePhrase: String? = nil
+            talkModeEnabled: SettingUpdate<Bool> = .noChange,
+            wakeWordEnabled: SettingUpdate<Bool> = .noChange,
+            wakePhrase: SettingUpdate<String> = .noChange
         ) {
             self.talkModeEnabled = talkModeEnabled
             self.wakeWordEnabled = wakeWordEnabled
@@ -67,14 +72,23 @@ extension SettingsCommands {
                 context.insert(settings)
             }
 
-            if let talkModeEnabled {
-                settings.talkModeEnabled = talkModeEnabled
+            switch talkModeEnabled {
+            case .set(let value):
+                settings.talkModeEnabled = value
+            case .noChange:
+                break
             }
-            if let wakeWordEnabled {
-                settings.wakeWordEnabled = wakeWordEnabled
+            switch wakeWordEnabled {
+            case .set(let value):
+                settings.wakeWordEnabled = value
+            case .noChange:
+                break
             }
-            if let wakePhrase {
-                settings.wakePhrase = wakePhrase
+            switch wakePhrase {
+            case .set(let value):
+                settings.wakePhrase = value
+            case .noChange:
+                break
             }
             settings.updatedAt = Date()
 
@@ -86,14 +100,14 @@ extension SettingsCommands {
 
     /// Updates node mode settings.
     public struct UpdateNode: WriteCommand {
-        private let nodeModeEnabled: Bool?
-        private let nodeModePort: Int?
-        private let nodeModeAuthToken: String?
+        private let nodeModeEnabled: SettingUpdate<Bool>
+        private let nodeModePort: SettingUpdate<Int>
+        private let nodeModeAuthToken: SettingUpdate<String?>
 
         public init(
-            nodeModeEnabled: Bool? = nil,
-            nodeModePort: Int? = nil,
-            nodeModeAuthToken: String? = nil
+            nodeModeEnabled: SettingUpdate<Bool> = .noChange,
+            nodeModePort: SettingUpdate<Int> = .noChange,
+            nodeModeAuthToken: SettingUpdate<String?> = .noChange
         ) {
             self.nodeModeEnabled = nodeModeEnabled
             self.nodeModePort = nodeModePort
@@ -116,14 +130,23 @@ extension SettingsCommands {
                 context.insert(settings)
             }
 
-            if let nodeModeEnabled {
-                settings.nodeModeEnabled = nodeModeEnabled
+            switch nodeModeEnabled {
+            case .set(let value):
+                settings.nodeModeEnabled = value
+            case .noChange:
+                break
             }
-            if let nodeModePort {
-                settings.nodeModePort = nodeModePort
+            switch nodeModePort {
+            case .set(let value):
+                settings.nodeModePort = value
+            case .noChange:
+                break
             }
-            if let nodeModeAuthToken {
-                settings.nodeModeAuthToken = nodeModeAuthToken
+            switch nodeModeAuthToken {
+            case .set(let value):
+                settings.nodeModeAuthToken = value
+            case .noChange:
+                break
             }
             settings.updatedAt = Date()
 

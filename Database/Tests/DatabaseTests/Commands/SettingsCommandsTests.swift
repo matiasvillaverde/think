@@ -26,9 +26,9 @@ struct SettingsCommandsTests {
         let database = try await Self.makeDatabase()
 
         _ = try await database.write(SettingsCommands.UpdateVoice(
-            talkModeEnabled: true,
-            wakeWordEnabled: false,
-            wakePhrase: "hey tests"
+            talkModeEnabled: .set(true),
+            wakeWordEnabled: .set(false),
+            wakePhrase: .set("hey tests")
         ))
 
         let settings = try await database.read(SettingsCommands.GetOrCreate())
@@ -43,9 +43,9 @@ struct SettingsCommandsTests {
         let database = try await Self.makeDatabase()
 
         _ = try await database.write(SettingsCommands.UpdateNode(
-            nodeModeEnabled: true,
-            nodeModePort: 7777,
-            nodeModeAuthToken: "token"
+            nodeModeEnabled: .set(true),
+            nodeModePort: .set(7777),
+            nodeModeAuthToken: .set("token")
         ))
 
         let settings = try await database.read(SettingsCommands.GetOrCreate())

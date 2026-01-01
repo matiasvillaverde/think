@@ -85,7 +85,12 @@ public final class AutomationSchedule: Identifiable, Equatable {
 
 extension AutomationSchedule {
     public var scheduleKind: AutomationScheduleKind {
-        get { AutomationScheduleKind(rawValue: scheduleKindRaw) ?? .cron }
+        get {
+            if scheduleKindRaw == "oneShot" {
+                return .oneShot
+            }
+            return AutomationScheduleKind(rawValue: scheduleKindRaw) ?? .cron
+        }
         set { scheduleKindRaw = newValue.rawValue }
     }
 
