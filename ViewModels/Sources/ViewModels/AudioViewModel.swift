@@ -1,19 +1,33 @@
 // swiftlint:disable line_length
 import Abstractions
+import Database
 import Foundation
 import OSLog
 
 public actor AudioViewModel: AudioViewModeling {
     private let audio: AudioGenerating
     private let speech: SpeechRecognizing
+    private let database: DatabaseProtocol
     private let logger: Logger = Logger(subsystem: "ViewModels", category: "AudioViewModel")
+
+    private var talkModeTask: Task<Void, Never>?
+    private var internalTalkModeState: TalkModeState = .idle
+    private var internalWakePhrase: String = "hey think"
+    private var internalWakeWordEnabled: Bool = true
+    private var internalTalkModeEnabled: Bool = false
 
     public init(
         audio: AudioGenerating,
-        speech: SpeechRecognizing
+        speech: SpeechRecognizing,
+        database: DatabaseProtocol
     ) {
         self.audio = audio
         self.speech = speech
+        self.database = database
+
+        Task { [weak self] in
+            await self?.refreshSettings()
+        }
     }
 
     public func cleanTextForSpeech(_ markdownText: String) -> String {
@@ -56,17 +70,15 @@ public actor AudioViewModel: AudioViewModeling {
         }
     }
 
-    public func listen(generator: ViewModelGenerating) {
-        Task {
-            do {
-                let text: String = try await speech.startListening()
-                await generator.generate(
-                    prompt: text,
-                    overrideAction: .textGeneration([])
-                )
-            } catch {
-                logger.error("Failed to start listening: \(error.localizedDescription)")
-            }
+    public func listen(generator: ViewModelGenerating) async {
+        do {
+            let text: String = try await speech.startListening()
+            await generator.generate(
+                prompt: text,
+                overrideAction: .textGeneration([])
+            )
+        } catch {
+            logger.error("Failed to start listening: \(error.localizedDescription)")
         }
     }
 
@@ -74,6 +86,131 @@ public actor AudioViewModel: AudioViewModeling {
         Task {
             await speech.stopListening()
         }
+    }
+
+    public var talkModeState: TalkModeState { internalTalkModeState }
+    public var wakePhrase: String { internalWakePhrase }
+    public var isWakeWordEnabled: Bool { internalWakeWordEnabled }
+    public var isTalkModeEnabled: Bool { internalTalkModeEnabled }
+
+    public func startTalkMode(generator: ViewModelGenerating) async {
+        internalTalkModeEnabled = true
+        _ = try? await database.write(SettingsCommands.UpdateVoice(talkModeEnabled: .set(true)))
+        await refreshSettings()
+
+        talkModeTask?.cancel()
+        talkModeTask = Task { [weak self] in
+            guard let self else { return }
+            await self.runTalkModeLoop(generator: generator)
+        }
+    }
+
+    public func stopTalkMode() async {
+        talkModeTask?.cancel()
+        talkModeTask = nil
+        internalTalkModeEnabled = false
+        internalTalkModeState = .idle
+        _ = try? await database.write(SettingsCommands.UpdateVoice(talkModeEnabled: .set(false)))
+        await speech.stopListening()
+    }
+
+    public func updateWakePhrase(_ phrase: String) async {
+        let cleaned = phrase.trimmingCharacters(in: .whitespacesAndNewlines)
+        internalWakePhrase = cleaned
+        _ = try? await database.write(SettingsCommands.UpdateVoice(wakePhrase: .set(cleaned)))
+    }
+
+    public func setWakeWordEnabled(_ enabled: Bool) async {
+        internalWakeWordEnabled = enabled
+        _ = try? await database.write(SettingsCommands.UpdateVoice(wakeWordEnabled: .set(enabled)))
+    }
+
+    private func refreshSettings() async {
+        do {
+            let settings = try await database.read(SettingsCommands.GetOrCreate())
+            internalTalkModeEnabled = settings.talkModeEnabled
+            internalWakeWordEnabled = settings.wakeWordEnabled
+            internalWakePhrase = settings.wakePhrase
+        } catch {
+            logger.error("Failed to refresh settings: \(error.localizedDescription)")
+        }
+    }
+
+    private func runTalkModeLoop(generator: ViewModelGenerating) async {
+        while !Task.isCancelled {
+            if internalWakeWordEnabled {
+                internalTalkModeState = .waitingForWakeWord
+            } else {
+                internalTalkModeState = .listening
+            }
+
+            do {
+                let transcript = try await speech.startListening()
+                if Task.isCancelled { break }
+                let cleaned = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+                if cleaned.isEmpty {
+                    continue
+                }
+
+                if internalWakeWordEnabled {
+                    guard let command = extractCommand(from: cleaned) else {
+                        continue
+                    }
+                    if command.isEmpty {
+                        internalTalkModeState = .listening
+                        let followUp = try await speech.startListening()
+                        let followUpCleaned = followUp.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if followUpCleaned.isEmpty {
+                            continue
+                        }
+                        await processCommand(followUpCleaned, generator: generator)
+                    } else {
+                        await processCommand(command, generator: generator)
+                    }
+                } else {
+                    await processCommand(cleaned, generator: generator)
+                }
+            } catch {
+                logger.error("Talk mode listening failed: \(error.localizedDescription)")
+                if Task.isCancelled {
+                    break
+                }
+                try? await Task.sleep(nanoseconds: 200_000_000)
+            }
+        }
+
+        internalTalkModeState = .idle
+    }
+
+    private func processCommand(_ command: String, generator: ViewModelGenerating) async {
+        internalTalkModeState = .processing
+        await generator.generate(
+            prompt: command,
+            overrideAction: .textGeneration([])
+        )
+
+        if internalWakeWordEnabled {
+            internalTalkModeState = .waitingForWakeWord
+        } else {
+            internalTalkModeState = .listening
+        }
+    }
+
+    private func extractCommand(from transcript: String) -> String? {
+        let lowerTranscript = transcript.lowercased()
+        let lowerWake = internalWakePhrase.lowercased()
+        guard !lowerWake.isEmpty else {
+            return transcript
+        }
+
+        guard let range = lowerTranscript.range(of: lowerWake) else {
+            return nil
+        }
+
+        let distance = lowerTranscript.distance(from: lowerTranscript.startIndex, to: range.upperBound)
+        let startIndex = transcript.index(transcript.startIndex, offsetBy: distance)
+        let remainder = transcript[startIndex...]
+        return remainder.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 // swiftlint:enable line_length
