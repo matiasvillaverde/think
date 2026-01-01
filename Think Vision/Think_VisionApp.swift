@@ -17,11 +17,13 @@ struct ThinkApp: App {
                 .withDatabase()
                 .withGenerator() // MLX doesn't work on simulators
                 .withChatViewModel()
+                .withToolValidator()
                 .withImageHandler()
                 .withNotificationViewModel()
                 .withAttacher()
                 .withAppViewModel()
                 .withReviewRequester()
+                .withPluginApprovalViewModel()
                 .withAudioGenerator()
                 .withDiscoveryCarousel()
                 .withModelActions()

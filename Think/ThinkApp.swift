@@ -20,11 +20,13 @@ struct ThinkApp: App {
                 .withDatabase()
                 .withGenerator() // MLX doesn't work on simulators
                 .withChatViewModel()
+                .withToolValidator()
                 .withImageHandler()
                 .withNotificationViewModel()
                 .withAttacher()
                 .withAppViewModel()
                 .withReviewRequester()
+                .withPluginApprovalViewModel()
                 .withAudioGenerator()
                 .withDiscoveryCarousel()
                 .withModelActions()
@@ -40,8 +42,10 @@ struct ThinkApp: App {
                 .withGenerator() // MLX doesn't work on simulators
 #endif
                 .withChatViewModel()
+                .withToolValidator()
                 .withNotificationViewModel()
                 .withAppViewModel()
+                .withPluginApprovalViewModel()
                 .withDiscoveryCarousel()
                 .withModelActions()
                 .withRemoteModelsViewModel()
@@ -52,8 +56,10 @@ struct ThinkApp: App {
             AnalyticsNavigationView()
                 .withDatabase()
                 .withChatViewModel()
+                .withToolValidator()
                 .withNotificationViewModel()
                 .withAppViewModel()
+                .withPluginApprovalViewModel()
         }
         .defaultSize(width: 900, height: 700)
 
@@ -61,7 +67,9 @@ struct ThinkApp: App {
             SettingsView()
                 .withDatabase()
                 .withChatViewModel()
+                .withToolValidator()
                 .withReviewRequester()
+                .withPluginApprovalViewModel()
         }
         .defaultSize(width: 700, height: 600)
         #endif
