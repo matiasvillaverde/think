@@ -74,17 +74,38 @@ public enum AgentOrchestratorFactory {
         remoteSession: LLMSession?,
         modelDownloader: ModelDownloaderProtocol
     ) -> AgentOrchestrating {
-        let workspaceRoot: URL? = resolveWorkspaceRoot()
-        let inputs: OrchestratorInputs = OrchestratorInputs(
+        let inputs: OrchestratorInputs = makeInputs(
+            database: database,
+            mlxSession: mlxSession,
+            ggufSession: ggufSession,
+            remoteSession: remoteSession,
+            modelDownloader: modelDownloader
+        )
+        let components: OrchestratorComponents = createComponents(inputs: inputs)
+        return buildOrchestrator(components: components)
+    }
+
+    private static func makeInputs(
+        database: DatabaseProtocol,
+        mlxSession: LLMSession,
+        ggufSession: LLMSession,
+        remoteSession: LLMSession?,
+        modelDownloader: ModelDownloaderProtocol
+    ) -> OrchestratorInputs {
+        OrchestratorInputs(
             database: database,
             mlxSession: mlxSession,
             ggufSession: ggufSession,
             remoteSession: remoteSession,
             modelDownloader: modelDownloader,
-            workspaceRoot: workspaceRoot
+            workspaceRoot: resolveWorkspaceRoot()
         )
-        let components: OrchestratorComponents = createComponents(inputs: inputs)
-        return AgentOrchestrator(
+    }
+
+    private static func buildOrchestrator(
+        components: OrchestratorComponents
+    ) -> AgentOrchestrating {
+        AgentOrchestrator(
             modelCoordinator: components.modelCoordinator,
             persistor: components.persistor,
             contextBuilder: ContextBuilder(tooling: components.tooling),
@@ -114,28 +135,39 @@ public enum AgentOrchestratorFactory {
     private static func createComponents(
         inputs: OrchestratorInputs
     ) -> OrchestratorComponents {
-        let dependencies: ModelCoordinatorDependencies = createModelCoordinatorDependencies(inputs: inputs)
-        let modelCoordinator: ModelStateCoordinator = createModelCoordinator(dependencies: dependencies)
+        let modelCoordinator: ModelStateCoordinator = createModelCoordinator(
+            dependencies: createModelCoordinatorDependencies(inputs: inputs)
+        )
         let persistor: MessagePersistor = createPersistor(database: inputs.database)
-        let subAgentCoordinator: SubAgentCoordinator = createSubAgentCoordinator(
+        let tooling: Tooling = createToolingWithSubAgent(
             database: inputs.database,
             modelCoordinator: modelCoordinator,
             workspaceRoot: inputs.workspaceRoot
         )
-        let tooling: Tooling = createTooling(
-            subAgentCoordinator: subAgentCoordinator,
-            workspaceRoot: inputs.workspaceRoot,
-            database: inputs.database
-        )
-        let workspaceProviders: WorkspaceProviders = createWorkspaceProviders(
-            workspaceRoot: inputs.workspaceRoot
-        )
-
         return OrchestratorComponents(
             modelCoordinator: modelCoordinator,
             persistor: persistor,
             tooling: tooling,
-            workspaceProviders: workspaceProviders
+            workspaceProviders: createWorkspaceProviders(
+                workspaceRoot: inputs.workspaceRoot
+            )
+        )
+    }
+
+    private static func createToolingWithSubAgent(
+        database: DatabaseProtocol,
+        modelCoordinator: ModelStateCoordinator,
+        workspaceRoot: URL?
+    ) -> Tooling {
+        let subAgentCoordinator: SubAgentCoordinator = createSubAgentCoordinator(
+            database: database,
+            modelCoordinator: modelCoordinator,
+            workspaceRoot: workspaceRoot
+        )
+        return createTooling(
+            subAgentCoordinator: subAgentCoordinator,
+            workspaceRoot: workspaceRoot,
+            database: database
         )
     }
 
