@@ -155,7 +155,7 @@ public struct CronExpression: Sendable, Equatable {
     private static func normalizeWeekday(_ weekday: Int) -> Int {
         // Calendar weekday: 1 = Sunday, 7 = Saturday
         // Cron weekday: 0 = Sunday, 6 = Saturday
-        return (weekday - 1 + 7) % 7
+        (weekday - 1 + 7) % 7
     }
 }
 
