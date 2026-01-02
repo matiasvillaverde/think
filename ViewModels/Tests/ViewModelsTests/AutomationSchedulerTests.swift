@@ -1,24 +1,24 @@
 import Abstractions
 import AbstractionsTestUtilities
+@testable import Database
 import Foundation
 import Testing
-@testable import Database
 @testable import ViewModels
 
 @Suite("Automation Scheduler Tests")
-struct AutomationSchedulerTests {
+internal struct AutomationSchedulerTests {
     @Test("Scheduler executes due schedule")
     @MainActor
     func schedulerExecutesDueSchedule() async throws {
-        let database = try await Self.makeDatabase()
-        let chatId = try await Self.createChat(database: database)
+        let database: Database = try await Self.makeDatabase()
+        let chatId: UUID = try await Self.createChat(database: database)
 
-        let past = Date(timeIntervalSinceNow: -300)
-        let formatter = ISO8601DateFormatter()
+        let past: Date = Date(timeIntervalSinceNow: -300)
+        let formatter: ISO8601DateFormatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        let cronExpression = formatter.string(from: past)
+        let cronExpression: String = formatter.string(from: past)
 
-        let scheduleId = try await database.write(
+        let scheduleId: UUID = try await database.write(
             AutomationScheduleCommands.Create(
                 title: "Due",
                 prompt: "Run task",
@@ -30,36 +30,42 @@ struct AutomationSchedulerTests {
             )
         )
 
-        let orchestrator = MockAgentOrchestrator()
-        let scheduler = AutomationScheduler(database: database, orchestrator: orchestrator, pollInterval: 60)
+        let orchestrator: MockAgentOrchestrator = MockAgentOrchestrator()
+        let scheduler: AutomationScheduler = AutomationScheduler(
+            database: database,
+            orchestrator: orchestrator,
+            pollInterval: 60
+        )
 
         await scheduler.runOnce()
 
-        let generateCalls = await orchestrator.generateCalls
+        let generateCalls: [(prompt: String, action: Action, timestamp: Date)] = await orchestrator.generateCalls
         #expect(generateCalls.count == 1)
         #expect(generateCalls.first?.prompt == "Run task")
 
-        let schedule = try await database.read(AutomationScheduleCommands.Get(id: scheduleId))
+        let schedule: AutomationSchedule = try await database.read(
+            AutomationScheduleCommands.Get(id: scheduleId)
+        )
         #expect(schedule.lastRunAt != nil)
         #expect(schedule.isRunning == false)
     }
 
     private static func makeDatabase() async throws -> Database {
-        let config = DatabaseConfiguration(
+        let config: DatabaseConfiguration = DatabaseConfiguration(
             isStoredInMemoryOnly: true,
             allowsSave: true,
             ragFactory: MockRagFactory(mockRag: MockRagging())
         )
-        let database = try Database.new(configuration: config)
+        let database: Database = try Database.new(configuration: config)
         _ = try await database.execute(AppCommands.Initialize())
         try await addRequiredModels(database)
         return database
     }
 
     private static func createChat(database: Database) async throws -> UUID {
-        let personalityId = try await database.read(PersonalityCommands.GetDefault())
-        let models = try await database.read(ModelCommands.FetchAll())
-        guard let languageModel = models.first(where: { $0.modelType.isLanguageCapable }) else {
+        let personalityId: UUID = try await database.read(PersonalityCommands.GetDefault())
+        let models: [SendableModel] = try await database.read(ModelCommands.FetchAll())
+        guard let languageModel: SendableModel = models.first(where: { isLanguageCapable($0.modelType) }) else {
             throw DatabaseError.modelNotFound
         }
         return try await database.write(
@@ -67,10 +73,20 @@ struct AutomationSchedulerTests {
         )
     }
 
+    private static func isLanguageCapable(_ type: SendableModel.ModelType) -> Bool {
+        switch type {
+        case .language, .visualLanguage, .deepLanguage, .flexibleThinker:
+            return true
+
+        case .diffusion, .diffusionXL:
+            return false
+        }
+    }
+
     private static func addRequiredModels(_ database: Database) async throws {
         try await database.write(PersonalityCommands.WriteDefault())
 
-        let languageModel = ModelDTO(
+        let languageModel: ModelDTO = ModelDTO(
             type: .language,
             backend: .mlx,
             name: "test-llm",
@@ -84,7 +100,7 @@ struct AutomationSchedulerTests {
             version: 1
         )
 
-        let imageModel = ModelDTO(
+        let imageModel: ModelDTO = ModelDTO(
             type: .diffusion,
             backend: .mlx,
             name: "test-image",
@@ -98,6 +114,6 @@ struct AutomationSchedulerTests {
             version: 1
         )
 
-        try await database.write(ModelCommands.AddModels(models: [languageModel, imageModel]))
+        try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, imageModel]))
     }
 }

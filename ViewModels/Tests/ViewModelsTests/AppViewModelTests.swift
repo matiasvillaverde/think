@@ -172,7 +172,7 @@ internal enum AppViewModelTests {
                 architecture: .unknown
             )
 
-            try await database.write(ModelCommands.AddModels(models: [languageModelDTO]))
+            try await database.write(ModelCommands.AddModels(modelDTOs: [languageModelDTO]))
             let models: [SendableModel] = try await database.read(ModelCommands.FetchAll())
             guard let languageModel = models.first(where: { $0.modelType == .language }) else {
                 Issue.record("Failed to create test language model")
@@ -266,7 +266,7 @@ internal enum AppViewModelTests {
             architecture: .unknown
         )
 
-        try await database.write(ModelCommands.AddModels(models: [languageModel, imageModel]))
+        try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, imageModel]))
 
         // Set models to downloaded state so they're considered "available"
         let addedModels: [SendableModel] = try await database.read(ModelCommands.FetchAll())

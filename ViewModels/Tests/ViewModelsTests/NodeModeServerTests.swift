@@ -4,14 +4,14 @@ import Testing
 @testable import ViewModels
 
 @Suite("Node Mode Server Tests")
-struct NodeModeServerTests {
+internal struct NodeModeServerTests {
     @Test("Unauthorized request returns 401")
     @MainActor
-    func unauthorizedRequestReturns401() async throws {
-        let gateway = MockGatewayService()
-        let handler = NodeModeRequestHandler(gateway: gateway)
+    func unauthorizedRequestReturns401() async {
+        let gateway: MockGatewayService = MockGatewayService()
+        let handler: NodeModeRequestHandler = NodeModeRequestHandler(gateway: gateway)
 
-        let request = HTTPRequest(
+        let request: HTTPRequest = HTTPRequest(
             method: "GET",
             path: "/sessions",
             queryItems: [],
@@ -19,9 +19,9 @@ struct NodeModeServerTests {
             body: Data()
         )
 
-        let response = await handler.handle(
+        let response: HTTPResponse = await handler.handle(
             request: request,
-            configuration: NodeModeConfiguration(port: 9999, authToken: "secret")
+            configuration: NodeModeConfiguration(port: 9_999, authToken: "secret")
         )
 
         #expect(response.statusCode == 401)
@@ -30,16 +30,16 @@ struct NodeModeServerTests {
     @Test("List sessions returns payload")
     @MainActor
     func listSessionsReturnsPayload() async throws {
-        let session = GatewaySession(
+        let session: GatewaySession = GatewaySession(
             id: UUID(),
             title: "Test",
             createdAt: Date(),
             updatedAt: Date()
         )
-        let gateway = MockGatewayService(sessions: [session])
-        let handler = NodeModeRequestHandler(gateway: gateway)
+        let gateway: MockGatewayService = MockGatewayService(sessions: [session])
+        let handler: NodeModeRequestHandler = NodeModeRequestHandler(gateway: gateway)
 
-        let request = HTTPRequest(
+        let request: HTTPRequest = HTTPRequest(
             method: "GET",
             path: "/sessions",
             queryItems: [],
@@ -47,16 +47,19 @@ struct NodeModeServerTests {
             body: Data()
         )
 
-        let response = await handler.handle(
+        let response: HTTPResponse = await handler.handle(
             request: request,
-            configuration: NodeModeConfiguration(port: 9999, authToken: "secret")
+            configuration: NodeModeConfiguration(port: 9_999, authToken: "secret")
         )
 
         #expect(response.statusCode == 200)
 
-        let decoder = JSONDecoder()
+        let decoder: JSONDecoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        let decoded = try decoder.decode([GatewaySession].self, from: response.body)
+        let decoded: [GatewaySession] = try decoder.decode(
+            [GatewaySession].self,
+            from: response.body
+        )
         #expect(decoded.count == 1)
         #expect(decoded.first?.title == "Test")
     }
@@ -70,21 +73,23 @@ private actor MockGatewayService: GatewayServicing {
     }
 
     func createSession(title: String?) async throws -> GatewaySession {
-        let session = GatewaySession(
+        try await Task.sleep(nanoseconds: 0)
+        return GatewaySession(
             id: UUID(),
             title: title ?? "Untitled",
             createdAt: Date(),
             updatedAt: Date()
         )
-        return session
     }
 
     func listSessions() async throws -> [GatewaySession] {
-        sessions
+        try await Task.sleep(nanoseconds: 0)
+        return sessions
     }
 
     func getSession(id: UUID) async throws -> GatewaySession {
-        guard let session = sessions.first(where: { $0.id == id }) else {
+        try await Task.sleep(nanoseconds: 0)
+        guard let session: GatewaySession = sessions.first(where: { $0.id == id }) else {
             throw GatewayError.sessionNotFound
         }
         return session
@@ -94,7 +99,8 @@ private actor MockGatewayService: GatewayServicing {
         sessionId: UUID,
         options: GatewayHistoryOptions
     ) async throws -> [GatewayMessage] {
-        []
+        try await Task.sleep(nanoseconds: 0)
+        return []
     }
 
     func send(
@@ -102,19 +108,21 @@ private actor MockGatewayService: GatewayServicing {
         input: String,
         options: GatewaySendOptions
     ) async throws -> GatewaySendResult {
-        GatewaySendResult(messageId: UUID(), assistantMessage: nil)
+        try await Task.sleep(nanoseconds: 0)
+        return GatewaySendResult(messageId: UUID(), assistantMessage: nil)
     }
 
     func spawnSubAgent(
         sessionId: UUID,
         request: SubAgentRequest
     ) async throws -> SubAgentResult {
-        SubAgentResult(
+        try await Task.sleep(nanoseconds: 0)
+        return SubAgentResult(
             id: request.id,
             output: "",
-            toolsUsed: [],
             durationMs: 0,
             status: .completed,
+            toolsUsed: [],
             errorMessage: nil,
             completedAt: Date()
         )

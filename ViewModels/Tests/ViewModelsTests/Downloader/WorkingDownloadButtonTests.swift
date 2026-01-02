@@ -286,7 +286,8 @@ internal final class WorkingMockCommunityExplorer: CommunityModelsExplorerProtoc
             modelType: .language,
             location: await discovery.id,  // Use the discovered model's ID as location to ensure proper linkage
             architecture: .unknown,  // Default to unknown for mock
-            backend: preferredBackend ?? .mlx
+            backend: preferredBackend ?? .mlx,
+            locationKind: .huggingFace,
         )
     }
 
