@@ -9,6 +9,16 @@ public struct CronStrategy: ToolStrategy {
 
     private let database: DatabaseProtocol
 
+    private struct ScheduleSnapshot: Sendable {
+        let id: UUID
+        let title: String
+        let prompt: String
+        let isEnabled: Bool
+        let isRunning: Bool
+        let nextRunAt: Date?
+        let actionTypeRaw: String
+    }
+
     public let definition: ToolDefinition = ToolDefinition(
         name: "cron",
         description: """
@@ -199,13 +209,11 @@ public struct CronStrategy: ToolStrategy {
             )
         )
 
-        let schedule: AutomationSchedule = try await database.read(
-            AutomationScheduleCommands.Get(id: scheduleId)
-        )
-        let nextRunAt: String = schedule.nextRunAt.map { iso8601String(from: $0) } ?? ""
+        let nextRunAt: Date? = try await fetchScheduleNextRunAt(id: scheduleId)
+        let nextRunAtString: String = nextRunAt.map { iso8601String(from: $0) } ?? ""
         return [
             "id": scheduleId.uuidString,
-            "next_run_at": nextRunAt
+            "next_run_at": nextRunAtString
         ]
     }
 
@@ -215,19 +223,17 @@ public struct CronStrategy: ToolStrategy {
     ) async -> ToolResponse {
         do {
             let chatId: UUID? = parseChatId(json["chat_id"], request: request)
-            let schedules: [AutomationSchedule] = try await database.read(
-                AutomationScheduleCommands.List(chatId: chatId)
-            )
+            let schedules: [ScheduleSnapshot] = try await fetchScheduleSnapshots(chatId: chatId)
 
             let payload: [[String: Any]] = schedules.map { schedule in
                 let nextRunAt: String = schedule.nextRunAt.map { iso8601String(from: $0) } ?? ""
-                [
+                return [
                     "id": schedule.id.uuidString,
                     "title": schedule.title,
                     "enabled": schedule.isEnabled,
                     "running": schedule.isRunning,
                     "next_run_at": nextRunAt,
-                    "action_type": schedule.actionType.rawValue
+                    "action_type": schedule.actionTypeRaw
                 ]
             }
 
@@ -385,6 +391,33 @@ public struct CronStrategy: ToolStrategy {
         }
         return UUID(uuidString: string)
     }
+
+    @MainActor
+    private func fetchScheduleNextRunAt(id: UUID) async throws -> Date? {
+        let schedule: AutomationSchedule = try await database.read(
+            AutomationScheduleCommands.Get(id: id)
+        )
+        return schedule.nextRunAt
+    }
+
+    @MainActor
+    private func fetchScheduleSnapshots(chatId: UUID?) async throws -> [ScheduleSnapshot] {
+        let schedules: [AutomationSchedule] = try await database.read(
+            AutomationScheduleCommands.List(chatId: chatId)
+        )
+        return schedules.map { schedule in
+            ScheduleSnapshot(
+                id: schedule.id,
+                title: schedule.title,
+                prompt: schedule.prompt,
+                isEnabled: schedule.isEnabled,
+                isRunning: schedule.isRunning,
+                nextRunAt: schedule.nextRunAt,
+                actionTypeRaw: schedule.actionType.rawValue
+            )
+        }
+    }
+
     private func iso8601String(from date: Date) -> String {
         let formatter: ISO8601DateFormatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

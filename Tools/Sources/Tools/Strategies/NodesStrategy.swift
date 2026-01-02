@@ -9,6 +9,12 @@ public struct NodesStrategy: ToolStrategy {
 
     private let database: DatabaseProtocol
 
+    private struct NodeSettingsSnapshot: Sendable {
+        let enabled: Bool
+        let port: Int
+        let authRequired: Bool
+    }
+
     public let definition: ToolDefinition = ToolDefinition(
         name: "nodes",
         description: "Report local node mode settings and availability.",
@@ -26,11 +32,11 @@ public struct NodesStrategy: ToolStrategy {
 
     public func execute(request: ToolRequest) async -> ToolResponse {
         do {
-            let settings: AppSettings = try await database.read(SettingsCommands.GetOrCreate())
+            let settings: NodeSettingsSnapshot = try await fetchSettingsSnapshot()
             let payload: [String: Any] = [
-                "enabled": settings.nodeModeEnabled,
-                "port": settings.nodeModePort,
-                "auth_required": settings.nodeModeAuthToken != nil
+                "enabled": settings.enabled,
+                "port": settings.port,
+                "auth_required": settings.authRequired
             ]
             return BaseToolStrategy.successResponse(
                 request: request,
@@ -53,5 +59,15 @@ public struct NodesStrategy: ToolStrategy {
             return nil
         }
         return String(data: data, encoding: .utf8)
+    }
+
+    @MainActor
+    private func fetchSettingsSnapshot() async throws -> NodeSettingsSnapshot {
+        let settings: AppSettings = try await database.read(SettingsCommands.GetOrCreate())
+        return NodeSettingsSnapshot(
+            enabled: settings.nodeModeEnabled,
+            port: settings.nodeModePort,
+            authRequired: settings.nodeModeAuthToken != nil
+        )
     }
 }

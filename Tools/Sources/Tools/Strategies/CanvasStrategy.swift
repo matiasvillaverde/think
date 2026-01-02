@@ -9,6 +9,13 @@ public struct CanvasStrategy: ToolStrategy {
 
     private let database: DatabaseProtocol
 
+    private struct CanvasSnapshot: Sendable {
+        let id: UUID
+        let title: String
+        let content: String
+        let updatedAt: Date
+    }
+
     public let definition: ToolDefinition = ToolDefinition(
         name: "canvas",
         description: """
@@ -123,7 +130,7 @@ public struct CanvasStrategy: ToolStrategy {
 
         do {
             let canvasId: UUID = try await resolveCanvasId(json: json, request: request)
-            let existing: CanvasDocument = try await database.read(CanvasCommands.Get(id: canvasId))
+            let existing: CanvasSnapshot = try await fetchCanvasSnapshot(id: canvasId)
             let newContent: String
             if append {
                 let separator: String = existing.content.isEmpty ? "" : "\n"
@@ -158,7 +165,7 @@ public struct CanvasStrategy: ToolStrategy {
     ) async -> ToolResponse {
         do {
             let canvasId: UUID = try await resolveCanvasId(json: json, request: request)
-            let canvas: CanvasDocument = try await database.read(CanvasCommands.Get(id: canvasId))
+            let canvas: CanvasSnapshot = try await fetchCanvasSnapshot(id: canvasId)
             let payload: [String: Any] = [
                 "id": canvas.id.uuidString,
                 "title": canvas.title,
@@ -184,9 +191,7 @@ public struct CanvasStrategy: ToolStrategy {
     ) async -> ToolResponse {
         do {
             let chatId: UUID? = parseChatId(json["chat_id"], request: request)
-            let canvases: [CanvasDocument] = try await database.read(
-                CanvasCommands.List(chatId: chatId)
-            )
+            let canvases: [CanvasSnapshot] = try await fetchCanvasSnapshots(chatId: chatId)
             let payload: [[String: Any]] = canvases.map { canvas in
                 [
                     "id": canvas.id.uuidString,
@@ -223,6 +228,32 @@ public struct CanvasStrategy: ToolStrategy {
         return try await database.write(
             CanvasCommands.GetOrCreateDefault(chatId: chatId)
         )
+    }
+
+    @MainActor
+    private func fetchCanvasSnapshot(id: UUID) async throws -> CanvasSnapshot {
+        let canvas: CanvasDocument = try await database.read(CanvasCommands.Get(id: id))
+        return CanvasSnapshot(
+            id: canvas.id,
+            title: canvas.title,
+            content: canvas.content,
+            updatedAt: canvas.updatedAt
+        )
+    }
+
+    @MainActor
+    private func fetchCanvasSnapshots(chatId: UUID?) async throws -> [CanvasSnapshot] {
+        let canvases: [CanvasDocument] = try await database.read(
+            CanvasCommands.List(chatId: chatId)
+        )
+        return canvases.map { canvas in
+            CanvasSnapshot(
+                id: canvas.id,
+                title: canvas.title,
+                content: canvas.content,
+                updatedAt: canvas.updatedAt
+            )
+        }
     }
 
     private func parseChatId(_ value: Any?, request: ToolRequest) -> UUID? {
