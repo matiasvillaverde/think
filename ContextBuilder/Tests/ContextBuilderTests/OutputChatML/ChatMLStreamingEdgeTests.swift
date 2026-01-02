@@ -14,7 +14,8 @@ internal struct ChatMLStreamingEdgeTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let part1 = "<commentary>Use tool</commentary><tool_call>{\"name\":\"search\""

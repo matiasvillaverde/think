@@ -14,7 +14,8 @@ internal struct OutputStreamingFuzzTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output = [
@@ -51,7 +52,8 @@ internal struct OutputStreamingFuzzTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output = [
@@ -95,7 +97,8 @@ internal struct OutputStreamingFuzzTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .harmony
+            architecture: .harmony,
+            locationKind: .huggingFace,
         )
 
         let output = [

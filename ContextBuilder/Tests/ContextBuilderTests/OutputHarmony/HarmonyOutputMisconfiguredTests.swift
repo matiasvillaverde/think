@@ -21,7 +21,8 @@ internal struct HarmonyOutputMisconfiguredTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .harmony
+            architecture: .harmony,
+            locationKind: .huggingFace,
         )
 
         let result = try await contextBuilder.process(output: harmonyOutput, model: model)
@@ -42,7 +43,8 @@ internal struct HarmonyOutputMisconfiguredTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let result = try await contextBuilder.process(output: harmonyOutput, model: model)

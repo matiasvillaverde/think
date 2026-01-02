@@ -20,7 +20,8 @@ internal struct HarmonyReasoningSystemMessage {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: architecture
+            architecture: architecture,
+            locationKind: .huggingFace,
         )
 
         // This test matches current behavior: with reasoning + messages, uses "analysis, final"

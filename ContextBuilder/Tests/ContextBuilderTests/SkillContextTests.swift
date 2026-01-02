@@ -45,7 +45,8 @@ internal struct SkillContextTests {
             modelType: .language,
             location: "test/model",
             architecture: .phi,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace,
         )
 
         let parameters = BuildParameters(
@@ -100,7 +101,8 @@ internal struct SkillContextTests {
             modelType: .language,
             location: "test/model",
             architecture: .phi,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace,
         )
 
         let parameters = BuildParameters(

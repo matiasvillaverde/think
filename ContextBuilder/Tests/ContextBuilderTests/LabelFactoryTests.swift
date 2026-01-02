@@ -101,7 +101,8 @@ internal struct LabelFactoryTests {
             modelType: .language,
             location: "qwen/qwen-test",
             architecture: .qwen,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace,
         )
 
         // Test Qwen-specific factory
@@ -115,7 +116,8 @@ internal struct LabelFactoryTests {
             modelType: .language,
             location: "bert/bert-test",
             architecture: .bert,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace,
         )
 
         let noLabels: QwenLabels? = LabelFactory.createQwenLabels(for: wrongModel)

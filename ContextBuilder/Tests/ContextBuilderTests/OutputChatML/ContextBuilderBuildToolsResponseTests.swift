@@ -43,7 +43,8 @@ internal struct ContextBuilderBuildToolsResponseTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: architecture
+            architecture: architecture,
+            locationKind: .huggingFace,
         )
 
         let toolCallId = UUID()

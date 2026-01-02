@@ -14,7 +14,8 @@ internal struct KimiOutputParserEdgeTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output = [
@@ -41,7 +42,8 @@ internal struct KimiOutputParserEdgeTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output = [

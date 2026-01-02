@@ -22,7 +22,8 @@ internal struct HarmonyOutputTestToolResponseParsing {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: architecture
+            architecture: architecture,
+            locationKind: .huggingFace,
         )
 
         // Read the input from the file to determine what to process
@@ -33,7 +34,7 @@ internal struct HarmonyOutputTestToolResponseParsing {
 
         // For output tests, we're validating the parsing works correctly
         // The exact assertion depends on what the test is checking
-        #expect(result != nil)
+        #expect(result.channels.isEmpty == false)
     }
 
     private func loadResource(_ name: String) throws -> String {

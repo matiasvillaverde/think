@@ -14,7 +14,8 @@ internal struct KimiOutputParserTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output = [
@@ -52,7 +53,8 @@ internal struct KimiOutputParserTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output = "Hello from Kimi."
@@ -72,7 +74,8 @@ internal struct KimiOutputParserTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output = [
@@ -98,7 +101,8 @@ internal struct KimiOutputParserTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output =
@@ -122,7 +126,8 @@ internal struct KimiOutputParserTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output =

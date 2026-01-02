@@ -29,7 +29,8 @@ internal struct ContextBuilderQwenNoThinkTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .qwen
+            architecture: .qwen,
+            locationKind: .huggingFace,
         )
 
         let messages = [

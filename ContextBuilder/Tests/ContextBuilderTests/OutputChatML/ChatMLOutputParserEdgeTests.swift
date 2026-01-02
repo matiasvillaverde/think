@@ -14,7 +14,8 @@ internal struct ChatMLOutputParserEdgeTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output = [
@@ -45,7 +46,8 @@ internal struct ChatMLOutputParserEdgeTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let output = "<commentary>\n</commentary>Final"

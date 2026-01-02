@@ -34,7 +34,8 @@ extension ChatMLToolsStreamingTests {
             ramNeeded: TestConstants.testRAMNeeded,
             modelType: .language,
             location: "test-model",
-            architecture: architecture
+            architecture: architecture,
+            locationKind: .huggingFace,
         )
     }
 

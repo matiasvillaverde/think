@@ -14,7 +14,8 @@ internal struct KimiOutputStreamingTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .llama
+            architecture: .llama,
+            locationKind: .huggingFace,
         )
 
         let part1 = "Preparing...<|tool_calls_section_begin|>"

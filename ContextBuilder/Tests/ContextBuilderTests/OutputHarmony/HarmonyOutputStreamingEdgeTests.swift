@@ -14,7 +14,8 @@ internal struct HarmonyOutputStreamingEdgeTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .harmony
+            architecture: .harmony,
+            locationKind: .huggingFace,
         )
 
         let part1 = "<|channel|>analysis<|message|>Thinking<|return|>"
@@ -49,7 +50,8 @@ internal struct HarmonyOutputStreamingEdgeTests {
             ramNeeded: 1_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: .harmony
+            architecture: .harmony,
+            locationKind: .huggingFace,
         )
 
         let part1 = "<|channel|>tool<|message|>{\"q\":\"x\"}"
