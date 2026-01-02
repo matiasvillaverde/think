@@ -118,6 +118,16 @@ extension AutomationScheduleCommands {
                 return oneShotDate
             }
         }
+
+        private static func parseOneShotDate(_ value: String) -> Date? {
+            let formatter: ISO8601DateFormatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date: Date = formatter.date(from: value) {
+                return date
+            }
+            formatter.formatOptions = [.withInternetDateTime]
+            return formatter.date(from: value)
+        }
     }
 
     /// Fetch a schedule by id.

@@ -1,11 +1,12 @@
+import Abstractions
 import Foundation
-import SwiftData
 import OSLog
+import SwiftData
 
 /// Commands for managing application settings.
 public enum SettingsCommands {}
 
-public enum SettingUpdate<Value> {
+public enum SettingUpdate<Value: Sendable>: Sendable {
     case noChange
     case set(Value)
 }
