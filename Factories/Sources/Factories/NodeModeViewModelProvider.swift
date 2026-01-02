@@ -73,7 +73,7 @@ public struct AutomationSchedulerProvider: ViewModifier {
                     orchestrator: orchestrator
                 )
                 scheduler = newScheduler
-                newScheduler.start()
+                await newScheduler.start()
             }
         }
     }
