@@ -75,8 +75,11 @@ internal struct MessagePersistorChannelTests {
             output: output
         )
 
-        // Then - should not throw
-        #expect(true)
+        // Then
+        let message: Message = try await env.database.read(
+            MessageCommands.Read(id: env.messageId)
+        )
+        #expect(message.channels?.isEmpty ?? true)
     }
 
     // MARK: - Test Helpers

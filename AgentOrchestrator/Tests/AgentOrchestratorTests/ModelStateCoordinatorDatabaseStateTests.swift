@@ -126,7 +126,7 @@ internal struct ModelStateCoordinatorDatabaseStateTests {
 
         // Get model ID for verification
         let models: [SendableModel] = try await env.database.read(ModelCommands.FetchAll())
-        guard let model = models.first(where: { $0.location == "test/model" }) else {
+        guard models.contains(where: { $0.location == "test/model" }) else {
             throw DatabaseError.modelNotFound
         }
 

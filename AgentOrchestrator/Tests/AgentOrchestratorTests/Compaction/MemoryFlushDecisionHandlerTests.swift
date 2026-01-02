@@ -56,7 +56,8 @@ internal struct MemoryFlushDecisionHandlerTests {
                 modelType: .language,
                 location: "test/model",
                 architecture: .llama,
-                backend: .mlx
+                backend: .mlx,
+                locationKind: .huggingFace,
             ),
             action: .textGeneration([]),
             prompt: "test"

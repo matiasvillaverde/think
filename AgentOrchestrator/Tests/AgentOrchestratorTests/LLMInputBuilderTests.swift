@@ -29,7 +29,9 @@ internal struct LLMInputBuilderTests {
             ramNeeded: 8_000_000_000,
             modelType: .language,
             location: "test-model",
-            architecture: architecture
+            architecture: architecture,
+            backend: .mlx,
+            locationKind: .huggingFace
         )
     }
 
