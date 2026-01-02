@@ -11,9 +11,9 @@ struct ModelCommandsAdditionalTests {
     @MainActor
     func getRamNeededSuccess() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(name: "test-model")
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // When
         let ramNeeded = try await database.read(ModelCommands.GetModelRamNeeded(id: id))
@@ -26,9 +26,9 @@ struct ModelCommandsAdditionalTests {
     @MainActor
     func getModelTypeSuccess() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(name: "test-model")
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // When
         let modelType = try await database.read(ModelCommands.GetModelType(id: id))
@@ -41,36 +41,31 @@ struct ModelCommandsAdditionalTests {
     @MainActor
     func getLocalURLSuccess() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(name: "test-model", isDownloaded: true)
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
-        let model = try await database.read(ModelCommands.GetModelFromId(id: id))
-        // NOTE: downloadedLocation property no longer exists
-        // model.downloadedLocation = "some/path"
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // When
-        // NOTE: GetModelDownloadedLocationURL command no longer exists
-        // let localURL = try await database.read(ModelCommands.GetModelDownloadedLocationURL(id: id))
+        let model = try await database.read(ModelCommands.GetModelFromId(id: id))
 
         // Then
-        // NOTE: localURL no longer exists since GetModelDownloadedLocationURL was removed
-        // #expect(localURL.absoluteString == "some/path")
+        #expect(model.locationHuggingface == "local/path/model")
     }
 
     @Test("Get local URL throws error for non-downloaded model")
     @MainActor
     func getLocalURLFailure() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-model",
             isDownloaded: false,
             locationRemote: URL(string: "https://example.com/model")!
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        _ = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // Then
-        await #expect(throws: Model.ModelError.invalidLocation) {
+        #expect(throws: Model.ModelError.invalidLocation) {
             // NOTE: GetModelDownloadedLocationURL command no longer exists
             // _ = try await database.read(ModelCommands.GetModelDownloadedLocationURL(id: id))
             throw Model.ModelError.invalidLocation
@@ -81,7 +76,7 @@ struct ModelCommandsAdditionalTests {
     @MainActor
     func handleInvalidModelId() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let invalidId = UUID()
 
         // Then - RAM needed
@@ -95,7 +90,7 @@ struct ModelCommandsAdditionalTests {
         }
 
         // Then - Local URL
-        await #expect(throws: DatabaseError.modelNotFound) {
+        #expect(throws: DatabaseError.modelNotFound) {
             // NOTE: GetModelDownloadedLocationURL command no longer exists
             // _ = try await database.read(ModelCommands.GetModelDownloadedLocationURL(id: invalidId))
             throw DatabaseError.modelNotFound
@@ -106,9 +101,9 @@ struct ModelCommandsAdditionalTests {
     @MainActor
     func concurrentAccess() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(name: "test-model")
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // When - Concurrent reads
         await withThrowingTaskGroup(of: Void.self) { group in
@@ -137,12 +132,12 @@ struct ModelCommandsSendableTests {
     @MainActor
     func getSendableModelFromLocal() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-model",
             isDownloaded: true
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // When
         let sendableModel = try await database.read(
@@ -160,13 +155,13 @@ struct ModelCommandsSendableTests {
     @MainActor
     func getSendableModelFromRemote() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-model",
             isDownloaded: false,
             locationRemote: URL(string: "https://example.com/model")!
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // When
         let sendableModel = try await database.read(
@@ -184,7 +179,7 @@ struct ModelCommandsSendableTests {
     @MainActor
     func getSendableModelFromHuggingFace() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelDTO(
             type: .language,
             backend: .mlx,
@@ -199,7 +194,7 @@ struct ModelCommandsSendableTests {
             version: 2,
             architecture: .unknown
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // When
         let sendableModel = try await database.read(
@@ -222,7 +217,7 @@ struct ModelCommandsSendableEdgeCases {
     @MainActor
     func invalidModelId() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let invalidId = UUID()
 
         // Then
@@ -235,7 +230,7 @@ struct ModelCommandsSendableEdgeCases {
     @MainActor
     func missingLocationInfo() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelDTO(
             type: .language,
             backend: .mlx,
@@ -253,7 +248,7 @@ struct ModelCommandsSendableEdgeCases {
 
         // Then
         await #expect(throws: Model.ModelError.invalidLocation) {
-            _ = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+            _ = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
         }
     }
 }

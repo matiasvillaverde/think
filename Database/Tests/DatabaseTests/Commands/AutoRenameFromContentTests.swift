@@ -60,7 +60,7 @@ private func addRequiredModelsForAutoRenameTest(_ database: Database) async thro
         version: 1
     )
 
-    try await database.write(ModelCommands.AddModels(models: [languageModel, imageModel]))
+    try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, imageModel]))
 }
 
 @Suite("AutoRenameFromContent Tests")

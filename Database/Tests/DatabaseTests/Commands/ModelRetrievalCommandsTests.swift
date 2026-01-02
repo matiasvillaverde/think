@@ -55,7 +55,7 @@ private func addRequiredModelsForRetrieval(_ database: Database) async throws {
         version: 1
     )
 
-    try await database.write(ModelCommands.AddModels(models: [languageModel, deepLanguageModel, imageModel]))
+    try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, deepLanguageModel, imageModel]))
 }
 
 @Suite("Model Retrieval Commands Tests", .serialized)

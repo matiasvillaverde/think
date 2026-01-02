@@ -71,7 +71,7 @@ struct ChatCommandsCreateWithModelTests {
         )
 
         try await database.writeInBackground(
-            ModelCommands.AddModels(models: [preferredLanguageModel, alternativeLanguageModel, imageModel])
+            ModelCommands.AddModels(modelDTOs: [preferredLanguageModel, alternativeLanguageModel, imageModel])
         )
 
         // Get the model IDs

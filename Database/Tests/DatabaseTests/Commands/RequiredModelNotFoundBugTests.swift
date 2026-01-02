@@ -38,7 +38,7 @@ struct RequiredModelNotFoundBugTests {
         )
 
         try await database.writeInBackground(
-            ModelCommands.AddModels(models: [textGenerationModel])
+            ModelCommands.AddModels(modelDTOs: [textGenerationModel])
         )
 
         // When/Then - Creating a chat should fail because not all required models are available
@@ -117,7 +117,7 @@ struct RequiredModelNotFoundBugTests {
         )
 
         try await database.writeInBackground(
-            ModelCommands.AddModels(models: [textGenerationModel, deepTextGenerationModel])
+            ModelCommands.AddModels(modelDTOs: [textGenerationModel, deepTextGenerationModel])
         )
 
         // When/Then - Creating a chat should fail because the image model is missing
@@ -197,7 +197,7 @@ struct ProductionBugPatternTests {
         // Add all models with bundle locations, but the current implementation
         // doesn't handle these properly in the findRequiredModels() method
         try await database.writeInBackground(
-            ModelCommands.AddModels(models: [
+            ModelCommands.AddModels(modelDTOs: [
                 textGenerationModel,
                 deepTextGenerationModel,
                 diffusionModel
@@ -276,7 +276,7 @@ struct ProductionBugPatternTests {
         )
 
         try await database.writeInBackground(
-            ModelCommands.AddModels(models: [
+            ModelCommands.AddModels(modelDTOs: [
                 textGenerationModel,
                 deepTextGenerationModel,
                 diffusionModel

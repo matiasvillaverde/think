@@ -12,11 +12,11 @@ struct ModelCommandsTests {
         @MainActor
         func addModelsSuccess() async throws {
             // Given
-            let database = try await setupTestDatabase()
+            let database = try setupTestDatabase()
             let modelDTO = createTestModelDTO(name: "test-model")
 
             // When
-            try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+            try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
             // Then
             let descriptor = FetchDescriptor<Model>()
@@ -30,9 +30,9 @@ struct ModelCommandsTests {
         @MainActor
         func getDefaultModelSuccess() async throws {
             // Given
-            let database = try await setupTestDatabase()
+            let database = try setupTestDatabase()
             let modelDTO = createTestModelDTO(name: "test-model", isDownloaded: true)
-            try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+            try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
             // Set the model state to downloaded so GetModelForType can find it
             let context = database.modelContainer.mainContext
@@ -118,7 +118,7 @@ extension ModelCommandsTests {
 
         try await database.writeInBackground(
             ModelCommands.AddModels(
-                models: [textGenerationModel, diffusionModel, deepTextGenerationModel]
+                modelDTOs: [textGenerationModel, diffusionModel, deepTextGenerationModel]
             )
         )
     }

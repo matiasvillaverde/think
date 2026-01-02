@@ -38,7 +38,7 @@ func addRequiredModelsForMessageCommands(_ database: Database) async throws {
         version: 1
     )
 
-    try await database.write(ModelCommands.AddModels(models: [languageModel, imageModel]))
+    try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, imageModel]))
 }
 
 // MARK: - Extensions

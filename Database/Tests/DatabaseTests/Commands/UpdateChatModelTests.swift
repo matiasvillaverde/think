@@ -41,7 +41,7 @@ private func addRequiredModels(_ database: Database) async throws {
         version: 1
     )
 
-    try await database.write(ModelCommands.AddModels(models: [languageModel, imageModel]))
+    try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, imageModel]))
 }
 
 @Suite("UpdateChatModel Command Tests")
@@ -240,7 +240,7 @@ func addNewLanguageModel(_ database: Database) async throws -> UUID {
     )
 
     try await database.writeInBackground(
-        ModelCommands.AddModels(models: [newLanguageModel])
+        ModelCommands.AddModels(modelDTOs: [newLanguageModel])
     )
 
     // Fetch the created model to get its ID
@@ -267,7 +267,7 @@ func addNewDeepLanguageModel(_ database: Database) async throws -> UUID {
     )
 
     try await database.write(
-        ModelCommands.AddModels(models: [newDeepLanguageModel])
+        ModelCommands.AddModels(modelDTOs: [newDeepLanguageModel])
     )
 
     // Fetch the created model to get its ID
@@ -294,7 +294,7 @@ func addNewDiffusionModel(_ database: Database) async throws -> UUID {
     )
 
     try await database.write(
-        ModelCommands.AddModels(models: [newDiffusionModel])
+        ModelCommands.AddModels(modelDTOs: [newDiffusionModel])
     )
 
     // Fetch the created model to get its ID
@@ -321,7 +321,7 @@ func addNewVisualLanguageModel(_ database: Database) async throws -> UUID {
     )
 
     try await database.write(
-        ModelCommands.AddModels(models: [newVisualLanguageModel])
+        ModelCommands.AddModels(modelDTOs: [newVisualLanguageModel])
     )
 
     // Fetch the created model to get its ID

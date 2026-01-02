@@ -48,10 +48,11 @@ struct ModelCommandsDiscoveryTests {
             modelType: .language,
             location: "mlx-community/test-model",
             architecture: .llama,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
 
         // When: Creating model from discovery
         let modelId = try await database.write(
@@ -126,10 +127,11 @@ struct ModelCommandsDiscoveryTests {
             modelType: .language,
             location: "test/minimal-model",
             architecture: .unknown,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
 
         // When: Creating minimal model from discovery
         let modelId = try await database.write(
@@ -184,8 +186,8 @@ struct ModelCommandsDiscoveryTests {
             architecture: .unknown
         )
 
-        let database = try await ModelCommandsTests.setupTestDatabase()
-        try await database.write(ModelCommands.AddModels(models: [originalDTO]))
+        let database = try ModelCommandsTests.setupTestDatabase()
+        try await database.write(ModelCommands.AddModels(modelDTOs: [originalDTO]))
 
         // Update the model ID to match our test
         let context = database.modelContainer.mainContext
@@ -227,7 +229,8 @@ struct ModelCommandsDiscoveryTests {
             modelType: .language,
             location: "existing-model",
             architecture: .llama,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
         // When: Updating model from discovery
@@ -269,7 +272,7 @@ struct ModelCommandsDiscoveryTests {
     @Test("CreateFromDiscovery validates required fields")
     @MainActor
     func createFromDiscoveryValidatesRequiredFields() async throws {
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
 
         // Test with empty name
         let invalidDiscoveredModel = DiscoveredModel(
@@ -288,7 +291,8 @@ struct ModelCommandsDiscoveryTests {
             modelType: .language,
             location: "test/invalid",
             architecture: .unknown,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
         // When/Then: Should throw validation error
@@ -306,7 +310,7 @@ struct ModelCommandsDiscoveryTests {
     @MainActor
     func testCreateFromDiscoveryAcceptsCoreMLZipFiles() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
 
         let discoveredModel = DiscoveredModel(
             id: "test-author/test-coreml-model",
@@ -330,7 +334,8 @@ struct ModelCommandsDiscoveryTests {
             modelType: .diffusion,
             location: "test-author/test-coreml-model",
             architecture: .unknown,
-            backend: .coreml
+            backend: .coreml,
+            locationKind: .huggingFace
         )
 
         // When: Create model from discovery
@@ -357,7 +362,7 @@ struct ModelCommandsDiscoveryTests {
     @MainActor
     func testCreateFromDiscoveryRejectsEmptyCoreMLModels() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
 
         let discoveredModel = DiscoveredModel(
             id: "test-author/empty-model",
@@ -376,7 +381,8 @@ struct ModelCommandsDiscoveryTests {
             modelType: .diffusion,
             location: "test-author/empty-model",
             architecture: .unknown,
-            backend: .coreml
+            backend: .coreml,
+            locationKind: .huggingFace
         )
 
         // When/Then: Should throw validation error
@@ -394,7 +400,7 @@ struct ModelCommandsDiscoveryTests {
     @MainActor
     func testCreateFromDiscoveryRejectsCoreMLModelsWithOnlyConfigFiles() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
 
         let discoveredModel = DiscoveredModel(
             id: "test-author/config-only-model",
@@ -416,7 +422,8 @@ struct ModelCommandsDiscoveryTests {
             modelType: .diffusion,
             location: "test-author/config-only-model",
             architecture: .unknown,
-            backend: .coreml
+            backend: .coreml,
+            locationKind: .huggingFace
         )
 
         // When/Then: Should throw validation error

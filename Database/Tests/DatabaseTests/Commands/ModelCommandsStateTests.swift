@@ -10,13 +10,13 @@ struct ModelCommandsStateTests {
     @MainActor
     func downloadProgressUpdates() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-model",
             isDownloaded: false,
             locationRemote: URL(string: "https://example.com/model")!
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
         let model = try await database.read(ModelCommands.GetModelFromId(id: id))
         #expect(model.state?.isDownloadingActive == false)
 
@@ -61,13 +61,13 @@ struct ModelCommandsStateTests {
     @MainActor
     func downloadProgressCompletion() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-model",
             isDownloaded: false,
             locationRemote: URL(string: "https://example.com/llm")!
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // Verify initial state
         var state = try await database.read(
@@ -99,7 +99,6 @@ struct ModelCommandsStateTests {
         state = try await database.read(
             ModelCommands.GetModelState(id: id)
         )
-        let model = try await database.read(ModelCommands.GetModelFromId(id: id))
         #expect(state == .downloaded)
         // NOTE: downloadedLocation property no longer exists
         // #expect(model.downloadedLocation == "llm")
@@ -109,13 +108,13 @@ struct ModelCommandsStateTests {
     @MainActor
     func stateChangesToDownloadedAtExactlyOne() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-model",
             isDownloaded: false,
             locationRemote: URL(string: "https://example.com/model")!
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // Verify initial state
         var state = try await database.read(
@@ -158,12 +157,12 @@ struct ModelCommandsStateTests {
     @MainActor
     func deleteLocalLocation() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-model",
             isDownloaded: true
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
         let model = try await database.read(ModelCommands.GetModelFromId(id: id))
         // NOTE: downloadedLocation property no longer exists
         // model.downloadedLocation = "some/path"

@@ -68,7 +68,7 @@ struct LanguageModelConfigurationTests {
                 architecture: .unknown
             )
 
-            try await database.write(ModelCommands.AddModels(models: [
+            try await database.write(ModelCommands.AddModels(modelDTOs: [
                 textGenerationModel,
                 deepTextGenerationModel,
                 imageGenerationModel
@@ -118,7 +118,7 @@ struct LanguageModelConfigurationTests {
                 _ = try await database.read(
                     ChatCommands.GetLanguageModelConfiguration(
                         chatId: nonExistentChatId,
-                        prompt: "Test prompt"
+                        prompt: testPrompt
                     )
                 )
             }
@@ -277,7 +277,7 @@ struct LanguageModelConfigurationTests {
                 architecture: .unknown
             )
 
-            try await database.write(ModelCommands.AddModels(models: [
+            try await database.write(ModelCommands.AddModels(modelDTOs: [
                 textGenerationModel,
                 deepTextGenerationModel,
                 imageGenerationModel
@@ -364,7 +364,7 @@ struct LanguageModelConfigurationTests {
             )
 
             // When - Add model (this would have crashed before the fix)
-            let modelId = try await database.write(ModelCommands.AddModels(models: [modelWithEmptyName]))
+            let modelId = try await database.write(ModelCommands.AddModels(modelDTOs: [modelWithEmptyName]))
 
             // Then - Verify the model with empty displayName was handled correctly
             let model = try await database.read(ModelCommands.GetModelFromId(id: modelId))

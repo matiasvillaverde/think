@@ -6,6 +6,7 @@ import Testing
 @Suite("Message-Channel Relationship Tests")
 struct MessageChannelRelationshipTests {
     @Test("Message has channelEntities relationship property")
+    @MainActor
     func messageHasChannelEntitiesProperty() {
         // This test verifies that the Message model has been updated
         // with the channelEntities relationship property.
@@ -18,8 +19,8 @@ struct MessageChannelRelationshipTests {
         // 2. Channel has a message property
         // 3. The sortedChannelEntities computed property exists
         
-        // The test passes if compilation succeeds
-        #expect(true)
+        let message = Message.previewUserInputOnly
+        #expect(message.sortedChannels.isEmpty)
     }
     
     @Test("Channel works with migration constructor")

@@ -67,11 +67,20 @@ struct CanvasCommandsTests {
     private static func createChat(database: Database) async throws -> UUID {
         let personalityId = try await database.read(PersonalityCommands.GetDefault())
         let models = try await database.read(ModelCommands.FetchAll())
-        guard let languageModel = models.first(where: { $0.modelType.isLanguageCapable }) else {
+        guard let languageModel = models.first(where: { isLanguageCapable($0.modelType) }) else {
             throw DatabaseError.modelNotFound
         }
         return try await database.write(
             ChatCommands.CreateWithModel(modelId: languageModel.id, personalityId: personalityId)
         )
+    }
+
+    private static func isLanguageCapable(_ type: SendableModel.ModelType) -> Bool {
+        switch type {
+        case .language, .visualLanguage, .deepLanguage, .flexibleThinker:
+            return true
+        case .diffusion, .diffusionXL:
+            return false
+        }
     }
 }

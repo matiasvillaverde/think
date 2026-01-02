@@ -40,7 +40,7 @@ private func addRequiredModelsForMessageCommandsTest(_ database: Database) async
         version: 1
     )
 
-    try await database.write(ModelCommands.AddModels(models: [languageModel, imageModel]))
+    try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, imageModel]))
 }
 
 @Suite("Message Commands Tests")

@@ -10,13 +10,13 @@ struct ModelCommandsEdgeCaseTests {
     @MainActor
     func canDeleteNonDownloaded() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-model",
             isDownloaded: false,
             locationRemote: URL(string: "https://example.com/model")!
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // When - Delete model location (now allowed from any state)
         let result = try await database.write(ModelCommands.DeleteModelLocation(
@@ -35,7 +35,7 @@ struct ModelCommandsEdgeCaseTests {
     @MainActor
     func emptyDisplayNameFallback() async throws {
         // Given - Create a model DTO with empty displayName
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelDTO(
             type: .language,
             backend: .mlx,
@@ -52,7 +52,7 @@ struct ModelCommandsEdgeCaseTests {
         )
 
         // When
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
         let model = try await database.read(ModelCommands.GetModelFromId(id: id))
 
         // Then - displayName should fallback to name
@@ -67,7 +67,7 @@ struct ModelCommandsEdgeCaseTests {
         // when properties have default values
 
         // Given - Create a database and add a model
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-migration-model",
             isDownloaded: false,
@@ -75,7 +75,7 @@ struct ModelCommandsEdgeCaseTests {
         )
 
         let modelId = try await database.write(
-            ModelCommands.AddModels(models: [modelDTO])
+            ModelCommands.AddModels(modelDTOs: [modelDTO])
         )
 
         // Verify model was created correctly
@@ -128,7 +128,7 @@ struct ModelCommandsEdgeCaseTests {
 
         // Add the second model
         try await database.write(
-            ModelCommands.AddModels(models: [emptyDisplayNameDTO])
+            ModelCommands.AddModels(modelDTOs: [emptyDisplayNameDTO])
         )
 
         // Retrieve the model by name since AddModels returns the first model's ID
@@ -148,7 +148,7 @@ struct ModelCommandsAdditionalEdgeCases {
     @MainActor
     func memoryRequirementsValidation() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         _ = ModelCommandsTests.createTestModelDTO(
             name: "huge-model",
             isDownloaded: false,
@@ -171,7 +171,7 @@ struct ModelCommandsAdditionalEdgeCases {
             architecture: .unknown
         )
 
-        try await database.write(ModelCommands.AddModels(models: [hugeModelDTO]))
+        try await database.write(ModelCommands.AddModels(modelDTOs: [hugeModelDTO]))
 
         // Then - Model should not be added
         let descriptor = FetchDescriptor<Model>()
@@ -183,10 +183,10 @@ struct ModelCommandsAdditionalEdgeCases {
     @MainActor
     func emptyModelListHandling() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
 
         // When/Then - Adding empty model list should not crash
-        try await database.write(ModelCommands.AddModels(models: []))
+        try await database.write(ModelCommands.AddModels(modelDTOs: []))
 
         // Verify system state
         let descriptor = FetchDescriptor<Model>()
@@ -198,14 +198,12 @@ struct ModelCommandsAdditionalEdgeCases {
     @MainActor
     func multipleDeleteAttempts() async throws {
         // Given
-        let database = try await ModelCommandsTests.setupTestDatabase()
+        let database = try ModelCommandsTests.setupTestDatabase()
         let modelDTO = ModelCommandsTests.createTestModelDTO(
             name: "test-model",
             isDownloaded: true
         )
-        let id = try await database.write(ModelCommands.AddModels(models: [modelDTO]))
-
-        let model = try await database.read(ModelCommands.GetModelFromId(id: id))
+        let id = try await database.write(ModelCommands.AddModels(modelDTOs: [modelDTO]))
 
         // When - Delete multiple times (now allowed from any state)
         let firstResult = try await database.write(ModelCommands.DeleteModelLocation(

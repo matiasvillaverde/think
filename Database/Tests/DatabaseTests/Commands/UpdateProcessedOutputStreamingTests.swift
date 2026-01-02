@@ -39,7 +39,7 @@ private func addRequiredModelsForStreamingTest(_ database: Database) async throw
         version: 1
     )
 
-    try await database.write(ModelCommands.AddModels(models: [languageModel, imageModel]))
+    try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, imageModel]))
 }
 
 /// Comprehensive tests for UpdateProcessedOutput command focusing on streaming behavior

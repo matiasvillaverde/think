@@ -41,7 +41,7 @@ private func addRequiredModels(_ database: Database) async throws {
         version: 1
     )
 
-    try await database.write(ModelCommands.AddModels(models: [languageModel, imageModel]))
+    try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, imageModel]))
 }
 
 @Suite("HaveSameModels Tests")
@@ -181,7 +181,7 @@ struct HaveSameModelsTests {
                 ragFactory: MockRagFactory(mockRag: MockRagging())
             )
 
-            let database = try await Database.new(configuration: config)
+            let database = try Database.new(configuration: config)
             try await addRequiredModels(database)
 
             // Create a lot of chats
@@ -258,7 +258,7 @@ func addAlternativeModels(_ database: Database) async throws {
 
     try await database.writeInBackground(
         ModelCommands.AddModels(
-            models: [alternativeTextModel, alternativeDiffusionModel, alternativeDeepTextModel]
+            modelDTOs: [alternativeTextModel, alternativeDiffusionModel, alternativeDeepTextModel]
         )
     )
 }
