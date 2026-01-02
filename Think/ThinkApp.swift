@@ -28,6 +28,8 @@ struct ThinkApp: App {
                 .withReviewRequester()
                 .withPluginApprovalViewModel()
                 .withAudioGenerator()
+                .withNodeModeViewModel()
+                .withAutomationScheduler()
                 .withDiscoveryCarousel()
                 .withModelActions()
                 .withRemoteModelsViewModel()
@@ -70,6 +72,9 @@ struct ThinkApp: App {
                 .withToolValidator()
                 .withReviewRequester()
                 .withPluginApprovalViewModel()
+                .withAudioGenerator()
+                .withNodeModeViewModel()
+                .withAutomationScheduler()
         }
         .defaultSize(width: 700, height: 600)
         #endif
