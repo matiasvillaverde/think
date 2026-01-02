@@ -3,7 +3,7 @@ import Foundation
 import OSLog
 
 /// Loads bootstrap context from workspace files.
-internal struct WorkspaceContextProvider {
+internal struct WorkspaceContextProvider: @unchecked Sendable {
     private static let logger: Logger = Logger(
         subsystem: AgentOrchestratorConfiguration.shared.logging.subsystem,
         category: "WorkspaceContextProvider"

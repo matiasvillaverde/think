@@ -3,7 +3,7 @@ import Foundation
 import OSLog
 
 /// Loads skills from a workspace skills directory.
-internal struct WorkspaceSkillLoader {
+internal struct WorkspaceSkillLoader: @unchecked Sendable {
     private static let logger: Logger = Logger(
         subsystem: AgentOrchestratorConfiguration.shared.logging.subsystem,
         category: "WorkspaceSkillLoader"

@@ -3,7 +3,7 @@ import Foundation
 import OSLog
 
 /// Loads file-backed memory context from workspace files.
-internal struct WorkspaceMemoryLoader {
+internal struct WorkspaceMemoryLoader: @unchecked Sendable {
     private static let logger: Logger = Logger(
         subsystem: AgentOrchestratorConfiguration.shared.logging.subsystem,
         category: "WorkspaceMemoryLoader"
