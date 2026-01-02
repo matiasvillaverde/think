@@ -80,17 +80,27 @@ internal struct CanvasStrategyTests {
             version: 1
         )
 
-        try await database.write(ModelCommands.AddModels(models: [languageModel, imageModel]))
+        try await database.write(ModelCommands.AddModels(modelDTOs: [languageModel, imageModel]))
     }
 
     private static func createChat(database: Database) async throws -> UUID {
         let personalityId: UUID = try await database.read(PersonalityCommands.GetDefault())
-        let models: [ModelDTO] = try await database.read(ModelCommands.FetchAll())
-        guard let languageModel: ModelDTO = models.first(where: \.modelType.isLanguageCapable) else {
+        let models: [SendableModel] = try await database.read(ModelCommands.FetchAll())
+        guard let languageModel: SendableModel = models.first(where: { isLanguageCapable($0.modelType) }) else {
             throw DatabaseError.modelNotFound
         }
         return try await database.write(
             ChatCommands.CreateWithModel(modelId: languageModel.id, personalityId: personalityId)
         )
+    }
+
+    private static func isLanguageCapable(_ type: SendableModel.ModelType) -> Bool {
+        switch type {
+        case .language, .visualLanguage, .deepLanguage, .flexibleThinker:
+            return true
+
+        case .diffusion, .diffusionXL:
+            return false
+        }
     }
 }

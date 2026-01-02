@@ -55,7 +55,7 @@ internal struct CronStrategyTests {
 
         let response: ToolResponse = await strategy.execute(request: request)
         #expect(response.error == nil)
-        #expect(response.result.contains("Ping"))
+        #expect(response.result.contains("\"title\":\"Test\""))
     }
 
     private static func makeDatabase() async throws -> Database {
