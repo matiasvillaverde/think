@@ -84,7 +84,7 @@ public actor AudioViewModel: AudioViewModeling {
 
     public func stopListening() {
         Task {
-            await speech.stopListening()
+            _ = await speech.stopListening()
         }
     }
 
@@ -100,8 +100,10 @@ public actor AudioViewModel: AudioViewModeling {
 
         talkModeTask?.cancel()
         talkModeTask = Task { [weak self] in
-            guard let self else { return }
-            await self.runTalkModeLoop(generator: generator)
+            guard let self else {
+                return
+            }
+            await runTalkModeLoop(generator: generator)
         }
     }
 
@@ -111,11 +113,11 @@ public actor AudioViewModel: AudioViewModeling {
         internalTalkModeEnabled = false
         internalTalkModeState = .idle
         _ = try? await database.write(SettingsCommands.UpdateVoice(talkModeEnabled: .set(false)))
-        await speech.stopListening()
+        _ = await speech.stopListening()
     }
 
     public func updateWakePhrase(_ phrase: String) async {
-        let cleaned = phrase.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleaned: String = phrase.trimmingCharacters(in: .whitespacesAndNewlines)
         internalWakePhrase = cleaned
         _ = try? await database.write(SettingsCommands.UpdateVoice(wakePhrase: .set(cleaned)))
     }
@@ -127,13 +129,23 @@ public actor AudioViewModel: AudioViewModeling {
 
     private func refreshSettings() async {
         do {
-            let settings = try await database.read(SettingsCommands.GetOrCreate())
-            internalTalkModeEnabled = settings.talkModeEnabled
-            internalWakeWordEnabled = settings.wakeWordEnabled
-            internalWakePhrase = settings.wakePhrase
+            let snapshot: AudioSettingsSnapshot = try await fetchSettingsSnapshot()
+            internalTalkModeEnabled = snapshot.talkModeEnabled
+            internalWakeWordEnabled = snapshot.wakeWordEnabled
+            internalWakePhrase = snapshot.wakePhrase
         } catch {
             logger.error("Failed to refresh settings: \(error.localizedDescription)")
         }
+    }
+
+    @MainActor
+    private func fetchSettingsSnapshot() async throws -> AudioSettingsSnapshot {
+        let settings: AppSettings = try await database.read(SettingsCommands.GetOrCreate())
+        return AudioSettingsSnapshot(
+            talkModeEnabled: settings.talkModeEnabled,
+            wakeWordEnabled: settings.wakeWordEnabled,
+            wakePhrase: settings.wakePhrase
+        )
     }
 
     private func runTalkModeLoop(generator: ViewModelGenerating) async {
@@ -145,9 +157,9 @@ public actor AudioViewModel: AudioViewModeling {
             }
 
             do {
-                let transcript = try await speech.startListening()
+                let transcript: String = try await speech.startListening()
                 if Task.isCancelled { break }
-                let cleaned = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+                let cleaned: String = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
                 if cleaned.isEmpty {
                     continue
                 }
@@ -158,8 +170,10 @@ public actor AudioViewModel: AudioViewModeling {
                     }
                     if command.isEmpty {
                         internalTalkModeState = .listening
-                        let followUp = try await speech.startListening()
-                        let followUpCleaned = followUp.trimmingCharacters(in: .whitespacesAndNewlines)
+                        let followUp: String = try await speech.startListening()
+                        let followUpCleaned: String = followUp.trimmingCharacters(
+                            in: .whitespacesAndNewlines
+                        )
                         if followUpCleaned.isEmpty {
                             continue
                         }
@@ -197,8 +211,8 @@ public actor AudioViewModel: AudioViewModeling {
     }
 
     private func extractCommand(from transcript: String) -> String? {
-        let lowerTranscript = transcript.lowercased()
-        let lowerWake = internalWakePhrase.lowercased()
+        let lowerTranscript: String = transcript.lowercased()
+        let lowerWake: String = internalWakePhrase.lowercased()
         guard !lowerWake.isEmpty else {
             return transcript
         }
@@ -207,10 +221,22 @@ public actor AudioViewModel: AudioViewModeling {
             return nil
         }
 
-        let distance = lowerTranscript.distance(from: lowerTranscript.startIndex, to: range.upperBound)
-        let startIndex = transcript.index(transcript.startIndex, offsetBy: distance)
-        let remainder = transcript[startIndex...]
+        let distance: Int = lowerTranscript.distance(
+            from: lowerTranscript.startIndex,
+            to: range.upperBound
+        )
+        let startIndex: String.Index = transcript.index(
+            transcript.startIndex,
+            offsetBy: distance
+        )
+        let remainder: Substring = transcript[startIndex...]
         return remainder.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 // swiftlint:enable line_length
+
+private struct AudioSettingsSnapshot: Sendable {
+    let talkModeEnabled: Bool
+    let wakeWordEnabled: Bool
+    let wakePhrase: String
+}

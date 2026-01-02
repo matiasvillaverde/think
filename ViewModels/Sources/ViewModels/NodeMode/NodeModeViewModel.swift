@@ -4,11 +4,15 @@ import Foundation
 import OSLog
 
 public actor NodeModeViewModel: NodeModeViewModeling {
+    private enum Constants {
+        static let defaultPort: Int = 9_876
+    }
+
     private let database: DatabaseProtocol
     private let server: NodeModeServer
     private let logger: Logger = Logger(subsystem: "ViewModels", category: "NodeModeViewModel")
 
-    private var cachedSettings: AppSettings?
+    private var cachedSettings: NodeModeSettingsSnapshot?
     private var running: Bool = false
 
     public init(
@@ -25,14 +29,14 @@ public actor NodeModeViewModel: NodeModeViewModeling {
 
     public var isEnabled: Bool { cachedSettings?.nodeModeEnabled ?? false }
     public var isRunning: Bool { running }
-    public var port: Int { cachedSettings?.nodeModePort ?? 9876 }
+    public var port: Int { cachedSettings?.nodeModePort ?? Constants.defaultPort }
     public var authToken: String? { cachedSettings?.nodeModeAuthToken }
 
     public func refresh() async {
         do {
-            let settings = try await database.read(SettingsCommands.GetOrCreate())
-            cachedSettings = settings
-            await apply(settings)
+            let snapshot: NodeModeSettingsSnapshot = try await fetchSettingsSnapshot()
+            cachedSettings = snapshot
+            await apply(snapshot)
         } catch {
             logger.error("Failed to refresh node settings: \(error.localizedDescription)")
         }
@@ -44,7 +48,7 @@ public actor NodeModeViewModel: NodeModeViewModeling {
     }
 
     public func updatePort(_ port: Int) async {
-        let sanitized = max(1, min(port, Int(UInt16.max)))
+        let sanitized: Int = max(1, min(port, Int(UInt16.max)))
         _ = try? await database.write(SettingsCommands.UpdateNode(nodeModePort: .set(sanitized)))
         await refresh()
     }
@@ -54,9 +58,9 @@ public actor NodeModeViewModel: NodeModeViewModeling {
         await refresh()
     }
 
-    private func apply(_ settings: AppSettings) async {
+    private func apply(_ settings: NodeModeSettingsSnapshot) async {
         if settings.nodeModeEnabled {
-            let portValue = UInt16(clamping: settings.nodeModePort)
+            let portValue: UInt16 = UInt16(clamping: settings.nodeModePort)
             do {
                 try await server.start(
                     configuration: NodeModeConfiguration(
@@ -74,4 +78,20 @@ public actor NodeModeViewModel: NodeModeViewModeling {
             running = false
         }
     }
+
+    @MainActor
+    private func fetchSettingsSnapshot() async throws -> NodeModeSettingsSnapshot {
+        let settings: AppSettings = try await database.read(SettingsCommands.GetOrCreate())
+        return NodeModeSettingsSnapshot(
+            nodeModeEnabled: settings.nodeModeEnabled,
+            nodeModePort: settings.nodeModePort,
+            nodeModeAuthToken: settings.nodeModeAuthToken
+        )
+    }
+}
+
+private struct NodeModeSettingsSnapshot: Sendable {
+    let nodeModeEnabled: Bool
+    let nodeModePort: Int
+    let nodeModeAuthToken: String?
 }
