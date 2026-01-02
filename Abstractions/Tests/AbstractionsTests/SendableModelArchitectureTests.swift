@@ -24,7 +24,8 @@ struct SendableModelArchitectureTests {
                 modelType: .language,
                 location: "test/model",
                 architecture: architecture,
-                backend: .mlx
+                backend: .mlx,
+                locationKind: .huggingFace
             )
 
             #expect(model.architecture == architecture)
@@ -42,7 +43,8 @@ struct SendableModelArchitectureTests {
             modelType: .language,
             location: "test/model",
             architecture: .llama,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
         let model2 = SendableModel(
@@ -51,7 +53,8 @@ struct SendableModelArchitectureTests {
             modelType: .language,
             location: "test/model",
             architecture: .llama,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
         let model3 = SendableModel(
@@ -60,7 +63,8 @@ struct SendableModelArchitectureTests {
             modelType: .language,
             location: "test/model",
             architecture: .mistral,  // Different architecture
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
         #expect(model1 == model2)
@@ -75,7 +79,8 @@ struct SendableModelArchitectureTests {
             modelType: .language,
             location: "test/model",
             architecture: .qwen,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
         let description = model.debugDescription
@@ -91,7 +96,8 @@ struct SendableModelArchitectureTests {
             modelType: .language,
             location: "test/qwen-model",
             architecture: .qwen,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
         let llamaModel = SendableModel(
@@ -100,7 +106,8 @@ struct SendableModelArchitectureTests {
             modelType: .language,
             location: "test/llama-model",
             architecture: .llama,
-            backend: .mlx
+            backend: .mlx,
+            locationKind: .huggingFace
         )
 
         // Architectures should be different
@@ -121,7 +128,8 @@ struct SendableModelArchitectureTests {
                 modelType: .language,
                 location: "test/\(architecture.rawValue)-model",
                 architecture: architecture,
-                backend: .mlx
+                backend: .mlx,
+                locationKind: .huggingFace
             )
 
             #expect(model.architecture == architecture)
@@ -146,6 +154,7 @@ struct SendableModelArchitectureTests {
             location: "test/model",
             architecture: .llama,
             backend: .mlx,
+            locationKind: .huggingFace,
             detailedMemoryRequirements: nil,
             metadata: metadata
         )

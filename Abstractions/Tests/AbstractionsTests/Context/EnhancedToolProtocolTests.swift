@@ -126,8 +126,8 @@ struct EnhancedToolProtocolTests {
             _ = metadata
         }.value
 
-        // Then - Test passes if it compiles
-        #expect(true)
+        // Then
+        #expect(metadata.usageInstruction == "Test instruction")
     }
 
     @Test("Mock enhanced tool should conform to protocol")
