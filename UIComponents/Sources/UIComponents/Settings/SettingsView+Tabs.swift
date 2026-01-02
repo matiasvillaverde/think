@@ -27,6 +27,42 @@ extension SettingsView {
         .accessibility(label: Text("Models tab"))
     }
 
+    var voiceTabLabel: some View {
+        Label(
+            String(
+                localized: "Voice",
+                bundle: .module,
+                comment: "Tab label for Voice"
+            ),
+            systemImage: "waveform"
+        )
+        .accessibility(label: Text("Voice tab"))
+    }
+
+    var automationTabLabel: some View {
+        Label(
+            String(
+                localized: "Automation",
+                bundle: .module,
+                comment: "Tab label for Automation"
+            ),
+            systemImage: "clock"
+        )
+        .accessibility(label: Text("Automation tab"))
+    }
+
+    var nodeModeTabLabel: some View {
+        Label(
+            String(
+                localized: "Node Mode",
+                bundle: .module,
+                comment: "Tab label for Node Mode"
+            ),
+            systemImage: "server.rack"
+        )
+        .accessibility(label: Text("Node Mode tab"))
+    }
+
     var pluginsTabLabel: some View {
         Label(
             String(

@@ -140,12 +140,60 @@ internal final actor PreviewAudioGenerator: AudioViewModeling {
     )
 
     func say(_ text: String) { logger.warning("Default view model - say called \(text)") }
-    func hear() -> String? { nil }
-    func listen(generator _: ViewModelGenerating) {
+    func listen(generator _: ViewModelGenerating) async {
         logger.warning("Default view model - listen called)")
     }
 
     func stopListening() { logger.warning("Default view model - stopListening") }
+
+    var talkModeState: TalkModeState { .idle }
+    var wakePhrase: String { "hey think" }
+    var isWakeWordEnabled: Bool { true }
+    var isTalkModeEnabled: Bool { false }
+
+    func startTalkMode(generator _: ViewModelGenerating) async {
+        logger.warning("Default view model - startTalkMode")
+    }
+
+    func stopTalkMode() async {
+        logger.warning("Default view model - stopTalkMode")
+    }
+
+    func updateWakePhrase(_ phrase: String) async {
+        logger.warning("Default view model - updateWakePhrase \(phrase)")
+    }
+
+    func setWakeWordEnabled(_ enabled: Bool) async {
+        logger.warning("Default view model - setWakeWordEnabled \(enabled)")
+    }
+}
+
+internal final actor PreviewNodeModeViewModel: NodeModeViewModeling {
+    private let logger: Logger = .init(
+        subsystem: Bundle.main.bundleIdentifier ?? "",
+        category: "UI"
+    )
+
+    var isEnabled: Bool { false }
+    var isRunning: Bool { false }
+    var port: Int { 9876 }
+    var authToken: String? { nil }
+
+    func refresh() async {
+        logger.warning("Default view model - refresh node mode")
+    }
+
+    func setEnabled(_ enabled: Bool) async {
+        logger.warning("Default view model - setEnabled \(enabled)")
+    }
+
+    func updatePort(_ port: Int) async {
+        logger.warning("Default view model - updatePort \(port)")
+    }
+
+    func updateAuthToken(_ token: String?) async {
+        logger.warning("Default view model - updateAuthToken \(token ?? "")")
+    }
 }
 
 internal final actor PreviewPluginApprovalViewModel: PluginApprovalViewModeling {

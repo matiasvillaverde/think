@@ -35,8 +35,20 @@ public struct SettingsView: View {
     @Environment(\.reviewPromptViewModel)
     private var reviewPromptViewModel: ReviewPromptManaging
 
+    @Environment(\.database)
+    private var database: DatabaseProtocol
+
+    @Environment(\.audioViewModel)
+    private var audioViewModel: AudioViewModeling
+
+    @Environment(\.nodeModeViewModel)
+    private var nodeModeViewModel: NodeModeViewModeling
+
     @Query(sort: \Chat.createdAt, order: .reverse)
     private var chats: [Chat]
+
+    @Query(sort: \AutomationSchedule.createdAt, order: .reverse)
+    private var schedules: [AutomationSchedule]
 
     @State private var isRatingsViewPresented: Bool = true
     @State private var showingDeleteAllAlert: Bool = false
@@ -46,6 +58,15 @@ public struct SettingsView: View {
     @State private var isReportBugHovered: Bool = false
     @State private var isDeleteAllHovered: Bool = false
 
+    @State private var talkModeEnabled: Bool = false
+    @State private var wakeWordEnabled: Bool = true
+    @State private var wakePhrase: String = ""
+
+    @State private var nodeModeEnabled: Bool = false
+    @State private var nodeModePort: String = "9876"
+    @State private var nodeModeAuthToken: String = ""
+    @State private var nodeModeRunning: Bool = false
+
     // **MARK: - Body**
     public var body: some View {
         TabView {
@@ -53,6 +74,24 @@ public struct SettingsView: View {
             actionsView
                 .tabItem {
                     actionsTabLabel
+                }
+
+            // Voice Tab
+            voiceView
+                .tabItem {
+                    voiceTabLabel
+                }
+
+            // Automation Tab
+            automationView
+                .tabItem {
+                    automationTabLabel
+                }
+
+            // Node Mode Tab
+            nodeModeView
+                .tabItem {
+                    nodeModeTabLabel
                 }
 
             // Models Tab

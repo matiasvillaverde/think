@@ -35,6 +35,7 @@ public struct ChatView: View {
 
     @State private var isModelSelectionPopoverPresented: Bool = false
     @State private var isRatingsViewPresented: Bool = false
+    @State private var isCanvasPresented: Bool = false
 
     @Namespace private var messagesBottomID: Namespace.ID
 
@@ -76,6 +77,10 @@ public struct ChatView: View {
             ToolbarItem(placement: .automatic) {
                 analyticsButton
             }
+
+            ToolbarItem(placement: .automatic) {
+                canvasButton
+            }
         }
         .frame(maxWidth: Layout.maxContentWidth)
         #if os(iOS) || os(visionOS)
@@ -107,6 +112,10 @@ public struct ChatView: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                         .animation(.spring(), value: isRatingsViewPresented)
                 }
+            }
+            .sheet(isPresented: $isCanvasPresented) {
+                CanvasView(chat: chat)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
     }
 
@@ -174,6 +183,16 @@ public struct ChatView: View {
                     .accessibilityLabel("View Chat Metrics")
             }
         #endif
+    }
+
+    private var canvasButton: some View {
+        Button {
+            isCanvasPresented = true
+        } label: {
+            Image(systemName: "square.and.pencil")
+                .accessibilityLabel("Open Canvas")
+        }
+        .help("Open Canvas")
     }
 }
 

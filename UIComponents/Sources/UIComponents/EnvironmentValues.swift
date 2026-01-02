@@ -142,6 +142,9 @@ extension EnvironmentValues {
     /// ViewModel for generating audio
     @Entry public var audioViewModel: AudioViewModeling = PreviewAudioGenerator()
 
+    /// ViewModel for node mode controls
+    @Entry public var nodeModeViewModel: NodeModeViewModeling = PreviewNodeModeViewModel()
+
     /// Tool validator for checking tool requirements
     @Entry public var toolValidator: ToolValidating?
 

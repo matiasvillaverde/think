@@ -20,6 +20,7 @@ public struct SpeakView: View {
     @Query private var metrics: [Metrics]
 
     @State private var isRecording: Bool = true
+    @State private var isTalkModeActive: Bool = false
 
     // MARK: - Initialization
 
@@ -54,11 +55,21 @@ public struct SpeakView: View {
 
                 Spacer()
 
-                ControlButtonsView(isRecording: $isRecording)
+                ControlButtonsView(
+                    isRecording: $isRecording,
+                    isTalkModeActive: $isTalkModeActive
+                )
             }
             .padding(.horizontal, LayoutVoice.Spacing.medium)
-        }.task {
-            Task {
+        }
+        .task {
+            let talkModeEnabled = await audioViewModel.isTalkModeEnabled
+            await MainActor.run {
+                isTalkModeActive = talkModeEnabled
+            }
+            if talkModeEnabled {
+                await audioViewModel.startTalkMode(generator: generator)
+            } else {
                 await audioViewModel.listen(generator: generator)
             }
         }
@@ -72,7 +83,11 @@ public struct SpeakView: View {
         }
         .onDisappear {
             Task {
-                await audioViewModel.stopListening()
+                if isTalkModeActive {
+                    await audioViewModel.stopTalkMode()
+                } else {
+                    await audioViewModel.stopListening()
+                }
             }
         }
     }

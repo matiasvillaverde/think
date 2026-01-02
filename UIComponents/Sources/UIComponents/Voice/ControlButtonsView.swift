@@ -13,6 +13,7 @@ internal struct ControlButtonsView: View {
     private var generator: ViewModelGenerating
 
     @Binding var isRecording: Bool
+    @Binding var isTalkModeActive: Bool
 
     var body: some View {
         HStack {
@@ -26,8 +27,20 @@ internal struct ControlButtonsView: View {
 
             Spacer()
 
-            // Microphone button
-            if !isRecording {
+            // Microphone / Talk mode controls
+            if isTalkModeActive {
+                Text("Talk mode active", bundle: .module)
+                    .foregroundStyle(Color.textSecondary)
+                    .font(.caption)
+                    .padding()
+
+                CircleButton(
+                    icon: "mic.slash.fill",
+                    accessibilityLabel: "Stop Talk Mode"
+                ) {
+                    onStopTalkMode()
+                }
+            } else if !isRecording {
                 Text("Tap to speak", bundle: .module)
                     .foregroundStyle(Color.textSecondary)
                     .font(.caption)
@@ -50,9 +63,20 @@ internal struct ControlButtonsView: View {
             isRecording = true
         }
     }
+
+    private func onStopTalkMode() {
+        Task {
+            await audioViewModel.stopTalkMode()
+            isTalkModeActive = false
+        }
+    }
 }
 
 #Preview {
     @Previewable @State var isRecording: Bool = false
-    ControlButtonsView(isRecording: $isRecording)
+    @Previewable @State var isTalkModeActive: Bool = false
+    ControlButtonsView(
+        isRecording: $isRecording,
+        isTalkModeActive: $isTalkModeActive
+    )
 }
