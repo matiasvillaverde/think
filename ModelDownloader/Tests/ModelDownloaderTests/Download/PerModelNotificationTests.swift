@@ -63,28 +63,3 @@ struct PerModelNotificationTests {
         #expect(notification?.content.body == "Your 4.19 GB model is ready to use!")
     }
 }
-
-// MARK: - Mock URLSessionDownloadTask
-
-private class MockDownloadTask: URLSessionDownloadTask, @unchecked Sendable {
-    private let _taskIdentifier: Int
-    private var _response: URLResponse?
-
-    init(taskIdentifier: Int) {
-        self._taskIdentifier = taskIdentifier
-        super.init()
-    }
-
-    override var taskIdentifier: Int {
-        _taskIdentifier
-    }
-
-    override var response: URLResponse? {
-        get { _response }
-        set { _response = newValue }
-    }
-
-    deinit {
-        // No cleanup required
-    }
-}

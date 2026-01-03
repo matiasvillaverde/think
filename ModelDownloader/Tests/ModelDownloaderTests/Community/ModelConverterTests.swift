@@ -45,7 +45,7 @@ struct ModelConverterTests {
             downloads: 1_000,
             likes: 50,
             tags: [],
-            lastModified: Date()
+            lastModified: Date(),
         )
         discovered.detectedBackends = [.mlx, .gguf, .coreml]
 
@@ -70,7 +70,7 @@ struct ModelConverterTests {
             downloads: 0,
             likes: 0,
             tags: [],
-            lastModified: Date()
+            lastModified: Date(),
         )
         discovered.detectedBackends = [] // No backends detected
 
@@ -107,7 +107,7 @@ struct ModelConverterTests {
                 likes: 0,
                 tags: [],
                 lastModified: Date(),
-                files: [ModelFile(path: "model.bin", size: 1_000_000_000)]
+                files: [ModelFile(path: "model.bin", size: 1_000_000_000)],
             )
             discovered.modelCard = modelCard
             discovered.detectedBackends = [SendableModel.Backend.mlx]

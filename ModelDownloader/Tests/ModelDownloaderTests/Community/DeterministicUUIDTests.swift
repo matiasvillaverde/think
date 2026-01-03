@@ -80,7 +80,7 @@ extension APITests {
                     path: "model.safetensors",
                     size: 1_000_000_000
                 )
-            ]
+            ],
         )
 
         discoveredModel1.enrich(with: EnrichedModelDetails(
@@ -135,7 +135,7 @@ extension APITests {
                     path: "model.safetensors",
                     size: 3_800_000_000
                 )
-            ]
+            ],
         )
 
         discoveredModel.enrich(with: EnrichedModelDetails(

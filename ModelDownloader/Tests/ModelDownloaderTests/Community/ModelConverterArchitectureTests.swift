@@ -83,7 +83,7 @@ struct ModelConverterArchitectureTests {
             lastModified: Date(),
             files: [
                 ModelFile(path: "model.bin", size: 1_000_000_000)
-            ]
+            ],
         )
         discoveredModel.detectedBackends = [.mlx]
 
@@ -107,7 +107,7 @@ struct ModelConverterArchitectureTests {
             files: [
                 ModelFile(path: "llama-2-7b.Q4_K_M.gguf", size: 3_800_000_000),
                 ModelFile(path: "llama-2-7b.Q8_0.gguf", size: 7_200_000_000)
-            ]
+            ],
         )
         discoveredModel.detectedBackends = [.gguf]
 
