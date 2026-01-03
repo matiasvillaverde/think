@@ -56,11 +56,9 @@ extension LlamaCPPModelTestSuite {
 
             print("Generated: '\(generatedText)'")
             print("Generated (escaped): '\(generatedText.debugDescription)'")
+            #expect(generatedText.isEmpty == false)
         }
 
         await session.unload()
-
-        // This test always passes - it's just for debugging
-        #expect(true)
     }
 }
