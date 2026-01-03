@@ -15,9 +15,13 @@ public struct SettingsView: View {
         static let titleSpacing: CGFloat = 8
         static let sectionSpacing: CGFloat = 24
         static let actionSpacing: CGFloat = 12
+        static let compactSpacing: CGFloat = 8
+        static let tightSpacing: CGFloat = 4
         static let cornerRadius: CGFloat = 8
         static let bugReportDelay: TimeInterval = 0.1
         static let deleteAnimationDelay: TimeInterval = 0.3
+        static let automationListMinHeight: CGFloat = 200
+        static let portFieldWidth: CGFloat = 120
         static let progressScale: CGFloat = 0.8
         static let backgroundOpacity: CGFloat = 1.0
         static let hoverBackgroundOpacity: CGFloat = 0.8
@@ -33,22 +37,22 @@ public struct SettingsView: View {
     private var chatViewModel: ChatViewModeling
 
     @Environment(\.reviewPromptViewModel)
-    private var reviewPromptViewModel: ReviewPromptManaging
+    var reviewPromptViewModel: ReviewPromptManaging
 
     @Environment(\.database)
-    private var database: DatabaseProtocol
+    var database: DatabaseProtocol
 
     @Environment(\.audioViewModel)
-    private var audioViewModel: AudioViewModeling
+    var audioViewModel: AudioViewModeling
 
     @Environment(\.nodeModeViewModel)
-    private var nodeModeViewModel: NodeModeViewModeling
+    var nodeModeViewModel: NodeModeViewModeling
 
     @Query(sort: \Chat.createdAt, order: .reverse)
     private var chats: [Chat]
 
     @Query(sort: \AutomationSchedule.createdAt, order: .reverse)
-    private var schedules: [AutomationSchedule]
+    var schedules: [AutomationSchedule]
 
     @State private var isRatingsViewPresented: Bool = true
     @State private var showingDeleteAllAlert: Bool = false
@@ -69,69 +73,7 @@ public struct SettingsView: View {
 
     // **MARK: - Body**
     public var body: some View {
-        TabView {
-            // Actions Tab
-            actionsView
-                .tabItem {
-                    actionsTabLabel
-                }
-
-            // Voice Tab
-            voiceView
-                .tabItem {
-                    voiceTabLabel
-                }
-
-            // Automation Tab
-            automationView
-                .tabItem {
-                    automationTabLabel
-                }
-
-            // Node Mode Tab
-            nodeModeView
-                .tabItem {
-                    nodeModeTabLabel
-                }
-
-            // Models Tab
-            modelsView
-                .tabItem {
-                    modelsTabLabel
-                }
-
-            // Plugins Tab
-            pluginsView
-                .tabItem {
-                    pluginsTabLabel
-                }
-
-            // Analytics Tab
-            analyticsView
-                .tabItem {
-                    analyticsTabLabel
-                }
-
-            // Legal Tab
-            legalView
-                .tabItem {
-                    legalTabLabel
-                }
-
-            // About Tab
-            AboutView()
-                .tabItem {
-                    aboutTabLabel
-                }
-
-            // Review Tab (if applicable)
-            if reviewPromptViewModel.shouldAskForReview, isRatingsViewPresented {
-                RatingsView(isRatingsViewPresented: $isRatingsViewPresented)
-                    .tabItem {
-                        reviewTabLabel
-                    }
-            }
-        }
+        tabsView
         .scenePadding()
         #if os(iOS)
             .frame(minHeight: Constants.minHeight)
@@ -151,6 +93,43 @@ public struct SettingsView: View {
                 actions: deleteAlertActions,
                 message: deleteAlertMessage
             )
+    }
+
+    var ratingsViewPresented: Bool { isRatingsViewPresented }
+    var ratingsViewPresentedBinding: Binding<Bool> { $isRatingsViewPresented }
+    var talkModeEnabledValue: Bool {
+        get { talkModeEnabled }
+        nonmutating set { talkModeEnabled = newValue }
+    }
+    var talkModeEnabledBinding: Binding<Bool> { $talkModeEnabled }
+    var wakeWordEnabledValue: Bool {
+        get { wakeWordEnabled }
+        nonmutating set { wakeWordEnabled = newValue }
+    }
+    var wakeWordEnabledBinding: Binding<Bool> { $wakeWordEnabled }
+    var wakePhraseValue: String {
+        get { wakePhrase }
+        nonmutating set { wakePhrase = newValue }
+    }
+    var wakePhraseBinding: Binding<String> { $wakePhrase }
+    var nodeModeEnabledValue: Bool {
+        get { nodeModeEnabled }
+        nonmutating set { nodeModeEnabled = newValue }
+    }
+    var nodeModeEnabledBinding: Binding<Bool> { $nodeModeEnabled }
+    var nodeModePortValue: String {
+        get { nodeModePort }
+        nonmutating set { nodeModePort = newValue }
+    }
+    var nodeModePortBinding: Binding<String> { $nodeModePort }
+    var nodeModeAuthTokenValue: String {
+        get { nodeModeAuthToken }
+        nonmutating set { nodeModeAuthToken = newValue }
+    }
+    var nodeModeAuthTokenBinding: Binding<String> { $nodeModeAuthToken }
+    var nodeModeRunningValue: Bool {
+        get { nodeModeRunning }
+        nonmutating set { nodeModeRunning = newValue }
     }
 
     // MARK: - Delete Alert
@@ -186,7 +165,7 @@ public struct SettingsView: View {
 
     // MARK: - Actions View
 
-    private var actionsView: some View {
+    var actionsView: some View {
         VStack(spacing: Constants.sectionSpacing) {
             actionsHeader
             actionsButtons
@@ -295,7 +274,7 @@ public struct SettingsView: View {
 
     // MARK: - Legal View
 
-    private var legalView: some View {
+    var legalView: some View {
         TabView {
             TermsOfUseView()
                 .tabItem {

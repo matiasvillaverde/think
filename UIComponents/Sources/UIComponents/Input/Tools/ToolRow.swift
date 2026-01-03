@@ -127,6 +127,15 @@ internal struct ToolRow: View {
 
         case .workspace:
             "folder"
+
+        case .cron:
+            "calendar.badge.clock"
+
+        case .canvas:
+            "square.and.pencil"
+
+        case .nodes:
+            "network"
         }
     }
 

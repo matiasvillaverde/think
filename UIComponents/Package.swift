@@ -50,7 +50,8 @@ let package = Package(
         .testTarget(
             name: "UIComponentsTests",
             dependencies: [
-                "UIComponents"
+                "UIComponents",
+                .product(name: "AbstractionsTestUtilities", package: "Abstractions")
             ]
         )
     ]

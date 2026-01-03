@@ -2,6 +2,10 @@ import Abstractions
 import Foundation
 import OSLog
 
+private enum PreviewConstants {
+    static let nodeModePort: Int = 9_876
+}
+
 /// Default view model implementation for attaching functionality in previews
 internal final actor PreviewViewModelAttacher: ViewModelAttaching {
     private let logger: Logger = .init(
@@ -141,6 +145,7 @@ internal final actor PreviewAudioGenerator: AudioViewModeling {
 
     func say(_ text: String) { logger.warning("Default view model - say called \(text)") }
     func listen(generator _: ViewModelGenerating) async {
+        await Task.yield()
         logger.warning("Default view model - listen called)")
     }
 
@@ -152,18 +157,22 @@ internal final actor PreviewAudioGenerator: AudioViewModeling {
     var isTalkModeEnabled: Bool { false }
 
     func startTalkMode(generator _: ViewModelGenerating) async {
+        await Task.yield()
         logger.warning("Default view model - startTalkMode")
     }
 
     func stopTalkMode() async {
+        await Task.yield()
         logger.warning("Default view model - stopTalkMode")
     }
 
     func updateWakePhrase(_ phrase: String) async {
+        await Task.yield()
         logger.warning("Default view model - updateWakePhrase \(phrase)")
     }
 
     func setWakeWordEnabled(_ enabled: Bool) async {
+        await Task.yield()
         logger.warning("Default view model - setWakeWordEnabled \(enabled)")
     }
 }
@@ -176,22 +185,26 @@ internal final actor PreviewNodeModeViewModel: NodeModeViewModeling {
 
     var isEnabled: Bool { false }
     var isRunning: Bool { false }
-    var port: Int { 9876 }
+    var port: Int { PreviewConstants.nodeModePort }
     var authToken: String? { nil }
 
     func refresh() async {
+        await Task.yield()
         logger.warning("Default view model - refresh node mode")
     }
 
     func setEnabled(_ enabled: Bool) async {
+        await Task.yield()
         logger.warning("Default view model - setEnabled \(enabled)")
     }
 
     func updatePort(_ port: Int) async {
+        await Task.yield()
         logger.warning("Default view model - updatePort \(port)")
     }
 
     func updateAuthToken(_ token: String?) async {
+        await Task.yield()
         logger.warning("Default view model - updateAuthToken \(token ?? "")")
     }
 }

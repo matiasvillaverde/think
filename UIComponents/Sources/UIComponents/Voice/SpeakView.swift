@@ -63,7 +63,7 @@ public struct SpeakView: View {
             .padding(.horizontal, LayoutVoice.Spacing.medium)
         }
         .task {
-            let talkModeEnabled = await audioViewModel.isTalkModeEnabled
+            let talkModeEnabled: Bool = await audioViewModel.isTalkModeEnabled
             await MainActor.run {
                 isTalkModeActive = talkModeEnabled
             }
