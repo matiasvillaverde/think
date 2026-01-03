@@ -17,7 +17,7 @@ struct ThinkApp: App {
     var body: some Scene {
         WindowGroup {
             AppView(selectedPersonality: $selectedPersonality)
-                .withDatabase()
+                .withDatabase(configuration: .default)
                 .withGenerator() // MLX doesn't work on simulators
                 .withChatViewModel()
                 .withToolValidator()
@@ -39,7 +39,7 @@ struct ThinkApp: App {
         #if os(macOS)
         Window("Discover AI Models", id: "discovery") {
             DiscoveryWindow(selectedPersonality: $selectedPersonality)
-                .withDatabase()
+                .withDatabase(configuration: .default)
 #if !targetEnvironment(simulator)
                 .withGenerator() // MLX doesn't work on simulators
 #endif
@@ -56,7 +56,7 @@ struct ThinkApp: App {
 
         Window("Analytics Dashboard", id: "analytics") {
             AnalyticsNavigationView()
-                .withDatabase()
+                .withDatabase(configuration: .default)
                 .withChatViewModel()
                 .withToolValidator()
                 .withNotificationViewModel()
@@ -67,7 +67,7 @@ struct ThinkApp: App {
 
         Settings {
             SettingsView()
-                .withDatabase()
+                .withDatabase(configuration: .default)
                 .withChatViewModel()
                 .withToolValidator()
                 .withReviewRequester()

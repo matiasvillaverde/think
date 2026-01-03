@@ -14,7 +14,7 @@ struct ThinkApp: App {
     var body: some Scene {
         WindowGroup {
             AppView(selectedChat: $selectedChat)
-                .withDatabase()
+                .withDatabase(configuration: .default)
                 .withGenerator() // MLX doesn't work on simulators
                 .withChatViewModel()
                 .withToolValidator()
