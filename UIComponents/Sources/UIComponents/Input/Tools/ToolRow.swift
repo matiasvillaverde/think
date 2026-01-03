@@ -241,8 +241,7 @@ internal struct ToolRow: View {
             ToolRow(
                 tool: .imageGeneration,
                 chat: .preview
-            ) { tool in
-                print("Selected \(tool.rawValue)")
+            ) { _ in
             }
 
             Divider()
@@ -250,8 +249,7 @@ internal struct ToolRow: View {
             ToolRow(
                 tool: .reasoning,
                 chat: .preview
-            ) { tool in
-                print("Selected \(tool.rawValue)")
+            ) { _ in
             }
 
             Divider()
@@ -259,8 +257,7 @@ internal struct ToolRow: View {
             ToolRow(
                 tool: .browser,
                 chat: .preview
-            ) { tool in
-                print("Selected \(tool.rawValue)")
+            ) { _ in
             }
         }
         .padding()

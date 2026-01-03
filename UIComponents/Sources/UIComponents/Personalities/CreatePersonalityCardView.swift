@@ -122,7 +122,6 @@ internal struct CreatePersonalityCardView: View {
 #if DEBUG
     #Preview("Create Card") {
         CreatePersonalityCardView {
-            print("Create tapped")
         }
         .padding()
         .frame(width: 200)
@@ -134,7 +133,6 @@ internal struct CreatePersonalityCardView: View {
             spacing: 16
         ) {
             CreatePersonalityCardView {
-                print("Create tapped")
             }
             PersonalityCardView(personality: .default)
             PersonalityCardView(personality: .previewCustom)

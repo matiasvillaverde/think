@@ -109,15 +109,12 @@ internal struct ToolChip: View {
     #Preview {
         HStack {
             ToolChip(tool: .imageGeneration) {
-                print("Remove image generation")
             }
 
             ToolChip(tool: .reasoning) {
-                print("Remove reasoning")
             }
 
             ToolChip(tool: .browser) {
-                print("Remove web search")
             }
         }
         .padding()

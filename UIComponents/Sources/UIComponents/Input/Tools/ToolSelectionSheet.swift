@@ -114,14 +114,11 @@ internal struct ToolSelectionSheet: View {
     #Preview {
         ToolSelectionSheet(
             chat: .preview,
-            onToolSelected: { tool in
-                print("Selected tool: \(tool.rawValue)")
+            onToolSelected: { _ in
             },
-            onToolConfirmationNeeded: { tool, model in
-                print("Tool \(tool.rawValue) needs confirmation for model \(model.name)")
+            onToolConfirmationNeeded: { _, _ in
             },
             onDismiss: {
-                print("Dismissed")
             }
         )
     }

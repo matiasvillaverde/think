@@ -230,8 +230,8 @@ public struct AssistantActionButtonsRow: View {
             message: message,
             showingStatsView: $showingStatsView,
             showingThinkingView: $showingStatsView,
-            copyTextAction: { _ in Swift.print("Copy action") },
-            shareTextAction: { _ in Swift.print("Share action") }
+            copyTextAction: { _ in },
+            shareTextAction: { _ in }
         )
     }
 #endif

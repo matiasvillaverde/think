@@ -298,8 +298,8 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
             showingSelectionView: $showingSelection,
             showingThinkingView: $showingThinking,
             showingStatsView: $showingStats,
-            copyTextAction: { text in print("Copy: \(text)") },
-            shareTextAction: { text in print("Share: \(text)") }
+            copyTextAction: { _ in },
+            shareTextAction: { _ in }
         )
         .padding()
     }

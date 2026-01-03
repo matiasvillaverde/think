@@ -234,8 +234,7 @@ public struct WelcomeView: View {
 
 #if DEBUG
     #Preview {
-        WelcomeView { modelId in
-            print("Selected model: \(modelId)")
+        WelcomeView { _ in
         }
         .environment(\.discoveryCarousel, PreviewDiscoveryCarouselViewModel())
         .environment(\.modelActionsViewModel, PreviewModelActionsViewModel())

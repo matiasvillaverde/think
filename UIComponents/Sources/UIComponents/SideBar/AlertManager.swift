@@ -10,10 +10,6 @@ public class AlertManager: ObservableObject {
     @Published var showingClearConversationAlert: Bool = false
     @Published var showingDeletePersonalityAlert: Bool = false
 
-    deinit {
-        print("Alert Manager deinit")
-    }
-
     // Chat being operated on (legacy)
     @Published var chatToModify: Chat?
 

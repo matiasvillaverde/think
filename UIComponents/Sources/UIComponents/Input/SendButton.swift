@@ -27,6 +27,5 @@ internal struct SendButton: View {
 
 #Preview {
     SendButton {
-        print("Sent!")
     }
 }

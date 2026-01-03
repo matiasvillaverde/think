@@ -137,8 +137,8 @@ public struct AssistantBubbleView: View {
                         showingSelectionView: $isShowing,
                         showingThinkingView: $isShowing,
                         showingStatsView: $isShowing,
-                        copyTextAction: { _ in Swift.print("Copy action") },
-                        shareTextAction: { _ in Swift.print("Share action") }
+                        copyTextAction: { _ in },
+                        shareTextAction: { _ in }
                     )
                 }
             }

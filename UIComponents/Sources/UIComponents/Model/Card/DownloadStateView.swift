@@ -191,7 +191,6 @@ internal struct DownloadStateView: View {
                     bytesDownloaded: PreviewConstants.bytesProgress25,
                     totalBytes: PreviewConstants.totalBytes
                 ) {
-                    print("Pause download")
                 }
             }
 
@@ -203,7 +202,6 @@ internal struct DownloadStateView: View {
                     bytesDownloaded: PreviewConstants.bytesProgress75,
                     totalBytes: PreviewConstants.totalBytes
                 ) {
-                    print("Pause download")
                 }
             }
         }
@@ -218,7 +216,6 @@ internal struct DownloadStateView: View {
                 bytesDownloaded: PreviewConstants.bytesProgress50,
                 totalBytes: PreviewConstants.totalBytes
             ) {
-                print("Resume download")
             }
         }
     }
@@ -228,7 +225,6 @@ internal struct DownloadStateView: View {
             Text("Downloaded")
                 .font(.headline)
             Button(role: .destructive) {
-                print("Delete model")
             } label: {
                 Label("Delete", systemImage: "trash")
             }

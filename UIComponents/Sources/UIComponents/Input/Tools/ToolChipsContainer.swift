@@ -23,20 +23,17 @@ internal struct ToolChipsContainer: View {
         VStack(spacing: 16) {
             ToolChipsContainer(
                 tools: [.imageGeneration]
-            ) { tool in
-                print("Remove \(tool.rawValue)")
+            ) { _ in
             }
 
             ToolChipsContainer(
                 tools: [.reasoning, .browser]
-            ) { tool in
-                print("Remove \(tool.rawValue)")
+            ) { _ in
             }
 
             ToolChipsContainer(
                 tools: [.imageGeneration, .reasoning, .browser]
-            ) { tool in
-                print("Remove \(tool.rawValue)")
+            ) { _ in
             }
         }
         .padding()

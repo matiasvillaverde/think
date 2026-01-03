@@ -95,7 +95,6 @@ internal struct InputFooter: View {
             canStop: { false },
             canSend: { false },
             onSend: {
-                print("Sent!")
             }
         )
     }

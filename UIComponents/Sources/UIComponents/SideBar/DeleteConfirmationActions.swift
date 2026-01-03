@@ -15,9 +15,7 @@ public struct DeleteConfirmationActions: View {
             Button(
                 String(localized: "Cancel", bundle: .module, comment: "Button label"),
                 role: .cancel
-            ) {
-                print("Cancelled")
-            }
+            ) { }
 
             Button(
                 String(localized: "Delete", bundle: .module, comment: "Button label"),

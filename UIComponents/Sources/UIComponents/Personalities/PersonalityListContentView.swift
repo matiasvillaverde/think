@@ -175,8 +175,7 @@ extension PersonalityCategory {
         @Previewable @State var isShowing: Bool = true
         PersonalityListContentView(
             isShowing: $isShowing
-        ) { personality in
-            print(personality.name)
+        ) { _ in
         }
     }
 #endif

@@ -39,6 +39,5 @@ internal struct ExplorePersonalitiesRowView: View {
 
 #Preview {
     ExplorePersonalitiesRowView {
-        print("Tapped")
     }
 }

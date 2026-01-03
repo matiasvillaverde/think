@@ -120,7 +120,6 @@ public struct UserBubbleView: View {
                 showingStatsView: $isShowing,
                 showingThinkingView: $isShowing
             ) {
-                print("Show alert")
             }
         }
     }
