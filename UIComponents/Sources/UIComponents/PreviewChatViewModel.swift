@@ -36,10 +36,6 @@ internal final actor PreviewChatViewModel: ChatViewModeling {
         logger.warning("Default view model - Rename chat called: \(chatId) to \(newName)")
     }
 
-    func addWelcomeMessage(chatId: UUID) {
-        logger.warning("Default view model - add welcome message called: \(chatId)")
-    }
-
     // MARK: - Personality-First Operations
 
     func selectPersonality(personalityId: UUID) {

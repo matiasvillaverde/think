@@ -19,13 +19,10 @@ public protocol ChatViewModeling: Actor {
     /// - Note: Deprecated.
     func rename(chatId: UUID, newName: String) async
 
-    /// Adds a welcome message to a chat
-    func addWelcomeMessage(chatId: UUID) async
-
     // MARK: - Personality-First Operations
 
     /// Selects a personality and ensures its chat is ready
-    /// This creates the chat if it doesn't exist and adds a welcome message
+    /// This creates the chat if it doesn't exist
     func selectPersonality(personalityId: UUID) async
 
     /// Clears all messages from a personality's conversation

@@ -109,105 +109,6 @@ public final actor ChatViewModel: ChatViewModeling {
         }
     }
 
-    /// Animates a welcome message word by word
-    /// - Parameters:
-    ///   - messageId: The message ID to update
-    ///   - welcomeMessage: The welcome message text
-    private func animateWelcomeMessage(
-        messageId: UUID,
-        welcomeMessage: String
-    ) async throws {
-        // Create haptic feedback generator for iOS
-        #if os(iOS)
-        let lightFeedbackGenerator: UIImpactFeedbackGenerator = await UIImpactFeedbackGenerator(style: .light)
-        let mediumFeedbackGenerator: UIImpactFeedbackGenerator = await  UIImpactFeedbackGenerator(style: .medium)
-        // Prepare generators ahead of time for more responsive feedback
-        await lightFeedbackGenerator.prepare()
-        await mediumFeedbackGenerator.prepare()
-        #endif
-
-        // Break up the message into words and add them with a delay to simulate typing
-        let words: [Substring] = welcomeMessage.split(separator: " ")
-        var currentResponse: String = ""
-
-        for (index, word) in words.enumerated() {
-            // Add the word to the current response
-            if index > 0 {
-                currentResponse += " "
-            }
-            currentResponse += word
-
-            // Update the message with the current response
-            let output: ProcessedOutput = ProcessedOutput(
-                channels: [
-                    ChannelMessage(
-                        id: UUID(),
-                        type: .final,
-                        content: currentResponse,
-                        order: 0
-                    )
-                ]
-            )
-            try await database.write(MessageCommands.UpdateProcessedOutput(
-                messageId: messageId,
-                processedOutput: output
-            ))
-
-            // Add haptic feedback on iOS only
-            #if os(iOS)
-            // Alternate between light and medium feedback for a more natural feel
-            // End of message gets a medium feedback
-            if index == words.count - 1 {
-                await mediumFeedbackGenerator.impactOccurred()
-            } else if index.isMultiple(of: Self.hapticFeedbackInterval) {
-                await lightFeedbackGenerator.impactOccurred(intensity: Self.mediumFeedbackIntensity)
-            } else {
-                await lightFeedbackGenerator.impactOccurred(intensity: Self.lightFeedbackIntensity)
-            }
-            #endif
-
-            // Vary the delay to make typing seem more natural (80-180ms)
-            let typingDelay: UInt64 = UInt64.random(in: Self.minTypingDelayNanoseconds...Self.maxTypingDelayNanoseconds)
-            try await Task.sleep(nanoseconds: typingDelay)
-        }
-    }
-
-    /// Adds a welcome message to the chat if it's empty with haptic feedback on iOS
-    /// - Parameter chatId: The UUID of the chat to add the welcome message to
-    public func addWelcomeMessage(chatId: UUID) async {
-        do {
-            // Check if the chat is empty
-            let existingMessages: Int = try await database.read(MessageCommands.CountMessages(chatId: chatId))
-
-            // Only add welcome message if there are no existing messages
-            if existingMessages == 0 {
-                logger.info("Adding welcome message to empty chat: \(chatId)")
-
-                let welcomeMessage: String = String(localized: "How can I help you today?", bundle: .module)
-
-                // Create the initial empty message
-                let messageId: UUID = try await database.write(MessageCommands.Create(
-                    chatId: chatId,
-                    userInput: nil,
-                    isDeepThinker: false
-                ))
-
-                // Animate the welcome message
-                try await animateWelcomeMessage(
-                    messageId: messageId,
-                    welcomeMessage: welcomeMessage
-                )
-
-                logger.info("Welcome message added successfully to chat: \(chatId)")
-            } else {
-                logger.info("Skipping welcome message for non-empty chat: \(chatId)")
-            }
-        } catch {
-            // Log error but don't show a notification to the user
-            logger.error("Failed to add welcome message to chat \(chatId): \(error.localizedDescription)")
-        }
-    }
-
     /// Creates a new custom personality
     /// - Parameters:
     ///   - name: The name of the new personality
@@ -248,9 +149,6 @@ public final actor ChatViewModel: ChatViewModeling {
             // Get or create the chat for this personality
             let chatId: UUID = try await database.write(PersonalityCommands.GetChat(personalityId: personalityId))
             logger.info("Selected personality \(personalityId) with chat \(chatId)")
-
-            // Add welcome message if the chat is empty
-            await addWelcomeMessage(chatId: chatId)
         } catch {
             logger.error("Failed to select personality \(personalityId): \(error.localizedDescription)")
             await notify(message: error.localizedDescription, type: .error)
