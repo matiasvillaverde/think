@@ -34,19 +34,23 @@ Think is a multi-platform AI assistant built with SwiftUI and Apple's MLX framew
 ```
 Think/
 ├── Abstractions/       # Core protocols and interfaces
-├── Database/          # SwiftData models and persistence
-├── ViewModels/        # Business logic implementations
-├── UIComponents/      # Reusable SwiftUI components
-├── AgentOrchestrator/ # AI model coordination and orchestration
-├── MLXSession/        # MLX framework integration for local AI
-├── LLamaCPP/          # Llama.cpp integration for efficient inference
-├── ModelDownloader/   # AI model downloading and management
-├── AudioGenerator/    # Voice synthesis capabilities
-├── ImageGenerator/    # Stable Diffusion image generation
-├── ContextBuilder/  # AI context management
-├── RAG/              # Document search implementation
-├── Factories/        # Dependency injection and wiring
-└── Think/        # Main app target
+├── Database/           # SwiftData models and persistence
+├── ViewModels/         # Business logic implementations
+├── UIComponents/       # Reusable SwiftUI components
+├── AgentOrchestrator/  # AI model coordination and orchestration
+├── MLXSession/         # MLX framework integration for local AI
+├── LLamaCPP/           # Llama.cpp integration for efficient inference
+├── ModelDownloader/    # AI model downloading and management
+├── AudioGenerator/     # Voice synthesis capabilities
+├── ImageGenerator/     # Stable Diffusion image generation
+├── ContextBuilder/     # AI context and prompt formatting
+├── Tools/              # Function calling strategies
+├── RAG/                # Document search implementation
+├── DataAssets/         # Static configuration data
+├── Factories/          # Dependency injection and wiring
+├── AppStoreConnectCLI/ # App Store automation tooling
+├── Think/              # Main macOS/iOS app target
+└── Think Vision/       # visionOS app target
 ```
 
 ### Data Flow
@@ -146,7 +150,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - **[CI.md](CI.md)**: Complete CI/CD documentation
 - **[CONTRIBUTING.md](CONTRIBUTING.md)**: Contribution guidelines
 - **[CLAUDE.md](CLAUDE.md)**: AI assistant development instructions
-- **[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)**: Third-party licenses and attributions
+- **[SECURITY.md](SECURITY.md)**: Security vulnerability reporting
 
 ## License
 
@@ -154,7 +158,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Third-Party Software
 
-Think uses various third-party tools and frameworks. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for complete attribution and license information.
+Think uses open-source frameworks including [MLX](https://github.com/ml-explore/mlx-swift), [llama.cpp](https://github.com/ggerganov/llama.cpp), [ESpeakNG](https://github.com/espeak-ng/espeak-ng), and [SwiftSoup](https://github.com/scinfu/SwiftSoup). See each project for their respective licenses.
 
 **Important**: When downloading AI models from HuggingFace Hub, you are responsible for complying with each model's individual license terms.
 
