@@ -43,7 +43,7 @@ internal struct OnboardingCoordinatorTests {
     func startsBackgroundDownloadsWhenCreated() async throws {
         // Given
         let mockDownloader: MockTrackingModelDownloaderViewModel = MockTrackingModelDownloaderViewModel()
-        let database: Database = try await Self.createTestDatabase()
+        let database: Database = try Self.createTestDatabase()
 
         // When
         _ = OnboardingCoordinator(
@@ -64,7 +64,7 @@ internal struct OnboardingCoordinatorTests {
     func reportsProgressAfterStartingDownloads() async throws {
         // Given
         let mockDownloader: MockTrackingModelDownloaderViewModel = MockTrackingModelDownloaderViewModel()
-        let database: Database = try await Self.createTestDatabase()
+        let database: Database = try Self.createTestDatabase()
 
         // When
         let coordinator: OnboardingCoordinator = OnboardingCoordinator(
@@ -88,7 +88,7 @@ internal struct OnboardingCoordinatorTests {
     func simplifiedDownloadTracking() async throws {
         // Given
         let mockDownloader: MockTrackingModelDownloaderViewModel = MockTrackingModelDownloaderViewModel()
-        let database: Database = try await Self.createTestDatabase()
+        let database: Database = try Self.createTestDatabase()
 
         // When
         let coordinator: OnboardingCoordinator = OnboardingCoordinator(

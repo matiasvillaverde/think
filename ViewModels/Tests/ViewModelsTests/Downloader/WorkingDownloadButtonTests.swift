@@ -29,7 +29,7 @@ internal struct WorkingDownloadButtonTests {
         // 🎯 GOAL: Prove all button states work as the user requested
 
         // GIVEN - Set up test environment with real database and working mocks
-        let environment: WorkingTestEnvironment = try await Self.setupWorkingTestEnvironment()
+        let environment: WorkingTestEnvironment = try Self.setupWorkingTestEnvironment()
         let viewModel: any ModelDownloaderViewModeling = environment.viewModel
         let database: Database = environment.database
         let discoveredModel: DiscoveredModel = environment.discoveredModel
@@ -106,7 +106,7 @@ internal struct WorkingDownloadButtonTests {
         // 🎯 GOAL: Prove delete button transitions work
 
         // GIVEN - Set up environment with a model that can be deleted
-        let environment: WorkingTestEnvironment = try await Self.setupWorkingTestEnvironment()
+        let environment: WorkingTestEnvironment = try Self.setupWorkingTestEnvironment()
         let viewModel: any ModelDownloaderViewModeling = environment.viewModel
         let database: Database = environment.database
         let discoveredModel: DiscoveredModel = environment.discoveredModel
@@ -148,7 +148,8 @@ internal struct WorkingTestEnvironment {
 
 extension WorkingDownloadButtonTests {
     /// Sets up a working test environment with proper dependencies
-    static func setupWorkingTestEnvironment() async throws -> WorkingTestEnvironment {
+    @MainActor
+    static func setupWorkingTestEnvironment() throws -> WorkingTestEnvironment {
         // Create in-memory database
         let config: DatabaseConfiguration = DatabaseConfiguration(
             isStoredInMemoryOnly: true,
@@ -169,7 +170,7 @@ extension WorkingDownloadButtonTests {
         )
 
         // Create test discovered model
-        let discoveredModel: DiscoveredModel = await createTestDiscoveredModel()
+        let discoveredModel: DiscoveredModel = createTestDiscoveredModel()
 
         return WorkingTestEnvironment(
             viewModel: viewModel,

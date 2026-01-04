@@ -232,7 +232,7 @@ internal struct DiscoveryCarouselViewModelTests {
         await setupModelsForSortingTest(mockExplorer: mockExplorer, deviceMemory: deviceMemory)
 
         // Create the view model
-        let viewModel: DiscoveryCarouselViewModel = await DiscoveryCarouselViewModel(
+        let viewModel: DiscoveryCarouselViewModel = DiscoveryCarouselViewModel(
             communityExplorer: mockExplorer,
             deviceChecker: mockChecker,
             vramCalculator: mockCalculator
