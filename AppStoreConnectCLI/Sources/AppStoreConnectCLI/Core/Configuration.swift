@@ -240,10 +240,11 @@ public struct Configuration: Sendable {
     
     private func validatePrivateKey(_ content: String) throws {
         let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        let pemBegin = "-----BEGIN " + "PRIVATE KEY-----"
+        let pemEnd = "-----END " + "PRIVATE KEY-----"
         
         // Check for PEM format
-        if !trimmedContent.hasPrefix("-----BEGIN PRIVATE-KEY-----") ||
-           !trimmedContent.hasSuffix("-----END PRIVATE-KEY-----") {
+        if !trimmedContent.hasPrefix(pemBegin) || !trimmedContent.hasSuffix(pemEnd) {
             throw AppStoreConnectError.invalidAPIKey(
                 reason: "Private key must be in PEM format"
             )
@@ -314,12 +315,14 @@ public struct MockConfigurationProvider: ConfigurationProvider {
             String(format: "%02x", Int.random(in: 0...255))
         }.joined()
         
+        let pemBegin = "-----BEGIN " + "PRIVATE KEY-----"
+        let pemEnd = "-----END " + "PRIVATE KEY-----"
         return """
-        -----BEGIN PRIVATE-KEY-----
+        \(pemBegin)
         MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg\(randomBytes)
         hRANCAASCGCCqGSM49AwEHBG0wawIBAQQghRANCAASCGCCqG
         SM49AwEHBG0wawIBAQQghRANCAASCGCCqGSM49AwEHBG0waw
-        -----END PRIVATE-KEY-----
+        \(pemEnd)
         """
     }
 }

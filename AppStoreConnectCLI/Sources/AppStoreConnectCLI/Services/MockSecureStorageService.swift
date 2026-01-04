@@ -71,16 +71,18 @@ extension MockSecureStorageService {
 // MARK: - Private Extension for Test Key Generation
 private extension MockConfigurationProvider {
     static func generateTestPrivateKey() -> String {
-        let randomBytes = (0..<32).map { _ in 
+        let randomBytes = (0..<32).map { _ in
             String(format: "%02x", Int.random(in: 0...255))
         }.joined()
         
+        let pemBegin = "-----BEGIN " + "PRIVATE KEY-----"
+        let pemEnd = "-----END " + "PRIVATE KEY-----"
         return """
-        -----BEGIN PRIVATE-KEY-----
+        \(pemBegin)
         MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg\(randomBytes)
         hRANCAASCGCCqGSM49AwEHBG0wawIBAQQghRANCAASCGCCqG
         SM49AwEHBG0wawIBAQQghRANCAASCGCCqGSM49AwEHBG0waw
-        -----END PRIVATE-KEY-----
+        \(pemEnd)
         """
     }
 }

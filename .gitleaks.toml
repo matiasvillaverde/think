@@ -1,0 +1,8 @@
+[allowlist]
+regexes = [
+  "Curve25519\\.Signing\\.PrivateKey"
+]
+paths = [
+  "AgentOrchestrator/Tests/AgentOrchestratorTests/Plugins/PluginTrustEvaluatorTests.swift",
+  "AgentOrchestrator/Tests/AgentOrchestratorTests/Plugins/PluginSigningKeyBundleUpdaterTests.swift"
+]
