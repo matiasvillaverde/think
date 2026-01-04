@@ -19,7 +19,7 @@ APPSTORE_BUNDLE_ID_VISIONOS ?= $(APPSTORE_BUNDLE_ID)
 
 # List of all modules
 MODULES = Abstractions DataAssets AgentOrchestrator AudioGenerator ContextBuilder Database Factories \
-          ImageGenerator LLamaCPP MLXSession ModelDownloader RAG Tools UIComponents ViewModels AppStoreConnectCLI
+          ImageGenerator LLamaCPP MLXSession ModelDownloader RAG Tools UIComponents ViewModels AppStoreConnectCLI ThinkCLI
 CI_TEST_MODULES = $(filter-out LLamaCPP MLXSession,$(MODULES))
 
 # ==============================================================================
