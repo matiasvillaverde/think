@@ -39,8 +39,7 @@ struct FetchContextDataMemoryTests {
 
         // Get the chat's personality
         let chat = try await database.read(ChatCommands.Read(chatId: chatId))
-        let personality = try #require(chat.personality, "Chat should have a personality")
-        let personalityId = personality.id
+        let personalityId = chat.personality.id
 
         // Create soul for the personality
         _ = try await database.write(
@@ -77,8 +76,7 @@ struct FetchContextDataMemoryTests {
 
         // Get the chat's personality
         let chat = try await database.read(ChatCommands.Read(chatId: chatId))
-        let personality = try #require(chat.personality, "Chat should have a personality")
-        let personalityId = personality.id
+        let personalityId = chat.personality.id
 
         // Create daily log for the personality
         _ = try await database.write(
@@ -117,8 +115,7 @@ struct FetchContextDataMemoryTests {
 
         // Get the chat's personality
         let chat = try await database.read(ChatCommands.Read(chatId: chatId))
-        let personality = try #require(chat.personality, "Chat should have a personality")
-        let personalityId = personality.id
+        let personalityId = chat.personality.id
 
         // Create only a soul (no other memories)
         _ = try await database.write(
@@ -144,8 +141,7 @@ struct FetchContextDataMemoryTests {
 
         // Get the chat's personality
         let chat = try await database.read(ChatCommands.Read(chatId: chatId))
-        let personality = try #require(chat.personality, "Chat should have a personality")
-        let personalityId = personality.id
+        let personalityId = chat.personality.id
 
         // Create multiple long-term memories
         _ = try await database.write(

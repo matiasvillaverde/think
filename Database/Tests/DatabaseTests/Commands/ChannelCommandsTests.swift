@@ -76,7 +76,7 @@ struct ChannelCommandsTests {
         let messageId = try await Self.createTestMessage(database)
         
         // When
-        let channelId = try await database.write(
+        _ = try await database.write(
             ChannelCommands.Create(
                 messageId: messageId,
                 type: .tool,
@@ -84,9 +84,7 @@ struct ChannelCommandsTests {
                 order: 1
             )
         )
-        
         // Then - channel was created successfully with tool type
-        #expect(channelId != nil)
     }
     
     @Test("Batch upsert with tool channels")
@@ -156,7 +154,7 @@ struct ChannelCommandsTests {
         let messageId = try await Self.createTestMessage(database)
         
         // When
-        let channelId = try await database.write(
+        _ = try await database.write(
             ChannelCommands.Create(
                 messageId: messageId,
                 type: .final,
@@ -176,7 +174,7 @@ struct ChannelCommandsTests {
         let toolId = UUID()
         
         // When
-        let channelId = try await database.write(
+        _ = try await database.write(
             ChannelCommands.Create(
                 messageId: messageId,
                 type: .commentary,

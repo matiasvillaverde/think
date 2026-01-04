@@ -165,11 +165,11 @@ struct ComplexChatSessionTests {
 
         // Try concurrent operations
         let id = chat.id
-        await withThrowingTaskGroup(of: Void.self) { group in
+        try await withThrowingTaskGroup(of: Void.self) { group in
             // Add messages concurrently
             for index in 0..<5 {
                 group.addTask {
-                    try await database.writeInBackground(MessageCommands.Create(
+                    try await database.write(MessageCommands.Create(
                         chatId: id,
                         userInput: "Concurrent message \(index)",
                         isDeepThinker: false
@@ -186,11 +186,17 @@ struct ComplexChatSessionTests {
                     ))
                 }
             }
+
+            try await group.waitForAll()
         }
 
         // Verify final state
-        let messages = try await database.read(MessageCommands.GetAll(chatId: chat.id))
-        #expect(messages.count == 5)
+        let messageCount = try await waitForMessageCount(
+            database: database,
+            chatId: chat.id,
+            expectedCount: 5
+        )
+        #expect(messageCount == 5)
 
         let hasAttachments = try await database.read(ChatCommands.HasAttachments(chatId: chat.id))
         #expect(hasAttachments == true)
@@ -213,5 +219,25 @@ struct ComplexChatSessionTests {
             try? FileManager.default.removeItem(at: fileURL)
         }
         try? FileManager.default.removeItem(at: invalidFileURL)
+    }
+}
+
+@MainActor
+private func waitForMessageCount(
+    database: Database,
+    chatId: UUID,
+    expectedCount: Int,
+    timeout: TimeInterval = 2.0
+) async throws -> Int {
+    let start = ProcessInfo.processInfo.systemUptime
+    while true {
+        let count = try await database.read(MessageCommands.CountMessages(chatId: chatId))
+        if count == expectedCount {
+            return count
+        }
+        if ProcessInfo.processInfo.systemUptime - start > timeout {
+            return count
+        }
+        try await Task.sleep(nanoseconds: 50_000_000)
     }
 }
