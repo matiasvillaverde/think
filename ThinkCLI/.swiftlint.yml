@@ -1,0 +1,56 @@
+# SwiftLint Configuration for ThinkCLI
+
+included:
+  - Sources
+  - Tests
+
+opt_in_rules:
+  - force_unwrapping
+
+force_unwrapping: error
+line_length:
+  warning: 100
+  error: 120
+
+disabled_rules:
+  - trailing_whitespace
+  - vertical_whitespace
+  - opening_brace
+  - comma
+  - function_name_whitespace
+  - return_arrow_whitespace
+  - statement_position
+  - vertical_parameter_alignment
+  - vertical_parameter_alignment_on_call
+  - closure_parameter_position
+  - multiline_parameters
+  - multiline_arguments
+  - multiline_function_chains
+  - multiline_literal_brackets
+  - multiline_parameters_brackets
+  - function_parameter_count
+  - type_body_length
+  - file_length
+  - function_body_length
+  - cyclomatic_complexity
+  - nesting
+  - large_tuple
+  - identifier_name
+  - type_name
+  - inclusive_language
+  - orphaned_doc_comment
+  - missing_docs
+  - todo
+
+custom_rules:
+  no_print_statements:
+    name: "No print statements"
+    regex: '^\s*print\s*\('
+    message: "Use Logger instead of print statements"
+    severity: warning
+    excluded:
+      - ".*CLIOutput\\.swift$"
+
+reporter: "xcode"
+
+analyzer_rules: []
