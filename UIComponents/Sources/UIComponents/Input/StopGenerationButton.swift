@@ -39,6 +39,7 @@ internal struct StopGenerationButton: View {
         HStack {
             StopGenerationButton(chat: chat)
             SendButton {
+                // no-op
             }
         }
     }

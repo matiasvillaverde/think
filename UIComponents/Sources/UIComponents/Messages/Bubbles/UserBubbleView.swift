@@ -120,6 +120,7 @@ public struct UserBubbleView: View {
                 showingStatsView: $isShowing,
                 showingThinkingView: $isShowing
             ) {
+                // no-op
             }
         }
     }

@@ -235,6 +235,7 @@ public struct WelcomeView: View {
 #if DEBUG
     #Preview {
         WelcomeView { _ in
+            // no-op
         }
         .environment(\.discoveryCarousel, PreviewDiscoveryCarouselViewModel())
         .environment(\.modelActionsViewModel, PreviewModelActionsViewModel())

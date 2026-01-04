@@ -191,6 +191,7 @@ internal struct DownloadStateView: View {
                     bytesDownloaded: PreviewConstants.bytesProgress25,
                     totalBytes: PreviewConstants.totalBytes
                 ) {
+                    // no-op
                 }
             }
 
@@ -202,6 +203,7 @@ internal struct DownloadStateView: View {
                     bytesDownloaded: PreviewConstants.bytesProgress75,
                     totalBytes: PreviewConstants.totalBytes
                 ) {
+                    // no-op
                 }
             }
         }
@@ -216,6 +218,7 @@ internal struct DownloadStateView: View {
                 bytesDownloaded: PreviewConstants.bytesProgress50,
                 totalBytes: PreviewConstants.totalBytes
             ) {
+                // no-op
             }
         }
     }
@@ -225,6 +228,7 @@ internal struct DownloadStateView: View {
             Text("Downloaded")
                 .font(.headline)
             Button(role: .destructive) {
+                // no-op
             } label: {
                 Label("Delete", systemImage: "trash")
             }

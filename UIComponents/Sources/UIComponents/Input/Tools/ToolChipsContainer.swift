@@ -24,16 +24,19 @@ internal struct ToolChipsContainer: View {
             ToolChipsContainer(
                 tools: [.imageGeneration]
             ) { _ in
+                // no-op
             }
 
             ToolChipsContainer(
                 tools: [.reasoning, .browser]
             ) { _ in
+                // no-op
             }
 
             ToolChipsContainer(
                 tools: [.imageGeneration, .reasoning, .browser]
             ) { _ in
+                // no-op
             }
         }
         .padding()

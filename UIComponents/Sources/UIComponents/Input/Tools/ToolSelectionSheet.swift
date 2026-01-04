@@ -115,10 +115,13 @@ internal struct ToolSelectionSheet: View {
         ToolSelectionSheet(
             chat: .preview,
             onToolSelected: { _ in
+                // no-op
             },
             onToolConfirmationNeeded: { _, _ in
+                // no-op
             },
             onDismiss: {
+                // no-op
             }
         )
     }

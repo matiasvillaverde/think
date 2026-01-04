@@ -230,8 +230,12 @@ public struct AssistantActionButtonsRow: View {
             message: message,
             showingStatsView: $showingStatsView,
             showingThinkingView: $showingStatsView,
-            copyTextAction: { _ in },
-            shareTextAction: { _ in }
+            copyTextAction: { _ in
+                // no-op
+            },
+            shareTextAction: { _ in
+                // no-op
+            }
         )
     }
 #endif

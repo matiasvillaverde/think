@@ -54,4 +54,8 @@ public class AlertManager: ObservableObject {
         personalityToModify = nil
         renameText = ""
     }
+
+    deinit {
+        // no-op
+    }
 }

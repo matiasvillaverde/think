@@ -242,6 +242,7 @@ internal struct ToolRow: View {
                 tool: .imageGeneration,
                 chat: .preview
             ) { _ in
+                // no-op
             }
 
             Divider()
@@ -250,6 +251,7 @@ internal struct ToolRow: View {
                 tool: .reasoning,
                 chat: .preview
             ) { _ in
+                // no-op
             }
 
             Divider()
@@ -258,6 +260,7 @@ internal struct ToolRow: View {
                 tool: .browser,
                 chat: .preview
             ) { _ in
+                // no-op
             }
         }
         .padding()

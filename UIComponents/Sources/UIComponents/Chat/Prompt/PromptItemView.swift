@@ -55,6 +55,7 @@ internal struct PromptItemView: View {
                 index: 0,
                 isAnimating: true
             ) {
+                // no-op
             }
         }
         .padding()

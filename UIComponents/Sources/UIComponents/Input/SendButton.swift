@@ -27,5 +27,6 @@ internal struct SendButton: View {
 
 #Preview {
     SendButton {
+        // no-op
     }
 }

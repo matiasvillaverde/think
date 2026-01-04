@@ -39,5 +39,6 @@ internal struct ExplorePersonalitiesRowView: View {
 
 #Preview {
     ExplorePersonalitiesRowView {
+        // no-op
     }
 }

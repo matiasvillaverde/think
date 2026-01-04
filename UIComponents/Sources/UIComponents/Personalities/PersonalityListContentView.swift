@@ -176,6 +176,7 @@ extension PersonalityCategory {
         PersonalityListContentView(
             isShowing: $isShowing
         ) { _ in
+            // no-op
         }
     }
 #endif

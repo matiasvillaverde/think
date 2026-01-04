@@ -27,7 +27,9 @@ public struct RenameChatActions: View {
             Button(
                 String(localized: "Cancel", bundle: .module, comment: "Button label"),
                 role: .cancel
-            ) { }
+            ) {
+                // no-op
+            }
 
             Button(
                 String(localized: "Save", bundle: .module, comment: "Button label")

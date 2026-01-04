@@ -113,6 +113,7 @@ internal struct CompactProgressBar: View {
                 bytesDownloaded: 750_000_000,
                 totalBytes: 1_000_000_000
             ) {
+                // no-op
             }
         }
         .padding()

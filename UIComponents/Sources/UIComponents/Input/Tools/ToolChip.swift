@@ -109,12 +109,15 @@ internal struct ToolChip: View {
     #Preview {
         HStack {
             ToolChip(tool: .imageGeneration) {
+                // no-op
             }
 
             ToolChip(tool: .reasoning) {
+                // no-op
             }
 
             ToolChip(tool: .browser) {
+                // no-op
             }
         }
         .padding()

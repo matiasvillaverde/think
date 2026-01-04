@@ -130,8 +130,12 @@ internal struct ChannelContainerView: View {
             showingSelectionView: $showingSelection,
             showingThinkingView: $showingThinking,
             showingStatsView: $showingStats,
-            copyTextAction: { _ in },
-            shareTextAction: { _ in }
+            copyTextAction: { _ in
+                // no-op
+            },
+            shareTextAction: { _ in
+                // no-op
+            }
         )
         .padding()
     }

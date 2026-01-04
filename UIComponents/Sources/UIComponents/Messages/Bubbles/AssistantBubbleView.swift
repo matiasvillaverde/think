@@ -137,8 +137,12 @@ public struct AssistantBubbleView: View {
                         showingSelectionView: $isShowing,
                         showingThinkingView: $isShowing,
                         showingStatsView: $isShowing,
-                        copyTextAction: { _ in },
-                        shareTextAction: { _ in }
+                        copyTextAction: { _ in
+                            // no-op
+                        },
+                        shareTextAction: { _ in
+                            // no-op
+                        }
                     )
                 }
             }

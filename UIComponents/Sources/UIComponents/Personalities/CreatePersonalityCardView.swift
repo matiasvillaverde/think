@@ -122,6 +122,7 @@ internal struct CreatePersonalityCardView: View {
 #if DEBUG
     #Preview("Create Card") {
         CreatePersonalityCardView {
+            // no-op
         }
         .padding()
         .frame(width: 200)
@@ -133,6 +134,7 @@ internal struct CreatePersonalityCardView: View {
             spacing: 16
         ) {
             CreatePersonalityCardView {
+                // no-op
             }
             PersonalityCardView(personality: .default)
             PersonalityCardView(personality: .previewCustom)

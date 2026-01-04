@@ -22,39 +22,26 @@ struct ModelLocationKindCompatibilityTests {
         )
     }
 
-    @Test("Defaults to huggingFace when raw value is missing")
+    @Test("Defaults to huggingFace")
     @MainActor
-    func defaultsWhenRawMissing() throws {
+    func defaultsToHuggingFace() throws {
         let model = try makeModel()
-        model.locationKindRaw = nil
-
         #expect(model.locationKind == .huggingFace)
     }
 
-    @Test("Defaults to huggingFace when raw value is unknown")
+    @Test("Updates locationKind to remote")
     @MainActor
-    func defaultsWhenRawUnknown() throws {
+    func updatesLocationKindToRemote() throws {
         let model = try makeModel()
-        model.locationKindRaw = "legacy"
-
-        #expect(model.locationKind == .huggingFace)
-    }
-
-    @Test("Maps raw value to enum")
-    @MainActor
-    func mapsRawValue() throws {
-        let model = try makeModel()
-        model.locationKindRaw = ModelLocationKind.remote.rawValue
-
+        model.locationKind = .remote
         #expect(model.locationKind == .remote)
     }
 
-    @Test("Setter updates raw storage")
+    @Test("Updates locationKind to localFile")
     @MainActor
-    func setterUpdatesRawStorage() throws {
+    func updatesLocationKindToLocalFile() throws {
         let model = try makeModel()
-        model.setLocationKind(.localFile)
-
-        #expect(model.locationKindRaw == ModelLocationKind.localFile.rawValue)
+        model.locationKind = .localFile
+        #expect(model.locationKind == .localFile)
     }
 }

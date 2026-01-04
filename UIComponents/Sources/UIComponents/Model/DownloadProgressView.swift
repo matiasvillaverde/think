@@ -254,6 +254,7 @@ internal struct DownloadProgressView: View {
                 downloadSpeed: 10_485_760,
                 estimatedTimeRemaining: 19
             ) {
+                // no-op
             }
         }
         .padding()
