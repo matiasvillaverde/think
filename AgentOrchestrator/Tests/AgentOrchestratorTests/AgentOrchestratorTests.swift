@@ -133,7 +133,7 @@ internal struct AgentOrchestratorTests {
         )
 
         // Initialize database with default data including personalities
-        _ = try await database.execute(AppCommands.Initialize())
+        try await AgentOrchestratorTestHelpers.seedDatabase(database)
 
         // Add a test language model
         let modelDTO: ModelDTO = createTestLanguageModel()

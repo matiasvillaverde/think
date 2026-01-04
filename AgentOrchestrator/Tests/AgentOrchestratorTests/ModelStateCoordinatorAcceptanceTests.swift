@@ -57,7 +57,7 @@ internal struct ModelStateCoordinatorAcceptanceTests {
         let database: Database = try Database.new(configuration: config)
 
         // Initialize app (creates user and default models)
-        _ = try await database.execute(AppCommands.Initialize())
+        try await AgentOrchestratorTestHelpers.seedDatabase(database)
 
         // Add language models that ModelStateCoordinator can use
         try await addLanguageModels(database)

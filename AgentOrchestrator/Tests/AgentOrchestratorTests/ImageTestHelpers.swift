@@ -52,7 +52,7 @@ internal enum ImageTestHelpers {
             ragFactory: MockRagFactory(mockRag: MockRagging())
         )
         let database: Database = try Database.new(configuration: config)
-        _ = try await database.execute(AppCommands.Initialize())
+        try await AgentOrchestratorTestHelpers.seedDatabase(database)
         return database
     }
 

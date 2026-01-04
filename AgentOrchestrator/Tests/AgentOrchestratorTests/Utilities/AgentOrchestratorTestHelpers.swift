@@ -9,11 +9,17 @@ import Tools
 
 internal enum AgentOrchestratorTestHelpers {
     internal static let kMegabyte: UInt64 = 1_048_576
+    private static let kDefaultImageModelName: String = "test-default-image-model"
     private static let kGigabyte: UInt64 = 1_000_000_000
     private static let kKilobyte: UInt64 = 1_024
     private static let kModelVersion: Int = 1
     private static let kChunkDelay: TimeInterval = 0.001
     private static let kMultiplier: Int = 2
+    private static let kDefaultImageParameters: UInt64 = 512_000_000
+    private static let kDefaultImageRamMultiplier: UInt64 = 128
+    private static let kDefaultImageSizeMultiplier: UInt64 = 64
+    private static let kDefaultImageRamNeeded: UInt64 = kDefaultImageRamMultiplier * kMegabyte
+    private static let kDefaultImageSize: UInt64 = kDefaultImageSizeMultiplier * kMegabyte
 
     @MainActor
     internal static func createTestDatabase() async throws -> Database {
@@ -23,8 +29,17 @@ internal enum AgentOrchestratorTestHelpers {
             ragFactory: MockRagFactory(mockRag: MockRagging())
         )
         let database: Database = try Database.new(configuration: config)
-        _ = try await database.execute(AppCommands.Initialize())
+        try await seedDatabase(database)
         return database
+    }
+
+    @MainActor
+    internal static func seedDatabase(_ database: Database) async throws {
+        _ = try await database.write(PersonalityCommands.WriteDefault())
+        let imageModel: ModelDTO = createDefaultImageModelDTO()
+        try await database.write(
+            ModelCommands.AddModels(modelDTOs: [imageModel])
+        )
     }
 
     @MainActor
@@ -68,6 +83,23 @@ internal enum AgentOrchestratorTestHelpers {
             locationHuggingface: "test/language",
             version: kModelVersion,
             architecture: .llama
+        )
+    }
+
+    internal static func createDefaultImageModelDTO() -> ModelDTO {
+        ModelDTO(
+            type: .diffusion,
+            backend: .coreml,
+            name: kDefaultImageModelName,
+            displayName: "Test Default Image Model",
+            displayDescription: "Baseline image model for tests",
+            skills: ["image-generation"],
+            parameters: kDefaultImageParameters,
+            ramNeeded: kDefaultImageRamNeeded,
+            size: kDefaultImageSize,
+            locationHuggingface: "test/default-image",
+            version: kModelVersion,
+            architecture: .stableDiffusion
         )
     }
 

@@ -114,7 +114,7 @@ struct EventIntegrationTests {
         )
 
         let database = try Database.new(configuration: config)
-        _ = try await database.execute(AppCommands.Initialize())
+        try await AgentOrchestratorTestHelpers.seedDatabase(database)
 
         let model = ModelDTO(
             type: .language,

@@ -80,7 +80,7 @@ internal struct AgentOrchestratorAcceptanceTests {
         )
 
         let database: Database = try Database.new(configuration: config)
-        _ = try await database.execute(AppCommands.Initialize())
+        try await AgentOrchestratorTestHelpers.seedDatabase(database)
 
         let model: ModelDTO = createTestModel()
         try await database.write(
@@ -99,7 +99,7 @@ internal struct AgentOrchestratorAcceptanceTests {
         )
 
         let database: Database = try Database.new(configuration: config)
-        _ = try await database.execute(AppCommands.Initialize())
+        try await AgentOrchestratorTestHelpers.seedDatabase(database)
 
         _ = try await database.write(
             ModelCommands.CreateRemoteModel(

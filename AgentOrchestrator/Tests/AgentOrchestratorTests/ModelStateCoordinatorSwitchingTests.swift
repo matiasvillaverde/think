@@ -53,7 +53,7 @@ internal struct ModelStateCoordinatorSwitchingTests {
         )
 
         let database: Database = try Database.new(configuration: config)
-        _ = try await database.execute(AppCommands.Initialize())
+        try await AgentOrchestratorTestHelpers.seedDatabase(database)
 
         // Add multiple models for switching tests
         try await addMultipleModels(database)
