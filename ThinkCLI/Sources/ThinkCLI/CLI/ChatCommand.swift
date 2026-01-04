@@ -5,6 +5,7 @@ import Foundation
 
 struct ChatCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
+        commandName: "chat",
         abstract: "Manage chat sessions and messages.",
         subcommands: [
             List.self,
@@ -31,7 +32,7 @@ extension ChatCommand {
         var global: GlobalOptions
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let sessions = try await runtime.gateway.listSessions()
             let fallback = sessions.isEmpty
                 ? "No sessions."
@@ -52,7 +53,7 @@ extension ChatCommand {
         var title: String?
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let session = try await runtime.gateway.createSession(title: title)
             let fallback = "Created session \(session.id.uuidString)"
             runtime.output.emit(session, fallback: fallback)
@@ -71,7 +72,7 @@ extension ChatCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let sessionId = try CLIParsing.parseUUID(id, field: "session")
             let session = try await runtime.gateway.getSession(id: sessionId)
             let fallback = "\(session.id.uuidString)  \(session.title)"
@@ -99,24 +100,57 @@ extension ChatCommand {
         @Flag(name: .long, help: "Use image generation action.")
         var image: Bool = false
 
+        @Flag(
+            name: .long,
+            inversion: .prefixedNo,
+            help: "Stream output as it is generated."
+        )
+        var stream: Bool = true
+
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
             let identifiers = try CLIParsing.parseToolIdentifiers(tools)
             let action = CLIParsing.parseAction(isImage: image, tools: identifiers)
             let options = GatewaySendOptions(action: action)
+            let shouldStream = stream && !global.json
+            let tracker = CLIStreamTracker()
+            let streamTask: Task<Void, Never>? = shouldStream
+                ? Task {
+                    await CLIGenerationStreamer.stream(
+                        orchestrator: runtime.orchestrator,
+                        output: runtime.output,
+                        tracker: tracker
+                    )
+                }
+                : nil
+
             let result = try await runtime.gateway.send(
                 sessionId: sessionId,
                 input: input,
                 options: options
             )
+
+            if let streamTask {
+                await CLIGenerationStreamer.awaitCompletion(
+                    streamTask,
+                    timeoutNanoseconds: 1_000_000_000
+                )
+            }
+
+            let didStreamText = await tracker.snapshot()
             let fallback: String
             if let message = result.assistantMessage {
                 fallback = message.content
             } else {
                 fallback = "Message \(result.messageId.uuidString) sent."
             }
-            runtime.output.emit(result, fallback: fallback)
+
+            if shouldStream, didStreamText {
+                runtime.output.emit("")
+            } else {
+                runtime.output.emit(result, fallback: fallback)
+            }
         }
     }
 
@@ -135,7 +169,7 @@ extension ChatCommand {
         var limit: Int = 50
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
             let messages = try await runtime.gateway.history(
                 sessionId: sessionId,
@@ -163,7 +197,7 @@ extension ChatCommand {
         var title: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
             _ = try await runtime.database.write(
                 ChatCommands.Rename(chatId: sessionId, newName: title)
@@ -184,7 +218,7 @@ extension ChatCommand {
         var session: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
             _ = try await runtime.database.write(ChatCommands.Delete(id: sessionId))
             runtime.output.emit("Deleted session \(sessionId.uuidString)")

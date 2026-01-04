@@ -1,4 +1,5 @@
 import Abstractions
+import Database
 import Foundation
 
 struct ModelSummary: Codable, Sendable, Equatable {

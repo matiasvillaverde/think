@@ -1,9 +1,11 @@
 import Abstractions
+import ArgumentParser
 import AbstractionsTestUtilities
 import Database
 import Foundation
 import SwiftData
 import Testing
+import ViewModels
 @testable import ThinkCLI
 
 @Suite("ThinkCLI Command Tests", .serialized)
@@ -12,15 +14,14 @@ struct ThinkCLICommandTests {
     func gatewayStartStop() async throws {
         let context = try await TestRuntime.make()
         try await withRuntime(context.runtime) {
-            var start = GatewayCommand.Start()
-            start.global = GlobalOptions()
-            start.port = 9_876
-            start.once = true
-            try await start.run()
+            let start = try GatewayCommand.Start.parse([
+                "--port", "9876",
+                "--once"
+            ])
+            try await runCommand(start)
 
-            var status = GatewayCommand.Status()
-            status.global = GlobalOptions()
-            try await status.run()
+            let status = try GatewayCommand.Status.parse([])
+            try await runCommand(status)
         }
 
         let running = await context.nodeMode.status()
@@ -55,52 +56,97 @@ struct ThinkCLICommandTests {
         )
 
         try await withRuntime(context.runtime) {
-            var list = ChatCommand.List()
-            list.global = GlobalOptions()
-            try await list.run()
+            let list = try ChatCommand.List.parse([])
+            try await runCommand(list)
 
-            var get = ChatCommand.Get()
-            get.global = GlobalOptions()
-            get.id = session.id.uuidString
-            try await get.run()
+            let get = try ChatCommand.Get.parse([session.id.uuidString])
+            try await runCommand(get)
 
-            var history = ChatCommand.History()
-            history.global = GlobalOptions()
-            history.session = session.id.uuidString
-            history.limit = 10
-            try await history.run()
+            let history = try ChatCommand.History.parse([
+                "--session", session.id.uuidString,
+                "--limit", "10"
+            ])
+            try await runCommand(history)
 
-            var send = ChatCommand.Send()
-            send.global = GlobalOptions()
-            send.session = session.id.uuidString
-            send.input = "Hello"
-            try await send.run()
+            let send = try ChatCommand.Send.parse([
+                "--session", session.id.uuidString,
+                "--no-stream",
+                "Hello"
+            ])
+            try await runCommand(send)
         }
 
         #expect(context.output.lines.contains { $0.contains("Test Chat") })
         #expect(context.output.lines.contains { $0.contains("Response") })
     }
 
+    @Test("Chat send streams output tokens")
+    func chatSendStreamsOutput() async throws {
+        let orchestrator = MockAgentOrchestrator()
+        let gateway = StubGateway()
+        await gateway.setSendDelayNanoseconds(200_000_000)
+        await gateway.setSendResult(
+            GatewaySendResult(
+                messageId: UUID(),
+                assistantMessage: GatewayMessage(
+                    id: UUID(),
+                    role: .assistant,
+                    content: "Response",
+                    createdAt: Date()
+                )
+            )
+        )
+        let context = try await TestRuntime.make(
+            gateway: gateway,
+            orchestrator: orchestrator
+        )
+        let sessionId = UUID()
+        let runId = UUID()
+
+        try await withRuntime(context.runtime) {
+            let send = try ChatCommand.Send.parse([
+                "--session", sessionId.uuidString,
+                "Hello"
+            ])
+
+            let sendTask = Task {
+                try await runCommand(send)
+            }
+
+            await Task.yield()
+            await orchestrator.emitEvent(.generationStarted(runId: runId))
+            await orchestrator.emitEvent(.textDelta(text: "Hello"))
+            await orchestrator.emitEvent(.textDelta(text: " world"))
+            await orchestrator.emitEvent(.generationCompleted(runId: runId, totalDurationMs: 1))
+            try await sendTask.value
+        }
+
+        let streamed = context.output.inline.joined()
+        #expect(streamed.contains("Hello world"))
+        #expect(context.output.lines.contains { $0.contains("Response") } == false)
+    }
+
     @Test("Chat rename/delete uses database")
+    @MainActor
     func chatRenameDelete() async throws {
         let context = try await TestRuntime.make()
         let chatId = try await seedChat(database: context.database)
 
         try await withRuntime(context.runtime) {
-            var rename = ChatCommand.Rename()
-            rename.global = GlobalOptions()
-            rename.session = chatId.uuidString
-            rename.title = "Renamed"
-            try await rename.run()
+            let rename = try ChatCommand.Rename.parse([
+                "--session", chatId.uuidString,
+                "Renamed"
+            ])
+            try await runCommand(rename)
 
-            var delete = ChatCommand.Delete()
-            delete.global = GlobalOptions()
-            delete.session = chatId.uuidString
-            try await delete.run()
+            let delete = try ChatCommand.Delete.parse([
+                "--session", chatId.uuidString
+            ])
+            try await runCommand(delete)
         }
 
         await #expect(throws: DatabaseError.chatNotFound) {
-            _ = try await context.database.read(ChatCommands.Read(chatId: chatId))
+            _ = try await context.database.read(ChatCommands.FetchGatewaySession(chatId: chatId))
         }
     }
 
@@ -122,19 +168,14 @@ struct ThinkCLICommandTests {
         )
 
         try await withRuntime(context.runtime) {
-            var list = ModelsCommand.List()
-            list.global = GlobalOptions()
-            try await list.run()
+            let list = try ModelsCommand.List.parse([])
+            try await runCommand(list)
 
-            var info = ModelsCommand.Info()
-            info.global = GlobalOptions()
-            info.id = modelId.uuidString
-            try await info.run()
+            let info = try ModelsCommand.Info.parse([modelId.uuidString])
+            try await runCommand(info)
 
-            var remove = ModelsCommand.Remove()
-            remove.global = GlobalOptions()
-            remove.id = modelId.uuidString
-            try await remove.run()
+            let remove = try ModelsCommand.Remove.parse([modelId.uuidString])
+            try await runCommand(remove)
         }
 
         let state = try await context.database.read(ModelStateReadCommand(id: modelId))
@@ -142,6 +183,7 @@ struct ThinkCLICommandTests {
     }
 
     @Test("Models download updates progress")
+    @MainActor
     func modelDownload() async throws {
         let mockRag = MockRagging()
         let explorer = MockCommunityModelsExplorer()
@@ -191,10 +233,8 @@ struct ThinkCLICommandTests {
         )
 
         try await withRuntime(context.runtime) {
-            var download = ModelsCommand.Download()
-            download.global = GlobalOptions()
-            download.modelId = discovered.id
-            try await download.run()
+            let download = try ModelsCommand.Download.parse([discovered.id])
+            try await runCommand(download)
         }
 
         let progress = try await context.database.read(ModelProgressReadCommand(id: sendable.id))
@@ -213,15 +253,14 @@ struct ThinkCLICommandTests {
         let context = try await TestRuntime.make(tooling: tooling)
 
         try await withRuntime(context.runtime) {
-            var list = ToolsCommand.List()
-            list.global = GlobalOptions()
-            try await list.run()
+            let list = try ToolsCommand.List.parse([])
+            try await runCommand(list)
 
-            var run = ToolsCommand.Run()
-            run.global = GlobalOptions()
-            run.name = "browser.search"
-            run.args = "{\"q\":\"swift\"}"
-            try await run.run()
+            let run = try ToolsCommand.Run.parse([
+                "browser.search",
+                "--args", "{\"q\":\"swift\"}"
+            ])
+            try await runCommand(run)
         }
 
         let requests = await tooling.lastRequests()
@@ -237,23 +276,23 @@ struct ThinkCLICommandTests {
         let table = RagTableName.chatTableName(chatId: UUID())
 
         try await withRuntime(context.runtime) {
-            var index = RagCommand.Index()
-            index.global = GlobalOptions()
-            index.table = table
-            index.text = "hello world"
-            try await index.run()
+            let index = try RagCommand.Index.parse([
+                "--table", table,
+                "--text", "hello world"
+            ])
+            try await runCommand(index)
 
-            var search = RagCommand.Search()
-            search.global = GlobalOptions()
-            search.table = table
-            search.query = "hello"
-            try await search.run()
+            let search = try RagCommand.Search.parse([
+                "--table", table,
+                "--query", "hello"
+            ])
+            try await runCommand(search)
 
-            var delete = RagCommand.Delete()
-            delete.global = GlobalOptions()
-            delete.table = table
-            delete.id = UUID().uuidString
-            try await delete.run()
+            let delete = try RagCommand.Delete.parse([
+                "--table", table,
+                UUID().uuidString
+            ])
+            try await runCommand(delete)
         }
 
         let addCalls = await mockRag.addTextCalls
@@ -261,6 +300,7 @@ struct ThinkCLICommandTests {
     }
 
     @Test("Skills list/enable/disable")
+    @MainActor
     func skillsCommands() async throws {
         let context = try await TestRuntime.make()
         let skillId = try await context.database.write(
@@ -274,19 +314,14 @@ struct ThinkCLICommandTests {
         )
 
         try await withRuntime(context.runtime) {
-            var list = SkillsCommand.List()
-            list.global = GlobalOptions()
-            try await list.run()
+            let list = try SkillsCommand.List.parse([])
+            try await runCommand(list)
 
-            var enable = SkillsCommand.Enable()
-            enable.global = GlobalOptions()
-            enable.id = skillId.uuidString
-            try await enable.run()
+            let enable = try SkillsCommand.Enable.parse([skillId.uuidString])
+            try await runCommand(enable)
 
-            var disable = SkillsCommand.Disable()
-            disable.global = GlobalOptions()
-            disable.id = skillId.uuidString
-            try await disable.run()
+            let disable = try SkillsCommand.Disable.parse([skillId.uuidString])
+            try await runCommand(disable)
         }
 
         let skill = try await context.database.read(SkillCommands.Read(skillId: skillId))
@@ -294,49 +329,43 @@ struct ThinkCLICommandTests {
     }
 
     @Test("Schedules create/update/enable/disable/delete")
+    @MainActor
     func schedulesCommands() async throws {
         let context = try await TestRuntime.make()
         let cronExpression = "0 0 * * *"
 
         try await withRuntime(context.runtime) {
-            var create = SchedulesCommand.Create()
-            create.global = GlobalOptions()
-            create.title = "Daily"
-            create.prompt = "Run"
-            create.cron = cronExpression
-            create.kind = "cron"
-            create.action = "text"
-            try await create.run()
+            let create = try SchedulesCommand.Create.parse([
+                "--title", "Daily",
+                "--prompt", "Run",
+                "--cron", cronExpression,
+                "--kind", "cron",
+                "--action", "text"
+            ])
+            try await runCommand(create)
 
-            var list = SchedulesCommand.List()
-            list.global = GlobalOptions()
-            try await list.run()
+            let list = try SchedulesCommand.List.parse([])
+            try await runCommand(list)
         }
 
         let schedules = try await context.database.read(AutomationScheduleCommands.List())
         let scheduleId = try #require(schedules.first?.id)
 
         try await withRuntime(context.runtime) {
-            var update = SchedulesCommand.Update()
-            update.global = GlobalOptions()
-            update.id = scheduleId.uuidString
-            update.title = "Updated"
-            try await update.run()
+            let update = try SchedulesCommand.Update.parse([
+                scheduleId.uuidString,
+                "--title", "Updated"
+            ])
+            try await runCommand(update)
 
-            var enable = SchedulesCommand.Enable()
-            enable.global = GlobalOptions()
-            enable.id = scheduleId.uuidString
-            try await enable.run()
+            let enable = try SchedulesCommand.Enable.parse([scheduleId.uuidString])
+            try await runCommand(enable)
 
-            var disable = SchedulesCommand.Disable()
-            disable.global = GlobalOptions()
-            disable.id = scheduleId.uuidString
-            try await disable.run()
+            let disable = try SchedulesCommand.Disable.parse([scheduleId.uuidString])
+            try await runCommand(disable)
 
-            var delete = SchedulesCommand.Delete()
-            delete.global = GlobalOptions()
-            delete.id = scheduleId.uuidString
-            try await delete.run()
+            let delete = try SchedulesCommand.Delete.parse([scheduleId.uuidString])
+            try await runCommand(delete)
         }
 
         let remaining = try await context.database.read(AutomationScheduleCommands.List())
@@ -354,13 +383,15 @@ private struct TestRuntime {
     let tooling: StubTooling
     let downloader: StubDownloader
     let nodeMode: StubNodeMode
+    let orchestrator: MockAgentOrchestrator
 
     static func make(
         rag: MockRagging = MockRagging(),
         gateway: StubGateway = StubGateway(),
         tooling: StubTooling = StubTooling(),
         downloader: StubDownloader = StubDownloader(),
-        nodeMode: StubNodeMode = StubNodeMode()
+        nodeMode: StubNodeMode = StubNodeMode(),
+        orchestrator: MockAgentOrchestrator = MockAgentOrchestrator()
     ) async throws -> TestRuntime {
         let config = DatabaseConfiguration(
             isStoredInMemoryOnly: true,
@@ -373,7 +404,7 @@ private struct TestRuntime {
         let output = BufferOutput()
         let runtime = CLIRuntime(
             database: database,
-            orchestrator: MockAgentOrchestrator(),
+            orchestrator: orchestrator,
             gateway: gateway,
             tooling: tooling,
             downloader: downloader,
@@ -387,20 +418,33 @@ private struct TestRuntime {
             gateway: gateway,
             tooling: tooling,
             downloader: downloader,
-            nodeMode: nodeMode
+            nodeMode: nodeMode,
+            orchestrator: orchestrator
         )
     }
 }
 
+@MainActor
 private func withRuntime(
     _ runtime: CLIRuntime,
     operation: () async throws -> Void
 ) async throws {
-    let previous = CLIRuntimeProvider.factory
-    CLIRuntimeProvider.factory = { _ in runtime }
-    defer { CLIRuntimeProvider.factory = previous }
-    try await operation()
+    let previous = await CLIRuntimeProvider.getFactory()
+    await CLIRuntimeProvider.setFactory({ _ in runtime })
+    do {
+        try await operation()
+        await CLIRuntimeProvider.setFactory(previous)
+    } catch {
+        await CLIRuntimeProvider.setFactory(previous)
+        throw error
+    }
 }
+
+private func runCommand<C: AsyncParsableCommand>(_ command: C) async throws {
+    var mutable = command
+    try await mutable.run()
+}
+
 
 @MainActor
 private func waitForReady(
@@ -484,6 +528,7 @@ actor StubGateway: GatewayServicing {
     private var sessions: [GatewaySession] = []
     private var historyBySession: [UUID: [GatewayMessage]] = [:]
     private var sendResult: GatewaySendResult?
+    private var sendDelayNanoseconds: UInt64 = 0
 
     func setSessions(_ sessions: [GatewaySession]) {
         self.sessions = sessions
@@ -495,6 +540,10 @@ actor StubGateway: GatewayServicing {
 
     func setSendResult(_ result: GatewaySendResult) {
         sendResult = result
+    }
+
+    func setSendDelayNanoseconds(_ delay: UInt64) {
+        sendDelayNanoseconds = delay
     }
 
     func createSession(title: String?) async throws -> GatewaySession {
@@ -531,6 +580,9 @@ actor StubGateway: GatewayServicing {
         input: String,
         options: GatewaySendOptions
     ) async throws -> GatewaySendResult {
+        if sendDelayNanoseconds > 0 {
+            try await Task.sleep(nanoseconds: sendDelayNanoseconds)
+        }
         if let sendResult {
             return sendResult
         }
@@ -605,7 +657,9 @@ actor StubDownloader: CLIDownloader {
         self.events = events
     }
 
-    nonisolated func download(sendableModel: SendableModel) -> AsyncThrowingStream<DownloadEvent, Error> {
+    nonisolated func download(
+        sendableModel: SendableModel
+    ) -> AsyncThrowingStream<DownloadEvent, Error> {
         AsyncThrowingStream { continuation in
             for event in events {
                 continuation.yield(event)

@@ -31,7 +31,7 @@ enum CLIParsing {
         }
 
         if !unknown.isEmpty {
-            throw ValidationError("Unknown tools: \(unknown.joined(separator: \", \"))")
+            throw ValidationError("Unknown tools: \(unknown.joined(separator: ", "))")
         }
 
         return identifiers

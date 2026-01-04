@@ -4,6 +4,7 @@ import Foundation
 
 struct ToolsCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
+        commandName: "tools",
         abstract: "List or run tools.",
         subcommands: [List.self, Run.self]
     )
@@ -22,7 +23,7 @@ extension ToolsCommand {
         var global: GlobalOptions
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             await runtime.tooling.configureTool(identifiers: Set(ToolIdentifier.allCases))
             let definitions = await runtime.tooling.getAllToolDefinitions()
             let summaries = definitions.map(ToolDefinitionSummary.init(definition:))
@@ -54,7 +55,7 @@ extension ToolsCommand {
         var message: String?
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let identifiers = try CLIParsing.parseToolIdentifiers([name])
             guard let identifier = identifiers.first else {
                 throw ValidationError("Unknown tool: \(name)")

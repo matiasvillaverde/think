@@ -8,15 +8,31 @@ public struct DatabaseConfiguration: Sendable {
     public let isStoredInMemoryOnly: Bool
     public let allowsSave: Bool
     public let ragFactory: RagFactory
+    public let storeURL: URL?
+
+    public init(
+        isStoredInMemoryOnly: Bool,
+        allowsSave: Bool,
+        ragFactory: RagFactory,
+        storeURL: URL? = nil
+    ) {
+        self.isStoredInMemoryOnly = isStoredInMemoryOnly
+        self.allowsSave = allowsSave
+        self.ragFactory = ragFactory
+        self.storeURL = storeURL
+    }
 
     public init(
         isStoredInMemoryOnly: Bool,
         allowsSave: Bool,
         ragFactory: RagFactory
     ) {
-        self.isStoredInMemoryOnly = isStoredInMemoryOnly
-        self.allowsSave = allowsSave
-        self.ragFactory = ragFactory
+        self.init(
+            isStoredInMemoryOnly: isStoredInMemoryOnly,
+            allowsSave: allowsSave,
+            ragFactory: ragFactory,
+            storeURL: nil
+        )
     }
 }
 

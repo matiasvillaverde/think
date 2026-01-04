@@ -4,6 +4,7 @@ import Foundation
 
 struct SkillsCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
+        commandName: "skills",
         abstract: "Manage skills.",
         subcommands: [List.self, Enable.self, Disable.self]
     )
@@ -21,8 +22,9 @@ extension SkillsCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @MainActor
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let skills = try await runtime.database.read(SkillCommands.GetAll())
             let summaries = skills.map(SkillSummary.init(skill:))
             let fallback = summaries.isEmpty
@@ -44,7 +46,7 @@ extension SkillsCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let skillId = try CLIParsing.parseUUID(id, field: "skill")
             _ = try await runtime.database.write(
                 SkillCommands.SetEnabled(skillId: skillId, isEnabled: true)
@@ -65,7 +67,7 @@ extension SkillsCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let skillId = try CLIParsing.parseUUID(id, field: "skill")
             _ = try await runtime.database.write(
                 SkillCommands.SetEnabled(skillId: skillId, isEnabled: false)

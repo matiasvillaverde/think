@@ -4,6 +4,7 @@ import Foundation
 
 struct RagCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
+        commandName: "rag",
         abstract: "RAG indexing and search operations.",
         subcommands: [Index.self, Search.self, Delete.self]
     )
@@ -40,7 +41,7 @@ extension RagCommand {
         var file: String?
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let tableName = try resolveTable(table: table, chat: chat, user: user)
             let contentId = try id.map { try CLIParsing.parseUUID($0, field: "id") } ?? UUID()
 
@@ -49,7 +50,7 @@ extension RagCommand {
                 content = text
             } else if let file {
                 let url = URL(fileURLWithPath: file)
-                content = try String(contentsOf: url)
+                content = try String(contentsOf: url, encoding: .utf8)
             } else {
                 throw ValidationError("Provide --text or --file.")
             }
@@ -86,7 +87,7 @@ extension RagCommand {
         var threshold: Double = 0.3
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let tableName = try resolveTable(table: table, chat: chat, user: user)
             let results = try await runtime.database.semanticSearch(
                 query: query,
@@ -123,7 +124,7 @@ extension RagCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let tableName = try resolveTable(table: table, chat: chat, user: user)
             let contentId = try CLIParsing.parseUUID(id, field: "id")
             try await runtime.database.deleteFromIndex(id: contentId, table: tableName)

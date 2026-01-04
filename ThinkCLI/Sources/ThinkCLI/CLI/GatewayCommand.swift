@@ -4,6 +4,7 @@ import ViewModels
 
 struct GatewayCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
+        commandName: "gateway",
         abstract: "Manage the local gateway (node mode) server.",
         subcommands: [Start.self, Status.self]
     )
@@ -31,7 +32,7 @@ extension GatewayCommand {
         var once: Bool = false
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             try await runtime.nodeMode.start(
                 configuration: NodeModeConfiguration(
                     port: port,
@@ -64,7 +65,7 @@ extension GatewayCommand {
         var global: GlobalOptions
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let running = await runtime.nodeMode.status()
             let fallback = running ? "running" : "stopped"
             runtime.output.emit(GatewayStatus(running: running), fallback: fallback)

@@ -5,14 +5,15 @@ enum AppStoreLocator {
     private static let defaultStoreName: String = "default.store"
 
     static func sharedStoreURL(bundleId: String, overridePath: String?) -> URL {
-        if let overridePath {
-            return URL(fileURLWithPath: overridePath)
-        }
-
         let containerRoot = FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent("Library/Containers")
             .appendingPathComponent(bundleId)
             .appendingPathComponent("Data/Library/Application Support")
+
+        if let overridePath {
+            let overrideName = URL(fileURLWithPath: overridePath).lastPathComponent
+            return containerRoot.appendingPathComponent(overrideName)
+        }
 
         return containerRoot.appendingPathComponent(defaultStoreName)
     }

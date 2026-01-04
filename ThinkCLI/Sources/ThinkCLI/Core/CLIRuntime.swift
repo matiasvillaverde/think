@@ -120,10 +120,60 @@ struct CLIRuntime: Sendable {
     }
 }
 
-enum CLIRuntimeProvider {
-    static var factory: (GlobalOptions) throws -> CLIRuntime = { try CLIRuntime.live(options: $0) }
+actor CLIRuntimeProviderActor {
+    private var factory: @Sendable (GlobalOptions) throws -> CLIRuntime
 
-    static func runtime(for options: GlobalOptions) throws -> CLIRuntime {
+    init(
+        factory: @escaping @Sendable (GlobalOptions) throws -> CLIRuntime = {
+            try CLIRuntime.live(options: $0)
+        }
+    ) {
+        self.factory = factory
+    }
+
+    func runtime(for options: GlobalOptions) throws -> CLIRuntime {
         try factory(options)
+    }
+
+    func setFactory(_ factory: @escaping @Sendable (GlobalOptions) throws -> CLIRuntime) {
+        self.factory = factory
+    }
+
+    func getFactory() -> (@Sendable (GlobalOptions) throws -> CLIRuntime) {
+        factory
+    }
+}
+
+enum CLIRuntimeProvider {
+    private static let shared = CLIRuntimeProviderActor()
+
+    static func runtime(for options: GlobalOptions) async throws -> CLIRuntime {
+        try await shared.runtime(for: options)
+    }
+
+    static func setFactory(
+        _ factory: @escaping @Sendable (GlobalOptions) throws -> CLIRuntime
+    ) async {
+        await shared.setFactory(factory)
+    }
+
+    static func getFactory() async -> (@Sendable (GlobalOptions) throws -> CLIRuntime) {
+        await shared.getFactory()
+    }
+
+    static func withFactory<T>(
+        _ factory: @escaping @Sendable (GlobalOptions) throws -> CLIRuntime,
+        operation: () async throws -> T
+    ) async rethrows -> T {
+        let previous = await shared.getFactory()
+        await shared.setFactory(factory)
+        do {
+            let result = try await operation()
+            await shared.setFactory(previous)
+            return result
+        } catch {
+            await shared.setFactory(previous)
+            throw error
+        }
     }
 }

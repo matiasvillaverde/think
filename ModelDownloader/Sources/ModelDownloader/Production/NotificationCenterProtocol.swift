@@ -50,7 +50,8 @@ internal struct RealNotificationCenter: NotificationCenterProtocol {
            ProcessInfo.processInfo.arguments.contains("XCTRunner") ||
            // Check for Swift Package Manager test environment
            ProcessInfo.processInfo.environment["SWIFT_PACKAGE_TEST_PRODUCT"] != nil ||
-           Bundle.main.bundleURL.path.contains("swift/pm") {
+           Bundle.main.bundleURL.path.contains("swift/pm") ||
+           !Bundle.main.bundlePath.hasSuffix(".app") {
             self.notificationCenter = nil
         } else {
             self.notificationCenter = UNUserNotificationCenter.current()

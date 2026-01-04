@@ -58,10 +58,20 @@ public actor Database: DatabaseProtocol {
         Self.logger.info("Database initialization started")
         Self.logger.info("Configuration: memory-only=\(configuration.isStoredInMemoryOnly), allowsSave=\(configuration.allowsSave)")
         
-        let config = ModelConfiguration(
-            isStoredInMemoryOnly: configuration.isStoredInMemoryOnly,
-            allowsSave: configuration.allowsSave
-        )
+        let config: ModelConfiguration
+        if let storeURL = configuration.storeURL {
+            let storeName = storeURL.lastPathComponent
+            config = ModelConfiguration(
+                storeName,
+                isStoredInMemoryOnly: configuration.isStoredInMemoryOnly,
+                allowsSave: configuration.allowsSave
+            )
+        } else {
+            config = ModelConfiguration(
+                isStoredInMemoryOnly: configuration.isStoredInMemoryOnly,
+                allowsSave: configuration.allowsSave
+            )
+        }
 
         do {
             Self.logger.info("Creating ModelContainer with SwiftData models...")

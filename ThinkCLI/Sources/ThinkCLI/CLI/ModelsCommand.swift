@@ -5,6 +5,7 @@ import Foundation
 
 struct ModelsCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
+        commandName: "models",
         abstract: "Manage models (list, download, add, remove).",
         subcommands: [
             List.self,
@@ -30,7 +31,7 @@ extension ModelsCommand {
         var global: GlobalOptions
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let models = try await runtime.database.read(ModelCommands.FetchAll())
             let summaries = models.map(ModelSummary.init(model:))
             let fallback = summaries.isEmpty
@@ -52,7 +53,7 @@ extension ModelsCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let modelId = try CLIParsing.parseUUID(id, field: "model")
             let model = try await runtime.database.read(
                 ModelCommands.GetSendableModel(id: modelId)
@@ -77,7 +78,7 @@ extension ModelsCommand {
         var backend: String?
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let explorer = runtime.downloader.explorer()
             let discovered = try await explorer.discoverModel(modelId)
 
@@ -147,7 +148,10 @@ extension ModelsCommand {
 
         @Option(
             name: .long,
-            help: "Model type (language, diffusion, diffusionXL, deepLanguage, flexibleThinker, visualLanguage)."
+            help: .init(
+                "Model type (language, diffusion, diffusionXL, deepLanguage, flexibleThinker, " +
+                    "visualLanguage)."
+            )
         )
         var type: String = "language"
 
@@ -155,7 +159,7 @@ extension ModelsCommand {
         var architecture: String = "unknown"
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let modelType = try CLIParsing.parseModelType(type)
             let architectureValue = CLIParsing.parseArchitecture(architecture)
             let display = displayName ?? name
@@ -207,7 +211,7 @@ extension ModelsCommand {
         var architecture: String = "unknown"
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let backendValue = try CLIParsing.parseBackend(backend)
             let modelType = try CLIParsing.parseModelType(type)
             let architectureValue = CLIParsing.parseArchitecture(architecture)
@@ -240,7 +244,7 @@ extension ModelsCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let modelId = try CLIParsing.parseUUID(id, field: "model")
             let sendable = try await runtime.database.read(
                 ModelCommands.GetSendableModel(id: modelId)
@@ -250,7 +254,9 @@ extension ModelsCommand {
                 do {
                     try await runtime.downloader.delete(modelLocation: sendable.location)
                 } catch {
-                    runtime.output.emit("Warning: failed to delete files (\(error.localizedDescription))")
+                    runtime.output.emit(
+                        "Warning: failed to delete files (\(error.localizedDescription))"
+                    )
                 }
             }
 

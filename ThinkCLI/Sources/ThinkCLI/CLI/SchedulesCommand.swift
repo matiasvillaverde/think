@@ -5,6 +5,7 @@ import Foundation
 
 struct SchedulesCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
+        commandName: "schedules",
         abstract: "Manage automation schedules.",
         subcommands: [List.self, Create.self, Update.self, Enable.self, Disable.self, Delete.self]
     )
@@ -25,8 +26,9 @@ extension SchedulesCommand {
         @Option(name: .long, help: "Filter schedules by chat UUID.")
         var chat: String?
 
+        @MainActor
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let chatId = try chat.map { try CLIParsing.parseUUID($0, field: "chat") }
             let schedules = try await runtime.database.read(
                 AutomationScheduleCommands.List(chatId: chatId)
@@ -75,7 +77,7 @@ extension SchedulesCommand {
         var disabled: Bool = false
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let scheduleKind = try CLIParsing.parseScheduleKind(kind)
             let actionType = try CLIParsing.parseActionType(action)
             let toolIdentifiers = try CLIParsing.parseToolIdentifiers(tools)
@@ -132,7 +134,7 @@ extension SchedulesCommand {
         var tools: [String] = []
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let scheduleId = try CLIParsing.parseUUID(id, field: "schedule")
 
             let kindValue = try kind.map(CLIParsing.parseScheduleKind(_:))
@@ -172,7 +174,7 @@ extension SchedulesCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let scheduleId = try CLIParsing.parseUUID(id, field: "schedule")
             _ = try await runtime.database.write(
                 AutomationScheduleCommands.SetEnabled(id: scheduleId, isEnabled: true)
@@ -193,7 +195,7 @@ extension SchedulesCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let scheduleId = try CLIParsing.parseUUID(id, field: "schedule")
             _ = try await runtime.database.write(
                 AutomationScheduleCommands.SetEnabled(id: scheduleId, isEnabled: false)
@@ -214,7 +216,7 @@ extension SchedulesCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let scheduleId = try CLIParsing.parseUUID(id, field: "schedule")
             _ = try await runtime.database.write(
                 AutomationScheduleCommands.Delete(id: scheduleId)
