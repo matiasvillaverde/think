@@ -125,7 +125,10 @@ public actor Database: DatabaseProtocol {
                     self?.state.onStatusChange = callback
                 }
 
-                await self?.initialize(configuration: configuration)
+                guard let self else { return }
+                await DatabaseInitializationGate.shared.run {
+                    await self.initialize(configuration: configuration)
+                }
             }
         } catch {
             Self.logger.error("Failed to create ModelContainer")
@@ -292,6 +295,44 @@ public actor Database: DatabaseProtocol {
     }
 }
 
+// MARK: - Initialization Gate
+
+/// Serializes database initialization work to avoid SwiftData concurrency crashes
+/// when many in-memory databases are created in parallel during tests.
+private actor DatabaseInitializationGate {
+    static let shared = DatabaseInitializationGate()
+
+    private var isRunning: Bool = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+
+    func run(_ operation: @Sendable () async -> Void) async {
+        await acquire()
+        defer { release() }
+        await operation()
+    }
+
+    private func acquire() async {
+        if !isRunning {
+            isRunning = true
+            return
+        }
+
+        await withCheckedContinuation { continuation in
+            waiters.append(continuation)
+        }
+    }
+
+    private func release() {
+        if waiters.isEmpty {
+            isRunning = false
+            return
+        }
+
+        let continuation = waiters.removeFirst()
+        continuation.resume()
+    }
+}
+
 // MARK: - UI
 
 extension Database {
@@ -363,6 +404,10 @@ extension Database {
                 userId: commandUserId,
                 rag: commandRag
             )
+        }
+
+        await MainActor.run { [modelContainer] in
+            modelContainer.mainContext.processPendingChanges()
         }
     }
 
