@@ -105,7 +105,7 @@ public struct AboutView: View {
                     bundle: .module,
                     comment: "Website label"
                 ),
-                value: "thinkfreely.chat"
+                value: "think.app"
             )
         }
         .frame(maxWidth: .infinity, alignment: .leading)

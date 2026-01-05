@@ -6,7 +6,7 @@ If you discover a security vulnerability in Think AI, please report it responsib
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Instead, please send an email to **contact@thinkfreely.chat** with:
+Instead, please send an email to **contact.app** with:
 
 - A description of the vulnerability
 - Steps to reproduce the issue

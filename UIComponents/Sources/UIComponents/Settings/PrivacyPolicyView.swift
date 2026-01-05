@@ -344,7 +344,7 @@ public struct PrivacyPolicyView: View {
                 .padding(.top)
 
                 Text(String(
-                    localized: "For questions or concerns about this Privacy Policy, please contact: contact@thinkfreely.chat",
+                    localized: "For questions or concerns about this Privacy Policy, please contact: contact.app",
                     bundle: .module,
                     comment: "Privacy Policy section content"
                 ))

@@ -398,7 +398,7 @@ public struct TermsOfUseView: View {
                 .padding(.top)
 
                 Text(String(
-                    localized: "For questions about these Terms, please contact: contact@thinkfreely.chat",
+                    localized: "For questions about these Terms, please contact: contact.app",
                     bundle: .module,
                     comment: "Terms of Use section content"
                 ))

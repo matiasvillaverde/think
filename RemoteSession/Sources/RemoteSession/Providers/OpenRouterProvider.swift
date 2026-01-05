@@ -21,7 +21,7 @@ struct OpenRouterProvider: RemoteProvider {
     /// - Parameters:
     ///   - appName: The name of your application for attribution
     ///   - appURL: The URL of your application for attribution
-    init(appName: String = "Think Freely", appURL: String = "https://thinkfreely.app") {
+    init(appName: String = "Think", appURL: String = "https://think.app") {
         self.appName = appName
         self.appURL = appURL
     }

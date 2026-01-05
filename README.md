@@ -1,18 +1,18 @@
-# Think Freely (OpenClaw App)
+# Think (OpenClaw App)
 
-A native Apple app that brings OpenClaw to iOS, macOS, and visionOS. The goal is to make OpenClaw easy to install, safe to run in a sandboxed environment (especially on iOS), and approachable for everyday use.
+Think is an Apple‑platform app inspired by OpenClaw and transformed into a native iOS/macOS/visionOS experience. The goal is to make OpenClaw easier to use, safer to run in a sandboxed environment (especially on iOS), and approachable for everyday workflows.
 
 ## Status
 
-This project is under active development and is **not ready for production use**. Expect breaking changes, missing features, and incomplete documentation.
+This is an experiment and is **not ready for production use**. Only use it if you understand how it works. Expect breaking changes, missing features, and incomplete documentation.
 
 ## Vision
 
-The goal is to give the world an open-source tool that thinks. This repository is the foundation for a polished, secure, and user-friendly app experience built on OpenClaw.
+The goal is to give the world an open‑source tool that thinks.
 
 ## What This Is
 
-- An app-focused implementation of OpenClaw for Apple platforms.
+- An app‑focused implementation inspired by OpenClaw for Apple platforms.
 - Designed to run in a sandbox (required on iOS) with a clear security model.
 - Built with Swift, SwiftUI, and a modular architecture.
 

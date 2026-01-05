@@ -115,7 +115,7 @@ These tests perfectly integrate with our new git-based download system:
 When run in proper environment (full Xcode + Apple Silicon):
 
 ```bash
-cd /path/to/think-freely/MLXSession
+cd /path/to/think/MLXSession
 make test-filter FILTER=testQwen15Generation
 ```
 

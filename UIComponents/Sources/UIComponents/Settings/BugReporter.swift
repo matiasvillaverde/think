@@ -14,7 +14,7 @@ public enum BugReporter {
     // MARK: - Configuration
 
     /// Email address to send bug reports to
-    private static let supportEmail: String = "contact@thinkfreely.chat"
+    private static let supportEmail: String = "contact.app"
 
     /// Subject line for bug report emails
     private static let bugReportSubject: String = "Bug Report"
