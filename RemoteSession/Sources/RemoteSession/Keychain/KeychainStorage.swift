@@ -25,6 +25,7 @@ public protocol SecureStorageProtocol: Sendable {
 public final class KeychainStorage: SecureStorageProtocol, @unchecked Sendable {
     /// The service identifier for keychain items
     private let service: String
+    private let legacyService: String?
 
     /// Shared instance with default service name
     public static let shared = KeychainStorage(service: "com.think.remotesession")
@@ -32,8 +33,9 @@ public final class KeychainStorage: SecureStorageProtocol, @unchecked Sendable {
     /// Creates a new keychain storage.
     ///
     /// - Parameter service: The keychain service identifier
-    public init(service: String) {
+    public init(service: String, legacyService: String? = "com.thinkfreely.remotesession") {
         self.service = service
+        self.legacyService = legacyService
     }
 
     public func store(_ data: Data, forKey key: String) async throws {
@@ -72,6 +74,24 @@ public final class KeychainStorage: SecureStorageProtocol, @unchecked Sendable {
     }
 
     public func retrieve(forKey key: String) async throws -> Data? {
+        if let data = try retrieve(forKey: key, service: service) {
+            return data
+        }
+
+        guard let legacyService else {
+            return nil
+        }
+
+        if let legacyData = try retrieve(forKey: key, service: legacyService) {
+            try await store(legacyData, forKey: key)
+            try delete(forKey: key, service: legacyService)
+            return legacyData
+        }
+
+        return nil
+    }
+
+    private func retrieve(forKey key: String, service: String) throws -> Data? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -94,6 +114,13 @@ public final class KeychainStorage: SecureStorageProtocol, @unchecked Sendable {
     }
 
     public func delete(forKey key: String) async throws {
+        try delete(forKey: key, service: service)
+        if let legacyService {
+            try delete(forKey: key, service: legacyService)
+        }
+    }
+
+    private func delete(forKey key: String, service: String) throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -109,6 +136,16 @@ public final class KeychainStorage: SecureStorageProtocol, @unchecked Sendable {
     }
 
     public func exists(forKey key: String) async -> Bool {
+        if exists(forKey: key, service: service) {
+            return true
+        }
+        guard let legacyService else {
+            return false
+        }
+        return exists(forKey: key, service: legacyService)
+    }
+
+    private func exists(forKey key: String, service: String) -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
