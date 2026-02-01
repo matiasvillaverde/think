@@ -76,7 +76,7 @@ Examples:
 ## API Key Storage
 
 API keys are stored securely in the macOS Keychain:
-- Service: `com.thinkfreely.remotesession`
+- Service: `com.think.remotesession`
 - Keys are isolated per provider
 - Use `APIKeyManager` for all key operations
 

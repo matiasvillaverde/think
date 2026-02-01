@@ -27,7 +27,7 @@ public final class KeychainStorage: SecureStorageProtocol, @unchecked Sendable {
     private let service: String
 
     /// Shared instance with default service name
-    public static let shared = KeychainStorage(service: "com.thinkfreely.remotesession")
+    public static let shared = KeychainStorage(service: "com.think.remotesession")
 
     /// Creates a new keychain storage.
     ///
