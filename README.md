@@ -1,14 +1,16 @@
 # Think (OpenClaw App)
 
-Think is an Apple‑platform app inspired by OpenClaw and transformed into a native iOS/macOS/visionOS experience. The goal is to make OpenClaw easier to use, safer to run in a sandboxed environment (especially on iOS), and approachable for everyday workflows.
+Think is an Apple‑platform app inspired by OpenClaw and transformed into a native iOS/macOS/visionOS experience. It is an experiment, and it is **not ready for production use**. Only use it if you understand how it works.
+
+## Purpose
+
+The goal is to make a tool that feels like OpenClaw but is easier to install, runs locally, and can live safely in a sandboxed environment (especially on iOS). Think uses MLX on Apple Silicon to run models on‑device.
+
+On capable Apple Silicon machines, Think is intended as the foundation for a personal assistant (or “ghost”) that lives on your computer and runs locally.
 
 ## Status
 
-This is an experiment and is **not ready for production use**. Only use it if you understand how it works. Expect breaking changes, missing features, and incomplete documentation.
-
-## Vision
-
-The goal is to give the world an open‑source tool that thinks.
+This project is under active development. Expect breaking changes, missing features, and incomplete documentation.
 
 ## What This Is
 
