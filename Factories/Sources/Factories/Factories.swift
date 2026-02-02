@@ -17,16 +17,7 @@ public struct DefaultRagFactory: RagFactory {
         isStoredInMemoryOnly: Bool,
         loadingStrategy: RagLoadingStrategy
     ) async throws -> Ragging {
-        #if os(iOS) || os(visionOS)
-        let modelDir: String = "Resources-ios/all-MiniLM-L6-v2"
-        #else
-        let modelDir: String = "Resources-macos/all-MiniLM-L6-v2"
-        #endif
-
-        guard let modelURL = Bundle.main.resourceURL?
-            .appendingPathComponent(modelDir, isDirectory: true) else {
-            throw DatabaseError.modelNotFound
-        }
+        let modelURL: URL? = RagResourceLocator.locateModelDirectory()
 
         return try await Rag(
             local: modelURL,
