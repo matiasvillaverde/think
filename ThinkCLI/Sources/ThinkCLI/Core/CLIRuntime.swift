@@ -86,6 +86,7 @@ struct CLIRuntime: Sendable {
         )
 
         let database = Database.instance(configuration: databaseConfig)
+        _ = CLIMetalLibraryBootstrapper.ensureMetallibAvailable()
         let mlxSession = MLXSessionFactory.create()
         let ggufSession = LlamaCPPFactory.createSession()
         let remoteSession = RemoteSessionFactory.create()
