@@ -134,11 +134,34 @@ internal final class LlamaCPPGenerator {
             return
         }
 
-        let tokenCount: Int32 = Int32(tokens.count)
+        let batchLimit: Int = max(1, Int(context.batchSize))
+        try processTokensInBatches(tokens, batchLimit: batchLimit, ctx: ctx)
+    }
+
+    private func processTokensInBatches(
+        _ tokens: [Int32],
+        batchLimit: Int,
+        ctx: OpaquePointer
+    ) throws {
+        var offset: Int = 0
+        while offset < tokens.count {
+            let end: Int = min(offset + batchLimit, tokens.count)
+            let tokenCount: Int32 = try decodeBatch(tokens[offset..<end], ctx: ctx)
+            currentPosition += tokenCount
+            offset = end
+        }
+    }
+
+    private func decodeBatch(
+        _ tokens: ArraySlice<Int32>,
+        ctx: OpaquePointer
+    ) throws -> Int32 {
+        let chunk: [Int32] = Array(tokens)
+        let tokenCount: Int32 = Int32(chunk.count)
 
         // Use llama_batch_get_one for single-sequence generation
         // This is optimized and handles position tracking automatically
-        let batch: llama_batch = tokens.withUnsafeBufferPointer { buffer in
+        let batch: llama_batch = chunk.withUnsafeBufferPointer { buffer in
             llama_batch_get_one(
                 UnsafeMutablePointer(mutating: buffer.baseAddress),
                 tokenCount
@@ -151,7 +174,7 @@ internal final class LlamaCPPGenerator {
         }
 
         // Position is tracked automatically by llama_decode when batch.pos = NULL
-        currentPosition += tokenCount
+        return tokenCount
     }
 
     /// Get logits for the current context state
