@@ -102,6 +102,29 @@ internal enum Logger {
         )
     }
 
+    /// Log when prompt tokens are truncated to fit the context window
+    internal static func promptTruncated(
+        original: Int,
+        trimmed: Int,
+        contextSize: Int,
+        requestedMaxTokens: Int
+    ) {
+        let message: String = "Prompt truncated: \(original)->\(trimmed) tokens " +
+            "to fit context \(contextSize) with maxTokens \(requestedMaxTokens)"
+        log.warning("\(message)")
+    }
+
+    /// Log when max tokens are clamped to fit the context window
+    internal static func maxTokensClamped(
+        requested: Int,
+        effective: Int,
+        contextSize: Int
+    ) {
+        log.warning(
+            "Max tokens clamped: \(requested)->\(effective) to fit context \(contextSize)"
+        )
+    }
+
     /// Log memory pressure warning
     internal static func memoryPressureWarning() {
         log.warning("Memory pressure detected during generation")
