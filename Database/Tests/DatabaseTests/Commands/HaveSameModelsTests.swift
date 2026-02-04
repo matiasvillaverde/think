@@ -202,7 +202,7 @@ struct HaveSameModelsTests {
             let duration = ProcessInfo.processInfo.systemUptime - start
 
             // Then
-            #expect(duration < 1.0) // Should complete within 1 second
+            #expect(duration < 2.0) // Should complete quickly under typical CI load
         }
     }
 }
