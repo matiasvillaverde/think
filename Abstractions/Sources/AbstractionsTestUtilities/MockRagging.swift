@@ -185,6 +185,7 @@ public final actor MockRagging: Ragging, @unchecked Sendable {
         addTextCalls.removeAll()
         getChunkCalls.removeAll()
         deleteTableCalls.removeAll()
+        deleteIDCalls.removeAll()
     }
 
     public var lastSemanticSearchCall: (query: String, numResults: Int, threshold: Double, table: String)? {

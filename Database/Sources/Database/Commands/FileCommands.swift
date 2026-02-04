@@ -43,6 +43,11 @@ public enum FileCommands {
         ) throws -> UUID {
             Logger.fileCommands.notice("Starting file creation execution for: \(fileURL.lastPathComponent, privacy: .public)")
 
+            guard Thread.isMainThread else {
+                Logger.fileCommands.error("FileCommands.Create must run on the main thread")
+                throw DatabaseError.invalidInput("File creation must run on the main thread")
+            }
+
             guard let rag else {
                 Logger.fileCommands.error("RAG system not available - database not ready")
                 throw DatabaseError.databaseNotReady
