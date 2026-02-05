@@ -16,6 +16,10 @@ test: build
 	@swift test $(SWIFT_TEST_FLAGS) --filter ThinkCLITests
 	@echo "✅ ThinkCLI tests complete"
 
+run: build
+	@echo "🚀 Running ThinkCLI..."
+	@swift run $(SWIFT_BUILD_FLAGS) think $(ARGS)
+
 lint:
 	@echo "🧹 Linting ThinkCLI..."
 	@if command -v swiftlint >/dev/null 2>&1; then \
@@ -46,6 +50,7 @@ help:
 	@echo "  make lint        - Run SwiftLint"
 	@echo "  make build       - Build ThinkCLI"
 	@echo "  make test        - Run ThinkCLI tests"
+	@echo "  make run         - Run ThinkCLI (pass ARGS=...)"
 	@echo "  make clean       - Clean build artifacts"
 
-.PHONY: build test lint lint-fix clean help
+.PHONY: build test run lint lint-fix clean help
