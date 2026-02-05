@@ -79,7 +79,10 @@ public actor ToolManager: Tooling {
                 logger.warning("Workspace tool requested but root not configured")
             }
 
-        case .reasoning, .imageGeneration, .memory, .cron, .canvas, .nodes:
+        case .memory:
+            await registerMemoryStrategy()
+
+        case .reasoning, .imageGeneration, .cron, .canvas, .nodes:
             break
 
         case .browser, .python, .functions, .healthKit, .weather, .duckduckgo, .braveSearch:
@@ -137,6 +140,64 @@ public actor ToolManager: Tooling {
         case .browser, .python, .functions, .healthKit, .weather, .duckduckgo, .braveSearch,
             .subAgent, .workspace, .reasoning, .imageGeneration, .memory:
             return nil
+        }
+    }
+
+    private func registerMemoryStrategy() async {
+        guard let database else {
+            logger.warning("Memory tool requested but database not configured")
+            return
+        }
+
+        await configureMemory { request in
+            await self.persistMemory(request, using: database)
+        }
+    }
+
+    private func persistMemory(
+        _ request: MemoryWriteRequest,
+        using database: DatabaseProtocol
+    ) async -> Result<UUID, Error> {
+        do {
+            switch request.type {
+            case .longTerm:
+                let memoryId: UUID = try await database.write(
+                    MemoryCommands.Create(
+                        type: .longTerm,
+                        content: request.content,
+                        keywords: request.keywords,
+                        chatId: request.chatId
+                    )
+                )
+                return .success(memoryId)
+
+            case .daily:
+                let memoryId: UUID = try await database.write(
+                    MemoryCommands.AppendToDaily(
+                        content: request.content,
+                        chatId: request.chatId
+                    )
+                )
+
+                if !request.keywords.isEmpty {
+                    _ = try await database.write(
+                        MemoryCommands.AddKeywords(
+                            memoryId: memoryId,
+                            keywords: request.keywords
+                        )
+                    )
+                }
+
+                return .success(memoryId)
+
+            case .soul:
+                let memoryId: UUID = try await database.write(
+                    MemoryCommands.UpsertSoul(content: request.content)
+                )
+                return .success(memoryId)
+            }
+        } catch {
+            return .failure(error)
         }
     }
 

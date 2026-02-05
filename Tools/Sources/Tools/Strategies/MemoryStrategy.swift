@@ -97,7 +97,8 @@ public struct MemoryStrategy: ToolStrategy {
             let writeRequest: MemoryWriteRequest = MemoryWriteRequest(
                 type: memoryType,
                 content: content,
-                keywords: keywords
+                keywords: keywords,
+                chatId: request.context?.chatId
             )
 
             let result: Result<UUID, Error> = await writeCallback(writeRequest)
@@ -143,11 +144,19 @@ public struct MemoryWriteRequest: Sendable {
     public let content: String
     /// Keywords for searching
     public let keywords: [String]
+    /// Optional chat association
+    public let chatId: UUID?
 
     /// Initialize a new memory write request
-    public init(type: MemoryType, content: String, keywords: [String] = []) {
+    public init(
+        type: MemoryType,
+        content: String,
+        keywords: [String] = [],
+        chatId: UUID? = nil
+    ) {
         self.type = type
         self.content = content
         self.keywords = keywords
+        self.chatId = chatId
     }
 }

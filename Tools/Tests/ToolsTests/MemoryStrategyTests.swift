@@ -74,6 +74,7 @@ internal struct MemoryStrategyTests {
         #expect(capturedRequest?.type == .longTerm)
         #expect(capturedRequest?.content == "User prefers dark mode")
         #expect(capturedRequest?.keywords.contains("preferences") == true)
+        #expect(capturedRequest?.chatId == nil)
     }
 
     @Test("MemoryStrategy writes daily memory successfully")
@@ -103,6 +104,31 @@ internal struct MemoryStrategyTests {
         let capturedRequest: MemoryWriteRequest? = await captureStore.get()
         #expect(capturedRequest?.type == .daily)
         #expect(capturedRequest?.content == "Discussed project requirements")
+        #expect(capturedRequest?.chatId == nil)
+    }
+
+    @Test("MemoryStrategy forwards chat context")
+    func testChatContextForwarded() async {
+        // Given
+        let captureStore: CaptureStore = CaptureStore()
+        let strategy: MemoryStrategy = MemoryStrategy { request in
+            await captureStore.set(request)
+            return .success(UUID())
+        }
+        let chatId: UUID = UUID()
+        let request: ToolRequest = ToolRequest(
+            name: "memory",
+            arguments: "{\"type\":\"longTerm\",\"content\":\"Remember this\"}",
+            context: ToolRequestContext(chatId: chatId, messageId: nil)
+        )
+
+        // When
+        let response: ToolResponse = await strategy.execute(request: request)
+
+        // Then
+        #expect(response.error == nil)
+        let capturedRequest: MemoryWriteRequest? = await captureStore.get()
+        #expect(capturedRequest?.chatId == chatId)
     }
 
     @Test("MemoryStrategy handles missing type parameter")
