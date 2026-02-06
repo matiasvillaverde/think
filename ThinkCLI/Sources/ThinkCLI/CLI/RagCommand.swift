@@ -84,7 +84,7 @@ extension RagCommand {
         var limit: Int = 10
 
         @Option(name: .long, help: "Similarity threshold.")
-        var threshold: Double = 0.3
+        var threshold: Double = Abstractions.Constants.defaultSearchThreshold
 
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: global)

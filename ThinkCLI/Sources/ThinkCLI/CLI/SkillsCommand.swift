@@ -6,7 +6,7 @@ struct SkillsCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "skills",
         abstract: "Manage skills.",
-        subcommands: [List.self, Enable.self, Disable.self]
+        subcommands: [List.self, Create.self, Enable.self, Disable.self]
     )
 
     @OptionGroup
@@ -31,6 +31,54 @@ extension SkillsCommand {
                 ? "No skills."
                 : summaries.map { "\($0.id.uuidString)  \($0.name)" }.joined(separator: "\n")
             runtime.output.emit(summaries, fallback: fallback)
+        }
+    }
+
+    struct Create: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Create a skill."
+        )
+
+        @OptionGroup
+        var global: GlobalOptions
+
+        @Option(name: .long, help: "Skill name.")
+        var name: String
+
+        @Option(name: .long, help: "Skill description.")
+        var description: String = ""
+
+        @Option(name: .long, help: "Skill instructions.")
+        var instructions: String = ""
+
+        @Option(
+            name: .long,
+            parsing: .upToNextOption,
+            help: "Tool names associated with the skill."
+        )
+        var tools: [String] = []
+
+        @Option(name: .long, help: "Optional chat UUID.")
+        var chat: String?
+
+        @Flag(name: .long, help: "Create the skill disabled.")
+        var disabled: Bool = false
+
+        func run() async throws {
+            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let chatId = try chat.map { try CLIParsing.parseUUID($0, field: "chat") }
+            let skillId = try await runtime.database.write(
+                SkillCommands.Create(
+                    name: name,
+                    skillDescription: description,
+                    instructions: instructions,
+                    tools: tools,
+                    isSystem: false,
+                    isEnabled: !disabled,
+                    chatId: chatId
+                )
+            )
+            runtime.output.emit("Created skill \(skillId.uuidString)")
         }
     }
 

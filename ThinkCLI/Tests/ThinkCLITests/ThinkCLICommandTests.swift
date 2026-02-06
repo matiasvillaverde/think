@@ -178,8 +178,9 @@ struct ThinkCLICommandTests {
             try await runCommand(remove)
         }
 
-        let state = try await context.database.read(ModelStateReadCommand(id: modelId))
-        #expect(state == .notDownloaded)
+        await #expect(throws: DatabaseError.modelNotFound) {
+            _ = try await context.database.read(ModelCommands.GetSendableModel(id: modelId))
+        }
     }
 
     @Test("Models download updates progress")
@@ -303,20 +304,24 @@ struct ThinkCLICommandTests {
     @MainActor
     func skillsCommands() async throws {
         let context = try await TestRuntime.make()
-        let skillId = try await context.database.write(
-            SkillCommands.Create(
-                name: "Test Skill",
-                skillDescription: "desc",
-                instructions: "do it",
-                tools: ["browser.search"],
-                isEnabled: false
-            )
-        )
 
         try await withRuntime(context.runtime) {
+            let create = try SkillsCommand.Create.parse([
+                "--name", "Test Skill",
+                "--description", "desc",
+                "--instructions", "do it",
+                "--tools", "browser.search"
+            ])
+            try await runCommand(create)
+
             let list = try SkillsCommand.List.parse([])
             try await runCommand(list)
+        }
 
+        let skills = try await context.database.read(SkillCommands.GetAll())
+        let skillId = try #require(skills.first?.id)
+
+        try await withRuntime(context.runtime) {
             let enable = try SkillsCommand.Enable.parse([skillId.uuidString])
             try await runCommand(enable)
 
@@ -490,21 +495,6 @@ private func seedChat(database: Database) async throws -> UUID {
     )
     let personalityId = try await database.write(PersonalityCommands.WriteDefault())
     return try await database.write(ChatCommands.Create(personality: personalityId))
-}
-
-private struct ModelStateReadCommand: ReadCommand {
-    let id: UUID
-
-    func execute(
-        in context: ModelContext,
-        userId: PersistentIdentifier?,
-        rag: Ragging?
-    ) throws -> Model.State? {
-        let descriptor = FetchDescriptor<Model>(
-            predicate: #Predicate<Model> { $0.id == id }
-        )
-        return try context.fetch(descriptor).first?.state
-    }
 }
 
 private struct ModelProgressReadCommand: ReadCommand {

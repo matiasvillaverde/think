@@ -261,7 +261,7 @@ extension ModelsCommand {
             }
 
             _ = try await runtime.database.write(
-                ModelCommands.DeleteModelLocation(model: modelId)
+                ModelCommands.DeleteModel(model: modelId)
             )
             runtime.output.emit("Removed model \(modelId.uuidString)")
         }
