@@ -4,8 +4,7 @@ import Testing
 
 @testable import LLamaCPP
 
-@Suite("LlamaCPPFactory Tests")
-internal struct LlamaCPPFactoryTests {
+extension LlamaCPPModelTestSuite {
     @Test("Factory is the only public interface")
     internal func testOnlyFactoryIsPublic() {
         // This test verifies that LlamaCPPFactory is public

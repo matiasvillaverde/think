@@ -3,8 +3,7 @@ import Foundation
 @testable import LLamaCPP
 import Testing
 
-@Suite("Simple Stop Sequence Test")
-internal struct SimpleStopSequenceTest {
+extension LlamaCPPModelTestSuite {
     @Test("Basic generation without stop sequences")
     internal func testBasicGeneration() async throws {
         guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {

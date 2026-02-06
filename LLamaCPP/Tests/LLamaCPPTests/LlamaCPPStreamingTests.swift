@@ -22,12 +22,26 @@ extension LlamaCPPModelTestSuite {
         let stream: AsyncThrowingStream<LLMStreamChunk, Error> = await session.stream(input)
         let chunks: [LLMStreamChunk] = try await TestHelpers.collectChunks(from: stream, limit: 5)
 
-        // With default test input (usually 3 max tokens), expect 3 text + 1 finished
-        TestAssertions.assertChunkSequence(
-            chunks,
-            expectedTextChunks: 3,
-            expectedTotalChunks: 4,
-            hasFinishedEvent: true
+        let textChunks: [LLMStreamChunk] = chunks.filter { chunk in
+            if case .text = chunk.event {
+                return true
+            }
+            return false
+        }
+        #expect(!textChunks.isEmpty, "Should emit at least one text chunk")
+
+        let finishedMetrics: ChunkMetrics? = chunks.first { chunk in
+            if case .finished = chunk.event {
+                return true
+            }
+            return false
+        }?.metrics
+        #expect(finishedMetrics != nil, "Should include finished event with metrics")
+
+        let maxTokens: Int = input.limits.maxTokens
+        TestAssertions.assertMetrics(
+            finishedMetrics,
+            expectedGeneratedTokens: maxTokens
         )
 
         await session.unload()

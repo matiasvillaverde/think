@@ -7,6 +7,7 @@ import Testing
 /// Main test suite for all LlamaCPP tests that require model loading.
 /// All tests are in a single suite marked as serialized to prevent concurrent model loading.
 /// Tests are organized across multiple files using extensions for better organization.
+@MainActor
 @Suite("LlamaCPP Model Tests", .serialized)
 internal struct LlamaCPPModelTestSuite {
     // This is the main suite struct. All model tests are added via extensions

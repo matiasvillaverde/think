@@ -12,7 +12,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -67,7 +67,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let config: ComputeConfiguration = ComputeConfiguration(
             contextSize: 512,
             batchSize: 32,
@@ -108,7 +108,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -151,7 +151,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
 
         // Create contexts sequentially to avoid concurrent access to model
         let context1: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
@@ -207,7 +207,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -253,7 +253,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
 
         // Test finding optimal batch size for different thread counts
         let threadCounts: [Int] = [1, 2, 4, 8]

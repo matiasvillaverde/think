@@ -19,7 +19,7 @@ extension LlamaCPPModelTestSuite {
         )
 
         // Test 2: Invalid context configuration
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
 
         // Create context with invalid configuration (if possible)
         // Most invalid configs are handled by parameter bounds, but we test what we can
@@ -39,7 +39,7 @@ extension LlamaCPPModelTestSuite {
         model.free()
 
         // Test 3: Operations on freed model
-        let model2: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model2: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         model2.free()
 
         // Attempting to create context with freed model
@@ -49,7 +49,7 @@ extension LlamaCPPModelTestSuite {
         )
 
         // Test 4: Invalid tokenization
-        let model3: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model3: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         _ = LlamaCPPTokenizer()
         model3.free()  // Free the model
 
@@ -60,7 +60,7 @@ extension LlamaCPPModelTestSuite {
         )
 
         // Test 5: Generator with invalid context
-        let model4: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model4: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model4, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model4, context: context)
 
@@ -100,7 +100,7 @@ extension LlamaCPPModelTestSuite {
             return
         }
         // Test invalid configuration error messages
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         context.free()
 
@@ -161,7 +161,7 @@ extension LlamaCPPModelTestSuite {
         // This test verifies that we don't have silent failures
         // where functions return 0 instead of throwing
 
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -205,7 +205,7 @@ extension LlamaCPPModelTestSuite {
         }
 
         // Now try a valid operation - should work
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 

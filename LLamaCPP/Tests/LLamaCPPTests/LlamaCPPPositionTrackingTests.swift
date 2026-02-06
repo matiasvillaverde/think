@@ -12,7 +12,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -54,6 +54,51 @@ extension LlamaCPPModelTestSuite {
         model.free()
     }
 
+    @Test("Context reset syncs generator position without manual reset")
+    internal func testContextResetSyncsGeneratorPosition() throws {
+        guard let modelPath: String = TestHelpers.testModelPath else {
+            return
+        }
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
+        let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
+        let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
+
+        guard let ptr = model.pointer else {
+            throw LLMError.invalidConfiguration("Model pointer is nil")
+        }
+
+        let tokenizer: LlamaCPPTokenizer = LlamaCPPTokenizer()
+        let tokens1: [Int32] = try tokenizer.tokenize(
+            text: "Hello",
+            addBos: true,
+            modelPointer: ptr
+        )
+
+        _ = try generator.generateNextToken(
+            prompt: "Hello",
+            sampling: SamplingParameters.default
+        )
+        #expect(generator.currentPosition == Int32(tokens1.count))
+
+        try context.reset()
+
+        let tokens2: [Int32] = try tokenizer.tokenize(
+            text: "New start",
+            addBos: true,
+            modelPointer: ptr
+        )
+
+        _ = try generator.generateNextToken(
+            prompt: "New start",
+            sampling: SamplingParameters.default
+        )
+        #expect(generator.currentPosition == Int32(tokens2.count))
+
+        generator.free()
+        context.free()
+        model.free()
+    }
+
     // MARK: - Test 3.2: Position consistency
 
     @Test("Position remains consistent across all operations")
@@ -61,7 +106,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -150,7 +195,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -189,7 +234,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -227,7 +272,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let config: ComputeConfiguration = ComputeConfiguration(
             contextSize: 128,  // Small context for testing
             batchSize: 32,

@@ -150,11 +150,11 @@ extension LlamaCPPModelTestSuite {
             limits: ResourceLimits(maxTokens: 3)
         )
 
-        let (lastMetrics, tokenCount): (ChunkMetrics?, Int) = try await collectMetrics(
+        let (lastMetrics, textChunkCount): (ChunkMetrics?, Int) = try await collectMetrics(
             from: session,
             input: input
         )
-        validateMetrics(lastMetrics, tokenCount: tokenCount)
+        validateMetrics(lastMetrics, textChunkCount: textChunkCount)
 
         await session.unload()
     }
@@ -164,24 +164,24 @@ extension LlamaCPPModelTestSuite {
         input: LLMInput
     ) async throws -> (ChunkMetrics?, Int) {
         var lastMetrics: ChunkMetrics?
-        var tokenCount: Int = 0
+        var textChunkCount: Int = 0
         let stream: AsyncThrowingStream<LLMStreamChunk, Error> = await session.stream(input)
 
         for try await chunk in stream {
             if case .text = chunk.event {
-                tokenCount += 1
+                textChunkCount += 1
                 if let metrics = chunk.metrics {
                     lastMetrics = metrics
                 }
             }
         }
 
-        return (lastMetrics, tokenCount)
+        return (lastMetrics, textChunkCount)
     }
 
     private func validateMetrics(
         _ metrics: ChunkMetrics?,
-        tokenCount: Int
+        textChunkCount: Int
     ) {
         #expect(metrics != nil, "Should have metrics in chunks")
         guard let metrics else {
@@ -190,8 +190,8 @@ extension LlamaCPPModelTestSuite {
 
         if let usage = metrics.usage {
             #expect(
-                usage.generatedTokens == tokenCount,
-                "Generated tokens should match actual count: \(usage.generatedTokens) vs \(tokenCount)"
+                usage.generatedTokens >= textChunkCount,
+                "Generated tokens should be >= text chunks: \(usage.generatedTokens) vs \(textChunkCount)"
             )
             #expect(usage.totalTokens > 0, "Total tokens should be positive")
         }

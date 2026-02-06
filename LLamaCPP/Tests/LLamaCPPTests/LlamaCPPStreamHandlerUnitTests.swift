@@ -4,8 +4,7 @@ import Foundation
 import Testing
 
 /// Unit tests for LlamaCPPStreamHandler stop sequence handling
-@Suite("StreamHandler Stop Sequence Tests")
-internal struct LlamaCPPStreamHandlerUnitTests {
+extension LlamaCPPModelTestSuite {
     @Test("Stop sequences prevent token emission")
     internal func testStopSequencesPreventEmission() {
         // Verify the fix: stop sequences checked BEFORE yielding
@@ -39,7 +38,7 @@ internal struct LlamaCPPStreamHandlerUnitTests {
     }
 
     @Test("Multiple stop sequences work")
-    internal func testMultipleStopSequences() {
+    internal func testStreamHandlerMultipleStopSequences() {
         let sequences: [String] = ["<|im_end|>", "###", "STOP"]
         let handler: StopSequenceTestHandler = StopSequenceTestHandler(
             stopSequences: sequences
@@ -58,7 +57,7 @@ internal struct LlamaCPPStreamHandlerUnitTests {
     }
 
     @Test("Empty stop sequences don't crash")
-    internal func testEmptyStopSequences() {
+    internal func testStreamHandlerEmptyStopSequences() {
         let handler: StopSequenceTestHandler = StopSequenceTestHandler(
             stopSequences: []
         )

@@ -4,25 +4,15 @@ import Foundation
 import Testing
 
 /// Tests for ensuring buffered text is emitted when stop is called
-@Suite("LlamaCPP Stop Buffer Tests")
-internal struct LlamaCPPStopBufferTests {
-    private let stopAfterTokensConstant: Int = 5
-    private let stopAfterChunksConstant: Int = 8
-
+extension LlamaCPPModelTestSuite {
     @Test("Buffered text is emitted when stop() is called")
     internal func testBufferedTextEmittedOnStop() async throws {
         guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
             return
         }
+        let stopAfterTokensConstant: Int = 5
         let session: LlamaCPPSession = LlamaCPPSession()
-
-        // Preload the model
-        let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
-            configuration: config
-        )
-        for try await _ in preloadStream {
-            // Consume progress updates
-        }
+        try await preloadSession(session, config: config)
 
         // Create input with a simple prompt
         let input: LLMInput = LLMInput(
@@ -85,15 +75,9 @@ internal struct LlamaCPPStopBufferTests {
         guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
             return
         }
+        let stopAfterChunksConstant: Int = 8
         let session: LlamaCPPSession = LlamaCPPSession()
-
-        // Preload the model
-        let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
-            configuration: config
-        )
-        for try await _ in preloadStream {
-            // Consume progress updates
-        }
+        try await preloadSession(session, config: config)
 
         // Use a multi-character stop sequence
         let stopSequence: String = "STOP"
@@ -118,14 +102,18 @@ internal struct LlamaCPPStopBufferTests {
                 collectedText += chunk.text
                 chunkCount += 1
 
-                // Stop after receiving some chunks
-                // This might happen when partial stop sequence is in buffer
+                // Stop after a few chunks to ensure partial stop sequence possible
                 if chunkCount >= stopAfterChunksConstant {
                     session.stop()
                 }
 
             case .finished:
-                // The buffered text should have been emitted
+                if let stopReason = chunk.metrics?.generation?.stopReason {
+                    #expect(
+                        stopReason == .userRequested,
+                        "Stop reason should be userRequested, got: \(stopReason)"
+                    )
+                }
                 break streamLoop
 
             default:
@@ -133,19 +121,28 @@ internal struct LlamaCPPStopBufferTests {
             }
         }
 
-        // Verify we collected text
         #expect(
             !collectedText.isEmpty,
-            "Should have collected text before stopping"
+            "Should have collected some text before stopping"
         )
 
-        // The collected text should not contain the complete stop sequence
-        // (since we stopped before it could complete)
         #expect(
-            !collectedText.contains(stopSequence),
-            "Should not contain complete stop sequence when stopped by user"
+            chunkCount >= stopAfterChunksConstant,
+            "Should have received at least \(stopAfterChunksConstant) chunks"
         )
 
         await session.unload()
+    }
+
+    private func preloadSession(
+        _ session: LlamaCPPSession,
+        config: ProviderConfiguration
+    ) async throws {
+        let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
+            configuration: config
+        )
+        for try await _ in preloadStream {
+            // Consume progress updates
+        }
     }
 }

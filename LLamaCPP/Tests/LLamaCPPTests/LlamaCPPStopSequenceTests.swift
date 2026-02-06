@@ -131,7 +131,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -248,7 +248,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -335,7 +335,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 

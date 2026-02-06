@@ -12,7 +12,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -74,7 +74,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         guard let ptr = model.pointer else {
             throw LLMError.invalidConfiguration("Model pointer is nil")
         }
@@ -108,7 +108,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
 
@@ -154,14 +154,14 @@ extension LlamaCPPModelTestSuite {
             #expect(error is LLMError, "Simple error type")
         }
 
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         model.free()
 
         // Operations on freed model should throw
         #expect(model.pointer == nil, "Freed model has nil pointer")
 
         // New model should work
-        let newModel: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let newModel: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         #expect(newModel.pointer != nil, "New model has valid pointer")
 
         newModel.free()
@@ -174,7 +174,7 @@ extension LlamaCPPModelTestSuite {
         guard let modelPath: String = TestHelpers.testModelPath else {
             return
         }
-        let model: LlamaCPPModel = try LlamaCPPModel(path: modelPath)
+        let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
 
         // Simple configuration
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)

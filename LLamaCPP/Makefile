@@ -12,7 +12,7 @@
 CONFIGURATION ?= debug
 PLATFORM ?= macos
 SWIFT_BUILD_FLAGS = --configuration $(CONFIGURATION)
-SWIFT_TEST_FLAGS = --configuration $(CONFIGURATION) --parallel
+SWIFT_TEST_FLAGS = --configuration $(CONFIGURATION) --parallel --num-workers 1
 
 # Colors for output
 GREEN = \033[0;32m
@@ -40,7 +40,7 @@ build-ci: lint ## Build with warnings as errors
 
 test: build ## Run unit tests
 	@echo "🧪 Testing LLamaCPP..."
-	@swift test $(SWIFT_TEST_FLAGS)
+	@LLAMA_CPP_FORCE_CPU=1 LLAMA_CPP_TEST_SHARED_MODEL=1 swift test $(SWIFT_TEST_FLAGS)
 
 # MARK: - Quality Targets
 

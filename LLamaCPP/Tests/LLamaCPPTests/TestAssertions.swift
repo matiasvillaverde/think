@@ -4,6 +4,7 @@ import Foundation
 import Testing
 
 /// Custom assertion helpers for LlamaCPP tests with specific expected values
+@MainActor
 internal enum TestAssertions {
     // MARK: - Model Assertions
     internal static func assertTokenInVocabRange(

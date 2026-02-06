@@ -1,12 +1,20 @@
 import Abstractions
+import Darwin
 import Foundation
 @testable import LLamaCPP
 
 internal enum TestHelpers {
     private static let ggufMagic: Data = Data("GGUF".utf8)
 
+    private static let testContextSize: Int = 2_048
+
+    private static let environmentConfigured: Void = {
+        setenv("LLAMA_CPP_FORCE_CPU", "1", 1)
+    }()
+
     internal static var testModelPath: String? {
-        resolveModelPath(
+        _ = environmentConfigured
+        return resolveModelPath(
             resourceName: "Resources/Qwen3-0.6B-UD-IQ1_S",
             withExtension: "gguf"
         )
@@ -14,10 +22,16 @@ internal enum TestHelpers {
 
     /// Path to the higher quality BF16 model for acceptance tests
     internal static var acceptanceTestModelPath: String? {
-        resolveModelPath(
+        _ = environmentConfigured
+        return resolveModelPath(
             resourceName: "Resources/Qwen3-0.6B-BF16",
             withExtension: "gguf"
         )
+    }
+
+    internal static func createTestModel(path: String) throws -> LlamaCPPModel {
+        let configuration: ComputeConfigurationExtended = .cpuOnly(contextSize: testContextSize)
+        return try LlamaCPPModel(path: path, configuration: configuration)
     }
 
     internal static func createTestConfiguration() -> ProviderConfiguration? {
