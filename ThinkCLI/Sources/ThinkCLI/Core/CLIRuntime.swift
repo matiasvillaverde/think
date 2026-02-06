@@ -82,6 +82,11 @@ struct CLIRuntime: Sendable {
         )
         try AppStoreLocator.ensureDirectoryExists(for: storeURL)
 
+        let configStore = CLIConfigStore()
+        let cliConfig = configStore.loadOrDefault()
+        let resolvedWorkspace = options.workspace ?? cliConfig.workspacePath
+        let workspaceRoot = resolvedWorkspace.map { URL(fileURLWithPath: $0) }
+
         let databaseConfig = DatabaseConfiguration(
             isStoredInMemoryOnly: false,
             allowsSave: true,
@@ -98,12 +103,14 @@ struct CLIRuntime: Sendable {
             database: database,
             mlxSession: mlxSession,
             ggufSession: ggufSession,
-            remoteSession: remoteSession,
-            modelDownloader: ModelDownloader.shared
+            options: .init(
+                remoteSession: remoteSession,
+                modelDownloader: ModelDownloader.shared,
+                workspaceRoot: workspaceRoot
+            )
         )
         let gateway = LocalGatewayService(database: database, orchestrator: orchestrator)
 
-        let workspaceRoot = options.workspace.map { URL(fileURLWithPath: $0) }
         let tooling = ToolManager(
             subAgentOrchestrator: nil,
             workspaceRoot: workspaceRoot,

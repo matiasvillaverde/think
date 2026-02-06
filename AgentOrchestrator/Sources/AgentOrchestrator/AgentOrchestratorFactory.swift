@@ -13,21 +13,40 @@ public enum AgentOrchestratorFactory {
     // Use nonisolated(unsafe) to suppress concurrency warning since we're using a lock
     nonisolated(unsafe) private static var sharedInstance: AgentOrchestrating?
 
+    /// Optional dependencies for orchestrator construction.
+    public struct Options {
+        /// Remote session for API-backed models.
+        public var remoteSession: LLMSession?
+        /// Custom model downloader override.
+        public var modelDownloader: ModelDownloaderProtocol?
+        /// Workspace root for skills and context loading.
+        public var workspaceRoot: URL?
+
+        /// Creates an options container.
+        public init(
+            remoteSession: LLMSession? = nil,
+            modelDownloader: ModelDownloaderProtocol? = nil,
+            workspaceRoot: URL? = nil
+        ) {
+            self.remoteSession = remoteSession
+            self.modelDownloader = modelDownloader
+            self.workspaceRoot = workspaceRoot
+        }
+    }
+
     /// Returns the shared AgentOrchestrating instance
     /// Creates it lazily on first access
     /// - Parameters:
     ///   - database: The database to use for persistence
     ///   - mlxSession: The MLX session for language models
     ///   - ggufSession: The GGUF session for language models
-    ///   - remoteSession: Optional remote session for API-based models
-    ///   - modelDownloader: The model downloader for resolving model paths
+    ///   - options: Optional dependencies (remote session, model downloader, workspace root)
     /// - Returns: The shared AgentOrchestrating instance
     public static func shared(
         database: DatabaseProtocol,
         mlxSession: LLMSession,
         ggufSession: LLMSession,
-        remoteSession: LLMSession? = nil,
-        modelDownloader: ModelDownloaderProtocol? = nil
+        options: Options = Options()
     ) -> AgentOrchestrating {
         lock.lock()
         defer { lock.unlock() }
@@ -36,13 +55,13 @@ public enum AgentOrchestratorFactory {
             return existingInstance
         }
 
-        let newInstance: AgentOrchestrating = createOrchestrator(
+        let inputs: OrchestratorInputs = makeInputs(
             database: database,
             mlxSession: mlxSession,
             ggufSession: ggufSession,
-            remoteSession: remoteSession,
-            modelDownloader: modelDownloader ?? ModelDownloader.shared
+            options: options
         )
+        let newInstance: AgentOrchestrating = createOrchestrator(inputs: inputs)
         sharedInstance = newInstance
         return newInstance
     }
@@ -53,34 +72,22 @@ public enum AgentOrchestratorFactory {
         database: DatabaseProtocol,
         mlxSession: LLMSession,
         ggufSession: LLMSession,
-        remoteSession: LLMSession? = nil,
-        modelDownloader: ModelDownloaderProtocol? = nil
-    ) -> AgentOrchestrating {
-        createOrchestrator(
-            database: database,
-            mlxSession: mlxSession,
-            ggufSession: ggufSession,
-            remoteSession: remoteSession,
-            modelDownloader: modelDownloader ?? ModelDownloader.shared
-        )
-    }
-
-    /// Creates a new AgentOrchestrator instance
-    /// Internal method that builds all dependencies
-    private static func createOrchestrator(
-        database: DatabaseProtocol,
-        mlxSession: LLMSession,
-        ggufSession: LLMSession,
-        remoteSession: LLMSession?,
-        modelDownloader: ModelDownloaderProtocol
+        options: Options = Options()
     ) -> AgentOrchestrating {
         let inputs: OrchestratorInputs = makeInputs(
             database: database,
             mlxSession: mlxSession,
             ggufSession: ggufSession,
-            remoteSession: remoteSession,
-            modelDownloader: modelDownloader
+            options: options
         )
+        return createOrchestrator(inputs: inputs)
+    }
+
+    /// Creates a new AgentOrchestrator instance
+    /// Internal method that builds all dependencies
+    private static func createOrchestrator(
+        inputs: OrchestratorInputs
+    ) -> AgentOrchestrating {
         let components: OrchestratorComponents = createComponents(inputs: inputs)
         return buildOrchestrator(components: components)
     }
@@ -89,16 +96,15 @@ public enum AgentOrchestratorFactory {
         database: DatabaseProtocol,
         mlxSession: LLMSession,
         ggufSession: LLMSession,
-        remoteSession: LLMSession?,
-        modelDownloader: ModelDownloaderProtocol
+        options: Options
     ) -> OrchestratorInputs {
         OrchestratorInputs(
             database: database,
             mlxSession: mlxSession,
             ggufSession: ggufSession,
-            remoteSession: remoteSession,
-            modelDownloader: modelDownloader,
-            workspaceRoot: resolveWorkspaceRoot()
+            remoteSession: options.remoteSession,
+            modelDownloader: options.modelDownloader ?? ModelDownloader.shared,
+            workspaceRoot: options.workspaceRoot ?? resolveWorkspaceRoot()
         )
     }
 

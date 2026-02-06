@@ -37,8 +37,10 @@ public struct GeneratorProvider: ViewModifier {
                         database: database,
                         mlxSession: MLXSessionFactory.create(),
                         ggufSession: LlamaCPPFactory.createSession(),
-                        remoteSession: RemoteSessionFactory.create(),
-                        modelDownloader: ModelDownloader.shared
+                        options: .init(
+                            remoteSession: RemoteSessionFactory.create(),
+                            modelDownloader: ModelDownloader.shared
+                        )
                     ),
                     database: database
                 )

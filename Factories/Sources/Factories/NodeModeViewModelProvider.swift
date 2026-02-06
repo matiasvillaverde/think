@@ -23,8 +23,10 @@ public struct NodeModeViewModelProvider: ViewModifier {
             database: database,
             mlxSession: MLXSessionFactory.create(),
             ggufSession: LlamaCPPFactory.createSession(),
-            remoteSession: RemoteSessionFactory.create(),
-            modelDownloader: ModelDownloader.shared
+            options: .init(
+                remoteSession: RemoteSessionFactory.create(),
+                modelDownloader: ModelDownloader.shared
+            )
         )
         let gateway: GatewayServicing = LocalGatewayService(
             database: database,
@@ -65,8 +67,10 @@ public struct AutomationSchedulerProvider: ViewModifier {
                     database: database,
                     mlxSession: MLXSessionFactory.create(),
                     ggufSession: LlamaCPPFactory.createSession(),
-                    remoteSession: RemoteSessionFactory.create(),
-                    modelDownloader: ModelDownloader.shared
+                    options: .init(
+                        remoteSession: RemoteSessionFactory.create(),
+                        modelDownloader: ModelDownloader.shared
+                    )
                 )
                 let newScheduler: AutomationScheduler = AutomationScheduler(
                     database: database,
