@@ -208,7 +208,42 @@ struct ThinkCLICommandTests {
         }
     }
 
+        @Test("Chat create seeds image model when only language model exists")
+    @MainActor
+    func chatCreateSeedsImageModel() async throws {
+        let context = try await TestRuntime.make()
+        _ = try await context.database.write(
+            ModelCommands.CreateLocalModel(
+                name: "Lang",
+                backend: .mlx,
+                type: .language,
+                parameters: 1,
+                ramNeeded: 1,
+                size: 1,
+                architecture: .llama,
+                locationLocal: "/tmp/lang",
+                locationBookmark: nil
+            )
+        )
+
+        let modelsBefore = try await context.database.read(ModelCommands.FetchAll())
+        let hadImageModel = modelsBefore.contains { model in
+            model.modelType == .diffusion || model.modelType == .diffusionXL
+        }
+        #expect(hadImageModel == false)
+
+        try await withRuntime(context.runtime) {
+            let create = try ChatCommand.Create.parse([])
+            try await runCommand(create)
+        }
+
+        let chats = try await context.database.read(ChatCommands.GetAll())
+        let chat = try #require(chats.first)
+        #expect(chat.imageModel.type == .diffusion || chat.imageModel.type == .diffusionXL)
+    }
+
     @Test("Models list/info/add/remove")
+    @MainActor
     func modelCommands() async throws {
         let context = try await TestRuntime.make()
         let modelId = try await context.database.write(
@@ -231,6 +266,11 @@ struct ThinkCLICommandTests {
 
             let info = try ModelsCommand.Info.parse([modelId.uuidString])
             try await runCommand(info)
+
+            let chats = try await context.database.read(ChatCommands.GetAll())
+            for chat in chats {
+                _ = try await context.database.write(ChatCommands.Delete(id: chat.id))
+            }
 
             let remove = try ModelsCommand.Remove.parse([modelId.uuidString])
             try await runCommand(remove)

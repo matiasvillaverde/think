@@ -71,6 +71,10 @@ struct CLIRuntime: Sendable {
     let output: CLIOutput
     let nodeMode: NodeModeServicing
 
+    func ensureInitialized() async throws {
+        try await CLIAppBootstrapper.shared.ensureInitialized(database: database)
+    }
+
     static func live(options: GlobalOptions) throws -> CLIRuntime {
         let storeURL = AppStoreLocator.sharedStoreURL(
             bundleId: AppStoreLocator.defaultBundleId,
@@ -149,7 +153,9 @@ enum CLIRuntimeProvider {
     private static let shared = CLIRuntimeProviderActor()
 
     static func runtime(for options: GlobalOptions) async throws -> CLIRuntime {
-        try await shared.runtime(for: options)
+        let runtime = try await shared.runtime(for: options)
+        try await runtime.ensureInitialized()
+        return runtime
     }
 
     static func setFactory(
