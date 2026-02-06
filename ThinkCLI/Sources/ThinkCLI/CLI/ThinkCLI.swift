@@ -12,6 +12,7 @@ struct ThinkCLI: AsyncParsableCommand {
             ToolsCommand.self,
             RagCommand.self,
             SkillsCommand.self,
+            PersonalityCommand.self,
             SchedulesCommand.self
         ]
     )

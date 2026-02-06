@@ -38,6 +38,26 @@ struct ToolDefinitionSummary: Codable, Sendable, Equatable {
     }
 }
 
+struct PersonalitySummary: Codable, Sendable, Equatable {
+    let id: UUID
+    let name: String
+    let description: String
+    let category: String
+    let isDefault: Bool
+    let isCustom: Bool
+    let chatId: UUID?
+
+    init(personality: Personality) {
+        id = personality.id
+        name = personality.name
+        description = personality.displayDescription
+        category = personality.category.rawValue
+        isDefault = personality.isDefault
+        isCustom = personality.isCustom
+        chatId = personality.chat?.id
+    }
+}
+
 struct SkillSummary: Codable, Sendable, Equatable {
     let id: UUID
     let name: String

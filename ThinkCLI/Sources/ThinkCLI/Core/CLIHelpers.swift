@@ -73,6 +73,28 @@ enum CLIParsing {
         }
     }
 
+    static func parsePersonalityCategory(_ value: String) throws -> PersonalityCategory {
+        let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        switch normalized {
+        case "creative":
+            return .creative
+        case "education":
+            return .education
+        case "entertainment":
+            return .entertainment
+        case "health":
+            return .health
+        case "lifestyle":
+            return .lifestyle
+        case "personal":
+            return .personal
+        case "productivity":
+            return .productivity
+        default:
+            throw ValidationError("Invalid category: \(value).")
+        }
+    }
+
     static func parseBackend(_ value: String) throws -> SendableModel.Backend {
         let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         switch normalized {

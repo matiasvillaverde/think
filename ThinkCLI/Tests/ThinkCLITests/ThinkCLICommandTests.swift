@@ -333,6 +333,55 @@ struct ThinkCLICommandTests {
         #expect(skill.isEnabled == false)
     }
 
+    @Test("Personalities list/create/chat/update/delete")
+    @MainActor
+    func personalityCommands() async throws {
+        let context = try await TestRuntime.make()
+        _ = try await seedChat(database: context.database)
+
+        try await withRuntime(context.runtime) {
+            let list = try PersonalityCommand.List.parse([])
+            try await runCommand(list)
+
+            let create = try PersonalityCommand.Create.parse([
+                "--name", "Ari",
+                "--description", "Coach",
+                "--instructions", "Be concise and practical."
+            ])
+            try await runCommand(create)
+        }
+
+        let personalities = try await context.database.read(PersonalityCommands.GetAll())
+        let custom = try #require(personalities.first { $0.name == "Ari" })
+
+        try await withRuntime(context.runtime) {
+            let chat = try PersonalityCommand.Chat.parse([custom.id.uuidString])
+            try await runCommand(chat)
+
+            let update = try PersonalityCommand.Update.parse([
+                custom.id.uuidString,
+                "--name", "Ari Updated"
+            ])
+            try await runCommand(update)
+        }
+
+        let updated = try await context.database.read(
+            PersonalityCommands.Read(personalityId: custom.id)
+        )
+        #expect(updated.name == "Ari Updated")
+        #expect(updated.chat != nil)
+
+        try await withRuntime(context.runtime) {
+            let delete = try PersonalityCommand.Delete.parse([custom.id.uuidString])
+            try await runCommand(delete)
+        }
+
+        await #expect(throws: DatabaseError.personalityNotFound) {
+            _ = try await context.database.read(PersonalityCommands.Read(personalityId: custom.id))
+        }
+    }
+
+
     @Test("Schedules create/update/enable/disable/delete")
     @MainActor
     func schedulesCommands() async throws {
