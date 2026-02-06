@@ -258,17 +258,50 @@ extension ModelStateCoordinator {
         }
 
         let localPath: URL = try await resolveModelLocation(sendableModel: sendableModel)
-        let contextSize: Int = sendableModel.metadata?.contextLength ?? Self.defaultContextSize
+        let compute: ComputeConfiguration = makeComputeConfiguration(
+            for: sendableModel,
+            preferredBatchSize: getBatchSizeForAppleSilicon()
+        )
 
         return ProviderConfiguration(
             location: localPath,
             authentication: .noAuth,
             modelName: sendableModel.location,
-            compute: ComputeConfiguration(
-                contextSize: contextSize,
-                batchSize: getBatchSizeForAppleSilicon(),
-                threadCount: ProcessInfo.processInfo.processorCount
+            compute: compute
+        )
+    }
+
+    nonisolated private func resolveContextSize(for sendableModel: SendableModel) -> Int {
+        let contextSize: Int = sendableModel.metadata?.contextLength ?? Self.defaultContextSize
+        if contextSize <= 0 {
+            Self.logger.warning(
+                "Invalid context size \(contextSize) for model \(sendableModel.location) - using default"
             )
+            return Self.defaultContextSize
+        }
+        return contextSize
+    }
+
+    nonisolated private func resolveBatchSize(preferredBatchSize: Int, contextSize: Int) -> Int {
+        let safePreferred: Int = max(1, preferredBatchSize)
+        let safeContext: Int = max(1, contextSize)
+        return min(safePreferred, safeContext)
+    }
+
+    nonisolated internal func makeComputeConfiguration(
+        for sendableModel: SendableModel,
+        preferredBatchSize: Int
+    ) -> ComputeConfiguration {
+        let contextSize: Int = resolveContextSize(for: sendableModel)
+        let batchSize: Int = resolveBatchSize(
+            preferredBatchSize: preferredBatchSize,
+            contextSize: contextSize
+        )
+
+        return ComputeConfiguration(
+            contextSize: contextSize,
+            batchSize: batchSize,
+            threadCount: ProcessInfo.processInfo.processorCount
         )
     }
 
@@ -397,16 +430,15 @@ extension ModelStateCoordinator {
 
     /// Creates configuration for a remote model.
     internal func createRemoteConfiguration(sendableModel: SendableModel) -> ProviderConfiguration {
-        let contextSize: Int = sendableModel.metadata?.contextLength ?? Self.defaultContextSize
+        let compute: ComputeConfiguration = makeComputeConfiguration(
+            for: sendableModel,
+            preferredBatchSize: Self.defaultBatchSize
+        )
         return ProviderConfiguration(
             location: URL(fileURLWithPath: "/"),
             authentication: .noAuth,
             modelName: sendableModel.location,
-            compute: ComputeConfiguration(
-                contextSize: contextSize,
-                batchSize: Self.defaultBatchSize,
-                threadCount: ProcessInfo.processInfo.processorCount
-            )
+            compute: compute
         )
     }
 

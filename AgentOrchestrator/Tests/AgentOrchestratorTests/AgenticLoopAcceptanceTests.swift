@@ -205,12 +205,12 @@ internal struct AgenticLoopAcceptanceTests {
         chatId: UUID,
         healthTool: TestHealthStrategy
     ) async throws {
-        try verifyHealthToolExecution(healthTool)
+        verifyHealthToolExecution(healthTool)
         try await verifyHealthMessageStructure(database: database, chatId: chatId)
     }
 
-    private func verifyHealthToolExecution(_ healthTool: TestHealthStrategy) throws {
-        try AgenticLoopVerificationHelpers.verifyHealthToolExecution(healthTool)
+    private func verifyHealthToolExecution(_ healthTool: TestHealthStrategy) {
+        AgenticLoopVerificationHelpers.verifyHealthToolExecution(healthTool)
     }
 
     @MainActor

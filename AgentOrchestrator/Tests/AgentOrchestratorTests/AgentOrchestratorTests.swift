@@ -107,7 +107,7 @@ internal struct AgentOrchestratorTests {
 
     private func verifySemanticSearchToolConfigured(toolManager: ToolManager) async {
         // First verify the tool wasn't there initially (it's dynamically added)
-        let initialDefinitions: [ToolDefinition] = await toolManager.getAllToolDefinitions()
+        _ = await toolManager.getAllToolDefinitions()
 
         // After triggering generation with attachments, semantic search should be registered
         let toolDefinitions: [ToolDefinition] = await toolManager.getAllToolDefinitions()

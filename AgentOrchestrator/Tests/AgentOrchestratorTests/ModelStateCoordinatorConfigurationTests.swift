@@ -131,6 +131,20 @@ internal struct ModelStateCoordinatorConfigurationTests {
         }
     }
 
+    @Test("Configuration clamps batch size to context length")
+    @MainActor
+    internal func configurationClampsBatchSizeToContextLength() async throws {
+        let env: TestEnvironment = try await setupTestEnvironment()
+        let sendable: SendableModel = makeSendableModel(contextLength: 128)
+        let compute: ComputeConfiguration = env.coordinator.makeComputeConfiguration(
+            for: sendable,
+            preferredBatchSize: 512
+        )
+
+        #expect(compute.contextSize == 128)
+        #expect(compute.batchSize == 128)
+    }
+
     @Test("Configuration Uses System Processor Count")
     @MainActor
     internal func configurationUsesSystemProcessorCount() async throws {
@@ -199,6 +213,27 @@ internal struct ModelStateCoordinatorConfigurationTests {
     }
 
     // MARK: - Helper Methods
+
+    private func makeSendableModel(contextLength: Int) -> SendableModel {
+        let metadata: ModelMetadata = ModelMetadata(
+            parameters: ModelParameters(count: 1_000, formatted: "1K"),
+            architecture: .llama,
+            capabilities: [],
+            quantizations: [],
+            contextLength: contextLength
+        )
+        return SendableModel(
+            id: UUID(),
+            ramNeeded: 0,
+            modelType: .language,
+            location: "test/model",
+            architecture: .llama,
+            backend: .mlx,
+            locationKind: .localFile,
+            locationLocal: "/tmp/model",
+            metadata: metadata
+        )
+    }
 
     @MainActor
     private func setupChatWithModel(_ database: Database) async throws -> UUID {
