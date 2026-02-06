@@ -42,7 +42,8 @@ struct DownloadFinalizationTests {
             taskManager: DownloadTaskManager(),
             identityService: identityService,
             downloader: mockDownloader,
-            fileManager: fileManager
+            fileManager: fileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         // When - Start download
@@ -256,7 +257,8 @@ struct DownloadFinalizationTests {
             taskManager: DownloadTaskManager(),
             identityService: identityService,
             downloader: mockDownloader,
-            fileManager: fileManager
+            fileManager: fileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         // When - Perform complete download flow
@@ -292,27 +294,14 @@ actor TestMockStreamingDownloader: StreamingDownloaderProtocol {
         headers _: [String: String],
         progressHandler: @Sendable (Double) -> Void
     ) async throws -> URL {
-        // Create directory structure like real HuggingFaceDownloader
         try FileManager.default.createDirectory(
-            at: destination,
+            at: destination.deletingLastPathComponent(),
             withIntermediateDirectories: true
         )
 
-        // Simulate download by creating multiple test files like a real model
         let modelContent: String = "Mock model content for \(url.lastPathComponent)"
-        let configContent: String = """
-        {
-          "model_type": "test",
-          "vocab_size": 1000
-        }
-        """
         try modelContent.write(
-            to: destination.appendingPathComponent("model.safetensors"),
-            atomically: true,
-            encoding: .utf8
-        )
-        try configContent.write(
-            to: destination.appendingPathComponent("config.json"),
+            to: destination,
             atomically: true,
             encoding: .utf8
         )

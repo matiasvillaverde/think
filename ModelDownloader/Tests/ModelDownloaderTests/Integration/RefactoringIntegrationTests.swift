@@ -19,7 +19,8 @@ struct RefactoringIntegrationTests {
             taskManager: taskManager,
             identityService: identityService,
             downloader: mockDownloader,
-            fileManager: mockFileManager
+            fileManager: mockFileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         // 2. Test model identity resolution

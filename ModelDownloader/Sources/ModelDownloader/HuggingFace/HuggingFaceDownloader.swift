@@ -79,7 +79,8 @@ internal actor HuggingFaceDownloader: HuggingFaceDownloaderProtocol {
                 taskManager: taskManager,
                 identityService: self.identityService,
                 downloader: retryableDownloader,
-                fileManager: fileManager
+                fileManager: fileManager,
+                modelFilesProvider: Self.makeModelFilesProvider(hubAPI: self.hubAPI)
             )
         } else {
             // Test configuration
@@ -95,7 +96,8 @@ internal actor HuggingFaceDownloader: HuggingFaceDownloaderProtocol {
                 taskManager: taskManager,
                 identityService: self.identityService,
                 downloader: streamingDownloader,
-                fileManager: fileManager
+                fileManager: fileManager,
+                modelFilesProvider: Self.makeModelFilesProvider(hubAPI: self.hubAPI)
             )
         }
 
@@ -202,9 +204,17 @@ internal actor HuggingFaceDownloader: HuggingFaceDownloaderProtocol {
 
                 case .completed:
                     // Download completed
-                    if let modelInfo: ModelInfo = try await fileManager.listDownloadedModels()
-                        .first(where: { $0.id == resolvedId }) {
+                    let models: [ModelInfo] = try await fileManager.listDownloadedModels()
+                    if let modelInfo: ModelInfo = models.first(where: { $0.id == resolvedId })
+                        ?? models.first(where: { $0.metadata["repositoryId"] == modelId })
+                        ?? models.first(where: { $0.name == modelId }) {
                         continuation.yield(.completed(modelInfo))
+                    } else {
+                        await logger.warning("Download completed but model info not found", metadata: [
+                            "modelId": modelId,
+                            "resolvedId": resolvedId.uuidString,
+                            "modelCount": String(models.count)
+                        ])
                     }
                     continuation.finish()
                     return
@@ -271,7 +281,7 @@ internal actor HuggingFaceDownloader: HuggingFaceDownloaderProtocol {
         )
 
         // Filter by format
-        let matchingFiles: [FileInfo] = await filterFilesForBackend(files, backend: backend)
+        let matchingFiles: [FileInfo] = await Self.filterFilesForBackend(files, backend: backend)
 
         // Get detailed metadata for each file
         var metadata: [FileMetadata] = []
@@ -307,7 +317,7 @@ internal actor HuggingFaceDownloader: HuggingFaceDownloaderProtocol {
         )
 
         // Filter files by format
-        let matchingFiles: [FileInfo] = await filterFilesForBackend(files, backend: backend)
+        let matchingFiles: [FileInfo] = await Self.filterFilesForBackend(files, backend: backend)
 
         // Create temporary directory to get local paths
         let tempDir: URL = fileManager.temporaryDirectory(for: modelId)
@@ -336,6 +346,34 @@ internal actor HuggingFaceDownloader: HuggingFaceDownloaderProtocol {
         return downloadFiles
     }
 
+    private static func makeModelFilesProvider(
+        hubAPI: HubAPI
+    ) -> DefaultDownloadCoordinator.ModelFilesProvider {
+        { model in
+            let repo: Repository = Repository(id: model.location)
+
+            let files: [FileInfo] = try await hubAPI.listFiles(
+                repo: repo,
+                revision: "main",
+                includePattern: nil,
+                excludePattern: nil
+            )
+
+            let matchingFiles: [FileInfo] = await Self.filterFilesForBackend(
+                files,
+                backend: model.backend
+            )
+
+            return matchingFiles.map { file in
+                ModelDownloadFile(
+                    url: repo.downloadURL(path: file.path, revision: "main"),
+                    relativePath: file.path,
+                    size: file.size
+                )
+            }
+        }
+    }
+
     // MARK: - Utility Methods
 
     private func buildAuthHeaders() async -> [String: String] {
@@ -346,7 +384,7 @@ internal actor HuggingFaceDownloader: HuggingFaceDownloaderProtocol {
         return headers
     }
 
-    private func filterFilesForBackend(
+    private static func filterFilesForBackend(
         _ files: [FileInfo],
         backend: SendableModel.Backend
     ) async -> [FileInfo] {

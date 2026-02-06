@@ -102,3 +102,30 @@ internal final class ConfigurableMockHTTPClient: HTTPClientProtocol, @unchecked 
         // No cleanup required
     }
 }
+
+internal func makeModelFilesProvider(
+    baseURL: String = "https://example.com",
+    files: [(String, Int64)] = [("model.bin", 1)]
+) -> DefaultDownloadCoordinator.ModelFilesProvider {
+    { model in
+        let trimmedBase: String = baseURL.hasSuffix("/") ? String(baseURL.dropLast()) : baseURL
+        var results: [ModelDownloadFile] = []
+        results.reserveCapacity(files.count)
+
+        for (path, size) in files {
+            let urlString: String = "\(trimmedBase)/\(model.location)/\(path)"
+            guard let url = URL(string: urlString) else {
+                throw ModelDownloadError.invalidURL(urlString)
+            }
+            results.append(
+                ModelDownloadFile(
+                    url: url,
+                    relativePath: path,
+                    size: size
+                )
+            )
+        }
+
+        return results
+    }
+}

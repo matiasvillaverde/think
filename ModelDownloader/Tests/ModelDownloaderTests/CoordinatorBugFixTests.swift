@@ -126,7 +126,8 @@ struct CoordinatorBugFixTests {
             taskManager: taskManager,
             identityService: identityService,
             downloader: mockDownloader,
-            fileManager: mockFileManager
+            fileManager: mockFileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         let testRepositoryId: String = "test/bug57-fix"
@@ -180,7 +181,8 @@ struct CoordinatorBugFixTests {
             taskManager: taskManager,
             identityService: identityService,
             downloader: mockDownloader,
-            fileManager: mockFileManager
+            fileManager: mockFileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         let testModel: SendableModel = SendableModel(
@@ -240,7 +242,8 @@ struct CoordinatorBugFixTests {
             taskManager: DownloadTaskManager(),
             identityService: sharedIdentityService,
             downloader: mockDownloader,
-            fileManager: mockFileManager
+            fileManager: mockFileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         let testLocation: String = "test/shared-identity"

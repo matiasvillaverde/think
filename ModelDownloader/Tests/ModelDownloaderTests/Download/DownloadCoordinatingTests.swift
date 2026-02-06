@@ -180,7 +180,8 @@ struct DefaultDownloadCoordinatorTests {
             taskManager: taskManager,
             identityService: identityService,
             downloader: mockDownloader,
-            fileManager: mockFileManager
+            fileManager: mockFileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         // Test initial state
@@ -199,7 +200,8 @@ struct DefaultDownloadCoordinatorTests {
             taskManager: taskManager,
             identityService: identityService,
             downloader: mockDownloader,
-            fileManager: mockFileManager
+            fileManager: mockFileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         let model: SendableModel = SendableModel(
@@ -236,7 +238,8 @@ struct DefaultDownloadCoordinatorTests {
             taskManager: taskManager,
             identityService: identityService,
             downloader: mockDownloader,
-            fileManager: mockFileManager
+            fileManager: mockFileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         let model: SendableModel = SendableModel(
@@ -299,7 +302,8 @@ struct DefaultDownloadCoordinatorTests {
             taskManager: taskManager,
             identityService: identityService,
             downloader: mockDownloader,
-            fileManager: mockFileManager
+            fileManager: mockFileManager,
+            modelFilesProvider: makeModelFilesProvider()
         )
 
         let model: SendableModel = SendableModel(
