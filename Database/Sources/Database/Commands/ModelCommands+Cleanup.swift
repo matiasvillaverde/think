@@ -46,6 +46,69 @@ extension ModelCommands {
         }
     }
 
+    public struct DeleteModel: WriteCommand {
+        private let modelId: UUID
+
+        public init(model: UUID) {
+            self.modelId = model
+            Logger.database.info("ModelCommands.DeleteModel initialized with model: \(model)")
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            Logger.database.info("ModelCommands.DeleteModel.execute started for model: \(modelId)")
+
+            guard let userId else {
+                Logger.database.error("ModelCommands.DeleteModel.execute failed: user not found")
+                throw DatabaseError.userNotFound
+            }
+
+            let user = try context.getUser(id: userId)
+
+            let descriptor = FetchDescriptor<Model>(
+                predicate: #Predicate<Model> { $0.id == modelId }
+            )
+
+            Logger.database.info("Fetching model with id: \(modelId)")
+            let models = try context.fetch(descriptor)
+
+            guard let model = models.first else {
+                Logger.database.error("ModelCommands.DeleteModel.execute failed: model not found with id: \(modelId)")
+                throw DatabaseError.modelNotFound
+            }
+
+            let chatDescriptor = FetchDescriptor<Chat>(
+                predicate: #Predicate<Chat> { chat in
+                    chat.languageModel.id == modelId || chat.imageModel.id == modelId
+                }
+            )
+            let chatsUsingModel = try context.fetch(chatDescriptor)
+            if !chatsUsingModel.isEmpty {
+                Logger.database.error("ModelCommands.DeleteModel.execute failed: model in use by \(chatsUsingModel.count) chats")
+                throw DatabaseError.invalidInput(
+                    "Model is currently used by \(chatsUsingModel.count) chat(s). Update chats before deleting."
+                )
+            }
+
+            for chat in user.chats where chat.fallbackModelIds.contains(modelId) {
+                chat.fallbackModelIds.removeAll { $0 == modelId }
+            }
+
+            user.models.removeAll { $0.id == modelId }
+
+            context.delete(model)
+
+            Logger.database.info("Saving context")
+            try context.save()
+
+            Logger.database.info("ModelCommands.DeleteModel.execute completed successfully")
+            return modelId
+        }
+    }
+
     public struct CleanupCancelledDownload: WriteCommand {
         private let modelId: UUID
 
