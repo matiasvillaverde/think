@@ -21,11 +21,17 @@ internal actor LlamaCPPSession: LLMSession {
                 input: input,
                 continuation: continuation
             )
-            setupTimeoutIfNeeded(
+            let timeoutTask: Task<Void, Never>? = setupTimeoutIfNeeded(
                 input: input,
                 generationTask: generationTask,
                 continuation: continuation
             )
+
+            continuation.onTermination = { _ in
+                timeoutTask?.cancel()
+                generationTask.cancel()
+                self.triggerStop()
+            }
         }
     }
 
@@ -64,20 +70,16 @@ internal actor LlamaCPPSession: LLMSession {
         input: LLMInput,
         generationTask: Task<Void, Never>,
         continuation: AsyncThrowingStream<LLMStreamChunk, Error>.Continuation
-    ) {
+    ) -> Task<Void, Never>? {
         guard let maxTime = input.limits.maxTime else {
-            return
+            return nil
         }
 
-        let timeoutTask: Task<Void, Never> = createTimeoutTask(
+        return createTimeoutTask(
             maxTime: maxTime,
             generationTask: generationTask,
             continuation: continuation
         )
-
-        continuation.onTermination = { _ in
-            timeoutTask.cancel()
-        }
     }
 
     private func createTimeoutTask(
@@ -170,6 +172,42 @@ internal actor LlamaCPPSession: LLMSession {
         continuation.yield(progress)
         continuation.finish()
     }
+
+    private func setupComponents(model loadedModel: LlamaCPPModel, context loadedContext: LlamaCPPContext) {
+        model = loadedModel; context = loadedContext
+        generator = LlamaCPPGenerator(model: loadedModel, context: loadedContext)
+    }
+
+    private func loadModelFromPath() throws -> LlamaCPPModel {
+        guard let configuration else {
+            throw LLMError.invalidConfiguration("Configuration not set. Call preload first.")
+        }
+        return try LlamaCPPModel(
+            path: configuration.location.path,
+            configuration: getExtendedConfig(configuration.compute)
+        )
+    }
+
+    private func performContextCreation(model loadedModel: LlamaCPPModel) throws -> LlamaCPPContext {
+        guard let configuration else {
+            throw LLMError.invalidConfiguration("Configuration not set. Call preload first.")
+        }
+        do {
+            let context: LlamaCPPContext = try LlamaCPPContext(
+                model: loadedModel,
+                configuration: configuration.compute
+            )
+            Logger.contextCreated(
+                contextSize: Int32(configuration.compute.contextSize),
+                batchSize: Int32(configuration.compute.batchSize)
+            )
+            return context
+        } catch {
+            Logger.contextCreationFailed(error: error)
+            throw error
+        }
+    }
+
     /// Unload a model from memory
     internal func unload() {
         generator?.free(); generator = nil
@@ -259,41 +297,6 @@ internal actor LlamaCPPSession: LLMSession {
         ) { [stopFlag] in stopFlag.get() }
 
         try coordinator.executeStream(input: input, continuation: continuation)
-    }
-    private func setupComponents(model loadedModel: LlamaCPPModel, context loadedContext: LlamaCPPContext) {
-        model = loadedModel
-        context = loadedContext
-        generator = LlamaCPPGenerator(model: loadedModel, context: loadedContext)
-    }
-
-    private func loadModelFromPath() throws -> LlamaCPPModel {
-        guard let configuration else {
-            throw LLMError.invalidConfiguration("Configuration not set. Call preload first.")
-        }
-        return try LlamaCPPModel(
-            path: configuration.location.path,
-            configuration: getExtendedConfig(configuration.compute)
-        )
-    }
-
-    private func performContextCreation(model loadedModel: LlamaCPPModel) throws -> LlamaCPPContext {
-        guard let configuration else {
-            throw LLMError.invalidConfiguration("Configuration not set. Call preload first.")
-        }
-        do {
-            let context: LlamaCPPContext = try LlamaCPPContext(
-                model: loadedModel,
-                configuration: configuration.compute
-            )
-            Logger.contextCreated(
-                contextSize: Int32(configuration.compute.contextSize),
-                batchSize: Int32(configuration.compute.batchSize)
-            )
-            return context
-        } catch {
-            Logger.contextCreationFailed(error: error)
-            throw error
-        }
     }
 }
 
