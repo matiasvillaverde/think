@@ -77,7 +77,7 @@ public struct ChatContentView: View {
     private func shouldShowPromptsOrSkeleton() -> Bool {
         // Show prompts when it's the first message and model is loaded
         // Show skeleton when it's the first message and model is loading
-        if messageCount == 1 {
+        if messageCount == 0 {
             return chat.languageModel.runtimeState == .loaded ||
                 chat.languageModel.runtimeState == .loading
         }
