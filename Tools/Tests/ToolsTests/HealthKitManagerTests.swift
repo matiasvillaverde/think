@@ -4,16 +4,10 @@ import Testing
 
 @Suite("HealthKitManager Tests")
 internal struct HealthKitManagerTests {
-    @Test("HealthKitManager initializes correctly")
-    internal func testInitialization() {
-        let manager: HealthKitManager = HealthKitManager()
-        #expect(manager != nil)
-    }
-
     @Test("HealthKitManager checks authorization status")
-    internal func testAuthorizationStatus() async {
+    internal func testAuthorizationStatus() {
         let manager: HealthKitManager = HealthKitManager()
-        let isAuthorized: Bool = await manager.isAuthorized()
+        let isAuthorized: Bool = manager.isAuthorized()
         // In test environment, should return false
         #expect(!isAuthorized)
     }
