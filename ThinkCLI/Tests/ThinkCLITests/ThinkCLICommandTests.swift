@@ -126,6 +126,64 @@ struct ThinkCLICommandTests {
         #expect(context.output.lines.contains { $0.contains("Response") } == false)
     }
 
+    @Test("Chat send defaults to tool policy when no tools are provided")
+    @MainActor
+    func chatSendDefaultsToToolPolicy() async throws {
+        let context = try await TestRuntime.make()
+        let chatId = try await seedChat(database: context.database)
+        await context.tooling.setDefinitions([
+            ToolDefinition(name: "memory", description: "Memory", schema: "{}")
+        ])
+        _ = try await context.database.write(
+            ToolPolicyCommands.UpsertForChat(
+                chatId: chatId,
+                profile: .minimal,
+                allowList: [ToolIdentifier.memory.toolName]
+            )
+        )
+
+        try await withRuntime(context.runtime) {
+            let send = try ChatCommand.Send.parse([
+                "--session", chatId.uuidString,
+                "--no-stream",
+                "Remember this."
+            ])
+            try await runCommand(send)
+        }
+
+        let options = await context.gateway.lastSendOptions
+        let action = try #require(options?.action)
+        #expect(action.tools == Set<ToolIdentifier>([.memory]))
+    }
+
+    @Test("Chat send --no-tools overrides tool policy defaults")
+    @MainActor
+    func chatSendNoToolsOverridesPolicy() async throws {
+        let context = try await TestRuntime.make()
+        let chatId = try await seedChat(database: context.database)
+        _ = try await context.database.write(
+            ToolPolicyCommands.UpsertForChat(
+                chatId: chatId,
+                profile: .research
+            )
+        )
+
+        try await withRuntime(context.runtime) {
+            let send = try ChatCommand.Send.parse([
+                "--session", chatId.uuidString,
+                "--no-tools",
+                "--no-stream",
+                "No tools."
+            ])
+            try await runCommand(send)
+        }
+
+        let options = await context.gateway.lastSendOptions
+        let action = try #require(options?.action)
+        #expect(action.tools.isEmpty)
+    }
+
+
     @Test("Chat rename/delete uses database")
     @MainActor
     func chatRenameDelete() async throws {
@@ -566,6 +624,8 @@ private struct ModelProgressReadCommand: ReadCommand {
 actor StubGateway: GatewayServicing {
     private var sessions: [GatewaySession] = []
     private var historyBySession: [UUID: [GatewayMessage]] = [:]
+    private(set) var lastSendOptions: GatewaySendOptions?
+    private var lastSendSessionId: UUID?
     private var sendResult: GatewaySendResult?
     private var sendDelayNanoseconds: UInt64 = 0
 
@@ -619,6 +679,8 @@ actor StubGateway: GatewayServicing {
         input: String,
         options: GatewaySendOptions
     ) async throws -> GatewaySendResult {
+        lastSendSessionId = sessionId
+        lastSendOptions = options
         if sendDelayNanoseconds > 0 {
             try await Task.sleep(nanoseconds: sendDelayNanoseconds)
         }

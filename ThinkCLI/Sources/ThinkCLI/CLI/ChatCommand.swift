@@ -97,6 +97,9 @@ extension ChatCommand {
         @Option(name: .long, parsing: .upToNextOption, help: "Tools to enable.")
         var tools: [String] = []
 
+        @Flag(name: .long, help: "Disable tools for this request.")
+        var noTools: Bool = false
+
         @Flag(name: .long, help: "Use image generation action.")
         var image: Bool = false
 
@@ -111,7 +114,16 @@ extension ChatCommand {
             let runtime = try await CLIRuntimeProvider.runtime(for: global)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
             let identifiers = try CLIParsing.parseToolIdentifiers(tools)
-            let action = CLIParsing.parseAction(isImage: image, tools: identifiers)
+            if noTools, !identifiers.isEmpty {
+                throw ValidationError("Use either --tools or --no-tools, not both.")
+            }
+            let resolvedTools = try await resolveTools(
+                runtime: runtime,
+                sessionId: sessionId,
+                requested: identifiers,
+                noTools: noTools
+            )
+            let action = CLIParsing.parseAction(isImage: image, tools: resolvedTools)
             let options = GatewaySendOptions(action: action)
             let shouldStream = stream && !global.json
             let tracker = CLIStreamTracker()
@@ -151,6 +163,26 @@ extension ChatCommand {
             } else {
                 runtime.output.emit(result, fallback: fallback)
             }
+        }
+
+        private func resolveTools(
+            runtime: CLIRuntime,
+            sessionId: UUID,
+            requested: Set<ToolIdentifier>,
+            noTools: Bool
+        ) async throws -> Set<ToolIdentifier> {
+            if noTools {
+                return []
+            }
+            if !requested.isEmpty {
+                return requested
+            }
+            let policy = try await runtime.database.read(
+                ToolPolicyCommands.ResolveForChat(chatId: sessionId)
+            )
+            let allowedTools = policy.allowedTools
+            let unsupported: Set<ToolIdentifier> = [.reasoning, .imageGeneration]
+            return allowedTools.subtracting(unsupported)
         }
     }
 
