@@ -3,7 +3,7 @@ import ArgumentParser
 import Database
 import Foundation
 
-struct PersonalityCommand: AsyncParsableCommand {
+struct PersonalityCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
         commandName: "personality",
         abstract: "Manage personalities.",
@@ -12,10 +12,15 @@ struct PersonalityCommand: AsyncParsableCommand {
 
     @OptionGroup
     var global: GlobalOptions
+
+    @ParentCommand
+    var parent: ThinkCLI
+
+    var parentGlobal: GlobalOptions? { parent.global }
 }
 
 extension PersonalityCommand {
-    struct List: AsyncParsableCommand {
+    struct List: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "List personalities."
         )
@@ -23,9 +28,14 @@ extension PersonalityCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: PersonalityCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @MainActor
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let personalities = try await runtime.database.read(PersonalityCommands.GetAll())
             let summaries = personalities.map(PersonalitySummary.init(personality:))
             let fallback = summaries.isEmpty
@@ -35,7 +45,7 @@ extension PersonalityCommand {
         }
     }
 
-    struct Create: AsyncParsableCommand {
+    struct Create: AsyncParsableCommand, GlobalOptionsAccessing {
         private static let categoryHelp = ArgumentHelp(
             "Category (creative, education, entertainment, health, lifestyle, personal, " +
             "productivity)."
@@ -47,6 +57,11 @@ extension PersonalityCommand {
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: PersonalityCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "Personality name.")
         var name: String
@@ -64,7 +79,7 @@ extension PersonalityCommand {
         var category: String?
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let categoryValue = try category
                 .map(CLIParsing.parsePersonalityCategory(_:)) ?? .productivity
             let personalityId = try await runtime.database.write(
@@ -79,7 +94,7 @@ extension PersonalityCommand {
         }
     }
 
-    struct Update: AsyncParsableCommand {
+    struct Update: AsyncParsableCommand, GlobalOptionsAccessing {
         private static let categoryHelp = ArgumentHelp(
             "New category (creative, education, entertainment, health, lifestyle, personal, " +
             "productivity)."
@@ -91,6 +106,11 @@ extension PersonalityCommand {
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: PersonalityCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Argument(help: "Personality UUID.")
         var id: String
@@ -114,7 +134,7 @@ extension PersonalityCommand {
             guard name != nil || description != nil || instructions != nil || category != nil else {
                 throw ValidationError("Provide at least one field to update.")
             }
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let personalityId = try CLIParsing.parseUUID(id, field: "personality")
             let categoryValue = try category.map(CLIParsing.parsePersonalityCategory(_:))
             _ = try await runtime.database.write(
@@ -130,7 +150,7 @@ extension PersonalityCommand {
         }
     }
 
-    struct Delete: AsyncParsableCommand {
+    struct Delete: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Delete a custom personality."
         )
@@ -138,11 +158,16 @@ extension PersonalityCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: PersonalityCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Personality UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let personalityId = try CLIParsing.parseUUID(id, field: "personality")
             _ = try await runtime.database.write(
                 PersonalityCommands.Delete(personalityId: personalityId)
@@ -151,7 +176,7 @@ extension PersonalityCommand {
         }
     }
 
-    struct Chat: AsyncParsableCommand {
+    struct Chat: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Get or create the chat for a personality."
         )
@@ -159,11 +184,16 @@ extension PersonalityCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: PersonalityCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Personality UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let personalityId = try CLIParsing.parseUUID(id, field: "personality")
             let chatId = try await runtime.database.write(
                 PersonalityCommands.GetChat(personalityId: personalityId)

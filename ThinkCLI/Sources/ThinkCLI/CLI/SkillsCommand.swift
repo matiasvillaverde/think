@@ -2,7 +2,7 @@ import ArgumentParser
 import Database
 import Foundation
 
-struct SkillsCommand: AsyncParsableCommand {
+struct SkillsCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
         commandName: "skills",
         abstract: "Manage skills.",
@@ -11,10 +11,15 @@ struct SkillsCommand: AsyncParsableCommand {
 
     @OptionGroup
     var global: GlobalOptions
+
+    @ParentCommand
+    var parent: ThinkCLI
+
+    var parentGlobal: GlobalOptions? { parent.global }
 }
 
 extension SkillsCommand {
-    struct List: AsyncParsableCommand {
+    struct List: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "List skills."
         )
@@ -22,9 +27,14 @@ extension SkillsCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: SkillsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @MainActor
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let skills = try await runtime.database.read(SkillCommands.GetAll())
             let summaries = skills.map(SkillSummary.init(skill:))
             let fallback = summaries.isEmpty
@@ -34,13 +44,18 @@ extension SkillsCommand {
         }
     }
 
-    struct Create: AsyncParsableCommand {
+    struct Create: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Create a skill."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: SkillsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "Skill name.")
         var name: String
@@ -65,7 +80,7 @@ extension SkillsCommand {
         var disabled: Bool = false
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let chatId = try chat.map { try CLIParsing.parseUUID($0, field: "chat") }
             let skillId = try await runtime.database.write(
                 SkillCommands.Create(
@@ -82,7 +97,7 @@ extension SkillsCommand {
         }
     }
 
-    struct Enable: AsyncParsableCommand {
+    struct Enable: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Enable a skill."
         )
@@ -90,11 +105,16 @@ extension SkillsCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: SkillsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Skill UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let skillId = try CLIParsing.parseUUID(id, field: "skill")
             _ = try await runtime.database.write(
                 SkillCommands.SetEnabled(skillId: skillId, isEnabled: true)
@@ -103,7 +123,7 @@ extension SkillsCommand {
         }
     }
 
-    struct Disable: AsyncParsableCommand {
+    struct Disable: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Disable a skill."
         )
@@ -111,11 +131,16 @@ extension SkillsCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: SkillsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Skill UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let skillId = try CLIParsing.parseUUID(id, field: "skill")
             _ = try await runtime.database.write(
                 SkillCommands.SetEnabled(skillId: skillId, isEnabled: false)

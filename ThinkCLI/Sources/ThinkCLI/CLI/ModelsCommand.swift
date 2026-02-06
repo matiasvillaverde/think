@@ -3,7 +3,7 @@ import ArgumentParser
 import Database
 import Foundation
 
-struct ModelsCommand: AsyncParsableCommand {
+struct ModelsCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
         commandName: "models",
         abstract: "Manage models (list, download, add, remove).",
@@ -19,10 +19,15 @@ struct ModelsCommand: AsyncParsableCommand {
 
     @OptionGroup
     var global: GlobalOptions
+
+    @ParentCommand
+    var parent: ThinkCLI
+
+    var parentGlobal: GlobalOptions? { parent.global }
 }
 
 extension ModelsCommand {
-    struct List: AsyncParsableCommand {
+    struct List: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "List known models."
         )
@@ -30,8 +35,13 @@ extension ModelsCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: ModelsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let models = try await runtime.database.read(ModelCommands.FetchAll())
             let summaries = models.map(ModelSummary.init(model:))
             let fallback = summaries.isEmpty
@@ -41,7 +51,7 @@ extension ModelsCommand {
         }
     }
 
-    struct Info: AsyncParsableCommand {
+    struct Info: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Get a model by id."
         )
@@ -49,11 +59,16 @@ extension ModelsCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: ModelsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Model UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let modelId = try CLIParsing.parseUUID(id, field: "model")
             let model = try await runtime.database.read(
                 ModelCommands.GetSendableModel(id: modelId)
@@ -63,13 +78,18 @@ extension ModelsCommand {
         }
     }
 
-    struct Download: AsyncParsableCommand {
+    struct Download: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Download a model from HuggingFace."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: ModelsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Argument(help: "Model repository id (e.g., mlx-community/Llama-3.2-1B).")
         var modelId: String
@@ -78,7 +98,7 @@ extension ModelsCommand {
         var backend: String?
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let explorer = runtime.downloader.explorer()
             let discovered = try await explorer.discoverModel(modelId)
 
@@ -126,13 +146,18 @@ extension ModelsCommand {
         }
     }
 
-    struct AddRemote: AsyncParsableCommand {
+    struct AddRemote: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Add a remote model reference."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: ModelsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "Model name.")
         var name: String
@@ -159,7 +184,7 @@ extension ModelsCommand {
         var architecture: String = "unknown"
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let modelType = try CLIParsing.parseModelType(type)
             let architectureValue = CLIParsing.parseArchitecture(architecture)
             let display = displayName ?? name
@@ -178,13 +203,18 @@ extension ModelsCommand {
         }
     }
 
-    struct AddLocal: AsyncParsableCommand {
+    struct AddLocal: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Add a local model reference."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: ModelsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "Model name.")
         var name: String
@@ -211,7 +241,7 @@ extension ModelsCommand {
         var architecture: String = "unknown"
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let backendValue = try CLIParsing.parseBackend(backend)
             let modelType = try CLIParsing.parseModelType(type)
             let architectureValue = CLIParsing.parseArchitecture(architecture)
@@ -232,7 +262,7 @@ extension ModelsCommand {
         }
     }
 
-    struct Remove: AsyncParsableCommand {
+    struct Remove: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Remove a model from the database (and delete files if applicable)."
         )
@@ -240,11 +270,16 @@ extension ModelsCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: ModelsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Model UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let modelId = try CLIParsing.parseUUID(id, field: "model")
             let sendable = try await runtime.database.read(
                 ModelCommands.GetSendableModel(id: modelId)

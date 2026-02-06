@@ -3,7 +3,7 @@ import ArgumentParser
 import Database
 import Foundation
 
-struct ChatCommand: AsyncParsableCommand {
+struct ChatCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
         commandName: "chat",
         abstract: "Manage chat sessions and messages.",
@@ -20,10 +20,15 @@ struct ChatCommand: AsyncParsableCommand {
 
     @OptionGroup
     var global: GlobalOptions
+
+    @ParentCommand
+    var parent: ThinkCLI
+
+    var parentGlobal: GlobalOptions? { parent.global }
 }
 
 extension ChatCommand {
-    struct List: AsyncParsableCommand {
+    struct List: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "List chat sessions."
         )
@@ -31,8 +36,13 @@ extension ChatCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: ChatCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessions = try await runtime.gateway.listSessions()
             let fallback = sessions.isEmpty
                 ? "No sessions."
@@ -41,7 +51,7 @@ extension ChatCommand {
         }
     }
 
-    struct Create: AsyncParsableCommand {
+    struct Create: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Create a new chat session."
         )
@@ -49,18 +59,23 @@ extension ChatCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: ChatCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Option(name: .long, help: "Optional title for the session.")
         var title: String?
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let session = try await runtime.gateway.createSession(title: title)
             let fallback = "Created session \(session.id.uuidString)"
             runtime.output.emit(session, fallback: fallback)
         }
     }
 
-    struct Get: AsyncParsableCommand {
+    struct Get: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Fetch a chat session by id."
         )
@@ -68,11 +83,16 @@ extension ChatCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: ChatCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Session UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(id, field: "session")
             let session = try await runtime.gateway.getSession(id: sessionId)
             let fallback = "\(session.id.uuidString)  \(session.title)"
@@ -80,13 +100,18 @@ extension ChatCommand {
         }
     }
 
-    struct Send: AsyncParsableCommand {
+    struct Send: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Send a prompt to a chat session."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: ChatCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "Session UUID.")
         var session: String
@@ -111,7 +136,7 @@ extension ChatCommand {
         var stream: Bool = true
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
             let identifiers = try CLIParsing.parseToolIdentifiers(tools)
             if noTools, !identifiers.isEmpty {
@@ -125,7 +150,7 @@ extension ChatCommand {
             )
             let action = CLIParsing.parseAction(isImage: image, tools: resolvedTools)
             let options = GatewaySendOptions(action: action)
-            let shouldStream = stream && !global.json
+            let shouldStream = stream && !resolvedGlobal.json
             let tracker = CLIStreamTracker()
             let streamTask: Task<Void, Never>? = shouldStream
                 ? Task {
@@ -186,13 +211,18 @@ extension ChatCommand {
         }
     }
 
-    struct History: AsyncParsableCommand {
+    struct History: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Show chat history."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: ChatCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "Session UUID.")
         var session: String
@@ -201,7 +231,7 @@ extension ChatCommand {
         var limit: Int = 50
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
             let messages = try await runtime.gateway.history(
                 sessionId: sessionId,
@@ -214,13 +244,18 @@ extension ChatCommand {
         }
     }
 
-    struct Rename: AsyncParsableCommand {
+    struct Rename: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Rename a chat session."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: ChatCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "Session UUID.")
         var session: String
@@ -229,7 +264,7 @@ extension ChatCommand {
         var title: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
             _ = try await runtime.database.write(
                 ChatCommands.Rename(chatId: sessionId, newName: title)
@@ -238,7 +273,7 @@ extension ChatCommand {
         }
     }
 
-    struct Delete: AsyncParsableCommand {
+    struct Delete: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Delete a chat session."
         )
@@ -246,11 +281,16 @@ extension ChatCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: ChatCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Option(name: .long, help: "Session UUID.")
         var session: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
             _ = try await runtime.database.write(ChatCommands.Delete(id: sessionId))
             runtime.output.emit("Deleted session \(sessionId.uuidString)")

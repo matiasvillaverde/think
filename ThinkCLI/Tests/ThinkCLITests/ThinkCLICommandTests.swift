@@ -14,14 +14,13 @@ struct ThinkCLICommandTests {
     func gatewayStartStop() async throws {
         let context = try await TestRuntime.make()
         try await withRuntime(context.runtime) {
-            let start = try GatewayCommand.Start.parse([
+            try await runCLI([
+                "gateway", "start",
                 "--port", "9876",
                 "--once"
             ])
-            try await runCommand(start)
 
-            let status = try GatewayCommand.Status.parse([])
-            try await runCommand(status)
+            try await runCLI(["gateway", "status"])
         }
 
         let running = await context.nodeMode.status()
@@ -56,24 +55,22 @@ struct ThinkCLICommandTests {
         )
 
         try await withRuntime(context.runtime) {
-            let list = try ChatCommand.List.parse([])
-            try await runCommand(list)
+            try await runCLI(["chat", "list"])
 
-            let get = try ChatCommand.Get.parse([session.id.uuidString])
-            try await runCommand(get)
+            try await runCLI(["chat", "get", session.id.uuidString])
 
-            let history = try ChatCommand.History.parse([
+            try await runCLI([
+                "chat", "history",
                 "--session", session.id.uuidString,
                 "--limit", "10"
             ])
-            try await runCommand(history)
 
-            let send = try ChatCommand.Send.parse([
+            try await runCLI([
+                "chat", "send",
                 "--session", session.id.uuidString,
                 "--no-stream",
                 "Hello"
             ])
-            try await runCommand(send)
         }
 
         #expect(context.output.lines.contains { $0.contains("Test Chat") })
@@ -104,13 +101,12 @@ struct ThinkCLICommandTests {
         let runId = UUID()
 
         try await withRuntime(context.runtime) {
-            let send = try ChatCommand.Send.parse([
-                "--session", sessionId.uuidString,
-                "Hello"
-            ])
-
             let sendTask = Task {
-                try await runCommand(send)
+                try await runCLI([
+                    "chat", "send",
+                    "--session", sessionId.uuidString,
+                    "Hello"
+                ])
             }
 
             await Task.yield()
@@ -143,12 +139,12 @@ struct ThinkCLICommandTests {
         )
 
         try await withRuntime(context.runtime) {
-            let send = try ChatCommand.Send.parse([
+            try await runCLI([
+                "chat", "send",
                 "--session", chatId.uuidString,
                 "--no-stream",
                 "Remember this."
             ])
-            try await runCommand(send)
         }
 
         let options = await context.gateway.lastSendOptions
@@ -169,13 +165,13 @@ struct ThinkCLICommandTests {
         )
 
         try await withRuntime(context.runtime) {
-            let send = try ChatCommand.Send.parse([
+            try await runCLI([
+                "chat", "send",
                 "--session", chatId.uuidString,
                 "--no-tools",
                 "--no-stream",
                 "No tools."
             ])
-            try await runCommand(send)
         }
 
         let options = await context.gateway.lastSendOptions
@@ -191,16 +187,16 @@ struct ThinkCLICommandTests {
         let chatId = try await seedChat(database: context.database)
 
         try await withRuntime(context.runtime) {
-            let rename = try ChatCommand.Rename.parse([
+            try await runCLI([
+                "chat", "rename",
                 "--session", chatId.uuidString,
                 "Renamed"
             ])
-            try await runCommand(rename)
 
-            let delete = try ChatCommand.Delete.parse([
+            try await runCLI([
+                "chat", "delete",
                 "--session", chatId.uuidString
             ])
-            try await runCommand(delete)
         }
 
         await #expect(throws: DatabaseError.chatNotFound) {
@@ -233,8 +229,7 @@ struct ThinkCLICommandTests {
         #expect(hadImageModel == false)
 
         try await withRuntime(context.runtime) {
-            let create = try ChatCommand.Create.parse([])
-            try await runCommand(create)
+            try await runCLI(["chat", "create"])
         }
 
         let chats = try await context.database.read(ChatCommands.GetAll())
@@ -261,19 +256,16 @@ struct ThinkCLICommandTests {
         )
 
         try await withRuntime(context.runtime) {
-            let list = try ModelsCommand.List.parse([])
-            try await runCommand(list)
+            try await runCLI(["models", "list"])
 
-            let info = try ModelsCommand.Info.parse([modelId.uuidString])
-            try await runCommand(info)
+            try await runCLI(["models", "info", modelId.uuidString])
 
             let chats = try await context.database.read(ChatCommands.GetAll())
             for chat in chats {
                 _ = try await context.database.write(ChatCommands.Delete(id: chat.id))
             }
 
-            let remove = try ModelsCommand.Remove.parse([modelId.uuidString])
-            try await runCommand(remove)
+            try await runCLI(["models", "remove", modelId.uuidString])
         }
 
         await #expect(throws: DatabaseError.modelNotFound) {
@@ -332,8 +324,7 @@ struct ThinkCLICommandTests {
         )
 
         try await withRuntime(context.runtime) {
-            let download = try ModelsCommand.Download.parse([discovered.id])
-            try await runCommand(download)
+            try await runCLI(["models", "download", discovered.id])
         }
 
         let progress = try await context.database.read(ModelProgressReadCommand(id: sendable.id))
@@ -352,14 +343,13 @@ struct ThinkCLICommandTests {
         let context = try await TestRuntime.make(tooling: tooling)
 
         try await withRuntime(context.runtime) {
-            let list = try ToolsCommand.List.parse([])
-            try await runCommand(list)
+            try await runCLI(["tools", "list"])
 
-            let run = try ToolsCommand.Run.parse([
+            try await runCLI([
+                "tools", "run",
                 "browser.search",
                 "--args", "{\"q\":\"swift\"}"
             ])
-            try await runCommand(run)
         }
 
         let requests = await tooling.lastRequests()
@@ -375,23 +365,23 @@ struct ThinkCLICommandTests {
         let table = RagTableName.chatTableName(chatId: UUID())
 
         try await withRuntime(context.runtime) {
-            let index = try RagCommand.Index.parse([
+            try await runCLI([
+                "rag", "index",
                 "--table", table,
                 "--text", "hello world"
             ])
-            try await runCommand(index)
 
-            let search = try RagCommand.Search.parse([
+            try await runCLI([
+                "rag", "search",
                 "--table", table,
                 "--query", "hello"
             ])
-            try await runCommand(search)
 
-            let delete = try RagCommand.Delete.parse([
+            try await runCLI([
+                "rag", "delete",
                 "--table", table,
                 UUID().uuidString
             ])
-            try await runCommand(delete)
         }
 
         let addCalls = await mockRag.addTextCalls
@@ -404,27 +394,24 @@ struct ThinkCLICommandTests {
         let context = try await TestRuntime.make()
 
         try await withRuntime(context.runtime) {
-            let create = try SkillsCommand.Create.parse([
+            try await runCLI([
+                "skills", "create",
                 "--name", "Test Skill",
                 "--description", "desc",
                 "--instructions", "do it",
                 "--tools", "browser.search"
             ])
-            try await runCommand(create)
 
-            let list = try SkillsCommand.List.parse([])
-            try await runCommand(list)
+            try await runCLI(["skills", "list"])
         }
 
         let skills = try await context.database.read(SkillCommands.GetAll())
         let skillId = try #require(skills.first?.id)
 
         try await withRuntime(context.runtime) {
-            let enable = try SkillsCommand.Enable.parse([skillId.uuidString])
-            try await runCommand(enable)
+            try await runCLI(["skills", "enable", skillId.uuidString])
 
-            let disable = try SkillsCommand.Disable.parse([skillId.uuidString])
-            try await runCommand(disable)
+            try await runCLI(["skills", "disable", skillId.uuidString])
         }
 
         let skill = try await context.database.read(SkillCommands.Read(skillId: skillId))
@@ -438,29 +425,27 @@ struct ThinkCLICommandTests {
         _ = try await seedChat(database: context.database)
 
         try await withRuntime(context.runtime) {
-            let list = try PersonalityCommand.List.parse([])
-            try await runCommand(list)
+            try await runCLI(["personality", "list"])
 
-            let create = try PersonalityCommand.Create.parse([
+            try await runCLI([
+                "personality", "create",
                 "--name", "Ari",
                 "--description", "Coach",
                 "--instructions", "Be concise and practical."
             ])
-            try await runCommand(create)
         }
 
         let personalities = try await context.database.read(PersonalityCommands.GetAll())
         let custom = try #require(personalities.first { $0.name == "Ari" })
 
         try await withRuntime(context.runtime) {
-            let chat = try PersonalityCommand.Chat.parse([custom.id.uuidString])
-            try await runCommand(chat)
+            try await runCLI(["personality", "chat", custom.id.uuidString])
 
-            let update = try PersonalityCommand.Update.parse([
+            try await runCLI([
+                "personality", "update",
                 custom.id.uuidString,
                 "--name", "Ari Updated"
             ])
-            try await runCommand(update)
         }
 
         let updated = try await context.database.read(
@@ -470,8 +455,7 @@ struct ThinkCLICommandTests {
         #expect(updated.chat != nil)
 
         try await withRuntime(context.runtime) {
-            let delete = try PersonalityCommand.Delete.parse([custom.id.uuidString])
-            try await runCommand(delete)
+            try await runCLI(["personality", "delete", custom.id.uuidString])
         }
 
         await #expect(throws: DatabaseError.personalityNotFound) {
@@ -480,6 +464,239 @@ struct ThinkCLICommandTests {
     }
 
 
+    @Test("Global options merge from root and subcommand")
+    func globalOptionsMerge() throws {
+        let command = try ThinkCLI.parseAsRoot([
+            "--store", "root.store",
+            "--workspace", "/tmp/work",
+            "chat", "list"
+        ])
+        let list = try #require(command as? ChatCommand.List)
+        #expect(list.resolvedGlobal.store == "root.store")
+        #expect(list.resolvedGlobal.workspace == "/tmp/work")
+
+        let override = try ThinkCLI.parseAsRoot([
+            "--store", "root.store",
+            "chat", "list",
+            "--store", "child.store"
+        ])
+        let listOverride = try #require(override as? ChatCommand.List)
+        #expect(listOverride.resolvedGlobal.store == "child.store")
+    }
+
+    @Test("Onboard command parses workspace-path without conflicts")
+    func onboardCommandParsesWorkspacePath() throws {
+        let command = try ThinkCLI.parseAsRoot([
+            "onboard",
+            "--workspace-path", "/tmp/onboard",
+            "--non-interactive",
+            "--skip-download"
+        ])
+        let onboard = try #require(command as? OnboardCommand)
+        #expect(onboard.workspacePath == "/tmp/onboard")
+    }
+
+    @Test("Status command reports counts")
+    func statusCommand() async throws {
+        let context = try await TestRuntime.make()
+        _ = try await seedChat(database: context.database)
+
+        try await withRuntime(context.runtime) {
+            try await runCLI(["status"])
+        }
+
+        let output = context.output.lines.joined(separator: "\n")
+        #expect(output.contains("store="))
+        #expect(output.contains("models="))
+    }
+
+    @Test("Doctor command reports checks")
+    func doctorCommand() async throws {
+        let context = try await TestRuntime.make()
+
+        try await withRuntime(context.runtime) {
+            try await runCLI(["doctor"])
+        }
+
+        let output = context.output.lines.joined(separator: "\n")
+        #expect(output.contains("config"))
+        #expect(output.contains("["))
+    }
+
+    @Test("Config command persists workspace and reset")
+    func configCommandPersists() async throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        let configURL = tempDir.appendingPathComponent("config.json")
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+
+        setenv(CLIConfigStore.overrideEnvKey, configURL.path, 1)
+        defer {
+            unsetenv(CLIConfigStore.overrideEnvKey)
+            try? FileManager.default.removeItem(at: tempDir)
+        }
+
+        try await runCLI(["config", "set", "--workspace-path", tempDir.path])
+        let store = CLIConfigStore()
+        let config = try store.load()
+        #expect(config.workspacePath == tempDir.path)
+
+        try await runCLI(["config", "reset"])
+        #expect(store.exists() == false)
+    }
+
+    @Test("Onboarding persists workspace, model, and skills")
+    func onboardingPersistsSelections() async throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        let configURL = tempDir.appendingPathComponent("config.json")
+        let store = CLIConfigStore(url: configURL)
+        let context = try await TestRuntime.make()
+
+        let modelId = try await context.database.write(
+            ModelCommands.CreateLocalModel(
+                name: "Onboard Model",
+                backend: .mlx,
+                type: .language,
+                parameters: 1,
+                ramNeeded: 1,
+                size: 1,
+                architecture: .llama,
+                locationLocal: "/tmp/onboard",
+                locationBookmark: nil
+            )
+        )
+
+        let skillId = try await context.database.write(
+            SkillCommands.Create(
+                name: "Test Skill",
+                skillDescription: "desc",
+                instructions: "do it",
+                tools: ["browser.search"],
+                isEnabled: false
+            )
+        )
+
+        let onboarding = CLIOnboarding(
+            configStore: store,
+            dateProvider: { Date(timeIntervalSince1970: 0) }
+        )
+        let options = CLIOnboarding.Options(
+            workspace: tempDir.path,
+            model: modelId.uuidString,
+            preferredBackend: nil,
+            skipDownload: true,
+            skills: ["Test Skill"]
+        )
+
+        let result = try await onboarding.run(runtime: context.runtime, options: options)
+        let saved = try store.load()
+
+        #expect(saved.workspacePath == tempDir.path)
+        #expect(saved.defaultModelId == modelId)
+        #expect(saved.preferredSkills == ["Test Skill"])
+        #expect(result.enabledSkillIds.contains(skillId))
+
+        let skillIsEnabled = try await Task { @MainActor in
+            let skill = try await context.database.read(SkillCommands.Read(skillId: skillId))
+            return skill.isEnabled
+        }.value
+        #expect(skillIsEnabled == true)
+    }
+
+    @Test("Onboarding step creates workspace directory")
+    func onboardingWorkspaceCreatesDirectory() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        let workspacePath = tempDir.appendingPathComponent("workspace").path
+        let onboarding = CLIOnboarding(fileManager: FileManager.default)
+
+        let updated = try onboarding.applyWorkspace(workspacePath, config: CLIConfig())
+        var isDirectory: ObjCBool = false
+        let exists = FileManager.default.fileExists(
+            atPath: workspacePath,
+            isDirectory: &isDirectory
+        )
+
+        #expect(exists == true)
+        #expect(isDirectory.boolValue == true)
+        #expect(updated.workspacePath == workspacePath)
+    }
+
+    @Test("Onboarding step rejects unknown skills")
+    func onboardingSkillValidation() async throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        let store = CLIConfigStore(url: tempDir.appendingPathComponent("config.json"))
+        let context = try await TestRuntime.make()
+        let onboarding = CLIOnboarding(configStore: store)
+
+        await #expect(throws: ValidationError.self) {
+            _ = try await onboarding.applySkills(
+                ["Missing Skill"],
+                runtime: context.runtime,
+                config: CLIConfig()
+            )
+        }
+    }
+
+    @Test("Onboarding downloads model when repo provided")
+    @MainActor
+    func onboardingDownloadsModel() async throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        let configURL = tempDir.appendingPathComponent("config.json")
+        let store = CLIConfigStore(url: configURL)
+
+        let explorer = MockCommunityModelsExplorer()
+        let discovered = DiscoveredModel.createMock(
+            id: "mlx-community/onboard-model",
+            detectedBackends: [.mlx]
+        )
+        explorer.discoverModelResponses[discovered.id] = discovered
+
+        let sendable = SendableModel(
+            id: UUID(),
+            ramNeeded: 1,
+            modelType: .language,
+            location: discovered.id,
+            architecture: .llama,
+            backend: .mlx,
+            locationKind: .huggingFace
+        )
+        explorer.prepareForDownloadResult = sendable
+
+        let modelInfo = ModelInfo(
+            id: sendable.id,
+            name: "Onboard",
+            backend: sendable.backend,
+            location: URL(fileURLWithPath: "/tmp/\(sendable.location)"),
+            totalSize: 1,
+            downloadDate: Date()
+        )
+
+        let downloader = StubDownloader(
+            explorerInstance: explorer,
+            events: [.completed(modelInfo)]
+        )
+        let context = try await TestRuntime.make(downloader: downloader)
+
+        let onboarding = CLIOnboarding(configStore: store)
+        let options = CLIOnboarding.Options(
+            workspace: nil,
+            model: discovered.id,
+            preferredBackend: nil,
+            skipDownload: false,
+            skills: []
+        )
+
+        let result = try await onboarding.run(runtime: context.runtime, options: options)
+        let downloaded = await downloader.lastDownloaded()
+
+        #expect(downloaded?.id == sendable.id)
+        #expect(result.defaultModelId == sendable.id)
+    }
+
     @Test("Schedules create/update/enable/disable/delete")
     @MainActor
     func schedulesCommands() async throws {
@@ -487,37 +704,33 @@ struct ThinkCLICommandTests {
         let cronExpression = "0 0 * * *"
 
         try await withRuntime(context.runtime) {
-            let create = try SchedulesCommand.Create.parse([
+            try await runCLI([
+                "schedules", "create",
                 "--title", "Daily",
                 "--prompt", "Run",
                 "--cron", cronExpression,
                 "--kind", "cron",
                 "--action", "text"
             ])
-            try await runCommand(create)
 
-            let list = try SchedulesCommand.List.parse([])
-            try await runCommand(list)
+            try await runCLI(["schedules", "list"])
         }
 
         let schedules = try await context.database.read(AutomationScheduleCommands.List())
         let scheduleId = try #require(schedules.first?.id)
 
         try await withRuntime(context.runtime) {
-            let update = try SchedulesCommand.Update.parse([
+            try await runCLI([
+                "schedules", "update",
                 scheduleId.uuidString,
                 "--title", "Updated"
             ])
-            try await runCommand(update)
 
-            let enable = try SchedulesCommand.Enable.parse([scheduleId.uuidString])
-            try await runCommand(enable)
+            try await runCLI(["schedules", "enable", scheduleId.uuidString])
 
-            let disable = try SchedulesCommand.Disable.parse([scheduleId.uuidString])
-            try await runCommand(disable)
+            try await runCLI(["schedules", "disable", scheduleId.uuidString])
 
-            let delete = try SchedulesCommand.Delete.parse([scheduleId.uuidString])
-            try await runCommand(delete)
+            try await runCLI(["schedules", "delete", scheduleId.uuidString])
         }
 
         let remaining = try await context.database.read(AutomationScheduleCommands.List())
@@ -592,9 +805,13 @@ private func withRuntime(
     }
 }
 
-private func runCommand<C: AsyncParsableCommand>(_ command: C) async throws {
-    var mutable = command
-    try await mutable.run()
+private func runCLI(_ arguments: [String]) async throws {
+    var command = try ThinkCLI.parseAsRoot(arguments)
+    if var asyncCommand = command as? AsyncParsableCommand {
+        try await asyncCommand.run()
+    } else {
+        try command.run()
+    }
 }
 
 
@@ -789,6 +1006,7 @@ actor StubDownloader: CLIDownloader {
     nonisolated let explorerInstance: CommunityModelsExplorerProtocol
     nonisolated let events: [DownloadEvent]
     private var deleted: [String] = []
+    private var downloaded: [SendableModel] = []
 
     init(
         explorerInstance: CommunityModelsExplorerProtocol = MockCommunityModelsExplorer(),
@@ -801,7 +1019,8 @@ actor StubDownloader: CLIDownloader {
     nonisolated func download(
         sendableModel: SendableModel
     ) -> AsyncThrowingStream<DownloadEvent, Error> {
-        AsyncThrowingStream { continuation in
+        Task { await recordDownload(sendableModel) }
+        return AsyncThrowingStream { continuation in
             for event in events {
                 continuation.yield(event)
             }
@@ -815,6 +1034,14 @@ actor StubDownloader: CLIDownloader {
 
     func delete(modelLocation: String) async throws {
         deleted.append(modelLocation)
+    }
+
+    func lastDownloaded() -> SendableModel? {
+        downloaded.last
+    }
+
+    private func recordDownload(_ model: SendableModel) {
+        downloaded.append(model)
     }
 }
 

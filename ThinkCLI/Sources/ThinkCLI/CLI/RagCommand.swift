@@ -2,7 +2,7 @@ import Abstractions
 import ArgumentParser
 import Foundation
 
-struct RagCommand: AsyncParsableCommand {
+struct RagCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
         commandName: "rag",
         abstract: "RAG indexing and search operations.",
@@ -11,16 +11,26 @@ struct RagCommand: AsyncParsableCommand {
 
     @OptionGroup
     var global: GlobalOptions
+
+    @ParentCommand
+    var parent: ThinkCLI
+
+    var parentGlobal: GlobalOptions? { parent.global }
 }
 
 extension RagCommand {
-    struct Index: AsyncParsableCommand {
+    struct Index: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Index text into RAG."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: RagCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "RAG table name.")
         var table: String?
@@ -41,7 +51,7 @@ extension RagCommand {
         var file: String?
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let tableName = try resolveTable(table: table, chat: chat, user: user)
             let contentId = try id.map { try CLIParsing.parseUUID($0, field: "id") } ?? UUID()
 
@@ -60,13 +70,18 @@ extension RagCommand {
         }
     }
 
-    struct Search: AsyncParsableCommand {
+    struct Search: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Search indexed RAG content."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: RagCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "RAG table name.")
         var table: String?
@@ -87,7 +102,7 @@ extension RagCommand {
         var threshold: Double = Abstractions.Constants.defaultSearchThreshold
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let tableName = try resolveTable(table: table, chat: chat, user: user)
             let results = try await runtime.database.semanticSearch(
                 query: query,
@@ -103,13 +118,18 @@ extension RagCommand {
         }
     }
 
-    struct Delete: AsyncParsableCommand {
+    struct Delete: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Delete indexed RAG content."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: RagCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "RAG table name.")
         var table: String?
@@ -124,7 +144,7 @@ extension RagCommand {
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let tableName = try resolveTable(table: table, chat: chat, user: user)
             let contentId = try CLIParsing.parseUUID(id, field: "id")
             try await runtime.database.deleteFromIndex(id: contentId, table: tableName)

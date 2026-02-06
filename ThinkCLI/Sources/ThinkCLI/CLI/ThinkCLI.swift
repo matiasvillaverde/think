@@ -13,7 +13,14 @@ struct ThinkCLI: AsyncParsableCommand {
             RagCommand.self,
             SkillsCommand.self,
             PersonalityCommand.self,
-            SchedulesCommand.self
+            SchedulesCommand.self,
+            StatusCommand.self,
+            DoctorCommand.self,
+            ConfigCommand.self,
+            OnboardCommand.self
         ]
     )
+
+    @OptionGroup
+    var global: GlobalOptions
 }

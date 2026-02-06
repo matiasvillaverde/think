@@ -2,7 +2,7 @@ import Abstractions
 import ArgumentParser
 import Foundation
 
-struct ToolsCommand: AsyncParsableCommand {
+struct ToolsCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
         commandName: "tools",
         abstract: "List or run tools.",
@@ -11,10 +11,15 @@ struct ToolsCommand: AsyncParsableCommand {
 
     @OptionGroup
     var global: GlobalOptions
+
+    @ParentCommand
+    var parent: ThinkCLI
+
+    var parentGlobal: GlobalOptions? { parent.global }
 }
 
 extension ToolsCommand {
-    struct List: AsyncParsableCommand {
+    struct List: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "List available tools."
         )
@@ -22,8 +27,13 @@ extension ToolsCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: ToolsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             await runtime.tooling.configureTool(identifiers: Set(ToolIdentifier.allCases))
             let definitions = await runtime.tooling.getAllToolDefinitions()
             let summaries = definitions.map(ToolDefinitionSummary.init(definition:))
@@ -34,13 +44,18 @@ extension ToolsCommand {
         }
     }
 
-    struct Run: AsyncParsableCommand {
+    struct Run: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Run a tool with JSON arguments."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: ToolsCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Argument(help: "Tool name (e.g., browser.search).")
         var name: String
@@ -55,7 +70,7 @@ extension ToolsCommand {
         var message: String?
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let identifiers = try CLIParsing.parseToolIdentifiers([name])
             guard let identifier = identifiers.first else {
                 throw ValidationError("Unknown tool: \(name)")

@@ -2,7 +2,7 @@ import ArgumentParser
 import Foundation
 import ViewModels
 
-struct GatewayCommand: AsyncParsableCommand {
+struct GatewayCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
         commandName: "gateway",
         abstract: "Manage the local gateway (node mode) server.",
@@ -11,16 +11,26 @@ struct GatewayCommand: AsyncParsableCommand {
 
     @OptionGroup
     var global: GlobalOptions
+
+    @ParentCommand
+    var parent: ThinkCLI
+
+    var parentGlobal: GlobalOptions? { parent.global }
 }
 
 extension GatewayCommand {
-    struct Start: AsyncParsableCommand {
+    struct Start: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Start the local gateway server."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: GatewayCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "Port to bind the node server on.")
         var port: UInt16 = 9_876
@@ -32,7 +42,7 @@ extension GatewayCommand {
         var once: Bool = false
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             try await runtime.nodeMode.start(
                 configuration: NodeModeConfiguration(
                     port: port,
@@ -56,7 +66,7 @@ extension GatewayCommand {
         }
     }
 
-    struct Status: AsyncParsableCommand {
+    struct Status: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Check gateway server status."
         )
@@ -64,8 +74,13 @@ extension GatewayCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: GatewayCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let running = await runtime.nodeMode.status()
             let fallback = running ? "running" : "stopped"
             runtime.output.emit(GatewayStatus(running: running), fallback: fallback)

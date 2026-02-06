@@ -3,7 +3,7 @@ import ArgumentParser
 import Database
 import Foundation
 
-struct SchedulesCommand: AsyncParsableCommand {
+struct SchedulesCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
         commandName: "schedules",
         abstract: "Manage automation schedules.",
@@ -12,10 +12,15 @@ struct SchedulesCommand: AsyncParsableCommand {
 
     @OptionGroup
     var global: GlobalOptions
+
+    @ParentCommand
+    var parent: ThinkCLI
+
+    var parentGlobal: GlobalOptions? { parent.global }
 }
 
 extension SchedulesCommand {
-    struct List: AsyncParsableCommand {
+    struct List: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "List schedules."
         )
@@ -23,12 +28,17 @@ extension SchedulesCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: SchedulesCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Option(name: .long, help: "Filter schedules by chat UUID.")
         var chat: String?
 
         @MainActor
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let chatId = try chat.map { try CLIParsing.parseUUID($0, field: "chat") }
             let schedules = try await runtime.database.read(
                 AutomationScheduleCommands.List(chatId: chatId)
@@ -41,13 +51,18 @@ extension SchedulesCommand {
         }
     }
 
-    struct Create: AsyncParsableCommand {
+    struct Create: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Create a schedule."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: SchedulesCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Option(name: .long, help: "Schedule title.")
         var title: String
@@ -77,7 +92,7 @@ extension SchedulesCommand {
         var disabled: Bool = false
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let scheduleKind = try CLIParsing.parseScheduleKind(kind)
             let actionType = try CLIParsing.parseActionType(action)
             let toolIdentifiers = try CLIParsing.parseToolIdentifiers(tools)
@@ -101,13 +116,18 @@ extension SchedulesCommand {
         }
     }
 
-    struct Update: AsyncParsableCommand {
+    struct Update: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Update a schedule."
         )
 
         @OptionGroup
         var global: GlobalOptions
+
+        @ParentCommand
+        var parent: SchedulesCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
 
         @Argument(help: "Schedule UUID.")
         var id: String
@@ -134,7 +154,7 @@ extension SchedulesCommand {
         var tools: [String] = []
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let scheduleId = try CLIParsing.parseUUID(id, field: "schedule")
 
             let kindValue = try kind.map(CLIParsing.parseScheduleKind(_:))
@@ -162,7 +182,7 @@ extension SchedulesCommand {
         }
     }
 
-    struct Enable: AsyncParsableCommand {
+    struct Enable: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Enable a schedule."
         )
@@ -170,11 +190,16 @@ extension SchedulesCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: SchedulesCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Schedule UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let scheduleId = try CLIParsing.parseUUID(id, field: "schedule")
             _ = try await runtime.database.write(
                 AutomationScheduleCommands.SetEnabled(id: scheduleId, isEnabled: true)
@@ -183,7 +208,7 @@ extension SchedulesCommand {
         }
     }
 
-    struct Disable: AsyncParsableCommand {
+    struct Disable: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Disable a schedule."
         )
@@ -191,11 +216,16 @@ extension SchedulesCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: SchedulesCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Schedule UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let scheduleId = try CLIParsing.parseUUID(id, field: "schedule")
             _ = try await runtime.database.write(
                 AutomationScheduleCommands.SetEnabled(id: scheduleId, isEnabled: false)
@@ -204,7 +234,7 @@ extension SchedulesCommand {
         }
     }
 
-    struct Delete: AsyncParsableCommand {
+    struct Delete: AsyncParsableCommand, GlobalOptionsAccessing {
         static let configuration = CommandConfiguration(
             abstract: "Delete a schedule."
         )
@@ -212,11 +242,16 @@ extension SchedulesCommand {
         @OptionGroup
         var global: GlobalOptions
 
+        @ParentCommand
+        var parent: SchedulesCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
         @Argument(help: "Schedule UUID.")
         var id: String
 
         func run() async throws {
-            let runtime = try await CLIRuntimeProvider.runtime(for: global)
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let scheduleId = try CLIParsing.parseUUID(id, field: "schedule")
             _ = try await runtime.database.write(
                 AutomationScheduleCommands.Delete(id: scheduleId)
