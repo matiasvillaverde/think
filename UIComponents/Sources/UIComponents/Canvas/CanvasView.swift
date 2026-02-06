@@ -169,7 +169,7 @@ public struct CanvasView: View {
         let scheduler: CanvasUpdateScheduler = updateScheduler
         let title: String = draftTitle
         let content: String = draftContent
-        Task { [database] in
+        Task.detached(priority: .userInitiated) { [database] in
             await scheduler.flush(
                 database: database,
                 canvasId: canvasId,

@@ -60,13 +60,7 @@ internal struct MessageInputView: View {
 
     private var chatInputField: some View {
         ChatField(
-            LocalizedStringKey(
-                String(
-                    localized: "Message Think",
-                    bundle: .module,
-                    comment: "Placeholder text for the message input field"
-                )
-            ),
+            "",
             text: $inputMessage
         ) {
             send()
