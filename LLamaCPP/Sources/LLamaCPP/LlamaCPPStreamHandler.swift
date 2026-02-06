@@ -43,6 +43,7 @@ internal enum LlamaCPPStreamHandler {
 
         let tokenId: Int32 = try generateToken(deps: deps, input: input)
         context.lastToken = tokenId
+        context.state.recordTokenGenerated()
 
         if tokenId == context.eosToken {
             return true
@@ -210,7 +211,6 @@ internal enum LlamaCPPStreamHandler {
             return
         }
 
-        state.recordTokenGenerated()
         let metrics: ChunkMetrics = state.buildMetrics()
 
         // Log time to first token (important UX metric)

@@ -9,9 +9,10 @@ import os.signpost
 /// Note: This class is NOT thread-safe and should only be used within LlamaCPPSession actor
 internal final class LlamaCPPGenerator {
     private let model: LlamaCPPModel
-    private let context: LlamaCPPContext
+    internal let context: LlamaCPPContext
     private let tokenizer: LlamaCPPTokenizer
-    private var currentPosition: Int32 = 0
+    internal var currentPosition: Int32 = 0
+    private var lastResetEpoch: UInt64 = 0
     private var samplerPointer: UnsafeMutablePointer<llama_sampler>?
 
     /// Initialize generator with model and context
@@ -31,13 +32,11 @@ internal final class LlamaCPPGenerator {
         if let sampler = samplerPointer {
             llama_sampler_reset(sampler)
         }
-        // Clear the memory/KV cache to ensure clean state
-        if let ctx = context.pointer,
-            let memory = llama_get_memory(ctx) {
-            #if DEBUG
-            SignpostInstrumentation.signposter.emitEvent(SignpostNames.kvCacheClear)
-            #endif
-            llama_memory_clear(memory, true)
+        do {
+            try context.reset()
+            lastResetEpoch = context.resetEpoch
+        } catch {
+            Logger.invalidConfiguration(message: "Failed to reset context: \(error.localizedDescription)")
         }
     }
 
@@ -95,6 +94,8 @@ internal final class LlamaCPPGenerator {
             throw LLMError.invalidConfiguration("Invalid pointer")
         }
 
+        syncWithContextResetIfNeeded()
+
         // Process input tokens if provided
         if !tokens.isEmpty {
             try processBatch(tokens: tokens)
@@ -120,61 +121,6 @@ internal final class LlamaCPPGenerator {
         // For single tokens, just use the regular batch processing
         // which is already optimized when n=1
         try processBatch(tokens: [token])
-    }
-
-    /// Process a batch of tokens
-    /// - Parameter tokens: The tokens to process
-    /// - Throws: LlamaCPPError if processing fails
-    @inline(__always)
-    internal func processBatch(tokens: [Int32]) throws {
-        guard let ctx = context.pointer else {
-            throw LLMError.invalidConfiguration("Invalid pointer")
-        }
-        guard !tokens.isEmpty else {
-            return
-        }
-
-        let batchLimit: Int = max(1, Int(context.batchSize))
-        try processTokensInBatches(tokens, batchLimit: batchLimit, ctx: ctx)
-    }
-
-    private func processTokensInBatches(
-        _ tokens: [Int32],
-        batchLimit: Int,
-        ctx: OpaquePointer
-    ) throws {
-        var offset: Int = 0
-        while offset < tokens.count {
-            let end: Int = min(offset + batchLimit, tokens.count)
-            let tokenCount: Int32 = try decodeBatch(tokens[offset..<end], ctx: ctx)
-            currentPosition += tokenCount
-            offset = end
-        }
-    }
-
-    private func decodeBatch(
-        _ tokens: ArraySlice<Int32>,
-        ctx: OpaquePointer
-    ) throws -> Int32 {
-        let chunk: [Int32] = Array(tokens)
-        let tokenCount: Int32 = Int32(chunk.count)
-
-        // Use llama_batch_get_one for single-sequence generation
-        // This is optimized and handles position tracking automatically
-        let batch: llama_batch = chunk.withUnsafeBufferPointer { buffer in
-            llama_batch_get_one(
-                UnsafeMutablePointer(mutating: buffer.baseAddress),
-                tokenCount
-            )
-        }
-
-        let result: Int32 = llama_decode(ctx, batch)
-        if result != 0 {
-            throw LLMError.providerError(code: "DECODE_FAILED", message: "Failed to decode tokens")
-        }
-
-        // Position is tracked automatically by llama_decode when batch.pos = NULL
-        return tokenCount
     }
 
     /// Get logits for the current context state
@@ -205,6 +151,18 @@ internal final class LlamaCPPGenerator {
         }
 
         return logits
+    }
+
+    internal func syncWithContextResetIfNeeded() {
+        let contextEpoch: UInt64 = context.resetEpoch
+        guard contextEpoch != lastResetEpoch else {
+            return
+        }
+        currentPosition = 0
+        if let sampler = samplerPointer {
+            llama_sampler_reset(sampler)
+        }
+        lastResetEpoch = contextEpoch
     }
 
     @inline(__always)
