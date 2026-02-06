@@ -78,7 +78,53 @@ struct AppInitializationExistingUserTests {
         #expect(result.targetScreen == .chat)
     }
 
-    @Test("Reuses existing chat when user has chat with messages (1:1 relationship)")
+        @Test("Adds image model when existing user has v2 language only")
+    @MainActor
+    func existingUserWithLanguageOnlyAddsImageModel() async throws {
+        // Given - Database with user having v2 language model only
+        let mockRag = MockRagging()
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: mockRag)
+        )
+        let database = try Database.new(configuration: config)
+
+        let user = User()
+        let v2LanguageModel = try ModelDTO(
+            type: .language,
+            backend: .mlx,
+            name: "v2-language-model",
+            displayName: "V2 Language Model",
+            displayDescription: "A v2 language model",
+            skills: ["text-generation"],
+            parameters: 1_000_000_000,
+            ramNeeded: 2.gigabytes,
+            size: 1.gigabytes,
+            locationHuggingface: "mlx-community/v2-model",
+            version: 2,
+            architecture: .unknown
+        ).createModel()
+
+        database.modelContainer.mainContext.insert(user)
+        database.modelContainer.mainContext.insert(v2LanguageModel)
+        user.models.append(v2LanguageModel)
+        try database.modelContainer.mainContext.save()
+
+        // When - Initialize app for existing user
+        let result = try await database.execute(AppCommands.Initialize())
+
+        // Then - Image model should be added and chat created
+        let imageModels = user.models.filter { model in
+            (model.type == .diffusion || model.type == .diffusionXL) && model.version == 2
+        }
+        #expect(imageModels.count == 1)
+        #expect(user.chats.count == 1)
+        #expect(user.chats.first?.imageModel.id == imageModels.first?.id)
+        #expect(result.targetScreen == .chat)
+    }
+
+@Test("Reuses existing chat when user has chat with messages (1:1 relationship)")
     @MainActor
     func existingUserWithNonEmptyChatReusesExisting() async throws {
         // Given - Database with user having v2 models and existing chat with messages

@@ -308,7 +308,7 @@ struct FetchContextDataTests {
         ))
         
         let message = try await database.read(MessageCommands.Read(id: messageId))
-        let finalChannel = Channel(type: .final, content: "Hello! How can I help you?", order: 0)
+        let finalChannel = Channel(type: .final, content: "Here is a response.", order: 0)
         finalChannel.message = message
         message.channels = [finalChannel]
         database.modelContainer.mainContext.insert(finalChannel)
@@ -324,7 +324,7 @@ struct FetchContextDataTests {
         #expect(messageData.userInput == "Hello there!")
         #expect(messageData.channels.count == 1)
         #expect(messageData.channels[0].type == .final)
-        #expect(messageData.channels[0].content == "Hello! How can I help you?")
+        #expect(messageData.channels[0].content == "Here is a response.")
         #expect(messageData.toolCalls.isEmpty) // Should be empty array, not nil
     }
     

@@ -29,6 +29,28 @@ struct ChatCommandsBasicTests {
         #expect(chatCount == 1)
     }
 
+    @Test("New chat starts with no messages")
+    @MainActor
+    func createChatStartsEmpty() async throws {
+        // Given
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: MockRagging())
+        )
+
+        let database = try Database.new(configuration: config)
+        try await addRequiredModelsForChatCommands(database)
+        let defaultPersonalityId = try await getDefaultPersonalityId(database)
+
+        // When
+        let chatId = try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
+
+        // Then
+        let chat = try await database.read(ChatCommands.Read(chatId: chatId))
+        #expect(chat.messages.isEmpty)
+    }
+
     @MainActor
     @Test("Create chat successfully with system instruction")
     func createChatSystemInstruction() async throws {

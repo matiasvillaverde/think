@@ -237,6 +237,16 @@ public struct AppInitializeCommand: AnonymousCommand {
             // Sync personalities (fast path)
             try syncPersonalities(in: context)
 
+            // Ensure a v2 image model exists for chat creation.
+            let hasV2ImageModel = user.models.contains { model in
+                (model.type == .diffusion || model.type == .diffusionXL) && model.version == 2
+            }
+
+            if !hasV2ImageModel {
+                Self.logger.info("Missing v2 image model - adding default image model")
+                try addV2ImageModel(for: user, in: context)
+            }
+
             // Model states are now ephemeral and reset automatically
             // No need to explicitly reset them on startup
 
