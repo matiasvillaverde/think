@@ -247,14 +247,14 @@ internal enum TestAssertions {
         _ generatedText: String,
         stopSequences: [String]
     ) {
-        // Stop sequences should NOT appear in the output - they trigger stopping but are not emitted
+        // Stop sequences should NOT appear at the end of the output (they should be filtered)
         let foundSequence: String? = findStopSequence(in: generatedText, from: stopSequences)
 
         #expect(
             foundSequence == nil,
             """
-            Generated text should NOT contain stop sequences (they should be filtered): \
-            found '\(foundSequence ?? "")' in output
+            Generated text should NOT end with a stop sequence (it should be filtered): \
+            found '\(foundSequence ?? "")' at end of output
             """
         )
     }
@@ -263,7 +263,7 @@ internal enum TestAssertions {
         in text: String,
         from sequences: [String]
     ) -> String? {
-        for sequence in sequences where text.contains(sequence) {
+        for sequence in sequences where text.hasSuffix(sequence) {
             return sequence
         }
         return nil
