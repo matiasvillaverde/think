@@ -62,6 +62,13 @@ struct LiveCLIDownloader: CLIDownloader {
     }
 }
 
+struct CLIRuntimeSettings: Sendable {
+    let outputFormat: CLIOutputFormat
+    let toolAccess: CLIToolAccess
+    let workspaceRoot: URL?
+    let verbose: Bool
+}
+
 struct CLIRuntime: Sendable {
     let database: DatabaseProtocol
     let orchestrator: AgentOrchestrating
@@ -70,22 +77,24 @@ struct CLIRuntime: Sendable {
     let downloader: CLIDownloader
     let output: CLIOutput
     let nodeMode: NodeModeServicing
+    let settings: CLIRuntimeSettings
 
     func ensureInitialized() async throws {
         try await CLIAppBootstrapper.shared.ensureInitialized(database: database)
     }
 
     static func live(options: GlobalOptions) throws -> CLIRuntime {
+        let resolver = CLIConfigResolver()
+        let resolved = resolver.resolve(options: options)
         let storeURL = AppStoreLocator.sharedStoreURL(
             bundleId: AppStoreLocator.defaultBundleId,
-            overridePath: options.store
+            overridePath: resolved.store.value
         )
         try AppStoreLocator.ensureDirectoryExists(for: storeURL)
 
-        let configStore = CLIConfigStore()
-        let cliConfig = configStore.loadOrDefault()
-        let resolvedWorkspace = options.workspace ?? cliConfig.workspacePath
-        let workspaceRoot = resolvedWorkspace.map { URL(fileURLWithPath: $0) }
+        let workspaceRoot = resolved.workspacePath.value.map { URL(fileURLWithPath: $0) }
+        let outputFormat = resolved.outputFormat.value
+        let toolAccess = resolved.toolAccess.value
 
         let databaseConfig = DatabaseConfiguration(
             isStoredInMemoryOnly: false,
@@ -99,13 +108,14 @@ struct CLIRuntime: Sendable {
         let mlxSession = MLXSessionFactory.create()
         let ggufSession = LlamaCPPFactory.createSession()
         let remoteSession = RemoteSessionFactory.create()
+        let modelDownloader = ModelDownloader()
         let orchestrator = AgentOrchestratorFactory.make(
             database: database,
             mlxSession: mlxSession,
             ggufSession: ggufSession,
             options: .init(
                 remoteSession: remoteSession,
-                modelDownloader: ModelDownloader.shared,
+                modelDownloader: modelDownloader,
                 workspaceRoot: workspaceRoot
             )
         )
@@ -117,17 +127,24 @@ struct CLIRuntime: Sendable {
             database: database
         )
 
-        let output = CLIOutput(writer: StdoutOutput(), json: options.json)
+        let output = CLIOutput(writer: StdoutOutput(), format: outputFormat)
         let nodeModeServer = NodeModeServerAdapter(server: NodeModeServer(gateway: gateway))
+        let settings = CLIRuntimeSettings(
+            outputFormat: outputFormat,
+            toolAccess: toolAccess,
+            workspaceRoot: workspaceRoot,
+            verbose: resolved.verbose.value
+        )
 
         return CLIRuntime(
             database: database,
             orchestrator: orchestrator,
             gateway: gateway,
             tooling: tooling,
-            downloader: LiveCLIDownloader(downloader: ModelDownloader.shared),
+            downloader: LiveCLIDownloader(downloader: modelDownloader),
             output: output,
-            nodeMode: nodeModeServer
+            nodeMode: nodeModeServer,
+            settings: settings
         )
     }
 }

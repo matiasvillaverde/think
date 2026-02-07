@@ -5,7 +5,7 @@ struct ConfigCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
         commandName: "config",
         abstract: "View or update CLI configuration.",
-        subcommands: [Show.self, Set.self, Reset.self],
+        subcommands: [Show.self, Set.self, Reset.self, Resolve.self],
         defaultSubcommand: Show.self
     )
 
@@ -35,7 +35,10 @@ extension ConfigCommand {
         func run() async throws {
             let store = CLIConfigStore()
             let config = store.loadOrDefault()
-            let output = CLIOutput(writer: StdoutOutput(), json: resolvedGlobal.json)
+            let output = CLIOutput(
+                writer: StdoutOutput(),
+                format: resolvedGlobal.resolvedOutputFormat
+            )
             let skills = config.preferredSkills.joined(separator: ", ")
             let fallback = [
                 "workspace=\(config.workspacePath ?? "-")",
@@ -120,9 +123,47 @@ extension ConfigCommand {
 
             try store.save(config)
 
-            let output = CLIOutput(writer: StdoutOutput(), json: resolvedGlobal.json)
+            let output = CLIOutput(
+                writer: StdoutOutput(),
+                format: resolvedGlobal.resolvedOutputFormat
+            )
             let fallback = "Config updated."
             output.emit(config, fallback: fallback)
+        }
+    }
+
+    struct Resolve: AsyncParsableCommand, GlobalOptionsAccessing {
+        static let configuration = CommandConfiguration(
+            abstract: "Show the resolved configuration with sources."
+        )
+
+        @OptionGroup
+        var global: GlobalOptions
+
+        @ParentCommand
+        var parent: ConfigCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
+        func run() async throws {
+            let resolver = CLIConfigResolver()
+            let resolved = resolver.resolve(options: resolvedGlobal)
+            let output = CLIOutput(
+                writer: StdoutOutput(),
+                format: resolvedGlobal.resolvedOutputFormat
+            )
+            let skills = resolved.preferredSkills.value.joined(separator: ", ")
+            let fallback = [
+                "configPath=\(resolved.configPath.value)",
+                "workspace=\(resolved.workspacePath.value ?? "-")",
+                "model=\(resolved.defaultModelId.value?.uuidString ?? "-")",
+                "skills=\(skills)",
+                "format=\(resolved.outputFormat.value.rawValue)",
+                "toolAccess=\(resolved.toolAccess.value.rawValue)",
+                "store=\(resolved.store.value ?? "-")",
+                "verbose=\(resolved.verbose.value)"
+            ].joined(separator: " ")
+            output.emit(resolved, fallback: fallback)
         }
     }
 
@@ -142,7 +183,10 @@ extension ConfigCommand {
         func run() async throws {
             let store = CLIConfigStore()
             try store.reset()
-            let output = CLIOutput(writer: StdoutOutput(), json: resolvedGlobal.json)
+            let output = CLIOutput(
+                writer: StdoutOutput(),
+                format: resolvedGlobal.resolvedOutputFormat
+            )
             output.emit("Config reset.")
         }
     }

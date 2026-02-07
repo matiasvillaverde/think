@@ -18,6 +18,22 @@ struct StdoutOutput: CLIOutputting {
     }
 }
 
+struct StderrOutput: CLIOutputting {
+    func write(_ text: String) {
+        guard let data = (text + "\n").data(using: .utf8) else {
+            return
+        }
+        FileHandle.standardError.write(data)
+    }
+
+    func writeInline(_ text: String) {
+        guard let data = text.data(using: .utf8) else {
+            return
+        }
+        FileHandle.standardError.write(data)
+    }
+}
+
 final class BufferOutput: CLIOutputting, @unchecked Sendable {
     private let lock = NSLock()
     private(set) var lines: [String] = []
@@ -36,42 +52,80 @@ final class BufferOutput: CLIOutputting, @unchecked Sendable {
     }
 }
 
+struct CLIMessage: Encodable, Sendable {
+    let type: String
+    let message: String
+
+    init(_ message: String, type: String = "message") {
+        self.type = type
+        self.message = message
+    }
+}
+
+struct CLIStreamChunk: Encodable, Sendable {
+    let type: String
+    let text: String
+
+    init(text: String) {
+        type = "stream"
+        self.text = text
+    }
+}
+
 struct CLIOutput: Sendable {
     private let writer: CLIOutputting
-    private let json: Bool
-    private let encoder: JSONEncoder
+    private let format: CLIOutputFormat
 
-    init(writer: CLIOutputting, json: Bool) {
+    init(writer: CLIOutputting, format: CLIOutputFormat) {
         self.writer = writer
-        self.json = json
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        self.encoder = encoder
+        self.format = format
+    }
+
+    var supportsStreaming: Bool {
+        format == .text || format == .jsonLines
     }
 
     func emit(_ message: String) {
-        writer.write(message)
+        emit(CLIMessage(message), fallback: message)
     }
 
     func stream(_ text: String) {
-        writer.writeInline(text)
+        switch format {
+        case .text:
+            writer.writeInline(text)
+        case .jsonLines:
+            emitLine(CLIStreamChunk(text: text))
+        case .json:
+            return
+        }
     }
 
     func emit<T: Encodable>(_ value: T, fallback: String) {
-        guard json else {
+        switch format {
+        case .text:
             writer.write(fallback)
-            return
+        case .json:
+            writer.write(encode(value, pretty: true) ?? fallback)
+        case .jsonLines:
+            writer.write(encode(value, pretty: false) ?? fallback)
         }
+    }
+
+    private func emitLine<T: Encodable>(_ value: T) {
+        if let line = encode(value, pretty: false) {
+            writer.write(line)
+        }
+    }
+
+    private func encode<T: Encodable>(_ value: T, pretty: Bool) -> String? {
         do {
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .iso8601
+            encoder.outputFormatting = pretty ? [.prettyPrinted, .sortedKeys] : [.sortedKeys]
             let data = try encoder.encode(value)
-            if let string = String(data: data, encoding: .utf8) {
-                writer.write(string)
-            } else {
-                writer.write(fallback)
-            }
+            return String(data: data, encoding: .utf8)
         } catch {
-            writer.write(fallback)
+            return nil
         }
     }
 }
