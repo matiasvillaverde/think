@@ -356,6 +356,29 @@ struct ThinkCLICommandTests {
         }
     }
 
+
+    @Test("Models add-remote defaults to GPT architecture for language models")
+    @MainActor
+    func modelAddRemoteDefaultsArchitecture() async throws {
+        let context = try await TestRuntime.make()
+
+        try await withRuntime(context.runtime) {
+            try await runCLI([
+                "models", "add-remote",
+                "--name", "OpenRouter Sonnet",
+                "--location", "openrouter:anthropic/claude-3.5-sonnet"
+            ])
+        }
+
+        let models = try await context.database.read(ModelCommands.FetchAll())
+        let remoteModel = try #require(models.first { model in
+            model.locationKind == .remote &&
+                model.location == "openrouter:anthropic/claude-3.5-sonnet"
+        })
+
+        #expect(remoteModel.architecture == .gpt)
+    }
+
     @Test("Models download updates progress")
     @MainActor
     func modelDownload() async throws {

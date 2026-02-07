@@ -78,6 +78,17 @@ enum CLIModelsService {
     ) async throws {
         let display = displayName ?? name
         let displayDescription = description ?? "Remote model"
+        let resolvedArchitecture: Architecture
+        if architecture == .unknown {
+            switch type {
+            case .language, .deepLanguage, .flexibleThinker, .visualLanguage:
+                resolvedArchitecture = .gpt
+            case .diffusion, .diffusionXL:
+                resolvedArchitecture = architecture
+            }
+        } else {
+            resolvedArchitecture = architecture
+        }
         let modelId = try await runtime.database.write(
             ModelCommands.CreateRemoteModel(
                 name: name,
@@ -85,7 +96,7 @@ enum CLIModelsService {
                 displayDescription: displayDescription,
                 location: location,
                 type: type,
-                architecture: architecture
+                architecture: resolvedArchitecture
             )
         )
         runtime.output.emit("Added remote model \(modelId.uuidString)")
