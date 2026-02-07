@@ -25,41 +25,45 @@ enum CLIModelsService {
         repositoryId: String,
         preferredBackend: SendableModel.Backend?
     ) async throws {
-        let explorer = runtime.downloader.explorer()
-        let discovered = try await explorer.discoverModel(repositoryId)
-        let sendable = try await explorer.prepareForDownload(
-            discovered,
-            preferredBackend: preferredBackend
-        )
-
-        let createCommand = await MainActor.run {
-            ModelCommands.CreateFromDiscovery(
-                discoveredModel: discovered,
-                sendableModel: sendable
+        do {
+            let explorer = runtime.downloader.explorer()
+            let discovered = try await explorer.discoverModel(repositoryId)
+            let sendable = try await explorer.prepareForDownload(
+                discovered,
+                preferredBackend: preferredBackend
             )
-        }
-        _ = try await runtime.database.write(createCommand)
 
-        runtime.output.emit("Downloading \(sendable.location)...")
-
-        for try await event in runtime.downloader.download(sendableModel: sendable) {
-            switch event {
-            case .progress(let progress):
-                try await runtime.database.write(
-                    ModelCommands.UpdateModelDownloadProgress(
-                        id: sendable.id,
-                        progress: progress.fractionCompleted
-                    )
-                )
-                runtime.output.emit(progress.description)
-            case .completed(let info):
-                _ = try await runtime.database.write(
-                    ModelCommands.UpdateModelDownloadProgress(id: sendable.id, progress: 1.0)
-                )
-                runtime.output.emit(
-                    "Download completed: \(info.name) (\(info.backend.rawValue))"
+            let createCommand = await MainActor.run {
+                ModelCommands.CreateFromDiscovery(
+                    discoveredModel: discovered,
+                    sendableModel: sendable
                 )
             }
+            _ = try await runtime.database.write(createCommand)
+
+            runtime.output.emit("Downloading \(sendable.location)...")
+
+            for try await event in runtime.downloader.download(sendableModel: sendable) {
+                switch event {
+                case .progress(let progress):
+                    try await runtime.database.write(
+                        ModelCommands.UpdateModelDownloadProgress(
+                            id: sendable.id,
+                            progress: progress.fractionCompleted
+                        )
+                    )
+                    runtime.output.emit(progress.description)
+                case .completed(let info):
+                    _ = try await runtime.database.write(
+                        ModelCommands.UpdateModelDownloadProgress(id: sendable.id, progress: 1.0)
+                    )
+                    runtime.output.emit(
+                        "Download completed: \(info.name) (\(info.backend.rawValue))"
+                    )
+                }
+            }
+        } catch {
+            throw mapDownloadError(error)
         }
     }
 
@@ -133,5 +137,19 @@ enum CLIModelsService {
             ModelCommands.DeleteModel(model: modelId)
         )
         runtime.output.emit("Removed model \(modelId.uuidString)")
+    }
+
+
+    private static func mapDownloadError(_ error: Error) -> Error {
+        let message = error.localizedDescription
+        let isAuthError = message.contains("status code: 401")
+            || message.lowercased().contains("authentication required")
+        if isAuthError {
+            return CLIError(
+                message: "HuggingFace auth required. Set HF_TOKEN (or token file) and retry.",
+                exitCode: .permission
+            )
+        }
+        return error
     }
 }
