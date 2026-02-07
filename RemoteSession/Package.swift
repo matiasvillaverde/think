@@ -15,7 +15,8 @@ let package = Package(
             targets: ["RemoteSession"])
     ],
     dependencies: [
-        .package(path: "../Abstractions")
+        .package(path: "../Abstractions"),
+        .package(path: "../ContextBuilder")
     ],
     targets: [
         .target(
@@ -28,6 +29,7 @@ let package = Package(
             name: "RemoteSessionTests",
             dependencies: [
                 "RemoteSession",
+                "ContextBuilder",
                 .product(
                     name: "AbstractionsTestUtilities",
                     package: "Abstractions"

@@ -1,4 +1,5 @@
 import Abstractions
+import ContextBuilder
 import Foundation
 import Testing
 @testable import RemoteSession
@@ -50,6 +51,63 @@ struct OpenRouterIntegrationTests {
         print("Response: \(text)")
     }
 
+    @Test("Stream tool call payload and parse")
+    func testToolCallParsing() async throws {
+        guard let apiKey = ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"] else {
+            throw TestSkip("OPENROUTER_API_KEY not set")
+        }
+
+        let apiKeyManager = MockAPIKeyManager(keys: [.openRouter: apiKey])
+        let session = RemoteSession(apiKeyManager: apiKeyManager)
+
+        let configuration = ProviderConfiguration(
+            location: URL(fileURLWithPath: "/"),
+            authentication: .noAuth,
+            modelName: "openrouter:google/gemma-3n-e2b-it:free",
+            compute: .init(contextSize: 4096, batchSize: 512, threadCount: 4)
+        )
+
+        for try await _ in await session.preload(configuration: configuration) {
+            // Progress updates are ignored for tests
+        }
+
+        let payload = [
+            "<tool_call>{\"tool_calls\":[{\"id\":\"call_1\",\"type\":\"function\",",
+            "\"function\":{\"name\":\"workspace.write\",\"arguments\":{\"action\":\"write\",",
+            "\"path\":\"notes.md\",\"content\":\"Hello\"}}}]}</tool_call>"
+        ].joined()
+        let input = LLMInput(
+            context: """
+You are a strict formatter. Output exactly the following and nothing else:
+\(payload)
+""",
+            sampling: .deterministic,
+            limits: ResourceLimits(maxTokens: 200)
+        )
+
+        var text = ""
+        for try await chunk in await session.stream(input) {
+            text += chunk.text
+        }
+
+        let contextBuilder = ContextBuilder(tooling: StubTooling())
+        let model = SendableModel(
+            id: UUID(),
+            ramNeeded: 1_000_000_000,
+            modelType: .language,
+            location: "test-model",
+            architecture: .llama,
+            locationKind: .huggingFace,
+        )
+
+        let result = try await contextBuilder.process(output: text, model: model)
+        let toolRequests = result.channels.compactMap(\.toolRequest)
+
+        #expect(!toolRequests.isEmpty)
+        #expect(toolRequests.first?.name == "workspace")
+        #expect(toolRequests.first?.arguments.contains("notes.md") == true)
+    }
+
     @Test("Handle invalid API key")
     func testInvalidKey() async throws {
         let apiKeyManager = MockAPIKeyManager(keys: [.openRouter: "invalid-key"])
@@ -98,4 +156,32 @@ struct TestSkip: Error, CustomStringConvertible {
 /// Tag for integration tests.
 extension Tag {
     @Tag static var integration: Self
+}
+
+private actor StubTooling: Tooling {
+    func configureTool(identifiers _: Set<ToolIdentifier>) async {
+        // no-op
+    }
+    func clearTools() async {
+        // no-op
+    }
+    func getToolDefinitions(for _: Set<ToolIdentifier>) async -> [ToolDefinition] {
+        // no-op
+        []
+    }
+    func getAllToolDefinitions() async -> [ToolDefinition] {
+        // no-op
+        []
+    }
+    func executeTools(toolRequests _: [ToolRequest]) async -> [ToolResponse] {
+        // no-op
+        []
+    }
+    func configureSemanticSearch(
+        database _: DatabaseProtocol,
+        chatId _: UUID,
+        fileTitles _: [String]
+    ) async {
+        // no-op
+    }
 }

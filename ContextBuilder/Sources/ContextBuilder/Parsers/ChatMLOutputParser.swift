@@ -175,30 +175,12 @@ internal struct ChatMLOutputParser: OutputParser {
             range: NSRange(output.startIndex..., in: output)
         )
 
-        return matches.compactMap { match in
+        return matches.flatMap { match in
             guard let range = Range(match.range(at: 1), in: output) else {
-                return nil
+                return [ToolRequest]()
             }
             let jsonString: String = String(output[range])
-
-            // Parse JSON to extract tool information
-            guard let data = jsonString.data(using: .utf8),
-                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                let name = json["name"] as? String,
-                let arguments = json["arguments"] else {
-                return nil
-            }
-
-            let argsString: String
-            if let argsDict = arguments as? [String: Any],
-                let argsData = try? JSONSerialization.data(withJSONObject: argsDict),
-                let jsonString = String(data: argsData, encoding: .utf8) {
-                argsString = jsonString
-            } else {
-                argsString = String(describing: arguments)
-            }
-
-            return ToolRequest(name: name, arguments: argsString)
+            return parseToolCallPayload(jsonString)
         }
     }
 
