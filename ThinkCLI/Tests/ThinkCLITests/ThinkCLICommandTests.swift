@@ -122,6 +122,51 @@ struct ThinkCLICommandTests {
         #expect(context.output.lines.contains { $0.contains("Response") } == false)
     }
 
+    @Test("Chat send streams JSON lines output")
+    func chatSendStreamsJsonLinesOutput() async throws {
+        let orchestrator = MockAgentOrchestrator()
+        let gateway = StubGateway()
+        await gateway.setSendDelayNanoseconds(200_000_000)
+        await gateway.setSendResult(
+            GatewaySendResult(
+                messageId: UUID(),
+                assistantMessage: GatewayMessage(
+                    id: UUID(),
+                    role: .assistant,
+                    content: "Response",
+                    createdAt: Date()
+                )
+            )
+        )
+        let context = try await TestRuntime.make(
+            gateway: gateway,
+            orchestrator: orchestrator,
+            outputFormat: .jsonLines
+        )
+        let sessionId = UUID()
+        let runId = UUID()
+
+        try await withRuntime(context.runtime) {
+            let sendTask = Task {
+                try await runCLI([
+                    "chat", "send",
+                    "--session", sessionId.uuidString,
+                    "Hello"
+                ])
+            }
+
+            await Task.yield()
+            await orchestrator.emitEvent(.generationStarted(runId: runId))
+            await orchestrator.emitEvent(.textDelta(text: "Hello"))
+            await orchestrator.emitEvent(.textDelta(text: " json"))
+            await orchestrator.emitEvent(.generationCompleted(runId: runId, totalDurationMs: 1))
+            try await sendTask.value
+        }
+
+        #expect(context.output.inline.isEmpty)
+        #expect(context.output.lines.contains { $0.contains("\"type\":\"stream\"") })
+    }
+
     @Test("Chat send defaults to tool policy when no tools are provided")
     @MainActor
     func chatSendDefaultsToToolPolicy() async throws {
@@ -177,6 +222,25 @@ struct ThinkCLICommandTests {
         let options = await context.gateway.lastSendOptions
         let action = try #require(options?.action)
         #expect(action.tools.isEmpty)
+    }
+
+    @Test("Chat send denies tools when tool access disabled")
+    @MainActor
+    func chatSendToolsDeniedWhenToolAccessDisabled() async throws {
+        let context = try await TestRuntime.make(toolAccess: .deny)
+        let chatId = try await seedChat(database: context.database)
+
+        await #expect(throws: CLIError.self) {
+            try await withRuntime(context.runtime) {
+                try await runCLI([
+                    "chat", "send",
+                    "--session", chatId.uuidString,
+                    "--tools", "memory",
+                    "--no-stream",
+                    "Hello"
+                ])
+            }
+        }
     }
 
 
@@ -356,6 +420,21 @@ struct ThinkCLICommandTests {
         #expect(requests.first?.name == "browser.search")
     }
 
+    @Test("Tools run denied when tool access disabled")
+    func toolsRunDeniedWhenToolAccessDisabled() async throws {
+        let context = try await TestRuntime.make(toolAccess: .deny)
+
+        await #expect(throws: CLIError.self) {
+            try await withRuntime(context.runtime) {
+                try await runCLI([
+                    "tools", "run",
+                    "browser.search",
+                    "--args", "{}"
+                ])
+            }
+        }
+    }
+
     @Test("RAG index/search/delete")
     func ragCommands() async throws {
         let mockRag = MockRagging(searchResults: [
@@ -469,19 +548,29 @@ struct ThinkCLICommandTests {
         let command = try ThinkCLI.parseAsRoot([
             "--store", "root.store",
             "--workspace", "/tmp/work",
+            "--format", "json-lines",
+            "--tool-access", "deny",
             "chat", "list"
         ])
         let list = try #require(command as? ChatCommand.List)
         #expect(list.resolvedGlobal.store == "root.store")
         #expect(list.resolvedGlobal.workspace == "/tmp/work")
+        #expect(list.resolvedGlobal.resolvedOutputFormat == .jsonLines)
+        #expect(list.resolvedGlobal.resolvedToolAccess == .deny)
 
         let override = try ThinkCLI.parseAsRoot([
             "--store", "root.store",
+            "--format", "json-lines",
+            "--tool-access", "deny",
             "chat", "list",
-            "--store", "child.store"
+            "--store", "child.store",
+            "--format", "json",
+            "--tool-access", "allow"
         ])
         let listOverride = try #require(override as? ChatCommand.List)
         #expect(listOverride.resolvedGlobal.store == "child.store")
+        #expect(listOverride.resolvedGlobal.resolvedOutputFormat == .json)
+        #expect(listOverride.resolvedGlobal.resolvedToolAccess == .allow)
     }
 
     @Test("Onboard command parses workspace-path without conflicts")
@@ -543,6 +632,53 @@ struct ThinkCLICommandTests {
 
         try await runCLI(["config", "reset"])
         #expect(store.exists() == false)
+    }
+
+    @Test("Config resolver reports sources")
+    func configResolverReportsSources() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        let configURL = tempDir.appendingPathComponent("config.json")
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        let store = CLIConfigStore(url: configURL)
+        var config = CLIConfig()
+        let modelId = UUID()
+        config.workspacePath = "/tmp/config-workspace"
+        config.defaultModelId = modelId
+        config.preferredSkills = ["skill-a"]
+        try store.save(config)
+
+        var options = GlobalOptions()
+        options.workspace = "/tmp/cli-workspace"
+        options.format = .jsonLines
+        options.toolAccess = .deny
+        options.store = "custom.store"
+        options.verbose = true
+
+        let resolver = CLIConfigResolver(
+            configStore: store,
+            environment: [CLIConfigStore.overrideEnvKey: configURL.path]
+        )
+        let resolved = resolver.resolve(options: options)
+
+        #expect(resolved.configPath.value == configURL.path)
+        #expect(resolved.configPath.source == .environment)
+        #expect(resolved.workspacePath.value == "/tmp/cli-workspace")
+        #expect(resolved.workspacePath.source == .cli)
+        #expect(resolved.defaultModelId.value == modelId)
+        #expect(resolved.defaultModelId.source == .configFile)
+        #expect(resolved.preferredSkills.value == ["skill-a"])
+        #expect(resolved.preferredSkills.source == .configFile)
+        #expect(resolved.outputFormat.value == .jsonLines)
+        #expect(resolved.outputFormat.source == .cli)
+        #expect(resolved.toolAccess.value == .deny)
+        #expect(resolved.toolAccess.source == .cli)
+        #expect(resolved.store.value == "custom.store")
+        #expect(resolved.store.source == .cli)
+        #expect(resolved.verbose.value == true)
+        #expect(resolved.verbose.source == .cli)
     }
 
     @Test("Onboarding persists workspace, model, and skills")
@@ -735,328 +871,5 @@ struct ThinkCLICommandTests {
 
         let remaining = try await context.database.read(AutomationScheduleCommands.List())
         #expect(remaining.isEmpty)
-    }
-}
-
-// MARK: - Test Helpers
-
-private struct TestRuntime {
-    let runtime: CLIRuntime
-    let output: BufferOutput
-    let database: Database
-    let gateway: StubGateway
-    let tooling: StubTooling
-    let downloader: StubDownloader
-    let nodeMode: StubNodeMode
-    let orchestrator: MockAgentOrchestrator
-
-    static func make(
-        rag: MockRagging = MockRagging(),
-        gateway: StubGateway = StubGateway(),
-        tooling: StubTooling = StubTooling(),
-        downloader: StubDownloader = StubDownloader(),
-        nodeMode: StubNodeMode = StubNodeMode(),
-        orchestrator: MockAgentOrchestrator = MockAgentOrchestrator()
-    ) async throws -> TestRuntime {
-        let config = DatabaseConfiguration(
-            isStoredInMemoryOnly: true,
-            allowsSave: true,
-            ragFactory: MockRagFactory(mockRag: rag)
-        )
-        let database = try Database.new(configuration: config)
-        try await waitForReady(database)
-
-        let output = BufferOutput()
-        let runtime = CLIRuntime(
-            database: database,
-            orchestrator: orchestrator,
-            gateway: gateway,
-            tooling: tooling,
-            downloader: downloader,
-            output: CLIOutput(writer: output, json: false),
-            nodeMode: nodeMode
-        )
-        return TestRuntime(
-            runtime: runtime,
-            output: output,
-            database: database,
-            gateway: gateway,
-            tooling: tooling,
-            downloader: downloader,
-            nodeMode: nodeMode,
-            orchestrator: orchestrator
-        )
-    }
-}
-
-@MainActor
-private func withRuntime(
-    _ runtime: CLIRuntime,
-    operation: () async throws -> Void
-) async throws {
-    let previous = await CLIRuntimeProvider.getFactory()
-    await CLIRuntimeProvider.setFactory({ _ in runtime })
-    do {
-        try await operation()
-        await CLIRuntimeProvider.setFactory(previous)
-    } catch {
-        await CLIRuntimeProvider.setFactory(previous)
-        throw error
-    }
-}
-
-private func runCLI(_ arguments: [String]) async throws {
-    var command = try ThinkCLI.parseAsRoot(arguments)
-    if var asyncCommand = command as? AsyncParsableCommand {
-        try await asyncCommand.run()
-    } else {
-        try command.run()
-    }
-}
-
-
-@MainActor
-private func waitForReady(
-    _ database: Database,
-    timeout: TimeInterval = 2.0
-) async throws {
-    let deadline = Date().addingTimeInterval(timeout)
-    while Date() < deadline {
-        if database.status == .ready {
-            return
-        }
-        try await Task.sleep(nanoseconds: 50_000_000)
-    }
-    throw DatabaseError.databaseNotReady
-}
-
-private func seedChat(database: Database) async throws -> UUID {
-    _ = try await database.write(
-        ModelCommands.CreateLocalModel(
-            name: "Lang",
-            backend: .mlx,
-            type: .language,
-            parameters: 1,
-            ramNeeded: 1,
-            size: 1,
-            architecture: .llama,
-            locationLocal: "/tmp/lang",
-            locationBookmark: nil
-        )
-    )
-    _ = try await database.write(
-        ModelCommands.CreateLocalModel(
-            name: "Image",
-            backend: .mlx,
-            type: .diffusion,
-            parameters: 1,
-            ramNeeded: 1,
-            size: 1,
-            architecture: .stableDiffusion,
-            locationLocal: "/tmp/image",
-            locationBookmark: nil
-        )
-    )
-    let personalityId = try await database.write(PersonalityCommands.WriteDefault())
-    return try await database.write(ChatCommands.Create(personality: personalityId))
-}
-
-private struct ModelProgressReadCommand: ReadCommand {
-    let id: UUID
-
-    func execute(
-        in context: ModelContext,
-        userId: PersistentIdentifier?,
-        rag: Ragging?
-    ) throws -> Double? {
-        let descriptor = FetchDescriptor<Model>(
-            predicate: #Predicate<Model> { $0.id == id }
-        )
-        return try context.fetch(descriptor).first?.downloadProgress
-    }
-}
-
-// MARK: - Stubs
-
-actor StubGateway: GatewayServicing {
-    private var sessions: [GatewaySession] = []
-    private var historyBySession: [UUID: [GatewayMessage]] = [:]
-    private(set) var lastSendOptions: GatewaySendOptions?
-    private var lastSendSessionId: UUID?
-    private var sendResult: GatewaySendResult?
-    private var sendDelayNanoseconds: UInt64 = 0
-
-    func setSessions(_ sessions: [GatewaySession]) {
-        self.sessions = sessions
-    }
-
-    func setHistory(sessionId: UUID, messages: [GatewayMessage]) {
-        historyBySession[sessionId] = messages
-    }
-
-    func setSendResult(_ result: GatewaySendResult) {
-        sendResult = result
-    }
-
-    func setSendDelayNanoseconds(_ delay: UInt64) {
-        sendDelayNanoseconds = delay
-    }
-
-    func createSession(title: String?) async throws -> GatewaySession {
-        let session = GatewaySession(
-            id: UUID(),
-            title: title ?? "New Session",
-            createdAt: Date(),
-            updatedAt: Date()
-        )
-        sessions.append(session)
-        return session
-    }
-
-    func listSessions() async throws -> [GatewaySession] {
-        sessions
-    }
-
-    func getSession(id: UUID) async throws -> GatewaySession {
-        if let session = sessions.first(where: { $0.id == id }) {
-            return session
-        }
-        throw GatewayError.sessionNotFound
-    }
-
-    func history(
-        sessionId: UUID,
-        options: GatewayHistoryOptions
-    ) async throws -> [GatewayMessage] {
-        historyBySession[sessionId] ?? []
-    }
-
-    func send(
-        sessionId: UUID,
-        input: String,
-        options: GatewaySendOptions
-    ) async throws -> GatewaySendResult {
-        lastSendSessionId = sessionId
-        lastSendOptions = options
-        if sendDelayNanoseconds > 0 {
-            try await Task.sleep(nanoseconds: sendDelayNanoseconds)
-        }
-        if let sendResult {
-            return sendResult
-        }
-        return GatewaySendResult(messageId: UUID(), assistantMessage: nil)
-    }
-
-    func spawnSubAgent(
-        sessionId: UUID,
-        request: SubAgentRequest
-    ) async throws -> SubAgentResult {
-        throw GatewayError.subAgentUnavailable
-    }
-}
-
-actor StubTooling: Tooling {
-    private var configured: Set<ToolIdentifier> = []
-    private var definitions: [ToolDefinition] = []
-    private var lastToolRequests: [ToolRequest] = []
-
-    func configureTool(identifiers: Set<ToolIdentifier>) async {
-        configured = identifiers
-    }
-
-    func clearTools() async {
-        configured.removeAll()
-    }
-
-    func getToolDefinitions(for identifiers: Set<ToolIdentifier>) async -> [ToolDefinition] {
-        definitions.filter { definition in
-            identifiers.contains { identifier in
-                identifier.toolName == definition.name
-            }
-        }
-    }
-
-    func getAllToolDefinitions() async -> [ToolDefinition] {
-        definitions
-    }
-
-    func executeTools(toolRequests: [ToolRequest]) async -> [ToolResponse] {
-        lastToolRequests = toolRequests
-        return toolRequests.map { request in
-            ToolResponse(requestId: request.id, toolName: request.name, result: request.arguments)
-        }
-    }
-
-    func configureSemanticSearch(
-        database: DatabaseProtocol,
-        chatId: UUID,
-        fileTitles: [String]
-    ) async {}
-
-    func setDefinitions(_ definitions: [ToolDefinition]) {
-        self.definitions = definitions
-    }
-
-    func lastRequests() -> [ToolRequest] {
-        lastToolRequests
-    }
-}
-
-actor StubDownloader: CLIDownloader {
-    nonisolated let explorerInstance: CommunityModelsExplorerProtocol
-    nonisolated let events: [DownloadEvent]
-    private var deleted: [String] = []
-    private var downloaded: [SendableModel] = []
-
-    init(
-        explorerInstance: CommunityModelsExplorerProtocol = MockCommunityModelsExplorer(),
-        events: [DownloadEvent] = []
-    ) {
-        self.explorerInstance = explorerInstance
-        self.events = events
-    }
-
-    nonisolated func download(
-        sendableModel: SendableModel
-    ) -> AsyncThrowingStream<DownloadEvent, Error> {
-        Task { await recordDownload(sendableModel) }
-        return AsyncThrowingStream { continuation in
-            for event in events {
-                continuation.yield(event)
-            }
-            continuation.finish()
-        }
-    }
-
-    nonisolated func explorer() -> CommunityModelsExplorerProtocol {
-        explorerInstance
-    }
-
-    func delete(modelLocation: String) async throws {
-        deleted.append(modelLocation)
-    }
-
-    func lastDownloaded() -> SendableModel? {
-        downloaded.last
-    }
-
-    private func recordDownload(_ model: SendableModel) {
-        downloaded.append(model)
-    }
-}
-
-actor StubNodeMode: NodeModeServicing {
-    private var running: Bool = false
-
-    func start(configuration: NodeModeConfiguration) async throws {
-        running = true
-    }
-
-    func stop() async {
-        running = false
-    }
-
-    func status() async -> Bool {
-        running
     }
 }
