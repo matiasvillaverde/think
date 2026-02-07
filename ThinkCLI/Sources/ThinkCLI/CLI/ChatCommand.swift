@@ -107,7 +107,10 @@ extension ChatCommand {
         var session: String
 
         @Argument(help: "Prompt to send.")
-        var input: String
+        var input: String?
+
+        @Option(name: .long, help: "Prompt to send (use to avoid conflicts with --tools).")
+        var prompt: String?
 
         @Option(name: .long, parsing: .upToNextOption, help: "Tools to enable.")
         var tools: [String] = []
@@ -124,13 +127,21 @@ extension ChatCommand {
         )
         var noStream: Bool = false
 
+        func validate() throws {
+            let resolved = (prompt ?? input)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            if resolved.isEmpty {
+                throw ValidationError("Provide a prompt via <input> or --prompt.")
+            }
+        }
+
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
+            let resolvedInput = prompt ?? input ?? ""
             try await CLIChatService.send(
                 runtime: runtime,
                 sessionId: sessionId,
-                input: input,
+                input: resolvedInput,
                 tools: tools,
                 noTools: noTools,
                 image: image,

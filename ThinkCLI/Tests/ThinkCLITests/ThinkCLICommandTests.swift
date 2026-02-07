@@ -197,6 +197,25 @@ struct ThinkCLICommandTests {
         #expect(action.tools == Set<ToolIdentifier>([.memory]))
     }
 
+    @Test("Chat send accepts --prompt")
+    @MainActor
+    func chatSendPromptOption() async throws {
+        let context = try await TestRuntime.make()
+        let chatId = try await seedChat(database: context.database)
+
+        try await withRuntime(context.runtime) {
+            try await runCLI([
+                "chat", "send",
+                "--session", chatId.uuidString,
+                "--prompt", "Hello from option",
+                "--no-stream"
+            ])
+        }
+
+        let options = await context.gateway.lastSendOptions
+        #expect(options != nil)
+    }
+
     @Test("Chat send --no-tools overrides tool policy defaults")
     @MainActor
     func chatSendNoToolsOverridesPolicy() async throws {
