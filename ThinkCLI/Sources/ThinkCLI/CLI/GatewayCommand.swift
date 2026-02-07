@@ -1,6 +1,5 @@
 import ArgumentParser
 import Foundation
-import ViewModels
 
 struct GatewayCommand: AsyncParsableCommand, GlobalOptionsAccessing {
     static let configuration = CommandConfiguration(
@@ -43,26 +42,12 @@ extension GatewayCommand {
 
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
-            try await runtime.nodeMode.start(
-                configuration: NodeModeConfiguration(
-                    port: port,
-                    authToken: token
-                )
+            try await CLIGatewayService.start(
+                runtime: runtime,
+                port: port,
+                token: token,
+                once: once
             )
-
-            runtime.output.emit("Gateway server running on port \(port)")
-
-            if once {
-                await runtime.nodeMode.stop()
-                runtime.output.emit("Gateway server stopped")
-                return
-            }
-
-            do {
-                try await Task.sleep(nanoseconds: UInt64.max)
-            } catch {
-                await runtime.nodeMode.stop()
-            }
         }
     }
 
@@ -81,13 +66,7 @@ extension GatewayCommand {
 
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
-            let running = await runtime.nodeMode.status()
-            let fallback = running ? "running" : "stopped"
-            runtime.output.emit(GatewayStatus(running: running), fallback: fallback)
+            try await CLIGatewayService.status(runtime: runtime)
         }
     }
-}
-
-private struct GatewayStatus: Codable, Sendable {
-    let running: Bool
 }

@@ -1,6 +1,4 @@
-import Abstractions
 import ArgumentParser
-import Database
 import Foundation
 
 struct ChatCommand: AsyncParsableCommand, GlobalOptionsAccessing {
@@ -43,11 +41,7 @@ extension ChatCommand {
 
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
-            let sessions = try await runtime.gateway.listSessions()
-            let fallback = sessions.isEmpty
-                ? "No sessions."
-                : sessions.map { "\($0.id.uuidString)  \($0.title)" }.joined(separator: "\n")
-            runtime.output.emit(sessions, fallback: fallback)
+            try await CLIChatService.list(runtime: runtime)
         }
     }
 
@@ -69,9 +63,7 @@ extension ChatCommand {
 
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
-            let session = try await runtime.gateway.createSession(title: title)
-            let fallback = "Created session \(session.id.uuidString)"
-            runtime.output.emit(session, fallback: fallback)
+            try await CLIChatService.create(runtime: runtime, title: title)
         }
     }
 
@@ -94,9 +86,7 @@ extension ChatCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(id, field: "session")
-            let session = try await runtime.gateway.getSession(id: sessionId)
-            let fallback = "\(session.id.uuidString)  \(session.title)"
-            runtime.output.emit(session, fallback: fallback)
+            try await CLIChatService.get(runtime: runtime, sessionId: sessionId)
         }
     }
 
@@ -130,84 +120,22 @@ extension ChatCommand {
 
         @Flag(
             name: .long,
-            inversion: .prefixedNo,
-            help: "Stream output as it is generated."
+            help: "Disable output streaming for this request."
         )
-        var stream: Bool = true
+        var noStream: Bool = false
 
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
-            let identifiers = try CLIParsing.parseToolIdentifiers(tools)
-            if noTools, !identifiers.isEmpty {
-                throw ValidationError("Use either --tools or --no-tools, not both.")
-            }
-            let resolvedTools = try await resolveTools(
+            try await CLIChatService.send(
                 runtime: runtime,
                 sessionId: sessionId,
-                requested: identifiers,
-                noTools: noTools
-            )
-            let action = CLIParsing.parseAction(isImage: image, tools: resolvedTools)
-            let options = GatewaySendOptions(action: action)
-            let shouldStream = stream && !resolvedGlobal.json
-            let tracker = CLIStreamTracker()
-            let streamTask: Task<Void, Never>? = shouldStream
-                ? Task {
-                    await CLIGenerationStreamer.stream(
-                        orchestrator: runtime.orchestrator,
-                        output: runtime.output,
-                        tracker: tracker
-                    )
-                }
-                : nil
-
-            let result = try await runtime.gateway.send(
-                sessionId: sessionId,
                 input: input,
-                options: options
+                tools: tools,
+                noTools: noTools,
+                image: image,
+                stream: !noStream
             )
-
-            if let streamTask {
-                await CLIGenerationStreamer.awaitCompletion(
-                    streamTask,
-                    timeoutNanoseconds: 1_000_000_000
-                )
-            }
-
-            let didStreamText = await tracker.snapshot()
-            let fallback: String
-            if let message = result.assistantMessage {
-                fallback = message.content
-            } else {
-                fallback = "Message \(result.messageId.uuidString) sent."
-            }
-
-            if shouldStream, didStreamText {
-                runtime.output.emit("")
-            } else {
-                runtime.output.emit(result, fallback: fallback)
-            }
-        }
-
-        private func resolveTools(
-            runtime: CLIRuntime,
-            sessionId: UUID,
-            requested: Set<ToolIdentifier>,
-            noTools: Bool
-        ) async throws -> Set<ToolIdentifier> {
-            if noTools {
-                return []
-            }
-            if !requested.isEmpty {
-                return requested
-            }
-            let policy = try await runtime.database.read(
-                ToolPolicyCommands.ResolveForChat(chatId: sessionId)
-            )
-            let allowedTools = policy.allowedTools
-            let unsupported: Set<ToolIdentifier> = [.reasoning, .imageGeneration]
-            return allowedTools.subtracting(unsupported)
         }
     }
 
@@ -233,14 +161,11 @@ extension ChatCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
-            let messages = try await runtime.gateway.history(
+            try await CLIChatService.history(
+                runtime: runtime,
                 sessionId: sessionId,
-                options: GatewayHistoryOptions(limit: limit)
+                limit: limit
             )
-            let fallback = messages.isEmpty
-                ? "No messages."
-                : messages.map { "\($0.role.rawValue): \($0.content)" }.joined(separator: "\n")
-            runtime.output.emit(messages, fallback: fallback)
         }
     }
 
@@ -266,10 +191,11 @@ extension ChatCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
-            _ = try await runtime.database.write(
-                ChatCommands.Rename(chatId: sessionId, newName: title)
+            try await CLIChatService.rename(
+                runtime: runtime,
+                sessionId: sessionId,
+                title: title
             )
-            runtime.output.emit("Renamed session \(sessionId.uuidString)")
         }
     }
 
@@ -292,8 +218,7 @@ extension ChatCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let sessionId = try CLIParsing.parseUUID(session, field: "session")
-            _ = try await runtime.database.write(ChatCommands.Delete(id: sessionId))
-            runtime.output.emit("Deleted session \(sessionId.uuidString)")
+            try await CLIChatService.delete(runtime: runtime, sessionId: sessionId)
         }
     }
 }

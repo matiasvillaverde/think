@@ -1,5 +1,4 @@
 import ArgumentParser
-import Database
 import Foundation
 
 struct SkillsCommand: AsyncParsableCommand, GlobalOptionsAccessing {
@@ -35,12 +34,7 @@ extension SkillsCommand {
         @MainActor
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
-            let skills = try await runtime.database.read(SkillCommands.GetAll())
-            let summaries = skills.map(SkillSummary.init(skill:))
-            let fallback = summaries.isEmpty
-                ? "No skills."
-                : summaries.map { "\($0.id.uuidString)  \($0.name)" }.joined(separator: "\n")
-            runtime.output.emit(summaries, fallback: fallback)
+            try await CLISkillsService.list(runtime: runtime)
         }
     }
 
@@ -82,18 +76,15 @@ extension SkillsCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let chatId = try chat.map { try CLIParsing.parseUUID($0, field: "chat") }
-            let skillId = try await runtime.database.write(
-                SkillCommands.Create(
-                    name: name,
-                    skillDescription: description,
-                    instructions: instructions,
-                    tools: tools,
-                    isSystem: false,
-                    isEnabled: !disabled,
-                    chatId: chatId
-                )
+            try await CLISkillsService.create(
+                runtime: runtime,
+                name: name,
+                description: description,
+                instructions: instructions,
+                tools: tools,
+                chatId: chatId,
+                disabled: disabled
             )
-            runtime.output.emit("Created skill \(skillId.uuidString)")
         }
     }
 
@@ -116,10 +107,7 @@ extension SkillsCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let skillId = try CLIParsing.parseUUID(id, field: "skill")
-            _ = try await runtime.database.write(
-                SkillCommands.SetEnabled(skillId: skillId, isEnabled: true)
-            )
-            runtime.output.emit("Enabled skill \(skillId.uuidString)")
+            try await CLISkillsService.enable(runtime: runtime, skillId: skillId)
         }
     }
 
@@ -142,10 +130,7 @@ extension SkillsCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let skillId = try CLIParsing.parseUUID(id, field: "skill")
-            _ = try await runtime.database.write(
-                SkillCommands.SetEnabled(skillId: skillId, isEnabled: false)
-            )
-            runtime.output.emit("Disabled skill \(skillId.uuidString)")
+            try await CLISkillsService.disable(runtime: runtime, skillId: skillId)
         }
     }
 }

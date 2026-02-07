@@ -1,6 +1,5 @@
 import Abstractions
 import ArgumentParser
-import Database
 import Foundation
 
 struct ModelsCommand: AsyncParsableCommand, GlobalOptionsAccessing {
@@ -42,12 +41,7 @@ extension ModelsCommand {
 
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
-            let models = try await runtime.database.read(ModelCommands.FetchAll())
-            let summaries = models.map(ModelSummary.init(model:))
-            let fallback = summaries.isEmpty
-                ? "No models."
-                : summaries.map { "\($0.id.uuidString)  \($0.location)" }.joined(separator: "\n")
-            runtime.output.emit(summaries, fallback: fallback)
+            try await CLIModelsService.list(runtime: runtime)
         }
     }
 
@@ -70,11 +64,7 @@ extension ModelsCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let modelId = try CLIParsing.parseUUID(id, field: "model")
-            let model = try await runtime.database.read(
-                ModelCommands.GetSendableModel(id: modelId)
-            )
-            let summary = ModelSummary(model: model)
-            runtime.output.emit(summary, fallback: "\(summary.id.uuidString)  \(summary.location)")
+            try await CLIModelsService.info(runtime: runtime, modelId: modelId)
         }
     }
 
@@ -99,50 +89,12 @@ extension ModelsCommand {
 
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
-            let explorer = runtime.downloader.explorer()
-            let discovered = try await explorer.discoverModel(modelId)
-
-            let preferredBackend: SendableModel.Backend?
-            if let backend {
-                preferredBackend = try CLIParsing.parseBackend(backend)
-            } else {
-                preferredBackend = nil
-            }
-
-            let sendable = try await explorer.prepareForDownload(
-                discovered,
+            let preferredBackend = try backend.map(CLIParsing.parseBackend(_:))
+            try await CLIModelsService.download(
+                runtime: runtime,
+                repositoryId: modelId,
                 preferredBackend: preferredBackend
             )
-
-            let createCommand = await MainActor.run {
-                ModelCommands.CreateFromDiscovery(
-                    discoveredModel: discovered,
-                    sendableModel: sendable
-                )
-            }
-            _ = try await runtime.database.write(createCommand)
-
-            runtime.output.emit("Downloading \(sendable.location)...")
-
-            for try await event in runtime.downloader.download(sendableModel: sendable) {
-                switch event {
-                case .progress(let progress):
-                    try await runtime.database.write(
-                        ModelCommands.UpdateModelDownloadProgress(
-                            id: sendable.id,
-                            progress: progress.fractionCompleted
-                        )
-                    )
-                    runtime.output.emit(progress.description)
-                case .completed(let info):
-                    _ = try await runtime.database.write(
-                        ModelCommands.UpdateModelDownloadProgress(id: sendable.id, progress: 1.0)
-                    )
-                    runtime.output.emit(
-                        "Download completed: \(info.name) (\(info.backend.rawValue))"
-                    )
-                }
-            }
         }
     }
 
@@ -187,19 +139,15 @@ extension ModelsCommand {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let modelType = try CLIParsing.parseModelType(type)
             let architectureValue = CLIParsing.parseArchitecture(architecture)
-            let display = displayName ?? name
-            let displayDescription = description ?? "Remote model"
-            let modelId = try await runtime.database.write(
-                ModelCommands.CreateRemoteModel(
-                    name: name,
-                    displayName: display,
-                    displayDescription: displayDescription,
-                    location: location,
-                    type: modelType,
-                    architecture: architectureValue
-                )
+            try await CLIModelsService.addRemote(
+                runtime: runtime,
+                name: name,
+                displayName: displayName,
+                description: description,
+                location: location,
+                type: modelType,
+                architecture: architectureValue
             )
-            runtime.output.emit("Added remote model \(modelId.uuidString)")
         }
     }
 
@@ -245,20 +193,17 @@ extension ModelsCommand {
             let backendValue = try CLIParsing.parseBackend(backend)
             let modelType = try CLIParsing.parseModelType(type)
             let architectureValue = CLIParsing.parseArchitecture(architecture)
-            let modelId = try await runtime.database.write(
-                ModelCommands.CreateLocalModel(
-                    name: name,
-                    backend: backendValue,
-                    type: modelType,
-                    parameters: parameters,
-                    ramNeeded: ramNeeded,
-                    size: size,
-                    architecture: architectureValue,
-                    locationLocal: path,
-                    locationBookmark: nil
-                )
+            try await CLIModelsService.addLocal(
+                runtime: runtime,
+                name: name,
+                path: path,
+                backend: backendValue,
+                type: modelType,
+                parameters: parameters,
+                ramNeeded: ramNeeded,
+                size: size,
+                architecture: architectureValue
             )
-            runtime.output.emit("Added local model \(modelId.uuidString)")
         }
     }
 
@@ -281,24 +226,7 @@ extension ModelsCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let modelId = try CLIParsing.parseUUID(id, field: "model")
-            let sendable = try await runtime.database.read(
-                ModelCommands.GetSendableModel(id: modelId)
-            )
-
-            if sendable.locationKind == .huggingFace {
-                do {
-                    try await runtime.downloader.delete(modelLocation: sendable.location)
-                } catch {
-                    runtime.output.emit(
-                        "Warning: failed to delete files (\(error.localizedDescription))"
-                    )
-                }
-            }
-
-            _ = try await runtime.database.write(
-                ModelCommands.DeleteModel(model: modelId)
-            )
-            runtime.output.emit("Removed model \(modelId.uuidString)")
+            try await CLIModelsService.remove(runtime: runtime, modelId: modelId)
         }
     }
 }

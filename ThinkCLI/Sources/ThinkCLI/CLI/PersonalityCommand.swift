@@ -1,6 +1,4 @@
-import Abstractions
 import ArgumentParser
-import Database
 import Foundation
 
 struct PersonalityCommand: AsyncParsableCommand, GlobalOptionsAccessing {
@@ -36,12 +34,7 @@ extension PersonalityCommand {
         @MainActor
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
-            let personalities = try await runtime.database.read(PersonalityCommands.GetAll())
-            let summaries = personalities.map(PersonalitySummary.init(personality:))
-            let fallback = summaries.isEmpty
-                ? "No personalities."
-                : summaries.map { "\($0.id.uuidString)  \($0.name)" }.joined(separator: "\n")
-            runtime.output.emit(summaries, fallback: fallback)
+            try await CLIPersonalityService.list(runtime: runtime)
         }
     }
 
@@ -82,15 +75,13 @@ extension PersonalityCommand {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let categoryValue = try category
                 .map(CLIParsing.parsePersonalityCategory(_:)) ?? .productivity
-            let personalityId = try await runtime.database.write(
-                PersonalityCommands.CreateCustom(
-                    name: name,
-                    description: description,
-                    customSystemInstruction: instructions,
-                    category: categoryValue
-                )
+            try await CLIPersonalityService.create(
+                runtime: runtime,
+                name: name,
+                description: description,
+                instructions: instructions,
+                category: categoryValue
             )
-            runtime.output.emit("Created personality \(personalityId.uuidString)")
         }
     }
 
@@ -137,16 +128,14 @@ extension PersonalityCommand {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let personalityId = try CLIParsing.parseUUID(id, field: "personality")
             let categoryValue = try category.map(CLIParsing.parsePersonalityCategory(_:))
-            _ = try await runtime.database.write(
-                PersonalityCommands.Update(
-                    personalityId: personalityId,
-                    name: name,
-                    description: description,
-                    systemInstruction: instructions,
-                    category: categoryValue
-                )
+            try await CLIPersonalityService.update(
+                runtime: runtime,
+                personalityId: personalityId,
+                name: name,
+                description: description,
+                instructions: instructions,
+                category: categoryValue
             )
-            runtime.output.emit("Updated personality \(personalityId.uuidString)")
         }
     }
 
@@ -169,10 +158,7 @@ extension PersonalityCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let personalityId = try CLIParsing.parseUUID(id, field: "personality")
-            _ = try await runtime.database.write(
-                PersonalityCommands.Delete(personalityId: personalityId)
-            )
-            runtime.output.emit("Deleted personality \(personalityId.uuidString)")
+            try await CLIPersonalityService.delete(runtime: runtime, personalityId: personalityId)
         }
     }
 
@@ -195,10 +181,7 @@ extension PersonalityCommand {
         func run() async throws {
             let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
             let personalityId = try CLIParsing.parseUUID(id, field: "personality")
-            let chatId = try await runtime.database.write(
-                PersonalityCommands.GetChat(personalityId: personalityId)
-            )
-            runtime.output.emit("Personality chat \(chatId.uuidString)")
+            try await CLIPersonalityService.chat(runtime: runtime, personalityId: personalityId)
         }
     }
 }
