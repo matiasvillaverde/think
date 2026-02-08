@@ -49,7 +49,7 @@ public enum ImageCommands {
             )
 
             guard let configuration = try context.fetch(descriptorConfig).first else {
-                throw DatabaseError.messageNotFound
+                throw DatabaseError.configurationNotFound
             }
 
             if let responseImage = message.responseImage {
@@ -114,7 +114,7 @@ public enum ImageCommands {
             )
             
             guard let configuration = try context.fetch(descriptorConfig).first else {
-                throw DatabaseError.messageNotFound
+                throw DatabaseError.configurationNotFound
             }
             
             if let responseImage = message.responseImage {

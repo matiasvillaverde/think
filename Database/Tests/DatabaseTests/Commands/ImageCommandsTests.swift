@@ -186,6 +186,47 @@ struct ImageCommandsTests {
                     ))
                 }
             }
+
+            @Test("Add response with nonexistent configuration fails")
+            @MainActor
+            func addResponseNonexistentConfiguration() async throws {
+                // Given
+                let config = DatabaseConfiguration(
+                    isStoredInMemoryOnly: true,
+                    allowsSave: true,
+                    ragFactory: MockRagFactory(mockRag: MockRagging())
+                )
+
+                let database = try Database.new(configuration: config)
+                try await addRequiredModels(database)
+                let defaultPersonalityId = try await getDefaultPersonalityId(database)
+                try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
+                let chat = try await database.read(ChatCommands.GetFirst())
+
+                // Create a message so we have a valid messageId.
+                try await database.write(
+                    MessageCommands.Create(
+                        chatId: chat.id,
+                        userInput: "Generate an image",
+                        isDeepThinker: false
+                    )
+                )
+                guard let messageId = chat.messages.first?.id else {
+                    throw DatabaseError.messageNotFound
+                }
+
+                // When/Then
+                await #expect(throws: DatabaseError.configurationNotFound) {
+                    try await database.write(
+                        ImageCommands.AddResponse(
+                            messageId: messageId,
+                            imageData: Data("img".utf8),
+                            configuration: UUID(),
+                            prompt: "Test prompt"
+                        )
+                    )
+                }
+            }
         }
 
         @Test("Get response from nonexistent message fails")
