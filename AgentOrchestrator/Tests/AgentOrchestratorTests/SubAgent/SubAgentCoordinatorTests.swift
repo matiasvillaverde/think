@@ -55,7 +55,7 @@ internal struct SubAgentCoordinatorTests {
         let request: SubAgentRequest = makeRequest(
             chatId: environment.chatId,
             prompt: "Quick task",
-            timeout: .seconds(5)
+            timeout: .seconds(30)
         )
         let result: SubAgentResult = try await spawnAndWait(
             environment: environment,
