@@ -68,8 +68,8 @@ public enum ModelDownloadError: LocalizedError, Sendable, Equatable {
         case .fileSystemError:
             return "File system error"
 
-        case .unknown:
-            return "Unknown error"
+        case .unknown(let message):
+            return "Unknown error: \(message)"
         }
     }
 
