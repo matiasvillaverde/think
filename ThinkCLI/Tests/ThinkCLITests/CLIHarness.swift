@@ -68,18 +68,47 @@ struct TestRuntime {
     }
 }
 
+actor RuntimeFactoryGate {
+    static let shared = RuntimeFactoryGate()
+
+    private var locked = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+
+    func acquire() async {
+        if !locked {
+            locked = true
+            return
+        }
+        await withCheckedContinuation { cont in
+            waiters.append(cont)
+        }
+    }
+
+    func release() {
+        if waiters.isEmpty {
+            locked = false
+            return
+        }
+        let cont = waiters.removeFirst()
+        cont.resume()
+    }
+}
+
 @MainActor
 func withRuntime(
     _ runtime: CLIRuntime,
     operation: () async throws -> Void
 ) async throws {
+    await RuntimeFactoryGate.shared.acquire()
     let previous = await CLIRuntimeProvider.getFactory()
     await CLIRuntimeProvider.setFactory({ _ in runtime })
     do {
         try await operation()
         await CLIRuntimeProvider.setFactory(previous)
+        await RuntimeFactoryGate.shared.release()
     } catch {
         await CLIRuntimeProvider.setFactory(previous)
+        await RuntimeFactoryGate.shared.release()
         throw error
     }
 }

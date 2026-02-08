@@ -28,6 +28,44 @@ struct ThinkCLICommandTests {
         #expect(context.output.lines.contains { $0.contains("Gateway server running") })
     }
 
+    @Test("OpenClaw add/list/use/delete stores token in secure storage")
+    func openClawCommands() async throws {
+        let context = try await TestRuntime.make()
+        let storage = InMemorySecureStorage()
+
+        try await withRuntime(context.runtime, operation: {
+            try await OpenClawSecureStorageProvider.withFactory({ storage }, operation: {
+                try await runCLI([
+                    "openclaw", "upsert",
+                    "--name", "Test Gateway",
+                    "--url", "ws://example.invalid:18789",
+                    "--token", "token-123",
+                    "--activate"
+                ])
+
+                try await runCLI(["openclaw", "list"])
+
+                let instances = try await context.database.read(
+                    SettingsCommands.FetchOpenClawInstances()
+                )
+                #expect(instances.count == 1)
+                let id = instances[0].id
+
+                let key = "openclaw.instance.\(id.uuidString).shared_token"
+                let stored = try await storage.retrieve(forKey: key)
+                #expect(String(data: stored ?? Data(), encoding: .utf8) == "token-123")
+
+                try await runCLI(["openclaw", "use", "--id", id.uuidString])
+                try await runCLI(["openclaw", "delete", "--id", id.uuidString])
+            })
+        })
+
+        #expect(context.output.lines.contains { $0.contains("OpenClaw instance saved") })
+        #expect(context.output.lines.contains { $0.contains("Test Gateway") })
+        #expect(context.output.lines.contains { $0.contains("Active OpenClaw instance set") })
+        #expect(context.output.lines.contains { $0.contains("OpenClaw instance deleted") })
+    }
+
     @Test("Chat list/create/get/send/history")
     func chatCommands() async throws {
         let context = try await TestRuntime.make()
@@ -165,6 +203,91 @@ struct ThinkCLICommandTests {
 
         #expect(context.output.inline.isEmpty)
         #expect(context.output.lines.contains { $0.contains("\"type\":\"stream\"") })
+    }
+
+    @Test("Chat send emits heartbeat JSON lines when --no-stream and heartbeat enabled")
+    func chatSendEmitsHeartbeatsJsonLinesNoStream() async throws {
+        let gateway = StubGateway()
+        // Delay long enough to ensure at least one heartbeat at 1s.
+        await gateway.setSendDelayNanoseconds(1_500_000_000)
+        await gateway.setSendResult(
+            GatewaySendResult(
+                messageId: UUID(),
+                assistantMessage: GatewayMessage(
+                    id: UUID(),
+                    role: .assistant,
+                    content: "Response",
+                    createdAt: Date()
+                )
+            )
+        )
+        let context = try await TestRuntime.make(
+            gateway: gateway,
+            outputFormat: .jsonLines
+        )
+        let sessionId = UUID()
+
+        try await withRuntime(context.runtime) {
+            try await runCLI([
+                "chat", "send",
+                "--session", sessionId.uuidString,
+                "--no-stream",
+                "--heartbeat-seconds", "1",
+                "Hello"
+            ])
+        }
+
+        // Should include heartbeat lines while waiting for send to complete.
+        #expect(context.output.lines.contains { $0.contains("\"type\":\"heartbeat\"") })
+        // Final result should still be emitted.
+        #expect(context.output.lines.contains { $0.contains("\"messageId\"") })
+    }
+
+    @Test("Chat send respects --timeout-seconds")
+    func chatSendTimeout() async throws {
+        let gateway = StubGateway()
+        // Delay longer than timeout.
+        await gateway.setSendDelayNanoseconds(2_000_000_000)
+        let context = try await TestRuntime.make(
+            gateway: gateway,
+            outputFormat: .jsonLines
+        )
+        let sessionId = UUID()
+
+        do {
+            try await withRuntime(context.runtime) {
+                try await runCLI([
+                    "chat", "send",
+                    "--session", sessionId.uuidString,
+                    "--no-stream",
+                    "--heartbeat-seconds", "1",
+                    "--timeout-seconds", "1",
+                    "Hello"
+                ])
+            }
+            #expect(Bool(false), "Expected a timeout error.")
+        } catch let err as CLIError {
+            #expect(err.message.contains("Timed out during chat send"))
+            #expect(err.exitCode == .unavailable)
+        }
+    }
+
+    @Test("Chat stop calls orchestrator stop")
+    func chatStopCallsOrchestrator() async throws {
+        let orchestrator = MockAgentOrchestrator()
+        let context = try await TestRuntime.make(orchestrator: orchestrator)
+        let sessionId = UUID()
+
+        try await withRuntime(context.runtime) {
+            try await runCLI([
+                "chat", "stop",
+                "--session", sessionId.uuidString
+            ])
+        }
+
+        let stopCount = await orchestrator.stopCalls.count
+        #expect(stopCount == 1)
+        #expect(context.output.lines.contains { $0.contains("Stop requested") })
     }
 
     @Test("Chat send defaults to tool policy when no tools are provided")
