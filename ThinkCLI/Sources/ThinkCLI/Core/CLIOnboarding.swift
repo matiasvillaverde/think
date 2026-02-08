@@ -91,6 +91,8 @@ struct CLIOnboarding {
                 sendableModel: sendable
             )
         }
+        // The model may already exist (seeded defaults) even if the SendableModel has a different
+        // UUID. Use the stored UUID for both progress updates and download storage.
         let modelId = try await runtime.database.write(createCommand)
 
         var updated = config
@@ -100,21 +102,40 @@ struct CLIOnboarding {
             return updated
         }
 
-        runtime.output.emit("Downloading \(sendable.location)...")
+        let storedSendable = SendableModel(
+            id: modelId,
+            ramNeeded: sendable.ramNeeded,
+            modelType: sendable.modelType,
+            location: sendable.location,
+            architecture: sendable.architecture,
+            backend: sendable.backend,
+            locationKind: sendable.locationKind,
+            locationLocal: sendable.locationLocal,
+            locationBookmark: sendable.locationBookmark,
+            detailedMemoryRequirements: sendable.detailedMemoryRequirements,
+            metadata: sendable.metadata
+        )
 
-        for try await event in runtime.downloader.download(sendableModel: sendable) {
+        runtime.output.emit("Downloading \(storedSendable.location)...")
+
+        var lastProgressPercent: Int = -1
+        for try await event in runtime.downloader.download(sendableModel: storedSendable) {
             switch event {
             case .progress(let progress):
                 try await runtime.database.write(
                     ModelCommands.UpdateModelDownloadProgress(
-                        id: sendable.id,
+                        id: modelId,
                         progress: progress.fractionCompleted
                     )
                 )
-                runtime.output.emit(progress.description)
+                let percent = Int(progress.fractionCompleted * 100)
+                if percent != lastProgressPercent {
+                    lastProgressPercent = percent
+                    runtime.output.emit(progress.description)
+                }
             case .completed(let info):
                 _ = try await runtime.database.write(
-                    ModelCommands.UpdateModelDownloadProgress(id: sendable.id, progress: 1.0)
+                    ModelCommands.UpdateModelDownloadProgress(id: modelId, progress: 1.0)
                 )
                 runtime.output.emit(
                     "Download completed: \(info.name) (\(info.backend.rawValue))"
