@@ -27,7 +27,9 @@ struct FileCommandsTests {
             let chat = try await database.read(ChatCommands.GetFirst())
 
             // Create a temporary file
-            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("test.txt")
+            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                "test-\(UUID().uuidString).txt"
+            )
             try "Test content".write(to: fileURL, atomically: true, encoding: .utf8)
 
             // When
@@ -63,7 +65,9 @@ struct FileCommandsTests {
             let chat = try await database.read(ChatCommands.GetFirst())
 
             // Create and add a file
-            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("delete-test.txt")
+            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                "delete-test-\(UUID().uuidString).txt"
+            )
             try "Content to delete".write(to: fileURL, atomically: true, encoding: .utf8)
 
             try await database.write(FileCommands.Create(
@@ -110,7 +114,9 @@ struct FileCommandsTests {
             let chat = try await database.read(ChatCommands.GetFirst())
 
             // Invalid URL that doesn't exist
-            let invalidURL = FileManager.default.temporaryDirectory.appendingPathComponent("nonexistent.txt")
+            let invalidURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                "nonexistent-\(UUID().uuidString).txt"
+            )
 
             // When/Then
             await #expect(throws: Error.self) {
@@ -134,7 +140,9 @@ struct FileCommandsTests {
             let database = try Database.new(configuration: config)
 
             // Create a temporary file
-            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("orphan.txt")
+            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                "orphan-\(UUID().uuidString).txt"
+            )
             try "Orphan content".write(to: fileURL, atomically: true, encoding: .utf8)
 
             // When/Then
@@ -188,7 +196,9 @@ struct FileCommandsTests {
             let chat = try await database.read(ChatCommands.GetFirst())
 
             // Create a file
-            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("progress-test.txt")
+            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                "progress-test-\(UUID().uuidString).txt"
+            )
             try "Progress test content".write(to: fileURL, atomically: true, encoding: .utf8)
 
             try await database.write(FileCommands.Create(
@@ -244,7 +254,9 @@ struct FileCommandsTests {
             var fileURLs: [URL] = []
 
             for index in 0..<fileCount {
-                let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("concurrent-\(index).txt")
+                let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                    "concurrent-\(UUID().uuidString)-\(index).txt"
+                )
                 try "Content \(index)".write(to: fileURL, atomically: true, encoding: .utf8)
                 fileURLs.append(fileURL)
             }
