@@ -8,6 +8,57 @@ import DataAssets
 
 // MARK: - Personality Commands
 public enum PersonalityCommands {
+    /// Creates a new non-default system personality intended to back a single chat session.
+    ///
+    /// Rationale: `Personality.chat` is a 1:1 relationship. Reusing the default personality would
+    /// cause "chat create" to reuse/clear the existing chat instead of creating a new session.
+    public struct CreateSessionPersonality: WriteCommand {
+        public typealias Result = UUID
+        // Mark as custom + attach to the user so AppInitialize personality syncing doesn't
+        // treat it as a system personality and delete it (which would cascade-delete its chat).
+        public var requiresUser: Bool { true }
+        public var requiresRag: Bool { false }
+
+        private let title: String?
+
+        public init(title: String?) {
+            self.title = title
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            guard let userId else {
+                throw DatabaseError.userNotFound
+            }
+            let user = try context.getUser(id: userId)
+
+            let trimmedTitle = title?.trimmingCharacters(in: .whitespacesAndNewlines)
+            let name: String
+            if let trimmedTitle, !trimmedTitle.isEmpty {
+                name = trimmedTitle
+            } else {
+                name = "Session \(UUID().uuidString.prefix(8))"
+            }
+
+            let personality = Personality(
+                systemInstruction: .englishAssistant,
+                name: name,
+                description: "Ephemeral session assistant",
+                imageName: "think",
+                category: .productivity,
+                isDefault: false,
+                isCustom: true,
+                user: user
+            )
+            context.insert(personality)
+            try context.save()
+            return personality.id
+        }
+    }
+
     public struct GetDefault: ReadCommand {
         public typealias Result = UUID
         public var requiresUser: Bool { false }

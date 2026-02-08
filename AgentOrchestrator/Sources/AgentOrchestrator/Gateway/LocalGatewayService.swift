@@ -18,7 +18,12 @@ public final actor LocalGatewayService: GatewayServicing {
     }
 
     public func createSession(title: String?) async throws -> GatewaySession {
-        let personalityId: UUID = try await database.write(PersonalityCommands.WriteDefault())
+        // Create a new personality per session because Personality.chat is a 1:1 relationship.
+        // Reusing the default personality would cause subsequent "create session" calls
+        // to reuse and clear the same chat.
+        let personalityId: UUID = try await database.write(
+            PersonalityCommands.CreateSessionPersonality(title: title)
+        )
         let chatId: UUID = try await database.write(
             ChatCommands.Create(personality: personalityId)
         )

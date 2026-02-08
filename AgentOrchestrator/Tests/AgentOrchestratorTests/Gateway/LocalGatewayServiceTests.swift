@@ -21,6 +21,21 @@ internal struct LocalGatewayServiceTests {
         #expect(sessions.contains { $0.id == session.id })
     }
 
+    @Test("Create session creates unique sessions")
+    internal func createSessionCreatesUniqueSessions() async throws {
+        let database: Database = try await makeDatabase()
+        let gateway: LocalGatewayService = makeGateway(database: database)
+
+        let sessionOne: GatewaySession = try await gateway.createSession(title: "One")
+        let sessionTwo: GatewaySession = try await gateway.createSession(title: "Two")
+        let sessions: [GatewaySession] = try await gateway.listSessions()
+
+        #expect(sessionOne.id != sessionTwo.id)
+        #expect(sessions.count == 2)
+        #expect(sessions.contains { $0.id == sessionOne.id })
+        #expect(sessions.contains { $0.id == sessionTwo.id })
+    }
+
     @Test("Send returns assistant response and history includes user/assistant")
     internal func sendReturnsResponse() async throws {
         let database: Database = try await makeDatabase()
