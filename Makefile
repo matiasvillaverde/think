@@ -141,28 +141,30 @@ build-visionos:
 # CI builds (compile only, no signing)
 build-macos-ci:
 	@echo "🚀 Building Think macOS (CI, no signing)..."
-	@xcodebuild build \
+	@/bin/bash -lc "set -o pipefail; xcodebuild build \
 		-workspace $(WORKSPACE) \
 		-scheme Think \
 		-destination 'platform=macOS' \
 		-configuration Debug \
+		ENABLE_USER_SCRIPT_SANDBOXING=NO \
 		$(XCODE_THIRD_PARTY_WARNING_SETTINGS) \
 		$(XCODE_CI_SETTINGS) \
 		$(XCODE_FLAGS) \
-		| xcbeautify --is-ci
+		| xcbeautify --is-ci"
 	@echo "✅ macOS CI build complete"
 
 build-ios-ci:
 	@echo "🚀 Building Think iOS (CI, no signing)..."
-	@xcodebuild build \
+	@/bin/bash -lc "set -o pipefail; xcodebuild build \
 		-workspace $(WORKSPACE) \
 		-scheme Think \
 		-destination 'generic/platform=iOS' \
 		-configuration Debug \
+		ENABLE_USER_SCRIPT_SANDBOXING=NO \
 		$(XCODE_THIRD_PARTY_WARNING_SETTINGS) \
 		$(XCODE_CI_SETTINGS) \
 		$(XCODE_FLAGS) \
-		| xcbeautify --is-ci
+		| xcbeautify --is-ci"
 	@echo "✅ iOS CI build complete"
 
 build-ios-sim:
@@ -191,15 +193,16 @@ build-ios-sim:
 
 build-visionos-ci:
 	@echo "🚀 Building ThinkVision visionOS (CI, no signing)..."
-	@xcodebuild build \
+	@/bin/bash -lc "set -o pipefail; xcodebuild build \
 		-workspace $(WORKSPACE) \
 		-scheme ThinkVision \
 		-destination 'generic/platform=visionOS' \
 		-configuration Debug \
+		ENABLE_USER_SCRIPT_SANDBOXING=NO \
 		$(XCODE_THIRD_PARTY_WARNING_SETTINGS) \
 		$(XCODE_CI_SETTINGS) \
 		$(XCODE_FLAGS) \
-		| xcbeautify --is-ci
+		| xcbeautify --is-ci"
 	@echo "✅ visionOS CI build complete"
 
 # Run Think app on macOS
