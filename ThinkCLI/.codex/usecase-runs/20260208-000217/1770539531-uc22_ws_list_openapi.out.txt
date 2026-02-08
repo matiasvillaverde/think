@@ -1,0 +1,6 @@
+{
+  "id" : "9FE2227F-E9A5-4CB5-B974-93B7DC598A3D",
+  "requestId" : "042C1F6E-4E09-4D1B-B8BE-4EBFD53C4AC9",
+  "result" : "[\"openapi\\\/.spectral.yaml\",\"openapi\\\/README.md\",\"openapi\\\/.gitignore\",\"openapi\\\/openapi.json\"]",
+  "toolName" : "workspace"
+}

@@ -1,0 +1,8 @@
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1008 checkpointed: 1008
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1006 checkpointed: 1006
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1002 checkpointed: 1002
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1000 checkpointed: 1000
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1007 checkpointed: 1007
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1014 checkpointed: 1014
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1020 checkpointed: 1020
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1012 checkpointed: 1012

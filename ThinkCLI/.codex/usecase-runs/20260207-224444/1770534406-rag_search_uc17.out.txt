@@ -1,0 +1,9 @@
+[
+  {
+    "id" : "F76D6CD3-D093-4FE8-A889-57098E44CB52",
+    "keywords" : "openapi audit summary paths",
+    "rowId" : 1,
+    "score" : 5.32005500793457,
+    "text" : "uc17 openapi audit summary: paths=136"
+  }
+]

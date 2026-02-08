@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo schedules create --title 'uc20 temp' --prompt temp --cron '*/30 * * * *' --chat 426B749A-13EA-4CA4-AE68-799EA95813AF --disabled --format json",
+  "duration_ms": 177,
+  "exit_code": 0,
+  "name": "uc20_schedule_create",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770516530-uc20_schedule_create.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770516530-uc20_schedule_create.out.txt"
+}

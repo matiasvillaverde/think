@@ -1,0 +1,8 @@
+{
+  "defaultModelId" : "66E10993-D747-C97E-3CFC-58E752214B9E",
+  "lastOnboardedAt" : "2026-02-08T01:21:33Z",
+  "preferredSkills" : [
+    "nonexistent-skill"
+  ],
+  "workspacePath" : "\/Users\/mati\/Code\/Nell-Technologies\/monorepo"
+}

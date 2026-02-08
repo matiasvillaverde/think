@@ -1,0 +1,432 @@
+[
+  {
+    "category" : "entertainment",
+    "description" : "Interactive adventure guide and game narrator",
+    "id" : "46C902A0-E149-4980-8E30-6858B270E1E7",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Game Master"
+  },
+  {
+    "category" : "education",
+    "description" : "Clear mathematical explanations and problem-solving",
+    "id" : "4882ACCD-0C93-424C-AEB1-5C326ED2FF2D",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Math Teacher"
+  },
+  {
+    "category" : "personal",
+    "description" : "Thoughtful guidance for personal connections",
+    "id" : "7AF791AA-CCB2-4578-8AB5-1BD86FB92F9B",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Relationship Advisor"
+  },
+  {
+    "category" : "personal",
+    "description" : "Empathetic listener and emotional support",
+    "id" : "0FB5313B-A5BB-49D9-BEE0-F0CB68581094",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Supportive Friend"
+  },
+  {
+    "category" : "creative",
+    "description" : "Imaginative tales and narrative adventures",
+    "id" : "293F6DAD-1F47-4676-82AE-D9ACA4ECB077",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Storyteller"
+  },
+  {
+    "category" : "health",
+    "description" : "Holistic health and mindfulness guidance",
+    "id" : "C00DBAFF-5314-4DDD-AB43-015D6651141B",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Wellness Advisor"
+  },
+  {
+    "category" : "personal",
+    "description" : "Goal-setting and personal development mentor",
+    "id" : "B6743296-4586-4D8E-A70F-65BE25AFABBD",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Life Coach"
+  },
+  {
+    "category" : "lifestyle",
+    "description" : "Destination expertise and travel planning",
+    "id" : "A1A1BDA6-15F7-4FD7-BEBA-CC5A376E62DA",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Travel Guide"
+  },
+  {
+    "category" : "lifestyle",
+    "description" : "Your trendy friend who keeps you updated",
+    "id" : "1D28CABA-60C2-415C-A8F7-A51BC1DE1CE2",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Gen Z Bestie"
+  },
+  {
+    "category" : "education",
+    "description" : "Historical insights and contextual analysis",
+    "id" : "69BFEF3C-40D3-4448-8CA3-3EFBFEE53664",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Historian"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "A61C9369-6044-4C31-9482-414642F3820A",
+    "description" : "A helpful and knowledgeable assistant for everyday tasks",
+    "id" : "3CF30D2A-BE91-40CB-883B-D928B2CBED8E",
+    "isCustom" : false,
+    "isDefault" : true,
+    "name" : "General Assistant"
+  },
+  {
+    "category" : "productivity",
+    "description" : "Expert code analysis and improvement suggestions",
+    "id" : "BA862D45-DF5C-4250-9E17-CE0574693E5C",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Code Reviewer"
+  },
+  {
+    "category" : "personal",
+    "description" : "Deep thoughts and existential exploration",
+    "id" : "89B3EC11-DDC5-40BF-8234-7933A01CD6BC",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Philosopher"
+  },
+  {
+    "category" : "lifestyle",
+    "description" : "Content strategy and digital presence optimization",
+    "id" : "D1CB9359-0C34-4E67-A38A-D5E37C23B49B",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Social Media Expert"
+  },
+  {
+    "category" : "health",
+    "description" : "Healthy eating guidance and meal planning",
+    "id" : "3D6A1155-2B73-48E9-8C5D-518721F5D274",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Nutrition Expert"
+  },
+  {
+    "category" : "creative",
+    "description" : "Script development and cinematic storytelling",
+    "id" : "6B094E19-1914-44DE-B988-97D0126E74A1",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Screenwriter"
+  },
+  {
+    "category" : "education",
+    "description" : "Accurate translations and language learning support",
+    "id" : "B02F46DB-677C-4733-87C3-F4A2F164BF47",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Language Translator"
+  },
+  {
+    "category" : "entertainment",
+    "description" : "Strategic chess analysis and game companion",
+    "id" : "BC96B5F0-C038-4E47-B5F8-E40BEAEC13C3",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Chess Player"
+  },
+  {
+    "category" : "creative",
+    "description" : "Creative writing mentor and storytelling guide",
+    "id" : "BA57B44F-92D9-49A8-88EB-28D2466B9A4B",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Writing Coach"
+  },
+  {
+    "category" : "productivity",
+    "description" : "Cybersecurity guidance and threat assessment",
+    "id" : "23D35D8E-CC5A-4302-BAB4-406C55BF0C77",
+    "isCustom" : false,
+    "isDefault" : false,
+    "name" : "Security Expert"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "761644CA-67E9-47FD-B86E-5F102ACBB0E7",
+    "description" : "Ephemeral session assistant",
+    "id" : "039AD5D6-0613-4559-8D34-9B0A383109B0",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc1-bootstrap"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "75CBCDE7-B9D9-43E1-883F-4298FD2258F5",
+    "description" : "Ephemeral session assistant",
+    "id" : "7EA16D46-8FD2-4C68-ADDF-61CD3538020A",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc2-audit"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "6BCFBB1F-55FA-4C3A-845B-4EE3BC69DE2B",
+    "description" : "Ephemeral session assistant",
+    "id" : "4FF3C6FC-AF5D-49D4-9799-0A30D1BB9AF0",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc3-zero-trust"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "8703B2C9-1C9D-48A2-988F-EFC0A95BEFA2",
+    "description" : "Ephemeral session assistant",
+    "id" : "F9E96BA5-5E2C-4371-9B39-050EFEC357DD",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc5-image"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "40222E8E-3B94-4799-9DA3-B2D475526E06",
+    "description" : "Ephemeral session assistant",
+    "id" : "052F1A05-218A-4B9B-9B06-AB4D0240A719",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc6-incident"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "46BBED74-E1C9-40F8-A7DD-FD4C718F0187",
+    "description" : "Ephemeral session assistant",
+    "id" : "3B968D5A-5D8D-40DD-83DA-8AB63065B9D8",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc8-eng"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "78DBAD72-CF37-4933-B29C-E8EECD6D0426",
+    "description" : "Ephemeral session assistant",
+    "id" : "7107F054-442D-440D-A076-F6440F16AC00",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc9-daily"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "900A243E-2C45-444E-9396-097FFFDE6C8A",
+    "description" : "autogen:panel-optimist",
+    "id" : "80518C51-627C-46C6-91CF-13DD3ABE0C45",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "panel-optimist"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "47E90C47-F59F-4D0C-9DDF-49373279B11C",
+    "description" : "autogen:panel-skeptic",
+    "id" : "E1B70A60-F856-4168-BC20-F7EE9143FD16",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "panel-skeptic"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "48CDB134-C944-47CA-A629-4E4D1B4635B9",
+    "description" : "autogen:panel-auditor",
+    "id" : "23F4877C-A009-4548-BC73-24D2BC1578E3",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "panel-auditor"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "61BDF4D2-51D2-46BB-B202-BD9F581726D7",
+    "description" : "Ephemeral session assistant",
+    "id" : "4BE64594-5F0D-4719-B93F-2ECB35D7543F",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc10-synthesis"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "D3282B5F-42BA-4B5C-A00B-3F84BF5E06F0",
+    "description" : "Ephemeral session assistant",
+    "id" : "62DFFC3A-BE00-4EFB-BE99-58C699A940E5",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc11-research"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "2174CE7F-85D7-4111-9772-6099838FAD1C",
+    "description" : "Ephemeral session assistant",
+    "id" : "F3A2E034-69BB-42D0-A5F6-8059ABA4C158",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc12-personal"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "99639A95-DD16-4CDC-BA65-888244757DAF",
+    "description" : "Ephemeral session assistant",
+    "id" : "27A2533C-E00E-4572-A608-86633BA927EC",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc13-agency"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "71B3D496-B561-43A1-8CCE-7662915777F5",
+    "description" : "Ephemeral session assistant",
+    "id" : "D3EE8FA0-986F-43DF-9E56-C83A3019E475",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc14-ecomm"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "9F9B0FBE-D4E9-433B-8B13-70A471F44A12",
+    "description" : "Ephemeral session assistant",
+    "id" : "B510EEE6-2AAB-4E05-8130-C1297A0BBC62",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc15-content"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "08B70620-9123-4973-927E-890E7CF3C98A",
+    "description" : "Ephemeral session assistant",
+    "id" : "ADAB4033-DC19-4A55-ADE3-1327D7741DD3",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc16-smarthome"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "B2B2E0F0-D2E1-4309-AF7B-8E5CCD374D71",
+    "description" : "Ephemeral session assistant",
+    "id" : "6968E51A-2C7C-40DF-8F46-A4559FCB243D",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc17-openapi-audit"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "1FF086E8-B09E-4043-9F16-8BEBF25179E4",
+    "description" : "Ephemeral session assistant",
+    "id" : "3F7C7F50-7554-486F-BDE1-963D2149A383",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc18-security"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "09DB1C5D-9CF9-47EC-9A8F-8BE6FC71D0B8",
+    "description" : "Ephemeral session assistant",
+    "id" : "0621B179-A1EB-426D-81E2-5F0F466DF45A",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc19-canvas"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "7A66DFD8-C81F-477D-8E00-3B92075169FD",
+    "description" : "Ephemeral session assistant",
+    "id" : "CE12E283-0D57-4F8B-9702-68D72F0DC7F0",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc20-stress"
+  },
+  {
+    "category" : "productivity",
+    "description" : "autogen:uc20-personality-1",
+    "id" : "FCF7DBE7-C522-46FE-9B1B-DAA075239FD1",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc20-personality-1"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "04F2EB88-1B1B-4F90-9E2B-DD9BB17F8245",
+    "description" : "Ephemeral session assistant",
+    "id" : "19326EBF-DC37-43C0-8A86-D32C6FEF9204",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc21-workflow"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "67BB9A32-DFDF-4F6A-8CC6-8C3626766BC5",
+    "description" : "Ephemeral session assistant",
+    "id" : "E3757278-72AB-40B9-AA8E-0944021684C2",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc22-release-notes"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "D94B7ECC-00BE-4E1B-A9BD-102C8DDBA65E",
+    "description" : "Ephemeral session assistant",
+    "id" : "D6717F7E-A3AC-4715-986F-22CEE6472EA2",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc23-triage"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "698F6EB0-65F8-4BD2-898A-8D5DB372D6FD",
+    "description" : "Ephemeral session assistant",
+    "id" : "6DAA0996-2249-4321-83A2-6FE421D4F479",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc24-data"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "8134D17E-F375-4D44-9C7E-45A1791BFE2E",
+    "description" : "Ephemeral session assistant",
+    "id" : "0DD8E970-28B8-47BC-AA48-D697DCC94018",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc25-security"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "95FACC04-8DC8-4E4B-8261-E807F20A29AC",
+    "description" : "Ephemeral session assistant",
+    "id" : "C5DF281A-CBC1-470A-9FA6-9C27C251E648",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc28-jsonlines"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "EFC536F2-70F0-48A1-AD88-86030301A1E6",
+    "description" : "Ephemeral session assistant",
+    "id" : "91C641F8-A464-4B42-A1D0-2FCE0EF2670D",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc29-canvas"
+  },
+  {
+    "category" : "productivity",
+    "chatId" : "D8EC4626-D4D4-44F3-9839-F84079B951C0",
+    "description" : "Ephemeral session assistant",
+    "id" : "B8A5E8DF-54F9-41C9-8B08-9F83016FDB18",
+    "isCustom" : true,
+    "isDefault" : false,
+    "name" : "uc30-ops"
+  }
+]

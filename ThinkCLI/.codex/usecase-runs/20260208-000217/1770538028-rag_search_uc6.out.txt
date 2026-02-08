@@ -1,0 +1,9 @@
+[
+  {
+    "id" : "D1F1DA99-5471-4E50-8214-BF72B846E634",
+    "keywords" : "error contacting upstream service x",
+    "rowId" : 1,
+    "score" : 5.953579425811768,
+    "text" : "error timeout contacting upstream service x"
+  }
+]

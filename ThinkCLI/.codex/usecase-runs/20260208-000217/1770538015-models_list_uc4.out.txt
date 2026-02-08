@@ -1,0 +1,30 @@
+[
+  {
+    "architecture" : "unknown",
+    "backend" : "coreml",
+    "id" : "E619716A-E93E-459B-A155-4C67AF60F492",
+    "location" : "coreml-community\/coreml-Inkpunk-Diffusion",
+    "locationKind" : "huggingFace",
+    "ramNeeded" : 3221225472,
+    "type" : "diffusion"
+  },
+  {
+    "architecture" : "llama",
+    "backend" : "mlx",
+    "id" : "66E10993-D747-C97E-3CFC-58E752214B9E",
+    "location" : "mlx-community\/SmolLM-135M-4bit",
+    "locationKind" : "huggingFace",
+    "ramNeeded" : 1073741824,
+    "type" : "language"
+  },
+  {
+    "architecture" : "unknown",
+    "backend" : "mlx",
+    "id" : "87153FAF-B61F-4C70-ABD7-495B163019FA",
+    "location" : "\/Users\/mati\/Code\/matiasvillaverde\/think-freely\/ThinkCLI\/.codex\/usecase-runs\/20260208-000217\/dummy.model",
+    "locationKind" : "localFile",
+    "locationLocal" : "\/Users\/mati\/Code\/matiasvillaverde\/think-freely\/ThinkCLI\/.codex\/usecase-runs\/20260208-000217\/dummy.model",
+    "ramNeeded" : 0,
+    "type" : "language"
+  }
+]

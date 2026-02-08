@@ -1,0 +1,37 @@
+[
+  {
+    "id" : "2B3D4E2A-1415-4D09-A575-072ED9F652B8",
+    "keywords" : "title openapi.json date",
+    "rowId" : 5,
+    "score" : 3.3885295391082764,
+    "text" : "\"title\": \"openapi.json out of date\""
+  },
+  {
+    "id" : "2B3D4E2A-1415-4D09-A575-072ED9F652B8",
+    "keywords" : "",
+    "rowId" : 13,
+    "score" : 5.1463189125061035,
+    "text" : "},"
+  },
+  {
+    "id" : "2B3D4E2A-1415-4D09-A575-072ED9F652B8",
+    "keywords" : "",
+    "rowId" : 10,
+    "score" : 5.1463189125061035,
+    "text" : "},"
+  },
+  {
+    "id" : "2B3D4E2A-1415-4D09-A575-072ED9F652B8",
+    "keywords" : "",
+    "rowId" : 20,
+    "score" : 5.158247947692871,
+    "text" : "}"
+  },
+  {
+    "id" : "2B3D4E2A-1415-4D09-A575-072ED9F652B8",
+    "keywords" : "",
+    "rowId" : 19,
+    "score" : 5.158247947692871,
+    "text" : "}"
+  }
+]

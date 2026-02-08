@@ -1,0 +1,6 @@
+{
+  "id" : "B610677B-15A9-40BA-92A2-9B68A3BF560D",
+  "requestId" : "A179148D-4269-4471-9FEC-F589CC33D96E",
+  "result" : "[\".husky\",\"clients\",\".native-pids.bak\",\".vercel\",\".instance\",\".DS_Store\",\".redis.pid\",\"dump.rdb\",\".qstash-local.log\",\"Makefile\",\"style-references\",\".native-logs\",\".mcp.json\",\".agents\",\".claude\",\".qstash-local.pid\",\".env.test\",\"docs\",\".e2e-failures.md\",\"openapi\",\".qstash-local.env\",\"supabase\",\"cliff.toml\",\".dockerignore\",\".codex\",\"logs\",\".gitignore\",\"package-lock.json\",\"make\",\"appendonlydir\",\".nvmrc\",\"scripts\",\"packages\",\".github\",\".gitattributes\",\".playwright-mcp\",\".infisical.json\",\"docker-compose.yml\",\"docker-compose.test.yml\",\".tmp\",\"skills\",\".env.example\",\"AGENTS.md\",\".git\",\"mcp-servers\",\"test-results\",\".emdash.json\",\"notebooks\",\"CLAUDE.md\",\"services\",\"Dockerfile.generator\"]",
+  "toolName" : "workspace"
+}

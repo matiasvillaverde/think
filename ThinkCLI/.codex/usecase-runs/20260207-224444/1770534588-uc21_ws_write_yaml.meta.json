@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run workspace --args '{\"action\": \"write\", \"path\": \".codex-uc21-workflow.yaml\", \"content\": \"name: uc21-workflow\\ndescription: \\\"Simulated OpenClaw-style workflow spec for ThinkCLI parity checks\\\"\\nsteps:\\n  - id: gather_context\\n    tool: workspace\\n    args:\\n      action: list\\n      path: \\\".\\\"\\n      recursive: false\\n  - id: audit_contract\\n    tool: workspace\\n    args:\\n      action: read\\n      path: \\\"AGENTS.md\\\"\\n  - id: synthesize\\n    action: chat_send\\n    prompt: \\\"Summarize key constraints and propose next actions.\\\"\\n\"}' --format json",
+  "duration_ms": 177,
+  "exit_code": 0,
+  "name": "uc21_ws_write_yaml",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534588-uc21_ws_write_yaml.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534588-uc21_ws_write_yaml.out.txt"
+}

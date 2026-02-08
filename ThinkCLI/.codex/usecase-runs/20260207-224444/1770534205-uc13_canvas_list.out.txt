@@ -1,0 +1,6 @@
+{
+  "id" : "F767FCE8-543C-4CB0-A8C3-70EDEC9EA538",
+  "requestId" : "C26B14A9-4858-4777-AFF6-7D90F20856EA",
+  "result" : "[{\"id\":\"02EEA017-1AB8-4BA3-9419-D7A3ACB66CEC\",\"title\":\"UC11 Findings\",\"updated_at\":\"2026-02-08T06:59:21.548Z\"},{\"id\":\"C2AE9AE4-53A2-40E6-802C-AF09D24A9F30\",\"updated_at\":\"2026-02-08T07:03:25.955Z\",\"title\":\"Client Deliverable\"}]",
+  "toolName" : "canvas"
+}

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run cron --args '{\"action\": \"create\", \"title\": \"uc14 inventory check\", \"prompt\": \"Check inventory and list SKUs needing reorder.\", \"cron\": \"0 6 * * *\", \"chat_id\": \"71B3D496-B561-43A1-8CCE-7662915777F5\", \"action_type\": \"text\"}' --format json",
+  "duration_ms": 199,
+  "exit_code": 0,
+  "name": "uc14_cron_create",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538912-uc14_cron_create.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538912-uc14_cron_create.out.txt"
+}

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo rag index --chat 7D730C58-EDFE-4567-9FAA-88EB9D0D1FDE --id CDD3DE58-D24B-4E33-9244-CA1BE8A57299 --text 'ERROR timeout contacting upstream service X'",
+  "duration_ms": 1887,
+  "exit_code": 0,
+  "name": "rag_index_text",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-135137/1770501427-rag_index_text.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-135137/1770501427-rag_index_text.out.txt"
+}

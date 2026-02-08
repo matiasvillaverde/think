@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases.store --workspace /Users/mati/Code/Nell-Technologies/monorepo models download coreml-community/coreml-Inkpunk-Diffusion --backend coreml",
+  "duration_ms": 216251,
+  "exit_code": 1,
+  "name": "models_download_coreml-community_coreml-Inkpunk-Diffusion",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-130720/1770498465-models_download_coreml-community_coreml-Inkpunk-Diffusion.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-130720/1770498465-models_download_coreml-community_coreml-Inkpunk-Diffusion.out.txt"
+}

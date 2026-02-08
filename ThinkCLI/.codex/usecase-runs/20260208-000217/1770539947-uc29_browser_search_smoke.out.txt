@@ -1,0 +1,6 @@
+{
+  "id" : "B4474657-08A3-4F1B-B6C3-54781AC2E28B",
+  "requestId" : "4A9200BA-6DA6-4B7B-A298-5136D0BD06DA",
+  "result" : "Web search results for 'OpenClaw workflows'\n\nFound 1 results:\n\n1. Openclaw - Open-Source AI Automation Framework | Build Your Own AI Assistant\n   URL: https:\/\/openclaw.im\/\n   Openclaw is an open-source AI automation framework designed for developers who want full control over their AI workflows. Unlike hosted AI services, Openclaw runs on your infrastructure, gives you complete source code access, and lets you customize every aspect of the system through TypeScript plugins and configuration.\n   Content: Open Source | MIT Licensed | Built by Developers, for Developers Your Code, Your AI, Your Rules Openclaw is an open-source framework that lets developers build AI-powered automations.\nRoute messages, execute workflows, and extend with plugins—all running on your own infrastructure.\nView Source on Gi...",
+  "toolName" : "browser.search"
+}

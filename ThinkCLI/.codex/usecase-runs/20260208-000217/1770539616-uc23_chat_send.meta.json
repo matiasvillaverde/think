@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session D94B7ECC-00BE-4E1B-A9BD-102C8DDBA65E --prompt 'Triage the tickets: propose owners, next steps, and verification commands.' --no-stream --format json",
+  "duration_ms": 70208,
+  "exit_code": 0,
+  "name": "uc23_chat_send",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539616-uc23_chat_send.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539616-uc23_chat_send.out.txt"
+}

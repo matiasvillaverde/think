@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo personality delete 01AD0F09-66E5-4CF6-AEEA-ADDE3AB5FDD0",
+  "duration_ms": 187,
+  "exit_code": 0,
+  "name": "uc20_personality_delete_01AD0F09",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534587-uc20_personality_delete_01AD0F09.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534587-uc20_personality_delete_01AD0F09.out.txt"
+}

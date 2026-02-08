@@ -1,0 +1,4 @@
+{
+  "message" : "Created skill D989EED1-A27D-4A91-BEE8-8B9165C6C9C9",
+  "type" : "message"
+}

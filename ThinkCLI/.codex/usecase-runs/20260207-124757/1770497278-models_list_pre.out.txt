@@ -1,0 +1,11 @@
+[
+  {
+    "architecture" : "unknown",
+    "backend" : "coreml",
+    "id" : "53731C97-22A6-4CF7-A0C6-785C00F5AD51",
+    "location" : "coreml-community\/coreml-Inkpunk-Diffusion",
+    "locationKind" : "huggingFace",
+    "ramNeeded" : 3221225472,
+    "type" : "diffusion"
+  }
+]

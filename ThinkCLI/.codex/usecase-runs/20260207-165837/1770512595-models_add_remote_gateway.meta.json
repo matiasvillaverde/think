@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo models add-remote --name team-gateway --location http://localhost:9988 --type language --format json",
+  "duration_ms": 178,
+  "exit_code": 0,
+  "name": "models_add_remote_gateway",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-165837/1770512595-models_add_remote_gateway.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-165837/1770512595-models_add_remote_gateway.out.txt"
+}

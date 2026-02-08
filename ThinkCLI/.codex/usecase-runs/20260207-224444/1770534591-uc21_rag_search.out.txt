@@ -1,0 +1,23 @@
+[
+  {
+    "id" : "64D17E41-AB61-481C-9E81-5DA9DB2FF7A6",
+    "keywords" : "steps",
+    "rowId" : 9,
+    "score" : 4.2013125494122505e-06,
+    "text" : "steps:"
+  },
+  {
+    "id" : "64D17E41-AB61-481C-9E81-5DA9DB2FF7A6",
+    "keywords" : "path",
+    "rowId" : 12,
+    "score" : 3.4361674785614014,
+    "text" : "path: \".\""
+  },
+  {
+    "id" : "64D17E41-AB61-481C-9E81-5DA9DB2FF7A6",
+    "keywords" : "action read",
+    "rowId" : 2,
+    "score" : 3.8320984840393066,
+    "text" : "action: read"
+  }
+]

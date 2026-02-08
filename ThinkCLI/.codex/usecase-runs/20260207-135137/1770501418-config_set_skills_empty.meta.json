@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo config set --skills nonexistent-skill --format json",
+  "duration_ms": 131,
+  "exit_code": 0,
+  "name": "config_set_skills_empty",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-135137/1770501418-config_set_skills_empty.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-135137/1770501418-config_set_skills_empty.out.txt"
+}

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 8B36EED7-D705-4DFB-93C2-CF051AF1E41A --prompt 'Define acceptance criteria and test gates.' --no-stream --format json",
+  "duration_ms": 106993,
+  "exit_code": 0,
+  "name": "panel_send_8B36EED7",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770533768-panel_send_8B36EED7.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770533768-panel_send_8B36EED7.out.txt"
+}

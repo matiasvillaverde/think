@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 71B3D496-B561-43A1-8CCE-7662915777F5 --prompt 'Write an ops runbook for inventory reorder based on a daily job output.' --no-stream --format json",
+  "duration_ms": 84764,
+  "exit_code": 0,
+  "name": "chat_send_uc14",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538912-chat_send_uc14.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538912-chat_send_uc14.out.txt"
+}

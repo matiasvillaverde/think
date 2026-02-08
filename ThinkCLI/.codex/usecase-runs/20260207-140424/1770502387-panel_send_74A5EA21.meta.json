@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 74A5EA21-A318-4C3B-AD79-7727CC97576E --prompt 'Argue for shipping quickly; propose plan.' --no-stream --format json",
+  "duration_ms": 59911,
+  "exit_code": 0,
+  "name": "panel_send_74A5EA21",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-140424/1770502387-panel_send_74A5EA21.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-140424/1770502387-panel_send_74A5EA21.out.txt"
+}

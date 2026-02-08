@@ -1,0 +1,6 @@
+{
+  "id" : "27F6660A-1DA1-425A-9CE7-8DCD0E49401E",
+  "requestId" : "4009F8D5-2D1D-4899-A2C4-BF19AA162523",
+  "result" : "Weather for San Francisco, CA\n─────────────────────\nCurrent: 73°F\nConditions: Partly Cloudy\n\n3-day forecast:\nDay 1: High 77°F, Low 70°F\nDay 2: High 77°F, Low 71°F\nDay 3: High 79°F, Low 68°F\n",
+  "toolName" : "weather"
+}

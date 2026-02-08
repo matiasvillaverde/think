@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo --tool-access allow tools run browser.search --args '{\"query\": \"OpenClaw use cases\", \"resultCount\": 2}' --format json",
+  "duration_ms": 2645,
+  "exit_code": 0,
+  "name": "uc18_tools_run_allowed",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534489-uc18_tools_run_allowed.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534489-uc18_tools_run_allowed.out.txt"
+}

@@ -1,0 +1,6 @@
+{
+  "id" : "976EB07B-142D-4FBF-8E36-E8FFDEBE0602",
+  "requestId" : "1AC78F0D-1114-4C80-B8FC-6DF808524A4D",
+  "result" : "[{\"title\":\"UC11 Findings\",\"updated_at\":\"2026-02-08T08:16:48.144Z\",\"id\":\"CDEAEA5C-A1B6-461D-B820-B82C6CD7A02D\"}]",
+  "toolName" : "canvas"
+}

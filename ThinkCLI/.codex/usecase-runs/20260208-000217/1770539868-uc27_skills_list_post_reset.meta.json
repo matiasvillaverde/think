@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-uc27 --workspace /Users/mati/Code/Nell-Technologies/monorepo skills list --format json",
+  "duration_ms": 193,
+  "exit_code": 0,
+  "name": "uc27_skills_list_post_reset",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539868-uc27_skills_list_post_reset.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539868-uc27_skills_list_post_reset.out.txt"
+}

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo rag index --chat 722609A6-ECBB-4AE7-8931-3F1475DC1E2F --id 65013DD3-A34D-4269-84DB-830F80B4EFA8 --file /Users/mati/Code/Nell-Technologies/monorepo/.codex-uc25-owasp.json",
+  "duration_ms": 2413,
+  "exit_code": 0,
+  "name": "rag_index_.codex-uc25-owasp.json",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534979-rag_index_.codex-uc25-owasp.json.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534979-rag_index_.codex-uc25-owasp.json.out.txt"
+}

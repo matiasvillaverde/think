@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo --tool-access allow chat send --session 1FF086E8-B09E-4043-9F16-8BEBF25179E4 --prompt 'Operate with tools allowed but do not call any tools. Provide a security checklist.' --no-stream --format json",
+  "duration_ms": 81779,
+  "exit_code": 0,
+  "name": "uc18_chat_send_allowed",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539271-uc18_chat_send_allowed.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539271-uc18_chat_send_allowed.out.txt"
+}

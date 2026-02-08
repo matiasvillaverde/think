@@ -1,0 +1,4 @@
+Error: Missing expected argument '--session <session>'
+Help:  --session <session>  Session UUID.
+Usage: think chat delete [--json] [--format <format>] [--store <store>] [--workspace <workspace>] [--tool-access <tool-access>] [--verbose] --session <session>
+  See 'think chat delete --help' for more information.

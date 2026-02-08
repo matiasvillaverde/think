@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo personality chat 2B0C97FB-0B31-4EAD-BE6F-25EA6195D156 --format json",
+  "duration_ms": 182,
+  "exit_code": 0,
+  "name": "uc20_personality_chat_1",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534582-uc20_personality_chat_1.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534582-uc20_personality_chat_1.out.txt"
+}

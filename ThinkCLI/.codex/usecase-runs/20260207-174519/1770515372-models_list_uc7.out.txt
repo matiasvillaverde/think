@@ -1,0 +1,39 @@
+[
+  {
+    "architecture" : "unknown",
+    "backend" : "coreml",
+    "id" : "EFD29926-F389-42DD-AD2E-8D0847BFDE5C",
+    "location" : "coreml-community\/coreml-Inkpunk-Diffusion",
+    "locationKind" : "huggingFace",
+    "ramNeeded" : 3221225472,
+    "type" : "diffusion"
+  },
+  {
+    "architecture" : "llama",
+    "backend" : "mlx",
+    "id" : "66E10993-D747-C97E-3CFC-58E752214B9E",
+    "location" : "mlx-community\/SmolLM-135M-4bit",
+    "locationKind" : "huggingFace",
+    "ramNeeded" : 1073741824,
+    "type" : "language"
+  },
+  {
+    "architecture" : "unknown",
+    "backend" : "mlx",
+    "id" : "C1193A3E-8D7A-425D-A9B5-6B87FAC01CAB",
+    "location" : "\/Users\/mati\/Code\/matiasvillaverde\/think-freely\/ThinkCLI\/.codex\/usecase-runs\/20260207-174519\/dummy.model",
+    "locationKind" : "localFile",
+    "locationLocal" : "\/Users\/mati\/Code\/matiasvillaverde\/think-freely\/ThinkCLI\/.codex\/usecase-runs\/20260207-174519\/dummy.model",
+    "ramNeeded" : 0,
+    "type" : "language"
+  },
+  {
+    "architecture" : "gpt",
+    "backend" : "remote",
+    "id" : "44FEE1F6-6D8C-42FF-B451-2EB3BFD80329",
+    "location" : "http:\/\/localhost:9988",
+    "locationKind" : "remote",
+    "ramNeeded" : 0,
+    "type" : "language"
+  }
+]

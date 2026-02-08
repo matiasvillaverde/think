@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo personality create --name panel-auditor --description autogen:panel-auditor --instructions 'You are panel-auditor. Keep outputs structured and actionable.' --category productivity --format json",
+  "duration_ms": 178,
+  "exit_code": 0,
+  "name": "personality_create_panel-auditor",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515481-personality_create_panel-auditor.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515481-personality_create_panel-auditor.out.txt"
+}

@@ -1,0 +1,6 @@
+{
+  "id" : "D473EDC6-3DBB-4628-A5B9-AE0EC17A7A40",
+  "requestId" : "C475CB4E-D71C-428F-A132-21BFB1A3F34F",
+  "result" : "Canvas updated",
+  "toolName" : "canvas"
+}

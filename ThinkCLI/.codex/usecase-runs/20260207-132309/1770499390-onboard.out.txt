@@ -1,0 +1,1 @@
+Onboarding complete. workspace=/Users/mati/Code/Nell-Technologies/monorepo model=CAFFD336-A121-8649-A5C9-D0EA57D43D08 skills=0

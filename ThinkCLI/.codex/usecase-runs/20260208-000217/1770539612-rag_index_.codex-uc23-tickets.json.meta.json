@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo rag index --chat D94B7ECC-00BE-4E1B-A9BD-102C8DDBA65E --id 2B3D4E2A-1415-4D09-A575-072ED9F652B8 --file /Users/mati/Code/Nell-Technologies/monorepo/.codex-uc23-tickets.json",
+  "duration_ms": 1941,
+  "exit_code": 0,
+  "name": "rag_index_.codex-uc23-tickets.json",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539612-rag_index_.codex-uc23-tickets.json.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539612-rag_index_.codex-uc23-tickets.json.out.txt"
+}

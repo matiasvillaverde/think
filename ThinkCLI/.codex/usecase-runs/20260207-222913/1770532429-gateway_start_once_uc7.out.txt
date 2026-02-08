@@ -1,0 +1,2 @@
+Gateway server running on port 9988
+Gateway server stopped

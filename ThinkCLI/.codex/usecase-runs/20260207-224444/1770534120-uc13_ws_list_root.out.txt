@@ -1,0 +1,6 @@
+{
+  "id" : "C4DD656D-85D1-4CC5-83FE-493C58AD4F77",
+  "requestId" : "94114706-50D1-4953-B546-5C17EF47E08F",
+  "result" : "[\".husky\",\"clients\",\".native-pids.bak\",\".vercel\",\".instance\",\".DS_Store\",\".redis.pid\",\".codex-uc13-deliverable.md\",\"dump.rdb\",\".qstash-local.log\",\"Makefile\",\"style-references\",\".codex-uc13-brief.md\",\".codex-uc14-inventory.csv\",\".native-logs\",\".mcp.json\",\".agents\",\".claude\",\".qstash-local.pid\",\".env.test\",\"docs\",\".e2e-failures.md\",\"openapi\",\".qstash-local.env\",\"supabase\",\"cliff.toml\",\".dockerignore\",\".codex\",\"logs\",\".gitignore\",\"package-lock.json\",\"make\",\"appendonlydir\",\".nvmrc\",\"scripts\",\"packages\",\".github\",\".gitattributes\",\".codex-uc11-web.md\",\".codex-uc17-openapi-report.txt\",\".playwright-mcp\",\".codex-uc15-draft.md\",\".infisical.json\",\"docker-compose.yml\",\"docker-compose.test.yml\",\".tmp\",\"skills\",\".native-pids\",\".env.example\",\"AGENTS.md\",\".git\",\"mcp-servers\",\"test-results\",\".emdash.json\",\"notebooks\",\"CLAUDE.md\",\"services\",\".codex-uc16-home.json\",\"Dockerfile.generator\"]",
+  "toolName" : "workspace"
+}

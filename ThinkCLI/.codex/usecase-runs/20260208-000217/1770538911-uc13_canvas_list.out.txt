@@ -1,0 +1,6 @@
+{
+  "id" : "FD13AF66-01BD-47CF-903A-BDC8B3CA0038",
+  "requestId" : "688ACCDF-AF81-4205-BF79-6E951BD120E5",
+  "result" : "[{\"id\":\"80ECA4E9-FEF8-452A-9454-1966C103064A\",\"updated_at\":\"2026-02-08T08:21:51.196Z\",\"title\":\"Client Deliverable\"}]",
+  "toolName" : "canvas"
+}

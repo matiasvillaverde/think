@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo schedules enable C71C9E11-9244-4D74-814E-26947B763ED9",
+  "duration_ms": 174,
+  "exit_code": 0,
+  "name": "schedule_enable_uc5",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515366-schedule_enable_uc5.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515366-schedule_enable_uc5.out.txt"
+}

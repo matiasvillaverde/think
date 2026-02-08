@@ -1,0 +1,56 @@
+[
+  {
+    "createdAt" : "2026-02-08T02:08:48Z",
+    "id" : "5C22DB68-D3E2-43E7-9BE9-182F9947ADDF",
+    "title" : "uc20-personality-5",
+    "updatedAt" : "2026-02-08T02:08:48Z"
+  },
+  {
+    "createdAt" : "2026-02-08T02:08:48Z",
+    "id" : "4922A820-968A-44F3-A4DF-8A8D102D97F3",
+    "title" : "uc20-personality-4",
+    "updatedAt" : "2026-02-08T02:08:48Z"
+  },
+  {
+    "createdAt" : "2026-02-08T02:08:47Z",
+    "id" : "F1CD8187-46D4-498E-8ECA-27994A36E366",
+    "title" : "uc20-personality-3",
+    "updatedAt" : "2026-02-08T02:08:47Z"
+  },
+  {
+    "createdAt" : "2026-02-08T02:08:47Z",
+    "id" : "45AFC195-9EA6-449F-AE17-63D8FBD24C80",
+    "title" : "uc20-personality-2",
+    "updatedAt" : "2026-02-08T02:08:47Z"
+  },
+  {
+    "createdAt" : "2026-02-08T02:08:47Z",
+    "id" : "AD0331FA-1062-4BA8-8478-6F5AA2497316",
+    "title" : "uc20-personality-1",
+    "updatedAt" : "2026-02-08T02:08:47Z"
+  },
+  {
+    "createdAt" : "2026-02-08T01:45:21Z",
+    "id" : "426B749A-13EA-4CA4-AE68-799EA95813AF",
+    "title" : "uc20-stress",
+    "updatedAt" : "2026-02-08T02:07:32Z"
+  },
+  {
+    "createdAt" : "2026-02-08T01:51:21Z",
+    "id" : "AC1AE112-DB4A-4A6B-AD11-2761C482EAF5",
+    "title" : "panel-auditor",
+    "updatedAt" : "2026-02-08T01:54:18Z"
+  },
+  {
+    "createdAt" : "2026-02-08T01:51:21Z",
+    "id" : "0A1445FE-A71F-48BF-8633-0BCD8B68F439",
+    "title" : "panel-skeptic",
+    "updatedAt" : "2026-02-08T01:53:03Z"
+  },
+  {
+    "createdAt" : "2026-02-08T01:51:21Z",
+    "id" : "E40A65E5-D3E4-41D6-AB57-71097037DF03",
+    "title" : "panel-optimist",
+    "updatedAt" : "2026-02-08T01:51:24Z"
+  }
+]

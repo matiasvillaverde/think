@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 99639A95-DD16-4CDC-BA65-888244757DAF --prompt 'Using the brief, produce a 7-day delivery plan with risk gates.' --no-stream --format json",
+  "duration_ms": 128039,
+  "exit_code": 0,
+  "name": "chat_send_uc13_plan",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538782-chat_send_uc13_plan.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538782-chat_send_uc13_plan.out.txt"
+}

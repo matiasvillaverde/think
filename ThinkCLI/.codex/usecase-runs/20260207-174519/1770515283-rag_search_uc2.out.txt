@@ -1,0 +1,37 @@
+[
+  {
+    "id" : "E04DF840-211E-4A3E-9A0D-2A2E48755559",
+    "keywords" : "",
+    "rowId" : 168,
+    "score" : 0.6042786240577698,
+    "text" : "openapi:"
+  },
+  {
+    "id" : "E04DF840-211E-4A3E-9A0D-2A2E48755559",
+    "keywords" : "",
+    "rowId" : 317,
+    "score" : 0.6758878231048584,
+    "text" : "openapi\/"
+  },
+  {
+    "id" : "E04DF840-211E-4A3E-9A0D-2A2E48755559",
+    "keywords" : "do not edit manually run make openapi generate",
+    "rowId" : 313,
+    "score" : 3.0137736797332764,
+    "text" : "│                             # do not edit manually - run `make openapi-generate`"
+  },
+  {
+    "id" : "5F5C29CA-84D6-461B-9469-5380B948E02C",
+    "keywords" : "openapi workflow critical",
+    "rowId" : 14,
+    "score" : 3.146761894226074,
+    "text" : "## openapi workflow (critical)"
+  },
+  {
+    "id" : "5F5C29CA-84D6-461B-9469-5380B948E02C",
+    "keywords" : "never manually edit openapi openapi.json always regenerate backend",
+    "rowId" : 24,
+    "score" : 3.251271963119507,
+    "text" : "- **never manually edit** `openapi\/openapi.json` - always regenerate from backend"
+  }
+]

@@ -1,0 +1,1 @@
+Tool access denied for chat send. Use --tool-access allow to enable.

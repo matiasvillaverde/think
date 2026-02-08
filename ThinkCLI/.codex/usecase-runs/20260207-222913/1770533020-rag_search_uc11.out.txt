@@ -1,0 +1,37 @@
+[
+  {
+    "id" : "6B7310D3-8CD7-44A1-B93C-11AE72D6DA87",
+    "keywords" : "",
+    "rowId" : 41,
+    "score" : 3.8583664894104004,
+    "text" : "}"
+  },
+  {
+    "id" : "6B7310D3-8CD7-44A1-B93C-11AE72D6DA87",
+    "keywords" : "",
+    "rowId" : 24,
+    "score" : 3.8583664894104004,
+    "text" : "}"
+  },
+  {
+    "id" : "6B7310D3-8CD7-44A1-B93C-11AE72D6DA87",
+    "keywords" : "",
+    "rowId" : 14,
+    "score" : 3.8583664894104004,
+    "text" : "}"
+  },
+  {
+    "id" : "6B7310D3-8CD7-44A1-B93C-11AE72D6DA87",
+    "keywords" : "run openclaw cron add cli walks fields human readable name cron schedule expression timezon content curl roadmaps openclaw skills memory automation setting first cron job u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591 u2591",
+    "rowId" : 47,
+    "score" : 4.177343368530273,
+    "text" : "run openclaw cron add and the cli walks you through 44 4 fields: a human-readable name, a cron schedule expression, a timezon\\n   content: ##### ###### ##### ### # # ### # # ###### ## ## ## ## ## ## ## # # # # # ## ##### #### ##### # # # # # # # #### ## # ## ## ## ## # # # # # ## ## # ###### ## ### # ### # ###### $ curl repovive.com\/roadmaps\/openclaw\/skills-memory-automation\/setting-up-your-first-cron-job \\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591\\u2591...\","
+  },
+  {
+    "id" : "6B7310D3-8CD7-44A1-B93C-11AE72D6DA87",
+    "keywords" : "",
+    "rowId" : 25,
+    "score" : 4.256715297698975,
+    "text" : "{"
+  }
+]

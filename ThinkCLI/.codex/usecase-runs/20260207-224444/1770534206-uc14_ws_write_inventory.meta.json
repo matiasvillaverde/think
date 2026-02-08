@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run workspace --args '{\"action\": \"write\", \"path\": \".codex-uc14-inventory.csv\", \"content\": \"sku,on_hand,reorder_point\\nA,3,5\\nB,10,5\\nC,0,2\\n\"}' --format json",
+  "duration_ms": 178,
+  "exit_code": 0,
+  "name": "uc14_ws_write_inventory",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534206-uc14_ws_write_inventory.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534206-uc14_ws_write_inventory.out.txt"
+}

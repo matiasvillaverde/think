@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 426B749A-13EA-4CA4-AE68-799EA95813AF --prompt 'Generate a daily briefing skeleton using the indexed guidelines.' --no-stream --format json",
+  "duration_ms": 30236,
+  "exit_code": 0,
+  "name": "chat_send_uc9",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515450-chat_send_uc9.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515450-chat_send_uc9.out.txt"
+}

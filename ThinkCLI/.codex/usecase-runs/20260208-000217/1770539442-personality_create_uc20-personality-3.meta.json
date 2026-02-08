@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo personality create --name uc20-personality-3 --description autogen:uc20-personality-3 --instructions 'You are uc20-personality-3. Keep outputs structured and actionable.' --category productivity --format json",
+  "duration_ms": 192,
+  "exit_code": 0,
+  "name": "personality_create_uc20-personality-3",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539442-personality_create_uc20-personality-3.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539442-personality_create_uc20-personality-3.out.txt"
+}

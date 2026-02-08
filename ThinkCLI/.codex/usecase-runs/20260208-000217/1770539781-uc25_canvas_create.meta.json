@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run canvas --args '{\"action\": \"create\", \"chat_id\": \"8134D17E-F375-4D44-9C7E-45A1791BFE2E\", \"title\": \"Threat Model\", \"content\": \"Assets / Trust boundaries / Threats / Mitigations\"}' --format json",
+  "duration_ms": 195,
+  "exit_code": 0,
+  "name": "uc25_canvas_create",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539781-uc25_canvas_create.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539781-uc25_canvas_create.out.txt"
+}

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 9F9B0FBE-D4E9-433B-8B13-70A471F44A12 --prompt 'Turn the outline into a 500-word draft with headings.' --no-stream --format json",
+  "duration_ms": 94860,
+  "exit_code": 0,
+  "name": "chat_send_uc15_draft",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539004-chat_send_uc15_draft.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539004-chat_send_uc15_draft.out.txt"
+}

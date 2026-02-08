@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 95FACC04-8DC8-4E4B-8261-E807F20A29AC --prompt 'Output two short paragraphs.' --format json-lines",
+  "duration_ms": 76493,
+  "exit_code": 0,
+  "name": "uc28_chat_send_json_lines",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539869-uc28_chat_send_json_lines.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539869-uc28_chat_send_json_lines.out.txt"
+}

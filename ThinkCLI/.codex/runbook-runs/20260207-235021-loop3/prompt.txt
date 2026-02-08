@@ -1,0 +1,26 @@
+You are running inside a monorepo workspace. Your task is to create a production runbook and to self-verify it by repeatedly checking the repo with tools until it is consistent.
+
+Deliverables:
+1) Create docs/runbook.md.
+2) Update AGENTS.md (Resources section) to include docs/runbook.md.
+
+Allowed tools: workspace, python_exec, browser.search, canvas, memory.
+
+Loop requirements (do not stop until all pass):
+A) Every command you mention in docs/runbook.md must exist in-repo. Verify by reading Makefile and relevant package.json files.
+B) Every file path you mention must exist. Verify via workspace list/read.
+C) After writing docs/runbook.md and updating AGENTS.md, re-read both and run python_exec checks:
+   - Extract all backticked commands from docs/runbook.md and verify each appears in Makefile or a package.json scripts section.
+   - Extract all referenced relative paths and verify they exist.
+If any check fails, fix the markdown files and repeat the checks.
+
+Process constraints:
+- Use canvas to track: pending checks, failures, and fixes applied.
+- Save a short final summary to memory when everything passes.
+- If you use browser.search, do it only for wording/best practices; do not invent new repo commands.
+
+Start by using workspace tool to:
+1) list '.' non-recursive
+2) read AGENTS.md and Makefile
+3) list services/ and openapi/
+Then draft the runbook.

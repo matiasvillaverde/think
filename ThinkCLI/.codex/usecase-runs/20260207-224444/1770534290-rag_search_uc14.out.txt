@@ -1,0 +1,30 @@
+[
+  {
+    "id" : "B729F4F3-A5EF-4231-A9A8-79353F004624",
+    "keywords" : "sku on_hand reorder_point",
+    "rowId" : 4,
+    "score" : 3.427666664123535,
+    "text" : "sku,on_hand,reorder_point"
+  },
+  {
+    "id" : "B729F4F3-A5EF-4231-A9A8-79353F004624",
+    "keywords" : "",
+    "rowId" : 1,
+    "score" : 6.644796848297119,
+    "text" : "a,3,5"
+  },
+  {
+    "id" : "B729F4F3-A5EF-4231-A9A8-79353F004624",
+    "keywords" : "",
+    "rowId" : 3,
+    "score" : 6.766387939453125,
+    "text" : "b,10,5"
+  },
+  {
+    "id" : "B729F4F3-A5EF-4231-A9A8-79353F004624",
+    "keywords" : "",
+    "rowId" : 2,
+    "score" : 7.032029628753662,
+    "text" : "c,0,2"
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "id" : "ED82812C-E677-4215-9068-BCD13CE4A00F",
+  "requestId" : "C73717CF-7967-4A71-A7F4-C0F1CD41E446",
+  "result" : "[{\"title\":\"uc9 daily briefing\",\"enabled\":false,\"next_run_at\":\"\",\"action_type\":\"text\",\"running\":false,\"id\":\"671BEF41-ABEF-4BEC-8F2C-92428B7C8112\"},{\"title\":\"uc12 morning brief\",\"id\":\"2C5C5475-5808-4CF3-B622-E1C385A7A7D1\",\"enabled\":true,\"next_run_at\":\"2026-02-09T16:00:00.000Z\",\"running\":false,\"action_type\":\"text\"}]",
+  "toolName" : "cron"
+}

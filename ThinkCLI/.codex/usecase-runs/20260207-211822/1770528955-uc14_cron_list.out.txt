@@ -1,0 +1,6 @@
+{
+  "id" : "3D3FF044-4A8B-4B62-A9D0-B677CD3763B9",
+  "requestId" : "950EDAB3-051C-4396-A6E0-9F5F7B7F6024",
+  "result" : "[{\"id\":\"671BEF41-ABEF-4BEC-8F2C-92428B7C8112\",\"next_run_at\":\"\",\"action_type\":\"text\",\"enabled\":false,\"title\":\"uc9 daily briefing\",\"running\":false},{\"running\":false,\"id\":\"2C5C5475-5808-4CF3-B622-E1C385A7A7D1\",\"enabled\":true,\"next_run_at\":\"2026-02-09T16:00:00.000Z\",\"title\":\"uc12 morning brief\",\"action_type\":\"text\"},{\"running\":false,\"title\":\"uc14 inventory check\",\"enabled\":true,\"id\":\"85A469EC-34E9-4FD8-B427-D95229D8DC8F\",\"action_type\":\"text\",\"next_run_at\":\"2026-02-08T14:00:00.000Z\"}]",
+  "toolName" : "cron"
+}

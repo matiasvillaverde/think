@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-uc27 --workspace /Users/mati/Code/Nell-Technologies/monorepo skills create --name uc27-skill --description autogen:uc27-skill --instructions 'UC27 smoke skill for testing store reset behavior.' --format json --tools workspace",
+  "duration_ms": 201,
+  "exit_code": 0,
+  "name": "skill_create_uc27-skill",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539867-skill_create_uc27-skill.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539867-skill_create_uc27-skill.out.txt"
+}

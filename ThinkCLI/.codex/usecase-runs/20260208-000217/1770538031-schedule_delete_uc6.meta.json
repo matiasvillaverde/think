@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo schedules delete 36161583-48FA-4314-A8E4-B0D32578AB74",
+  "duration_ms": 228,
+  "exit_code": 0,
+  "name": "schedule_delete_uc6",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538031-schedule_delete_uc6.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538031-schedule_delete_uc6.out.txt"
+}

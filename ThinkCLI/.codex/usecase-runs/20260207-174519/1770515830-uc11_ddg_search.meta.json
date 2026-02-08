@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run duckduckgo_search --args '{\"query\": \"OpenClaw use cases automation workflows\", \"count\": 5, \"region\": \"us-en\"}' --format json",
+  "duration_ms": 3095,
+  "exit_code": 0,
+  "name": "uc11_ddg_search",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515830-uc11_ddg_search.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515830-uc11_ddg_search.out.txt"
+}

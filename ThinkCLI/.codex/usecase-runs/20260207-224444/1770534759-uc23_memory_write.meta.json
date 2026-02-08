@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run memory --args '{\"type\": \"longTerm\", \"content\": \"UC23 triage board created with 3 sample tickets.\", \"keywords\": [\"triage\", \"support\", \"openapi\", \"docker\"]}' --format json",
+  "duration_ms": 174,
+  "exit_code": 0,
+  "name": "uc23_memory_write",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534759-uc23_memory_write.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534759-uc23_memory_write.out.txt"
+}

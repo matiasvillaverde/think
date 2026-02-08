@@ -1,0 +1,15 @@
+[
+  {
+    "actionType" : "image",
+    "chatId" : "8703B2C9-1C9D-48A2-988F-EFC0A95BEFA2",
+    "cronExpression" : "0 2 * * *",
+    "id" : "510A8B8D-00E0-4964-9DC7-2721C83C659C",
+    "isEnabled" : false,
+    "kind" : "cron",
+    "prompt" : "Generate an image for testing.",
+    "title" : "uc5 nightly image",
+    "toolNames" : [
+
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "actionType" : "text",
+    "chatId" : "722609A6-ECBB-4AE7-8931-3F1475DC1E2F",
+    "cronExpression" : "*\/15 * * * *",
+    "id" : "A890E01F-D23D-4621-B891-77D6970C0966",
+    "isEnabled" : false,
+    "kind" : "cron",
+    "prompt" : "Summarize incident context and propose next checks.",
+    "title" : "uc6 pulse",
+    "toolNames" : [
+
+    ]
+  }
+]

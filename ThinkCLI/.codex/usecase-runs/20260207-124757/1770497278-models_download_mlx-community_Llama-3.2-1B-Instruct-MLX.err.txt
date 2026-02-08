@@ -1,0 +1,1 @@
+HuggingFace auth required. Set HF_TOKEN (or token file) and retry.

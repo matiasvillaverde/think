@@ -1,0 +1,4 @@
+{
+  "message" : "Personality chat AD0331FA-1062-4BA8-8478-6F5AA2497316",
+  "type" : "message"
+}

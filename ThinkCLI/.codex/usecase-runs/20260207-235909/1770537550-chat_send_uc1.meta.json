@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 66ABF9EB-F092-4F3E-924E-9EF1F347A1C9 --prompt 'Confirm setup; summarize config.' --no-stream --format json",
+  "duration_ms": 77718,
+  "exit_code": 0,
+  "name": "chat_send_uc1",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-235909/1770537550-chat_send_uc1.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-235909/1770537550-chat_send_uc1.out.txt"
+}

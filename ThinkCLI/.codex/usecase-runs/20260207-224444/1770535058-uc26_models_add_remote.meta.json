@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo models add-remote --name uc26-remote --location http://localhost:9999 --type language --format json",
+  "duration_ms": 190,
+  "exit_code": 0,
+  "name": "uc26_models_add_remote",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770535058-uc26_models_add_remote.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770535058-uc26_models_add_remote.out.txt"
+}

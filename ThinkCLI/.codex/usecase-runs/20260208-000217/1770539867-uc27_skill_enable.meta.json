@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-uc27 --workspace /Users/mati/Code/Nell-Technologies/monorepo skills enable F323D351-65E6-471D-BEAE-C35D1BDE5C37",
+  "duration_ms": 192,
+  "exit_code": 0,
+  "name": "uc27_skill_enable",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539867-uc27_skill_enable.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539867-uc27_skill_enable.out.txt"
+}

@@ -1,0 +1,18 @@
+You are operating inside a monorepo workspace. Create docs/runbook.md that covers:
+- setup/dev/test/openapi workflow (make targets + service-specific npm commands)
+- common failures + fixes (OpenAPI drift, generator docker file: deps, mobile type regen)
+- “how to validate changes” checklist
+- “incident triage” quick steps
+
+Hard requirements (loop until all pass):
+1) Every command you mention MUST exist. Verify by reading Makefile and relevant package.json files (use workspace tool).
+2) Every file path you mention MUST exist. Verify via workspace list/read.
+3) Write the final runbook to docs/runbook.md (workspace write).
+4) Update AGENTS.md Resources section to include the new runbook (workspace write).
+5) After writing, re-read both files and run a final consistency check (python_exec) that:
+   - extracts all backticked commands and confirms they appear in Makefile/package.json text
+   - extracts all referenced paths and confirms they exist via workspace listing
+If any check fails, fix the docs and repeat.
+
+Use canvas to track checklist + current failures. Use memory to store final summary.
+You may use browser.search to confirm any best-practice wording, but do not add new commands that are not in-repo.

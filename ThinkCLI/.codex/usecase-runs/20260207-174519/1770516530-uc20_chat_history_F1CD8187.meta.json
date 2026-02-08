@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat history --session F1CD8187-46D4-498E-8ECA-27994A36E366 --format json",
+  "duration_ms": 176,
+  "exit_code": 0,
+  "name": "uc20_chat_history_F1CD8187",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770516530-uc20_chat_history_F1CD8187.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770516530-uc20_chat_history_F1CD8187.out.txt"
+}

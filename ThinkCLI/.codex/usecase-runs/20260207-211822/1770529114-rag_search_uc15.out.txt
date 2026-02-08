@@ -1,0 +1,9 @@
+[
+  {
+    "id" : "23DF0344-1687-4B2F-970A-6DF51430E997",
+    "keywords" : "draft generated uc15 chat",
+    "rowId" : 1,
+    "score" : 6.340301513671875,
+    "text" : "draft generated in uc15 chat."
+  }
+]

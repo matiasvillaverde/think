@@ -1,0 +1,6 @@
+[
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.store",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.store-wal",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.version",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.store-shm"
+]

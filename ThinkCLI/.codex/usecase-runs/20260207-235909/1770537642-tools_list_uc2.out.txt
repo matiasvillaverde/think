@@ -1,0 +1,74 @@
+[
+  {
+    "description" : "Create and update a live canvas document for the current chat. Use action=create to create a new canvas, update to replace content, append to add content, get to fetch, and list to view available canvases.",
+    "id" : "62EB1497-4253-4868-9B9B-82692224C678",
+    "name" : "canvas",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"action\": {\n            \"type\": \"string\",\n            \"enum\": [\"create\", \"update\", \"append\", \"get\", \"list\"]\n        },\n        \"title\": { \"type\": \"string\" },\n        \"content\": { \"type\": \"string\" },\n        \"canvas_id\": { \"type\": \"string\" },\n        \"chat_id\": { \"type\": \"string\" }\n    },\n    \"required\": [\"action\"]\n}"
+  },
+  {
+    "description" : "Read health and fitness data from HealthKit",
+    "id" : "006537DB-C4D9-4AE9-ABB2-B4488CB7EA28",
+    "name" : "health_data",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"dataType\": {\n            \"type\": \"string\",\n            \"description\": \"Type of health data to retrieve\",\n            \"enum\": [\"steps\", \"heartRate\", \"sleep\", \"workout\", \"calories\", \"distance\"]\n        },\n        \"startDate\": {\n            \"type\": \"string\",\n            \"description\": \"Start date in ISO format (YYYY-MM-DD)\",\n            \"format\": \"date\"\n        },\n        \"endDate\": {\n            \"type\": \"string\",\n            \"description\": \"End date in ISO format (YYYY-MM-DD)\",\n            \"format\": \"date\"\n        },\n        \"limit\": {\n            \"type\": \"integer\",\n            \"description\": \"Maximum number of results to return\",\n            \"minimum\": 1,\n            \"maximum\": 100,\n            \"default\": 50\n        }\n    },\n    \"required\": [\"dataType\"]\n}"
+  },
+  {
+    "description" : "Write important information to persistent memory. Use this tool to remember facts, preferences, and observations that should persist across conversations. Types: 'longTerm' for curated facts, 'daily' for contextual observations.",
+    "id" : "35F3EBB2-5535-47A3-8E94-12CE9EC66FC9",
+    "name" : "memory",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"type\": {\n            \"type\": \"string\",\n            \"description\": \"The type of memory to write\",\n            \"enum\": [\"longTerm\", \"daily\"]\n        },\n        \"content\": {\n            \"type\": \"string\",\n            \"description\": \"The fact, observation, or information to remember\"\n        },\n        \"keywords\": {\n            \"type\": \"array\",\n            \"items\": { \"type\": \"string\" },\n            \"description\": \"Keywords for categorizing and searching this memory\",\n            \"default\": []\n        }\n    },\n    \"required\": [\"type\", \"content\"]\n}"
+  },
+  {
+    "description" : "Schedule prompts to run in the future. Use action=create to create a schedule with a cron expression, list to view schedules, enable\/disable to toggle, and delete to remove schedules. Cron format: \"min hour day month weekday\".",
+    "id" : "54D6557E-575C-43D5-9F8F-9080C8E82E2B",
+    "name" : "cron",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"action\": {\n            \"type\": \"string\",\n            \"enum\": [\"create\", \"list\", \"enable\", \"disable\", \"delete\", \"update\"]\n        },\n        \"title\": { \"type\": \"string\" },\n        \"prompt\": { \"type\": \"string\" },\n        \"cron\": {\n            \"type\": \"string\",\n            \"description\": \"Cron expression or ISO 8601 date for one-shot schedules\"\n        },\n        \"schedule_kind\": {\n            \"type\": \"string\",\n            \"enum\": [\"cron\", \"one_shot\"],\n            \"default\": \"cron\"\n        },\n        \"action_type\": {\n            \"type\": \"string\",\n            \"enum\": [\"text\", \"image\"],\n            \"default\": \"text\"\n        },\n        \"timezone\": { \"type\": \"string\" },\n        \"tools\": {\n            \"type\": \"array\",\n            \"items\": { \"type\": \"string\" },\n            \"default\": []\n        },\n        \"schedule_id\": { \"type\": \"string\" },\n        \"chat_id\": { \"type\": \"string\" }\n    },\n    \"required\": [\"action\"]\n}"
+  },
+  {
+    "description" : "Search using Brave search engine with privacy focus",
+    "id" : "B1DA37ED-B043-4C0E-B7A1-723C74F405E2",
+    "name" : "brave_search",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"query\": {\n            \"type\": \"string\",\n            \"description\": \"The search query\"\n        },\n        \"freshness\": {\n            \"type\": \"string\",\n            \"description\": \"Time range for results\",\n            \"enum\": [\"day\", \"week\", \"month\", \"year\"],\n            \"default\": \"all\"\n        },\n        \"safe_search\": {\n            \"type\": \"string\",\n            \"description\": \"Safe search level\",\n            \"enum\": [\"off\", \"moderate\", \"strict\"],\n            \"default\": \"moderate\"\n        },\n        \"count\": {\n            \"type\": \"integer\",\n            \"description\": \"Number of results (1-10)\",\n            \"minimum\": 1,\n            \"maximum\": 10,\n            \"default\": 5\n        }\n    },\n    \"required\": [\"query\"]\n}"
+  },
+  {
+    "description" : "Search using DuckDuckGo with privacy protection",
+    "id" : "6F299D12-227C-421A-8D7F-43E2719E442F",
+    "name" : "duckduckgo_search",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"query\": {\n            \"type\": \"string\",\n            \"description\": \"The search query\"\n        },\n        \"region\": {\n            \"type\": \"string\",\n            \"description\": \"Region for results (e.g., us-en, uk-en)\",\n            \"default\": \"wt-wt\"\n        },\n        \"instant_answers\": {\n            \"type\": \"boolean\",\n            \"description\": \"Include instant answers\",\n            \"default\": false\n        },\n        \"no_redirect\": {\n            \"type\": \"boolean\",\n            \"description\": \"Disable redirect following\",\n            \"default\": false\n        },\n        \"count\": {\n            \"type\": \"integer\",\n            \"description\": \"Number of results (1-10)\",\n            \"minimum\": 1,\n            \"maximum\": 10,\n            \"default\": 5\n        }\n    },\n    \"required\": [\"query\"]\n}"
+  },
+  {
+    "description" : "Execute Python code in a sandboxed environment",
+    "id" : "A2CECA48-358B-434C-B5A6-145F1E353932",
+    "name" : "python_exec",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"code\": {\n            \"type\": \"string\",\n            \"description\": \"Python code to execute\"\n        },\n        \"timeout\": {\n            \"type\": \"integer\",\n            \"description\": \"Execution timeout in seconds\",\n            \"minimum\": 1,\n            \"maximum\": 300,\n            \"default\": 30\n        }\n    },\n    \"required\": [\"code\"]\n}"
+  },
+  {
+    "description" : "Execute predefined functions with optional parameters",
+    "id" : "E23B89E3-99F0-45F9-BDDD-880901F26558",
+    "name" : "functions",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"function_name\": {\n            \"type\": \"string\",\n            \"description\": \"Name of the function to execute\"\n        },\n        \"parameters\": {\n            \"type\": \"object\",\n            \"description\": \"Optional parameters for the function\"\n        }\n    },\n    \"required\": [\"function_name\"]\n}"
+  },
+  {
+    "description" : "Get weather information for a specific location",
+    "id" : "C9C55ED3-7084-427E-9B07-A7402F631468",
+    "name" : "weather",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"location\": {\n            \"type\": \"string\",\n            \"description\": \"City and country\/state (e.g., 'San Francisco, CA')\"\n        },\n        \"units\": {\n            \"type\": \"string\",\n            \"description\": \"Temperature units\",\n            \"enum\": [\"celsius\", \"fahrenheit\", \"kelvin\"],\n            \"default\": \"celsius\"\n        },\n        \"forecast\": {\n            \"type\": \"boolean\",\n            \"description\": \"Include forecast\",\n            \"default\": false\n        },\n        \"days\": {\n            \"type\": \"integer\",\n            \"description\": \"Number of forecast days (1-7)\",\n            \"minimum\": 1,\n            \"maximum\": 7,\n            \"default\": 3\n        },\n        \"detailed\": {\n            \"type\": \"boolean\",\n            \"description\": \"Include detailed weather information\",\n            \"default\": false\n        }\n    },\n    \"required\": [\"location\"]\n}"
+  },
+  {
+    "description" : "Report local node mode settings and availability.",
+    "id" : "45D9FE61-40B0-4D78-92C9-950C131CCBE9",
+    "name" : "nodes",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {}\n}"
+  },
+  {
+    "description" : "Read, write, and list files within the workspace directory",
+    "id" : "A62A0C0D-F656-481C-8F2A-C6A8942EEE0A",
+    "name" : "workspace",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"action\": {\n            \"type\": \"string\",\n            \"enum\": [\"read\", \"write\", \"list\"],\n            \"description\": \"Action to perform\"\n        },\n        \"path\": {\n            \"type\": \"string\",\n            \"description\": \"Relative path within the workspace\"\n        },\n        \"content\": {\n            \"type\": \"string\",\n            \"description\": \"Content to write (required for write)\"\n        },\n        \"recursive\": {\n            \"type\": \"boolean\",\n            \"description\": \"Whether to list recursively (list only)\",\n            \"default\": false\n        }\n    },\n    \"required\": [\"action\", \"path\"]\n}"
+  },
+  {
+    "description" : "Search the web for information",
+    "id" : "1C3730D8-E8C0-4B8E-9F57-91C9EBD87640",
+    "name" : "browser.search",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"query\": {\n            \"type\": \"string\",\n            \"description\": \"The search query\"\n        },\n        \"site\": {\n            \"type\": \"string\",\n            \"description\": \"Optional site filter\"\n        },\n        \"resultCount\": {\n            \"type\": \"integer\",\n            \"description\": \"Number of results (1-5)\",\n            \"minimum\": 1,\n            \"maximum\": 5,\n            \"default\": 3\n        }\n    },\n    \"required\": [\"query\"]\n}"
+  }
+]

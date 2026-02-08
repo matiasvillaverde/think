@@ -1,0 +1,56 @@
+[
+  {
+    "actionType" : "text",
+    "chatId" : "0E5FAF1D-CB20-4827-9BC0-5F6DCEC6FD8F",
+    "cronExpression" : "0 9 * * 1-5",
+    "id" : "671BEF41-ABEF-4BEC-8F2C-92428B7C8112",
+    "isEnabled" : false,
+    "kind" : "cron",
+    "prompt" : "Generate daily briefing.",
+    "title" : "uc9 daily briefing",
+    "toolNames" : [
+
+    ]
+  },
+  {
+    "actionType" : "text",
+    "chatId" : "0E5FAF1D-CB20-4827-9BC0-5F6DCEC6FD8F",
+    "cronExpression" : "0 8 * * 1-5",
+    "id" : "2C5C5475-5808-4CF3-B622-E1C385A7A7D1",
+    "isEnabled" : true,
+    "kind" : "cron",
+    "nextRunAt" : "2026-02-09T16:00:00Z",
+    "prompt" : "Generate a morning briefing: weather + tasks.",
+    "title" : "uc12 morning brief",
+    "toolNames" : [
+
+    ]
+  },
+  {
+    "actionType" : "text",
+    "chatId" : "0E5FAF1D-CB20-4827-9BC0-5F6DCEC6FD8F",
+    "cronExpression" : "0 6 * * *",
+    "id" : "85A469EC-34E9-4FD8-B427-D95229D8DC8F",
+    "isEnabled" : true,
+    "kind" : "cron",
+    "nextRunAt" : "2026-02-08T14:00:00Z",
+    "prompt" : "Check inventory and list SKUs needing reorder.",
+    "title" : "uc14 inventory check",
+    "toolNames" : [
+
+    ]
+  },
+  {
+    "actionType" : "text",
+    "chatId" : "0E5FAF1D-CB20-4827-9BC0-5F6DCEC6FD8F",
+    "cronExpression" : "*\/30 * * * *",
+    "id" : "5A6CFA47-9224-47F9-A545-2DB3EC8874A3",
+    "isEnabled" : false,
+    "kind" : "cron",
+    "prompt" : "temp",
+    "title" : "uc20 temp",
+    "toolNames" : [
+
+    ]
+  }
+]

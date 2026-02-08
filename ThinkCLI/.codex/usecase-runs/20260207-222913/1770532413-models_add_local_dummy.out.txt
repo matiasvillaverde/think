@@ -1,0 +1,4 @@
+{
+  "message" : "Added local model 68EBF8D6-8BD7-4B2A-98C5-409ED22645D7",
+  "type" : "message"
+}

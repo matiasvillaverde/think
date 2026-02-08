@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 426B749A-13EA-4CA4-AE68-799EA95813AF --prompt 'Operate without tools. Explain limitations.' --no-tools --no-stream --format json",
+  "duration_ms": 70305,
+  "exit_code": 0,
+  "name": "chat_send_uc3_no_tools",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515286-chat_send_uc3_no_tools.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515286-chat_send_uc3_no_tools.out.txt"
+}

@@ -1,0 +1,14 @@
+[
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.store-wal",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.store.store-shm",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.store",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.store-shm",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.store.store-wal",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27-wal",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27-shm",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.sqlite-wal",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.version",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.sqlite",
+  "\/Users\/mati\/Library\/Application Support\/codex-uc27.sqlite-shm"
+]

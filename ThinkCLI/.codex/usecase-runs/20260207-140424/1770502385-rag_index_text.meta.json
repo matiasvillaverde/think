@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo rag index --chat BCF07036-6EAB-433B-88CE-DC1530C6FF9A --id D44F4845-AC63-4192-B2B7-385CC8546630 --text 'Proposal: adopt stricter OpenAPI-first enforcement in CI.'",
+  "duration_ms": 1936,
+  "exit_code": 0,
+  "name": "rag_index_text",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-140424/1770502385-rag_index_text.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-140424/1770502385-rag_index_text.out.txt"
+}

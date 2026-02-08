@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 75CBCDE7-B9D9-43E1-883F-4298FD2258F5 --prompt 'Using the indexed docs, propose a repo audit checklist.' --no-stream --format json",
+  "duration_ms": 75348,
+  "exit_code": 0,
+  "name": "chat_send_uc2",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770537828-chat_send_uc2.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770537828-chat_send_uc2.out.txt"
+}

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run browser.search --args '{\"query\": \"OpenClaw workflows\", \"resultCount\": 1}' --format json",
+  "duration_ms": 1437,
+  "exit_code": 0,
+  "name": "uc29_browser_search_smoke",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539947-uc29_browser_search_smoke.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539947-uc29_browser_search_smoke.out.txt"
+}

@@ -1,0 +1,36 @@
+{
+  "configPath" : {
+    "source" : "environment",
+    "value" : "\/Users\/mati\/Code\/matiasvillaverde\/think-freely\/ThinkCLI\/.codex\/usecase-config.json"
+  },
+  "defaultModelId" : {
+    "source" : "configFile",
+    "value" : "CAFFD336-A121-8649-A5C9-D0EA57D43D08"
+  },
+  "outputFormat" : {
+    "source" : "cli",
+    "value" : "json"
+  },
+  "preferredSkills" : {
+    "source" : "defaultValue",
+    "value" : [
+
+    ]
+  },
+  "store" : {
+    "source" : "cli",
+    "value" : "codex-usecases.store"
+  },
+  "toolAccess" : {
+    "source" : "defaultValue",
+    "value" : "allow"
+  },
+  "verbose" : {
+    "source" : "defaultValue",
+    "value" : false
+  },
+  "workspacePath" : {
+    "source" : "cli",
+    "value" : "\/Users\/mati\/Code\/Nell-Technologies\/monorepo"
+  }
+}

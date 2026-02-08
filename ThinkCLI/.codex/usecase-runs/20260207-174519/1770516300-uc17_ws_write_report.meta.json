@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run workspace --args '{\"action\": \"write\", \"path\": \".codex-uc17-openapi-report.txt\", \"content\": \"UC17 OpenAPI audit summary: paths=136\\n\"}' --format json",
+  "duration_ms": 174,
+  "exit_code": 0,
+  "name": "uc17_ws_write_report",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770516300-uc17_ws_write_report.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770516300-uc17_ws_write_report.out.txt"
+}

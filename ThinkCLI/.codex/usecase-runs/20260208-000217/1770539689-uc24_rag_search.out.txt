@@ -1,0 +1,16 @@
+[
+  {
+    "id" : "680238E7-B9F6-4C6D-AAB1-81866915EB2B",
+    "keywords" : "uc24 metrics.csv raw data",
+    "rowId" : 2,
+    "score" : 4.765848159790039,
+    "text" : "see .codex-uc24-metrics.csv for raw data."
+  },
+  {
+    "id" : "680238E7-B9F6-4C6D-AAB1-81866915EB2B",
+    "keywords" : "metrics report",
+    "rowId" : 1,
+    "score" : 4.951805114746094,
+    "text" : "# uc24 metrics report"
+  }
+]

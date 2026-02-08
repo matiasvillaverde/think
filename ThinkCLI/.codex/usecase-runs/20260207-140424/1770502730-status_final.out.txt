@@ -1,0 +1,8 @@
+{
+  "chatsCount" : 4,
+  "enabledSkillsCount" : 1,
+  "gatewayRunning" : false,
+  "modelsCount" : 4,
+  "storePath" : "\/Users\/mati\/Library\/Application Support\/codex-usecases",
+  "workspacePath" : "\/Users\/mati\/Code\/Nell-Technologies\/monorepo"
+}

@@ -1,0 +1,6 @@
+{
+  "id" : "BF133F99-069C-4EDA-9FE7-82A627EBCE0D",
+  "requestId" : "74DF5E35-23F4-4284-944F-6373A7F2B42C",
+  "result" : "Weather for San Francisco, CA\n─────────────────────\nCurrent: 11°C\nConditions: Partly Cloudy\n",
+  "toolName" : "weather"
+}

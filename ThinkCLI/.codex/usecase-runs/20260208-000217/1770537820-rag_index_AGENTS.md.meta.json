@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo rag index --chat 75CBCDE7-B9D9-43E1-883F-4298FD2258F5 --id C173BC43-0A33-4CB3-B181-8E67830C66F1 --file /Users/mati/Code/Nell-Technologies/monorepo/AGENTS.md",
+  "duration_ms": 2262,
+  "exit_code": 0,
+  "name": "rag_index_AGENTS.md",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770537820-rag_index_AGENTS.md.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770537820-rag_index_AGENTS.md.out.txt"
+}

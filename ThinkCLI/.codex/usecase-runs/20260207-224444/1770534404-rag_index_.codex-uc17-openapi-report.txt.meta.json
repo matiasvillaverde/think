@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo rag index --chat 722609A6-ECBB-4AE7-8931-3F1475DC1E2F --id F76D6CD3-D093-4FE8-A889-57098E44CB52 --file /Users/mati/Code/Nell-Technologies/monorepo/.codex-uc17-openapi-report.txt",
+  "duration_ms": 1915,
+  "exit_code": 0,
+  "name": "rag_index_.codex-uc17-openapi-report.txt",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534404-rag_index_.codex-uc17-openapi-report.txt.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770534404-rag_index_.codex-uc17-openapi-report.txt.out.txt"
+}

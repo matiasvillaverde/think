@@ -1,0 +1,6 @@
+{
+  "id" : "7B3E1398-83F9-4805-89BB-FC2B3316F86A",
+  "requestId" : "65A50C03-019B-43B4-9D0C-7834AC3C3E85",
+  "result" : "[\"services\\\/test-utils\",\"services\\\/generator\",\"services\\\/web-api\"]",
+  "toolName" : "workspace"
+}

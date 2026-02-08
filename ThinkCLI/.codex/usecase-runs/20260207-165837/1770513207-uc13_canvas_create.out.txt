@@ -1,0 +1,6 @@
+{
+  "id" : "76335D4C-696E-42C9-BFA8-63CB63794E6C",
+  "requestId" : "6852433F-3B66-4895-983C-A3B390AE79A2",
+  "result" : "Canvas created (163BF855-ABBB-41A9-82D6-74ED2D36B2BA)",
+  "toolName" : "canvas"
+}

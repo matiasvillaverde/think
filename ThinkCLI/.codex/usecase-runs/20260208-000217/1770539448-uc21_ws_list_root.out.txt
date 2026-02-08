@@ -1,0 +1,6 @@
+{
+  "id" : "B7D6F3DB-76D0-4CAC-A790-22DF4C358BB7",
+  "requestId" : "F0C39E79-5640-4DEF-9942-10E771CB5051",
+  "result" : "[\".husky\",\"clients\",\".codex-uc24-report.md\",\".native-pids.bak\",\".vercel\",\".instance\",\".DS_Store\",\".redis.pid\",\".codex-uc13-deliverable.md\",\"dump.rdb\",\".codex-uc21-workflow.yaml\",\".qstash-local.log\",\"Dockerfile.mcp-nell-api\",\"Makefile\",\"style-references\",\".codex-uc13-brief.md\",\".codex-uc14-inventory.csv\",\".native-logs\",\".mcp.json\",\".codex-uc23-tickets.json\",\".agents\",\".claude\",\".qstash-local.pid\",\".env.test\",\"docs\",\".codex-uc22-release-draft.md\",\".e2e-failures.md\",\"openapi\",\".qstash-local.env\",\"supabase\",\"cliff.toml\",\".codex-uc25-owasp.json\",\".dockerignore\",\".codex\",\"logs\",\".gitignore\",\"package-lock.json\",\"make\",\"appendonlydir\",\".nvmrc\",\"scripts\",\"packages\",\".github\",\".gitattributes\",\".codex-uc11-web.md\",\".codex-uc17-openapi-report.txt\",\".playwright-mcp\",\".codex-uc15-draft.md\",\".infisical.json\",\"docker-compose.yml\",\"docker-compose.test.yml\",\".tmp\",\"skills\",\".native-pids\",\".env.example\",\"AGENTS.md\",\".git\",\"mcp-servers\",\"test-results\",\".emdash.json\",\"notebooks\",\"CLAUDE.md\",\"services\",\".codex-uc16-home.json\",\"Dockerfile.generator\"]",
+  "toolName" : "workspace"
+}

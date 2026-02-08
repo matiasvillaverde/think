@@ -1,0 +1,23 @@
+[
+  {
+    "id" : "13CAB45A-C064-4EC4-B81E-64673CEBCAB5",
+    "keywords" : "steps",
+    "rowId" : 4,
+    "score" : 4.2013125494122505e-06,
+    "text" : "steps:"
+  },
+  {
+    "id" : "13CAB45A-C064-4EC4-B81E-64673CEBCAB5",
+    "keywords" : "path",
+    "rowId" : 10,
+    "score" : 3.4361674785614014,
+    "text" : "path: \".\""
+  },
+  {
+    "id" : "13CAB45A-C064-4EC4-B81E-64673CEBCAB5",
+    "keywords" : "action read",
+    "rowId" : 11,
+    "score" : 3.8320984840393066,
+    "text" : "action: read"
+  }
+]

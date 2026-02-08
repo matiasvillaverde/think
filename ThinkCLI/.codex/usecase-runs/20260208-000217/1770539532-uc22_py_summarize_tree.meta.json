@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run python_exec --args '{\"code\": \"import os, json\\nroot='\"'\"'services'\"'\"'\\nitems=[]\\nfor d in sorted(os.listdir(root))[:20]:\\n  p=os.path.join(root,d)\\n  if os.path.isdir(p): items.append(d)\\nprint(json.dumps({'\"'\"'services'\"'\"':items}, indent=2))\", \"timeout\": 30}' --format json",
+  "duration_ms": 185,
+  "exit_code": 0,
+  "name": "uc22_py_summarize_tree",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539532-uc22_py_summarize_tree.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539532-uc22_py_summarize_tree.out.txt"
+}

@@ -1,0 +1,49 @@
+{
+  "checks" : [
+    {
+      "message" : "No config file found.",
+      "name" : "config",
+      "status" : "warning"
+    },
+    {
+      "message" : "\/Users\/mati\/Code\/Nell-Technologies\/monorepo",
+      "name" : "workspace",
+      "status" : "ok"
+    },
+    {
+      "message" : "\/Users\/mati\/Library\/Containers\/com.example.think\/Data\/Library\/Application Support\/codex-usecases.store",
+      "name" : "store",
+      "status" : "ok"
+    },
+    {
+      "message" : "MLX metallib available.",
+      "name" : "metallib",
+      "status" : "ok"
+    },
+    {
+      "message" : "Database reachable.",
+      "name" : "database",
+      "status" : "ok"
+    },
+    {
+      "message" : "Models available: 2",
+      "name" : "models",
+      "status" : "ok"
+    },
+    {
+      "message" : "Enabled skills: 0",
+      "name" : "skills",
+      "status" : "warning"
+    },
+    {
+      "message" : "Tools available: 12",
+      "name" : "tools",
+      "status" : "ok"
+    },
+    {
+      "message" : "Gateway stopped.",
+      "name" : "gateway",
+      "status" : "ok"
+    }
+  ]
+}

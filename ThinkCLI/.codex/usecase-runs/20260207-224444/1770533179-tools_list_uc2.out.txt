@@ -1,0 +1,74 @@
+[
+  {
+    "description" : "Read, write, and list files within the workspace directory",
+    "id" : "65813E76-289C-4559-A791-19C0F43C30DA",
+    "name" : "workspace",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"action\": {\n            \"type\": \"string\",\n            \"enum\": [\"read\", \"write\", \"list\"],\n            \"description\": \"Action to perform\"\n        },\n        \"path\": {\n            \"type\": \"string\",\n            \"description\": \"Relative path within the workspace\"\n        },\n        \"content\": {\n            \"type\": \"string\",\n            \"description\": \"Content to write (required for write)\"\n        },\n        \"recursive\": {\n            \"type\": \"boolean\",\n            \"description\": \"Whether to list recursively (list only)\",\n            \"default\": false\n        }\n    },\n    \"required\": [\"action\", \"path\"]\n}"
+  },
+  {
+    "description" : "Report local node mode settings and availability.",
+    "id" : "618FE71C-C4B8-41AF-BDD2-98CA2DB7902A",
+    "name" : "nodes",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {}\n}"
+  },
+  {
+    "description" : "Search the web for information",
+    "id" : "2361B829-7396-4C97-B741-738BF342CEA4",
+    "name" : "browser.search",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"query\": {\n            \"type\": \"string\",\n            \"description\": \"The search query\"\n        },\n        \"site\": {\n            \"type\": \"string\",\n            \"description\": \"Optional site filter\"\n        },\n        \"resultCount\": {\n            \"type\": \"integer\",\n            \"description\": \"Number of results (1-5)\",\n            \"minimum\": 1,\n            \"maximum\": 5,\n            \"default\": 3\n        }\n    },\n    \"required\": [\"query\"]\n}"
+  },
+  {
+    "description" : "Execute predefined functions with optional parameters",
+    "id" : "EA104C7D-1916-40EA-9A41-E1F131C15424",
+    "name" : "functions",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"function_name\": {\n            \"type\": \"string\",\n            \"description\": \"Name of the function to execute\"\n        },\n        \"parameters\": {\n            \"type\": \"object\",\n            \"description\": \"Optional parameters for the function\"\n        }\n    },\n    \"required\": [\"function_name\"]\n}"
+  },
+  {
+    "description" : "Write important information to persistent memory. Use this tool to remember facts, preferences, and observations that should persist across conversations. Types: 'longTerm' for curated facts, 'daily' for contextual observations.",
+    "id" : "DD45777E-5419-41C7-BBA3-CB1C1145C039",
+    "name" : "memory",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"type\": {\n            \"type\": \"string\",\n            \"description\": \"The type of memory to write\",\n            \"enum\": [\"longTerm\", \"daily\"]\n        },\n        \"content\": {\n            \"type\": \"string\",\n            \"description\": \"The fact, observation, or information to remember\"\n        },\n        \"keywords\": {\n            \"type\": \"array\",\n            \"items\": { \"type\": \"string\" },\n            \"description\": \"Keywords for categorizing and searching this memory\",\n            \"default\": []\n        }\n    },\n    \"required\": [\"type\", \"content\"]\n}"
+  },
+  {
+    "description" : "Search using DuckDuckGo with privacy protection",
+    "id" : "D7FBF8A2-93B5-4F74-ADA8-613BB03BE77E",
+    "name" : "duckduckgo_search",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"query\": {\n            \"type\": \"string\",\n            \"description\": \"The search query\"\n        },\n        \"region\": {\n            \"type\": \"string\",\n            \"description\": \"Region for results (e.g., us-en, uk-en)\",\n            \"default\": \"wt-wt\"\n        },\n        \"instant_answers\": {\n            \"type\": \"boolean\",\n            \"description\": \"Include instant answers\",\n            \"default\": false\n        },\n        \"no_redirect\": {\n            \"type\": \"boolean\",\n            \"description\": \"Disable redirect following\",\n            \"default\": false\n        },\n        \"count\": {\n            \"type\": \"integer\",\n            \"description\": \"Number of results (1-10)\",\n            \"minimum\": 1,\n            \"maximum\": 10,\n            \"default\": 5\n        }\n    },\n    \"required\": [\"query\"]\n}"
+  },
+  {
+    "description" : "Schedule prompts to run in the future. Use action=create to create a schedule with a cron expression, list to view schedules, enable\/disable to toggle, and delete to remove schedules. Cron format: \"min hour day month weekday\".",
+    "id" : "E3197629-075F-48D8-86B0-0602D9B203B1",
+    "name" : "cron",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"action\": {\n            \"type\": \"string\",\n            \"enum\": [\"create\", \"list\", \"enable\", \"disable\", \"delete\", \"update\"]\n        },\n        \"title\": { \"type\": \"string\" },\n        \"prompt\": { \"type\": \"string\" },\n        \"cron\": {\n            \"type\": \"string\",\n            \"description\": \"Cron expression or ISO 8601 date for one-shot schedules\"\n        },\n        \"schedule_kind\": {\n            \"type\": \"string\",\n            \"enum\": [\"cron\", \"one_shot\"],\n            \"default\": \"cron\"\n        },\n        \"action_type\": {\n            \"type\": \"string\",\n            \"enum\": [\"text\", \"image\"],\n            \"default\": \"text\"\n        },\n        \"timezone\": { \"type\": \"string\" },\n        \"tools\": {\n            \"type\": \"array\",\n            \"items\": { \"type\": \"string\" },\n            \"default\": []\n        },\n        \"schedule_id\": { \"type\": \"string\" },\n        \"chat_id\": { \"type\": \"string\" }\n    },\n    \"required\": [\"action\"]\n}"
+  },
+  {
+    "description" : "Execute Python code in a sandboxed environment",
+    "id" : "09BD3724-B19F-4F77-B4DF-B4A2CC05260C",
+    "name" : "python_exec",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"code\": {\n            \"type\": \"string\",\n            \"description\": \"Python code to execute\"\n        },\n        \"timeout\": {\n            \"type\": \"integer\",\n            \"description\": \"Execution timeout in seconds\",\n            \"minimum\": 1,\n            \"maximum\": 300,\n            \"default\": 30\n        }\n    },\n    \"required\": [\"code\"]\n}"
+  },
+  {
+    "description" : "Create and update a live canvas document for the current chat. Use action=create to create a new canvas, update to replace content, append to add content, get to fetch, and list to view available canvases.",
+    "id" : "6B7119DA-020E-43BE-870A-5C5D9847CE71",
+    "name" : "canvas",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"action\": {\n            \"type\": \"string\",\n            \"enum\": [\"create\", \"update\", \"append\", \"get\", \"list\"]\n        },\n        \"title\": { \"type\": \"string\" },\n        \"content\": { \"type\": \"string\" },\n        \"canvas_id\": { \"type\": \"string\" },\n        \"chat_id\": { \"type\": \"string\" }\n    },\n    \"required\": [\"action\"]\n}"
+  },
+  {
+    "description" : "Get weather information for a specific location",
+    "id" : "E117D2DE-BAFD-4F22-939C-D1C7515BEF78",
+    "name" : "weather",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"location\": {\n            \"type\": \"string\",\n            \"description\": \"City and country\/state (e.g., 'San Francisco, CA')\"\n        },\n        \"units\": {\n            \"type\": \"string\",\n            \"description\": \"Temperature units\",\n            \"enum\": [\"celsius\", \"fahrenheit\", \"kelvin\"],\n            \"default\": \"celsius\"\n        },\n        \"forecast\": {\n            \"type\": \"boolean\",\n            \"description\": \"Include forecast\",\n            \"default\": false\n        },\n        \"days\": {\n            \"type\": \"integer\",\n            \"description\": \"Number of forecast days (1-7)\",\n            \"minimum\": 1,\n            \"maximum\": 7,\n            \"default\": 3\n        },\n        \"detailed\": {\n            \"type\": \"boolean\",\n            \"description\": \"Include detailed weather information\",\n            \"default\": false\n        }\n    },\n    \"required\": [\"location\"]\n}"
+  },
+  {
+    "description" : "Read health and fitness data from HealthKit",
+    "id" : "E7F28043-C1A3-4166-B2C8-0D72C7DB60BE",
+    "name" : "health_data",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"dataType\": {\n            \"type\": \"string\",\n            \"description\": \"Type of health data to retrieve\",\n            \"enum\": [\"steps\", \"heartRate\", \"sleep\", \"workout\", \"calories\", \"distance\"]\n        },\n        \"startDate\": {\n            \"type\": \"string\",\n            \"description\": \"Start date in ISO format (YYYY-MM-DD)\",\n            \"format\": \"date\"\n        },\n        \"endDate\": {\n            \"type\": \"string\",\n            \"description\": \"End date in ISO format (YYYY-MM-DD)\",\n            \"format\": \"date\"\n        },\n        \"limit\": {\n            \"type\": \"integer\",\n            \"description\": \"Maximum number of results to return\",\n            \"minimum\": 1,\n            \"maximum\": 100,\n            \"default\": 50\n        }\n    },\n    \"required\": [\"dataType\"]\n}"
+  },
+  {
+    "description" : "Search using Brave search engine with privacy focus",
+    "id" : "5A2EE868-05F1-4B0F-AD6C-536A8A691EC8",
+    "name" : "brave_search",
+    "schema" : "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"query\": {\n            \"type\": \"string\",\n            \"description\": \"The search query\"\n        },\n        \"freshness\": {\n            \"type\": \"string\",\n            \"description\": \"Time range for results\",\n            \"enum\": [\"day\", \"week\", \"month\", \"year\"],\n            \"default\": \"all\"\n        },\n        \"safe_search\": {\n            \"type\": \"string\",\n            \"description\": \"Safe search level\",\n            \"enum\": [\"off\", \"moderate\", \"strict\"],\n            \"default\": \"moderate\"\n        },\n        \"count\": {\n            \"type\": \"integer\",\n            \"description\": \"Number of results (1-10)\",\n            \"minimum\": 1,\n            \"maximum\": 10,\n            \"default\": 5\n        }\n    },\n    \"required\": [\"query\"]\n}"
+  }
+]

@@ -1,0 +1,4 @@
+{
+  "message" : "\/Users\/mati\/Library\/Application Support\/codex-uc27",
+  "type" : "message"
+}

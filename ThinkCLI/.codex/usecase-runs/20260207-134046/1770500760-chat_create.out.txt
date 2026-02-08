@@ -1,0 +1,20 @@
+SwiftData.DefaultStore save failed with error: Error Domain=NSCocoaErrorDomain Code=1570 "%{PROPERTY}@ is a required value." UserInfo={NSValidationErrorObject=<NSManagedObject: 0x946fa9f90> (entity: Chat; id: 0xaf4dbac7762381ec <x-coredata://5ED6D207-7FE7-48B5-9DE7-1E3712E7DE58/Chat/p1>; data: {
+    archivedAt = nil;
+    canvases = "<relationship fault: 0x946cd07a0 'canvases'>";
+    createdAt = "2026-02-07 21:40:48 +0000";
+    fallbackModelIds = "(\n)";
+    id = "E297F84A-6E59-4DA9-8EB8-9A12E963DD60";
+    imageModel = "0xaf4dbac7762381fc <x-coredata://5ED6D207-7FE7-48B5-9DE7-1E3712E7DE58/Model/p1>";
+    imageModelConfig = nil;
+    isFavorite = 0;
+    languageModel = "0xaf4dbac7764381fc <x-coredata://5ED6D207-7FE7-48B5-9DE7-1E3712E7DE58/Model/p2>";
+    languageModelConfig = "0xaf4dbac77623815c <x-coredata://5ED6D207-7FE7-48B5-9DE7-1E3712E7DE58/LLMConfiguration/p1>";
+    messages =     (
+    );
+    modifiedAt = "2026-02-07 21:40:48 +0000";
+    name = "uc5-image";
+    personality = "0xaf4dbac77483814c <x-coredata://5ED6D207-7FE7-48B5-9DE7-1E3712E7DE58/Personality/p20>";
+    schedules = "<relationship fault: 0x946cd1420 'schedules'>";
+    updatedAt = "2026-02-07 21:45:52 +0000";
+    user = "0xaf4dbac7762381dc <x-coredata://5ED6D207-7FE7-48B5-9DE7-1E3712E7DE58/User/p1>";
+}), NSLocalizedDescription=%{PROPERTY}@ is a required value., NSValidationErrorKey=imageModelConfig, NSValidationErrorValue=null}

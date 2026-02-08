@@ -1,0 +1,7 @@
+{
+  "error" : "Failed to create schedule: Invalid input: Invalid one-shot date: 2026-02-08",
+  "id" : "97D8B70F-618D-4512-8BD8-53623115A346",
+  "requestId" : "6E766FB6-5043-46A2-9297-9041607E970C",
+  "result" : "",
+  "toolName" : "cron"
+}

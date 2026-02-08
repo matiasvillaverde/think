@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases.store --workspace /Users/mati/Code/Nell-Technologies/monorepo onboard --non-interactive --workspace-path /Users/mati/Code/Nell-Technologies/monorepo --model mlx-community/SmolLM-360M-Instruct-4bit --backend mlx --skip-download",
+  "duration_ms": 570,
+  "exit_code": 0,
+  "name": "onboard",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-132006/1770499206-onboard.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-132006/1770499206-onboard.out.txt"
+}

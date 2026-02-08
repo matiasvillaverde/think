@@ -1,0 +1,6 @@
+{
+  "id" : "748DF59D-16C3-460A-8A5B-3E52E0EA87A5",
+  "requestId" : "FF68D1B1-61E9-41D4-8B48-2FED434EC2BC",
+  "result" : "Brave search results for 'openclaw lobster workflow runner yaml json pipeline'\n\nReturning 5 results:\n1. [Result 1] - Privacy-focused result\n2. [Result 2] - Independent search result\n3. [Result 3] - No tracking result",
+  "toolName" : "brave_search"
+}

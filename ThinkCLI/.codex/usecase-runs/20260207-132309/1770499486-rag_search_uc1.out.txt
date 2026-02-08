@@ -1,0 +1,23 @@
+[
+  {
+    "id" : "F499F2A8-7522-4EED-BFA9-9C04A3F45367",
+    "keywords" : "openapi workflow critical",
+    "rowId" : 17,
+    "score" : 2.182856559753418,
+    "text" : "## openapi workflow (critical)"
+  },
+  {
+    "id" : "1DDC9FF0-F7A6-4234-952C-D5529CCC2AFF",
+    "keywords" : "openapi workflow is critical never edit openapi openapi.json manually",
+    "rowId" : 105,
+    "score" : 2.7412407398223877,
+    "text" : "openapi workflow is critical; never edit openapi\/openapi.json manually."
+  },
+  {
+    "id" : "F499F2A8-7522-4EED-BFA9-9C04A3F45367",
+    "keywords" : "never manually edit openapi openapi.json always regenerate backend",
+    "rowId" : 38,
+    "score" : 3.469433546066284,
+    "text" : "- **never manually edit** `openapi\/openapi.json` - always regenerate from backend"
+  }
+]

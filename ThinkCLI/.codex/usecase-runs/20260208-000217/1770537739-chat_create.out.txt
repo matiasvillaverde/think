@@ -1,0 +1,6 @@
+{
+  "createdAt" : "2026-02-08T08:02:19Z",
+  "id" : "761644CA-67E9-47FD-B86E-5F102ACBB0E7",
+  "title" : "uc1-bootstrap",
+  "updatedAt" : "2026-02-08T08:02:19Z"
+}

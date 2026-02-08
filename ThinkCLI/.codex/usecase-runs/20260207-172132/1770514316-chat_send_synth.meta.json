@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 4031AD40-EB59-402F-AC45-53459FEC79C4 --prompt 'Synthesize the panel positions into a decision and checklist.' --no-stream --format json",
+  "duration_ms": 28337,
+  "exit_code": 0,
+  "name": "chat_send_synth",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514316-chat_send_synth.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514316-chat_send_synth.out.txt"
+}

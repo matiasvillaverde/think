@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run canvas --args '{\"action\": \"create\", \"chat_id\": \"D20441FD-7F6C-4E6F-B80F-2C1944586136\", \"title\": \"UC11 Findings\", \"content\": \"Web research findings will be summarized here.\"}' --format json",
+  "duration_ms": 186,
+  "exit_code": 0,
+  "name": "uc11_canvas_create",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-222913/1770532945-uc11_canvas_create.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-222913/1770532945-uc11_canvas_create.out.txt"
+}

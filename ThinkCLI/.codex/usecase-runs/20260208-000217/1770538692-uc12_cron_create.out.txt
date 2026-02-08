@@ -1,0 +1,6 @@
+{
+  "id" : "CD5E7F49-2439-42C2-A6D3-33A8C79B00A1",
+  "requestId" : "E40C006F-A788-45D2-BFF7-4A8DBA8A3004",
+  "result" : "{\"id\":\"CDE9AD03-9B64-49B1-8EB2-F10A2F852BE3\",\"next_run_at\":\"2026-02-09T16:00:00.000Z\"}",
+  "toolName" : "cron"
+}

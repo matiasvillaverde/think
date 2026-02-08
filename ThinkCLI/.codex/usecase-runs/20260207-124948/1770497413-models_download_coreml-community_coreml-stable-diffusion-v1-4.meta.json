@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases-20260207-124948.store --workspace /Users/mati/Code/Nell-Technologies/monorepo models download coreml-community/coreml-stable-diffusion-v1-4 --backend coreml",
+  "duration_ms": 310,
+  "exit_code": 77,
+  "name": "models_download_coreml-community_coreml-stable-diffusion-v1-4",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-124948/1770497413-models_download_coreml-community_coreml-stable-diffusion-v1-4.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-124948/1770497413-models_download_coreml-community_coreml-stable-diffusion-v1-4.out.txt"
+}

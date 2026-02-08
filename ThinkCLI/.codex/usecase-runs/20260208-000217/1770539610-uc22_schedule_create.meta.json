@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo schedules create --title 'uc22 weekly release notes' --prompt 'Generate release notes.' --cron '0 10 * * 1' --chat 67BB9A32-DFDF-4F6A-8CC6-8C3626766BC5 --disabled --format json",
+  "duration_ms": 193,
+  "exit_code": 0,
+  "name": "uc22_schedule_create",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539610-uc22_schedule_create.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539610-uc22_schedule_create.out.txt"
+}

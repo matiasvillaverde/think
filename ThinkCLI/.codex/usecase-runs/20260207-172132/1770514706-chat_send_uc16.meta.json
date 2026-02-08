@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 4031AD40-EB59-402F-AC45-53459FEC79C4 --prompt 'Given the home state JSON, propose a safe automation strategy (no real device access).' --no-stream --format json",
+  "duration_ms": 74237,
+  "exit_code": 0,
+  "name": "chat_send_uc16",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514706-chat_send_uc16.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514706-chat_send_uc16.out.txt"
+}

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run canvas --args '{\"action\": \"create\", \"chat_id\": \"EFC536F2-70F0-48A1-AD88-86030301A1E6\", \"title\": \"UC29\", \"content\": \"tool belt\"}' --format json",
+  "duration_ms": 194,
+  "exit_code": 0,
+  "name": "uc29_canvas_smoke",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539946-uc29_canvas_smoke.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539946-uc29_canvas_smoke.out.txt"
+}

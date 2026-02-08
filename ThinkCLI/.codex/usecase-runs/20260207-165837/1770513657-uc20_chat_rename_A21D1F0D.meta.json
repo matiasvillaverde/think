@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat rename --session A21D1F0D-E359-41A2-A6E4-07CCE48EFCD5 uc20-renamed-A21D1F0D",
+  "duration_ms": 175,
+  "exit_code": 0,
+  "name": "uc20_chat_rename_A21D1F0D",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-165837/1770513657-uc20_chat_rename_A21D1F0D.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-165837/1770513657-uc20_chat_rename_A21D1F0D.out.txt"
+}

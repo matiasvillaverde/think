@@ -1,0 +1,4 @@
+{
+  "message" : "Created schedule 356C34DA-DC95-4EEF-99B6-847739EB6E32",
+  "type" : "message"
+}

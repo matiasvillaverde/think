@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session B126833D-DCCB-4101-B04B-4FDEEEF5490A --prompt 'Argue against; list risks and failure modes.' --no-stream --format json",
+  "duration_ms": 80330,
+  "exit_code": 0,
+  "name": "panel_send_B126833D",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-140424/1770502447-panel_send_B126833D.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-140424/1770502447-panel_send_B126833D.out.txt"
+}

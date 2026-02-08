@@ -1,0 +1,16 @@
+[
+  {
+    "id" : "58E1F8DF-E815-4C7C-A74C-1660897E1077",
+    "keywords" : "uc22 release notes draft",
+    "rowId" : 1,
+    "score" : 4.790801525115967,
+    "text" : "# uc22 release notes draft"
+  },
+  {
+    "id" : "58E1F8DF-E815-4C7C-A74C-1660897E1077",
+    "keywords" : "placeholder draft generated workspace inventory",
+    "rowId" : 2,
+    "score" : 5.4590654373168945,
+    "text" : "- placeholder draft generated from workspace inventory."
+  }
+]

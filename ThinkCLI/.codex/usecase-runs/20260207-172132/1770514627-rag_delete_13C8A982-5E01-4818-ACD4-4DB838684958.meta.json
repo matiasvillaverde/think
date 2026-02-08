@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo rag delete --chat 4031AD40-EB59-402F-AC45-53459FEC79C4 13C8A982-5E01-4818-ACD4-4DB838684958",
+  "duration_ms": 172,
+  "exit_code": 0,
+  "name": "rag_delete_13C8A982-5E01-4818-ACD4-4DB838684958",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514627-rag_delete_13C8A982-5E01-4818-ACD4-4DB838684958.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514627-rag_delete_13C8A982-5E01-4818-ACD4-4DB838684958.out.txt"
+}

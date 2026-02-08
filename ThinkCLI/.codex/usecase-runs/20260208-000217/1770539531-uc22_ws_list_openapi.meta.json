@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run workspace --args '{\"action\": \"list\", \"path\": \"openapi\", \"recursive\": false}' --format json",
+  "duration_ms": 184,
+  "exit_code": 0,
+  "name": "uc22_ws_list_openapi",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539531-uc22_ws_list_openapi.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539531-uc22_ws_list_openapi.out.txt"
+}

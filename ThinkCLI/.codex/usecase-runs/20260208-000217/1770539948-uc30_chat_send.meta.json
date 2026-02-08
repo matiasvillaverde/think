@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session D8EC4626-D4D4-44F3-9839-F84079B951C0 --prompt 'Provide 3 operational tips for running long ThinkCLI sessions.' --no-stream --format json",
+  "duration_ms": 75670,
+  "exit_code": 0,
+  "name": "uc30_chat_send",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539948-uc30_chat_send.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539948-uc30_chat_send.out.txt"
+}

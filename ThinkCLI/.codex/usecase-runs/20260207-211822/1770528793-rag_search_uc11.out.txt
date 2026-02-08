@@ -1,0 +1,37 @@
+[
+  {
+    "id" : "6E9A9EB7-FA82-401F-8C12-05F9F01EE3DE",
+    "keywords" : "",
+    "rowId" : 44,
+    "score" : 3.8583662509918213,
+    "text" : "}"
+  },
+  {
+    "id" : "6E9A9EB7-FA82-401F-8C12-05F9F01EE3DE",
+    "keywords" : "",
+    "rowId" : 31,
+    "score" : 3.8583662509918213,
+    "text" : "}"
+  },
+  {
+    "id" : "6E9A9EB7-FA82-401F-8C12-05F9F01EE3DE",
+    "keywords" : "",
+    "rowId" : 18,
+    "score" : 3.8583662509918213,
+    "text" : "}"
+  },
+  {
+    "id" : "6E9A9EB7-FA82-401F-8C12-05F9F01EE3DE",
+    "keywords" : "running user controlled hardware integrates tools email calendars code editors act digital teammate",
+    "rowId" : 5,
+    "score" : 4.156099319458008,
+    "text" : "running 24\/7 on user-controlled hardware, it integrates with tools (email, calendars, code editors, etc.) to act like a digital teammate."
+  },
+  {
+    "id" : "6E9A9EB7-FA82-401F-8C12-05F9F01EE3DE",
+    "keywords" : "",
+    "rowId" : 26,
+    "score" : 4.256714820861816,
+    "text" : "{"
+  }
+]

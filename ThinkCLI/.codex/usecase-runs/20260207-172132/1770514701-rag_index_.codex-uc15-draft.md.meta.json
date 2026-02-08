@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo rag index --chat 4031AD40-EB59-402F-AC45-53459FEC79C4 --id D4C93DF8-0F03-4732-947A-8FD1BA310290 --file /Users/mati/Code/Nell-Technologies/monorepo/.codex-uc15-draft.md",
+  "duration_ms": 1950,
+  "exit_code": 0,
+  "name": "rag_index_.codex-uc15-draft.md",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514701-rag_index_.codex-uc15-draft.md.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514701-rag_index_.codex-uc15-draft.md.out.txt"
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "id" : "F323D351-65E6-471D-BEAE-C35D1BDE5C37",
+    "isEnabled" : true,
+    "name" : "uc27-skill",
+    "tools" : [
+      "workspace"
+    ]
+  }
+]

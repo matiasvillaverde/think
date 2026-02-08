@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run cron --args '{\"action\": \"create\", \"title\": \"uc16 lights on\", \"prompt\": \"Turn kitchen lights ON (simulated).\", \"cron\": \"2026-02-08\", \"schedule_kind\": \"one_shot\", \"chat_id\": \"08B70620-9123-4973-927E-890E7CF3C98A\", \"action_type\": \"text\"}' --format json",
+  "duration_ms": 200,
+  "exit_code": 0,
+  "name": "uc16_cron_create_one_shot",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539104-uc16_cron_create_one_shot.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539104-uc16_cron_create_one_shot.out.txt"
+}

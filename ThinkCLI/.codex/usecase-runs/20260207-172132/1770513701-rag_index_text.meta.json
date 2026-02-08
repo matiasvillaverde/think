@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo rag index --chat 4031AD40-EB59-402F-AC45-53459FEC79C4 --id 981DC3C5-8C0E-4DEE-BD68-C479ED197F22 --text 'OpenAPI workflow is critical; never edit openapi/openapi.json manually.'",
+  "duration_ms": 1861,
+  "exit_code": 0,
+  "name": "rag_index_text",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770513701-rag_index_text.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770513701-rag_index_text.out.txt"
+}

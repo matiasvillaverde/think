@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 698F6EB0-65F8-4BD2-898A-8D5DB372D6FD --prompt 'Using the report + CSV context, propose alert thresholds and an incident response playbook.' --no-stream --format json",
+  "duration_ms": 86490,
+  "exit_code": 0,
+  "name": "uc24_chat_send",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539691-uc24_chat_send.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539691-uc24_chat_send.out.txt"
+}

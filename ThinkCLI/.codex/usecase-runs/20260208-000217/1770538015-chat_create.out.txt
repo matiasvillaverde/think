@@ -1,0 +1,6 @@
+{
+  "createdAt" : "2026-02-08T08:06:56Z",
+  "id" : "8703B2C9-1C9D-48A2-988F-EFC0A95BEFA2",
+  "title" : "uc5-image",
+  "updatedAt" : "2026-02-08T08:06:56Z"
+}

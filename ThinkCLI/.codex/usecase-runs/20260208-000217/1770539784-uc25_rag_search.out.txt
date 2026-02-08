@@ -1,0 +1,37 @@
+[
+  {
+    "id" : "A962A3A1-C935-4860-8DCD-C525153D8392",
+    "keywords" : "getting started start introduction learn owasp top",
+    "rowId" : 6,
+    "score" : 3.366353750228882,
+    "text" : "getting started start with the introduction to learn about the owasp top 10:2021."
+  },
+  {
+    "id" : "A962A3A1-C935-4860-8DCD-C525153D8392",
+    "keywords" : "owasp top url https owasp.org owasp top welcome owasp top documentation",
+    "rowId" : 7,
+    "score" : 3.4624011516571045,
+    "text" : "owasp top 10:2021\\n   url: https:\/\/owasp.org\/top10\/2021\/\\n   owasp top 10:2021 welcome to the owasp top 10:2021 documentation."
+  },
+  {
+    "id" : "A962A3A1-C935-4860-8DCD-C525153D8392",
+    "keywords" : "owasp top u200a u2014 u200aexplained examples mohammed ibrahim medium url https medium.com owasp top explained examples owasp top u2014 explained examples web applications are complex connected",
+    "rowId" : 10,
+    "score" : 3.561093807220459,
+    "text" : "owasp top 10 (2021)\\u200a\\u2014\\u200aexplained with examples | by mohammed ibrahim | medium\\n   url: https:\/\/medium.com\/@mi5062254\/owasp-top-10-2021-explained-with-examples-a9d1e3472c07\\n   owasp top 10 (2021) \\u2014 explained with examples web applications are complex and connected."
+  },
+  {
+    "id" : "A962A3A1-C935-4860-8DCD-C525153D8392",
+    "keywords" : "result web search results owasp top summary n nfound results n url https reesea.github.io assets docs owasp overview.pdf",
+    "rowId" : 8,
+    "score" : 3.957573413848877,
+    "text" : "\"result\": \"web search results for 'owasp top 10 2021 summary'\\n\\nfound 3 results:\\n\\n1. \\n   url: https:\/\/reesea.github.io\/assets\/docs\/owasp-top10-overview.pdf\\n   1."
+  },
+  {
+    "id" : "A962A3A1-C935-4860-8DCD-C525153D8392",
+    "keywords" : "navigation content owasp top welcome owasp top documentation. nthe owasp top is standard awareness document developers web application security. nit represents broad consensus most critical security risks web ngetting started start introduction n n3",
+    "rowId" : 9,
+    "score" : 4.19193696975708,
+    "text" : "navigation\\n   content: owasp top 10:2021 welcome to the owasp top 10:2021 documentation.\\nthe owasp top 10 is a standard awareness document for developers and web application security.\\nit represents a broad consensus about the most critical security risks to web applications.\\ngetting started start with the introduction to ...\\n\\n3."
+  }
+]

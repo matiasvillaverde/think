@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run browser.search --args '{\"query\": \"OpenClaw automation assistant use cases\", \"resultCount\": 3}' --format json",
+  "duration_ms": 2486,
+  "exit_code": 0,
+  "name": "uc15_web_search",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539001-uc15_web_search.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539001-uc15_web_search.out.txt"
+}

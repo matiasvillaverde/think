@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo personality create --name panel-optimist --description autogen:panel-optimist --instructions 'You are panel-optimist. Keep outputs structured and actionable.' --category productivity --format json",
+  "duration_ms": 179,
+  "exit_code": 0,
+  "name": "personality_create_panel-optimist",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514017-personality_create_panel-optimist.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-172132/1770514017-personality_create_panel-optimist.out.txt"
+}

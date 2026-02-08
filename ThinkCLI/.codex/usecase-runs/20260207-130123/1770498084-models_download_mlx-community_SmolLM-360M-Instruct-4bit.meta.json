@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases-20260207-130123.store --workspace /Users/mati/Code/Nell-Technologies/monorepo models download mlx-community/SmolLM-360M-Instruct-4bit --backend mlx",
+  "duration_ms": 24954,
+  "exit_code": 0,
+  "name": "models_download_mlx-community_SmolLM-360M-Instruct-4bit",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-130123/1770498084-models_download_mlx-community_SmolLM-360M-Instruct-4bit.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-130123/1770498084-models_download_mlx-community_SmolLM-360M-Instruct-4bit.out.txt"
+}

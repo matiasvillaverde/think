@@ -1,0 +1,1 @@
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1020 checkpointed: 1020

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run weather --args '{\"location\": \"San Francisco, CA\", \"units\": \"fahrenheit\", \"forecast\": true, \"days\": 3}' --format json",
+  "duration_ms": 177,
+  "exit_code": 0,
+  "name": "uc12_weather_now",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-165837/1770513060-uc12_weather_now.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-165837/1770513060-uc12_weather_now.out.txt"
+}

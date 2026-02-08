@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases.store --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run workspace --args '{\"action\": \"read\", \"path\": \"AGENTS.md\"}' --format json",
+  "duration_ms": 177,
+  "exit_code": 0,
+  "name": "tools_run_workspace_read_agents",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-132309/1770499496-tools_run_workspace_read_agents.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-132309/1770499496-tools_run_workspace_read_agents.out.txt"
+}

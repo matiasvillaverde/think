@@ -1,0 +1,8 @@
+{
+  "chatsCount" : 0,
+  "enabledSkillsCount" : 0,
+  "gatewayRunning" : false,
+  "modelsCount" : 1,
+  "storePath" : "\/Users\/mati\/Library\/Containers\/com.example.think\/Data\/Library\/Application Support\/codex-usecases-20260207-124715.store",
+  "workspacePath" : "\/Users\/mati\/Code\/Nell-Technologies\/monorepo"
+}

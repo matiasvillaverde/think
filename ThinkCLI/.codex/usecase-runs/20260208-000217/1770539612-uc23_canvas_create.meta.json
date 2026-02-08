@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run canvas --args '{\"action\": \"create\", \"chat_id\": \"D94B7ECC-00BE-4E1B-A9BD-102C8DDBA65E\", \"title\": \"Triage Board\", \"content\": \"To Do / Doing / Done\"}' --format json",
+  "duration_ms": 187,
+  "exit_code": 0,
+  "name": "uc23_canvas_create",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539612-uc23_canvas_create.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539612-uc23_canvas_create.out.txt"
+}

@@ -1,0 +1,7 @@
+{
+  "error" : "Invalid memory type: shortTerm. Use 'longTerm' or 'daily'.",
+  "id" : "33FF84B9-882C-4DE0-9D02-DFF33B934BE0",
+  "requestId" : "766CC777-0239-4085-B70C-A7BBDA4D9B48",
+  "result" : "",
+  "toolName" : "memory"
+}

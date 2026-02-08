@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo schedules create --title 'uc5 nightly image' --prompt 'Generate an image for testing.' --cron '0 2 * * *' --action image --chat 7D730C58-EDFE-4567-9FAA-88EB9D0D1FDE --disabled --format json",
+  "duration_ms": 184,
+  "exit_code": 0,
+  "name": "schedule_create_img",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-135137/1770501426-schedule_create_img.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-135137/1770501426-schedule_create_img.out.txt"
+}

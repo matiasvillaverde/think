@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo --tool-access deny chat send --session 1FF086E8-B09E-4043-9F16-8BEBF25179E4 --prompt 'Use web search to find OpenClaw cron docs.' --tools browser.search --no-stream --format json",
+  "duration_ms": 184,
+  "exit_code": 77,
+  "name": "uc18_chat_send_denied_tools",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539268-uc18_chat_send_denied_tools.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539268-uc18_chat_send_denied_tools.out.txt"
+}

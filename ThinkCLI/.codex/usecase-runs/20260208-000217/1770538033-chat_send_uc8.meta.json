@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 46BBED74-E1C9-40F8-A7DD-FD4C718F0187 --prompt 'List 3 potential improvements to AGENTS.md style guidelines.' --no-stream --format json",
+  "duration_ms": 75981,
+  "exit_code": 0,
+  "name": "chat_send_uc8",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538033-chat_send_uc8.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538033-chat_send_uc8.out.txt"
+}

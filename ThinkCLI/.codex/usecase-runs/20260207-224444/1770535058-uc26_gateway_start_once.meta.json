@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo gateway start --once --port 9999 --token uc26-token",
+  "duration_ms": 182,
+  "exit_code": 0,
+  "name": "uc26_gateway_start_once",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770535058-uc26_gateway_start_once.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-224444/1770535058-uc26_gateway_start_once.out.txt"
+}

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run cron --args '{\"action\": \"create\", \"title\": \"uc12 morning brief\", \"prompt\": \"Generate a morning briefing: weather + tasks.\", \"cron\": \"0 8 * * 1-5\", \"chat_id\": \"2174CE7F-85D7-4111-9772-6099838FAD1C\", \"action_type\": \"text\"}' --format json",
+  "duration_ms": 187,
+  "exit_code": 0,
+  "name": "uc12_cron_create",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538692-uc12_cron_create.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770538692-uc12_cron_create.out.txt"
+}

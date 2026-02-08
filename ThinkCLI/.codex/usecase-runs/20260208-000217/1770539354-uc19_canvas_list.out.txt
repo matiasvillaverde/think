@@ -1,0 +1,6 @@
+{
+  "id" : "760B1D41-02D0-409C-81F1-E762A30B7E13",
+  "requestId" : "FAF33E01-D708-49A8-9E72-1CDB72B25BF7",
+  "result" : "[{\"id\":\"C026ECAC-C2A7-46C0-8DF9-42AA6B1DB138\",\"updated_at\":\"2026-02-08T08:29:14.502Z\",\"title\":\"Spec Draft\"}]",
+  "toolName" : "canvas"
+}

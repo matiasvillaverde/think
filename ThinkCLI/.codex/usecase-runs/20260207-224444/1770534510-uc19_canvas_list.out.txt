@@ -1,0 +1,6 @@
+{
+  "id" : "9B80A2E0-9FBA-403E-91E8-6E33C4E99D52",
+  "requestId" : "761BE607-8ECE-4733-A09C-892B36277AB7",
+  "result" : "[{\"updated_at\":\"2026-02-08T06:59:21.548Z\",\"title\":\"UC11 Findings\",\"id\":\"02EEA017-1AB8-4BA3-9419-D7A3ACB66CEC\"},{\"title\":\"Client Deliverable\",\"id\":\"C2AE9AE4-53A2-40E6-802C-AF09D24A9F30\",\"updated_at\":\"2026-02-08T07:03:25.955Z\"},{\"id\":\"E0B18BE2-930A-4763-BE64-7935C83526CA\",\"title\":\"UC15 Outline\",\"updated_at\":\"2026-02-08T07:04:55.417Z\"},{\"title\":\"Spec Draft\",\"updated_at\":\"2026-02-08T07:08:30.260Z\",\"id\":\"CF10A85A-255E-44D1-ABFE-F2390781A9A7\"}]",
+  "toolName" : "canvas"
+}

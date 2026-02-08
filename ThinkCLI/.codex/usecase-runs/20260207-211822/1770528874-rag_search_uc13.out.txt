@@ -1,0 +1,30 @@
+[
+  {
+    "id" : "AF13F712-6282-4903-BBAB-05EF1701A8C7",
+    "keywords" : "constraints offline first openapi first avoid manual edits openapi openapi.json",
+    "rowId" : 4,
+    "score" : 3.2920942306518555,
+    "text" : "constraints: offline-first; openapi-first; avoid manual edits to openapi\/openapi.json."
+  },
+  {
+    "id" : "AF13F712-6282-4903-BBAB-05EF1701A8C7",
+    "keywords" : "goal ship feature safely",
+    "rowId" : 2,
+    "score" : 6.253818511962891,
+    "text" : "goal: ship a feature safely."
+  },
+  {
+    "id" : "AF13F712-6282-4903-BBAB-05EF1701A8C7",
+    "keywords" : "client brief",
+    "rowId" : 3,
+    "score" : 6.48672342300415,
+    "text" : "# client brief"
+  },
+  {
+    "id" : "AF13F712-6282-4903-BBAB-05EF1701A8C7",
+    "keywords" : "deliverable checklist timeline",
+    "rowId" : 1,
+    "score" : 7.2270026206970215,
+    "text" : "deliverable: checklist + timeline."
+  }
+]

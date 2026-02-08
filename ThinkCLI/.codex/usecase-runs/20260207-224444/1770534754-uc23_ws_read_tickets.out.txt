@@ -1,0 +1,6 @@
+{
+  "id" : "65A79D21-828F-4784-8A61-61FEFEBBE3F9",
+  "requestId" : "84EE1892-4379-4C43-9389-378FA8A0162F",
+  "result" : "{\n  \"tickets\": [\n    {\n      \"id\": \"T-100\",\n      \"notes\": \"CI spectral failing\",\n      \"severity\": \"high\",\n      \"title\": \"openapi.json out of date\"\n    },\n    {\n      \"id\": \"T-101\",\n      \"notes\": \"types regenerate on clean\",\n      \"severity\": \"medium\",\n      \"title\": \"iOS build fails after API change\"\n    },\n    {\n      \"id\": \"T-102\",\n      \"notes\": \"Dockerfile.generator needs copy\",\n      \"severity\": \"high\",\n      \"title\": \"generator docker build missing file:\"\n    }\n  ]\n}",
+  "toolName" : "workspace"
+}

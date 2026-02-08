@@ -1,0 +1,11 @@
+CoreData: debug: WAL checkpoint: Database did checkpoint. Log size: 1004 checkpointed: 1004
+CoreData: error: (6922) I/O error for database at /Users/mati/Library/Application Support/codex-usecases.store.  SQLite error code:6922, 'disk I/O error'
+CoreData: error: SQLCore dispatchRequest: exception handling request: <NSSQLFetchRequestContext: 0xa6d575180> , I/O error for database at /Users/mati/Library/Application Support/codex-usecases.store.  SQLite error code:6922, 'disk I/O error' with userInfo of {
+    NSFilePath = "/Users/mati/Library/Application Support/codex-usecases.store";
+    NSSQLiteErrorDomain = 6922;
+}
+CoreData: error: -executeRequest: encountered exception = I/O error for database at /Users/mati/Library/Application Support/codex-usecases.store.  SQLite error code:6922, 'disk I/O error' with userInfo = {
+    NSFilePath = "/Users/mati/Library/Application Support/codex-usecases.store";
+    NSSQLiteErrorDomain = 6922;
+}
+Error: Message not found

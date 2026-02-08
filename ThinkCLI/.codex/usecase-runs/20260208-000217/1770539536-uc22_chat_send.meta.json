@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session 67BB9A32-DFDF-4F6A-8CC6-8C3626766BC5 --prompt 'Turn the draft into release notes with sections: Backend, Mobile, Infra. Keep it concise.' --no-stream --format json",
+  "duration_ms": 74349,
+  "exit_code": 0,
+  "name": "uc22_chat_send",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539536-uc22_chat_send.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539536-uc22_chat_send.out.txt"
+}

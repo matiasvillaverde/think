@@ -1,0 +1,6 @@
+{
+  "createdAt" : "2026-02-08T06:44:46Z",
+  "id" : "722609A6-ECBB-4AE7-8931-3F1475DC1E2F",
+  "title" : "uc3-zero-trust",
+  "updatedAt" : "2026-02-08T06:46:20Z"
+}

@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run browser.search --args '{\"query\": \"OWASP Top 10 2021 summary\", \"resultCount\": 3}' --format json",
+  "duration_ms": 1861,
+  "exit_code": 0,
+  "name": "uc25_browser_search",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539779-uc25_browser_search.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539779-uc25_browser_search.out.txt"
+}

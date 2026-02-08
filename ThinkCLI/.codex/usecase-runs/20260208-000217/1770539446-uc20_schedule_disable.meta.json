@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo schedules disable 87F74C14-090C-4C81-B68F-8A9FCB54FD6C",
+  "duration_ms": 189,
+  "exit_code": 0,
+  "name": "uc20_schedule_disable",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539446-uc20_schedule_disable.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539446-uc20_schedule_disable.out.txt"
+}

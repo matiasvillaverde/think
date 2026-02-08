@@ -1,0 +1,6 @@
+{
+  "createdAt" : "2026-02-08T07:09:42Z",
+  "id" : "B7E4882E-4AA8-4113-866A-4D1A2B6A9B69",
+  "title" : "uc20-personality-1",
+  "updatedAt" : "2026-02-08T07:09:42Z"
+}

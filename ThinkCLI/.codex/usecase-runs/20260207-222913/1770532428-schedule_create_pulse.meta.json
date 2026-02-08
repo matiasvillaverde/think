@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo schedules create --title 'uc6 pulse' --prompt 'Summarize incident context and propose next checks.' --cron '*/15 * * * *' --chat D20441FD-7F6C-4E6F-B80F-2C1944586136 --disabled --format json",
+  "duration_ms": 177,
+  "exit_code": 0,
+  "name": "schedule_create_pulse",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-222913/1770532428-schedule_create_pulse.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-222913/1770532428-schedule_create_pulse.out.txt"
+}

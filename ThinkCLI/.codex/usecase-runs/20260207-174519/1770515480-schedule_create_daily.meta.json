@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo schedules create --title 'uc9 daily briefing' --prompt 'Generate daily briefing.' --cron '0 9 * * 1-5' --chat 426B749A-13EA-4CA4-AE68-799EA95813AF --disabled --format json",
+  "duration_ms": 178,
+  "exit_code": 0,
+  "name": "schedule_create_daily",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515480-schedule_create_daily.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260207-174519/1770515480-schedule_create_daily.out.txt"
+}

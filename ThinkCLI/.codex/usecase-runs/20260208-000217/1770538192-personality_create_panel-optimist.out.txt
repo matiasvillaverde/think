@@ -1,0 +1,4 @@
+{
+  "message" : "Created personality 80518C51-627C-46C6-91CF-13DD3ABE0C45",
+  "type" : "message"
+}

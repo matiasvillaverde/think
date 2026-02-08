@@ -1,0 +1,6 @@
+{
+  "id" : "6B37510D-787A-47B4-AF7A-BBD93C415EF0",
+  "requestId" : "94166D14-3C71-49B3-AC95-42EDE4FE6F82",
+  "result" : "{\n  \"lights\": {\n    \"bedroom\": \"off\",\n    \"kitchen\": \"off\"\n  },\n  \"thermostat\": {\n    \"target_f\": 70\n  }\n}",
+  "toolName" : "workspace"
+}

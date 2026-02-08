@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo tools run workspace --args '{\"action\": \"write\", \"path\": \".codex-uc23-tickets.json\", \"content\": \"{\\n  \\\"tickets\\\": [\\n    {\\n      \\\"id\\\": \\\"T-100\\\",\\n      \\\"notes\\\": \\\"CI spectral failing\\\",\\n      \\\"severity\\\": \\\"high\\\",\\n      \\\"title\\\": \\\"openapi.json out of date\\\"\\n    },\\n    {\\n      \\\"id\\\": \\\"T-101\\\",\\n      \\\"notes\\\": \\\"types regenerate on clean\\\",\\n      \\\"severity\\\": \\\"medium\\\",\\n      \\\"title\\\": \\\"iOS build fails after API change\\\"\\n    },\\n    {\\n      \\\"id\\\": \\\"T-102\\\",\\n      \\\"notes\\\": \\\"Dockerfile.generator needs copy\\\",\\n      \\\"severity\\\": \\\"high\\\",\\n      \\\"title\\\": \\\"generator docker build missing file:\\\"\\n    }\\n  ]\\n}\"}' --format json",
+  "duration_ms": 182,
+  "exit_code": 0,
+  "name": "uc23_ws_write_tickets",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539611-uc23_ws_write_tickets.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539611-uc23_ws_write_tickets.out.txt"
+}

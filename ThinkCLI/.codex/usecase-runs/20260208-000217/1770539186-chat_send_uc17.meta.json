@@ -1,0 +1,8 @@
+{
+  "cmd": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.build/debug/think --store codex-usecases --workspace /Users/mati/Code/Nell-Technologies/monorepo chat send --session B2B2E0F0-D2E1-4309-AF7B-8E5CCD374D71 --prompt 'Explain why OpenAPI-first matters and list 5 failure modes when openapi.json drifts.' --no-stream --format json",
+  "duration_ms": 81689,
+  "exit_code": 0,
+  "name": "chat_send_uc17",
+  "stderr_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539186-chat_send_uc17.err.txt",
+  "stdout_path": "/Users/mati/Code/matiasvillaverde/think-freely/ThinkCLI/.codex/usecase-runs/20260208-000217/1770539186-chat_send_uc17.out.txt"
+}

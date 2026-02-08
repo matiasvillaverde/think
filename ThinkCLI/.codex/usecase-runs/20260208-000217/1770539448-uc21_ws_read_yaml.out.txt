@@ -1,0 +1,6 @@
+{
+  "id" : "04E8D048-53B8-457A-B719-316D361C7B61",
+  "requestId" : "CB265A85-4A66-4CB5-B15A-6A360FEA1417",
+  "result" : "name: uc21-workflow\ndescription: \"Simulated OpenClaw-style workflow spec for ThinkCLI parity checks\"\nsteps:\n  - id: gather_context\n    tool: workspace\n    args:\n      action: list\n      path: \".\"\n      recursive: false\n  - id: audit_contract\n    tool: workspace\n    args:\n      action: read\n      path: \"AGENTS.md\"\n  - id: synthesize\n    action: chat_send\n    prompt: \"Summarize key constraints and propose next actions.\"\n",
+  "toolName" : "workspace"
+}
