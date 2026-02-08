@@ -8,6 +8,7 @@ struct ThinkCLI: AsyncParsableCommand {
         abstract: "Think CLI for chat, models, tools, RAG, and gateway operations.",
         subcommands: [
             GatewayCommand.self,
+            OpenClawCommand.self,
             ChatCommand.self,
             ModelsCommand.self,
             ToolsCommand.self,
@@ -15,6 +16,7 @@ struct ThinkCLI: AsyncParsableCommand {
             SkillsCommand.self,
             PersonalityCommand.self,
             SchedulesCommand.self,
+            StoreCommand.self,
             StatusCommand.self,
             DoctorCommand.self,
             ConfigCommand.self,
