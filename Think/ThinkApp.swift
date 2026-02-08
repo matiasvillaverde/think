@@ -13,28 +13,45 @@ struct ThinkApp: App {
     private let name: String = String(localized: "Think")
 
     @State private var selectedPersonality: Personality?
+    private var isUITesting: Bool {
+        ProcessInfo.processInfo.arguments.contains("--ui-testing")
+    }
 
     var body: some Scene {
         WindowGroup {
-            AppView(selectedPersonality: $selectedPersonality)
-                .withDatabase(configuration: .default)
-                .withGenerator() // MLX doesn't work on simulators
-                .withChatViewModel()
-                .withToolValidator()
-                .withImageHandler()
-                .withNotificationViewModel()
-                .withAttacher()
-                .withAppViewModel()
-                .withReviewRequester()
-                .withPluginApprovalViewModel()
-                .withAudioGenerator()
-                .withNodeModeViewModel()
-                .withOpenClawInstancesViewModel()
-                .withAutomationScheduler()
-                .withDiscoveryCarousel()
-                .withModelActions()
-                .withRemoteModelsViewModel()
-                .withOnboardingCoordinator()
+            Group {
+                if isUITesting {
+                    UITestRootView()
+                        .withDatabase(configuration: .uiTesting)
+                        // Keep providers minimal and deterministic for UI tests.
+                        // Avoid `.withGenerator()` (real model loading).
+                        .withChatViewModel()
+                        .withToolValidator()
+                        .withNotificationViewModel()
+                        .withAppViewModel()
+                        .withReviewRequester()
+                } else {
+                    AppView(selectedPersonality: $selectedPersonality)
+                        .withDatabase(configuration: .default)
+                        .withGenerator() // MLX doesn't work on simulators
+                        .withChatViewModel()
+                        .withToolValidator()
+                        .withImageHandler()
+                        .withNotificationViewModel()
+                        .withAttacher()
+                        .withAppViewModel()
+                        .withReviewRequester()
+                        .withPluginApprovalViewModel()
+                        .withAudioGenerator()
+                        .withNodeModeViewModel()
+                        .withOpenClawInstancesViewModel()
+                        .withAutomationScheduler()
+                        .withDiscoveryCarousel()
+                        .withModelActions()
+                        .withRemoteModelsViewModel()
+                        .withOnboardingCoordinator()
+                }
+            }
         }
 
         #if os(macOS)

@@ -90,6 +90,30 @@ build: build-all
 clean: clean-all
 
 # ==============================================================================
+# UI TESTS
+# ==============================================================================
+
+# Run deterministic UI tests on iOS Simulator (no signing / no dev entitlements required).
+test-ui:
+	@if [ -z "$(SIMULATOR_NAME)" ]; then \
+		echo "❌ No available iPhone simulator found. Install a simulator in Xcode."; \
+		exit 1; \
+	fi
+	@echo "🧪 Running UI tests on iOS Simulator: $(SIMULATOR_NAME)..."
+	@/bin/bash -lc "set -o pipefail; xcodebuild test \
+		-workspace $(WORKSPACE) \
+		-scheme 'Think-UI' \
+		-destination 'platform=iOS Simulator,name=$(SIMULATOR_NAME)' \
+		-only-testing:AcceptanceUITests \
+		-derivedDataPath build/DerivedData-UI \
+		IPHONEOS_DEPLOYMENT_TARGET=18.5 \
+		ENABLE_USER_SCRIPT_SANDBOXING=NO \
+		$(XCODE_CI_SETTINGS) \
+		$(XCODE_FLAGS) \
+		| xcbeautify --is-ci"
+	@echo "✅ UI tests passed"
+
+# ==============================================================================
 # APP-SPECIFIC COMMANDS - Build and run apps
 # ==============================================================================
 

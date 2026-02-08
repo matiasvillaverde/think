@@ -73,6 +73,15 @@ extension DatabaseConfiguration {
         allowsSave: false,
         ragFactory: DefaultRagFactory()
     )
+
+    /// In-memory database configuration for UI tests.
+    ///
+    /// UI tests need to write seed data (chats/messages/channels) but should not touch disk.
+    public static let uiTesting: DatabaseConfiguration = .init(
+        isStoredInMemoryOnly: true,
+        allowsSave: true,
+        ragFactory: DefaultRagFactory()
+    )
 }
 
 // MARK: - ModelDownloaderViewModel Factory

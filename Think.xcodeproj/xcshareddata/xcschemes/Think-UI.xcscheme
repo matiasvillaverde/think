@@ -21,20 +21,6 @@
                ReferencedContainer = "container:Think.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "NO"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "444DC7C72D8B145200D7494E"
-               BuildableName = "Screenshots.xctest"
-               BlueprintName = "Screenshots"
-               ReferencedContainer = "container:Think.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -44,28 +30,11 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:Think.xctestplan">
-         </TestPlanReference>
-         <TestPlanReference
-            reference = "container:Think-UITests.xctestplan">
-         </TestPlanReference>
-         <TestPlanReference
-            reference = "container:Think.xctestplan"
+            reference = "container:Think-UITests.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
       <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "44B648C52D47DB4500058AA6"
-               BuildableName = "ThinkTests.xctest"
-               BlueprintName = "ThinkTests"
-               ReferencedContainer = "container:Think.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
          <TestableReference
             skipped = "NO"
             parallelizable = "YES">
@@ -125,3 +94,4 @@
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>
+

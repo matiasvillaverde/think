@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "B0C0F8BE-0A33-4B2A-9B6D-8B41D6E8C2D7",
+      "name" : "UI",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Think.xcodeproj",
+        "identifier" : "44717DF02E2E86280087121E",
+        "name" : "AcceptanceUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
+

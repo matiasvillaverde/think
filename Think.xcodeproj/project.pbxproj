@@ -17,6 +17,7 @@
 		444DC7EB2D8B171800D7494E /* Database in Frameworks */ = {isa = PBXBuildFile; productRef = 444DC7EA2D8B171800D7494E /* Database */; };
 		444DC7ED2D8B171800D7494E /* UIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = 444DC7EC2D8B171800D7494E /* UIComponents */; };
 		4458C56D2D75C6F7002485E7 /* ViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 4458C56C2D75C6F7002485E7 /* ViewModels */; };
+		44AA00022F5A000100AA0001 /* ChatScreenUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44AA00012F5A000100AA0001 /* ChatScreenUITests.swift */; };
 		44D1315C2D75EAD60074C391 /* Factories in Frameworks */ = {isa = PBXBuildFile; productRef = 44D1315B2D75EAD60074C391 /* Factories */; };
 		44E2FF092D70C7A100E096DF /* Resources-macos in Resources */ = {isa = PBXBuildFile; fileRef = 44E2FF072D70C7A100E096DF /* Resources-macos */; platformFilters = (macos, xros, ); };
 		44E2FF0A2D70C7A100E096DF /* Resources-ios in Resources */ = {isa = PBXBuildFile; fileRef = 44E2FF082D70C7A100E096DF /* Resources-ios */; platformFilter = ios; };
@@ -52,6 +53,7 @@
 		444DC7C82D8B145200D7494E /* Screenshots.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Screenshots.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		444DC7D92D8B16F900D7494E /* App-Screenshots.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "App-Screenshots.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		44717DF12E2E86280087121E /* AcceptanceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AcceptanceUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		44AA00012F5A000100AA0001 /* ChatScreenUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatScreenUITests.swift; sourceTree = "<group>"; };
 		44B648B22D47DB4400058AA6 /* Think.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Think.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		44B648C62D47DB4500058AA6 /* ThinkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThinkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		44E2FF072D70C7A100E096DF /* Resources-macos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Resources-macos"; sourceTree = "<group>"; };
@@ -175,12 +177,21 @@
 				44E2FF072D70C7A100E096DF /* Resources-macos */,
 				44B648B42D47DB4400058AA6 /* Think */,
 				44B648C92D47DB4500058AA6 /* ThinkTests */,
+				44AA00032F5A000100AA0001 /* AcceptanceUITests */,
 				444DC7992D8B02B700D7494E /* Think Vision */,
 				444DC7C92D8B145200D7494E /* Screenshots */,
 				444DC7DA2D8B16F900D7494E /* App-Screenshots */,
 				44B648EC2D47DD4B00058AA6 /* Frameworks */,
 				44B648B32D47DB4400058AA6 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		44AA00032F5A000100AA0001 /* AcceptanceUITests */ = {
+			isa = PBXGroup;
+			children = (
+				44AA00012F5A000100AA0001 /* ChatScreenUITests.swift */,
+			);
+			path = AcceptanceUITests;
 			sourceTree = "<group>";
 		};
 		44B648B32D47DB4400058AA6 /* Products */ = {
@@ -509,6 +520,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44AA00022F5A000100AA0001 /* ChatScreenUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
