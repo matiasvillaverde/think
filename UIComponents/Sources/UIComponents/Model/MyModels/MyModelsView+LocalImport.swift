@@ -109,8 +109,13 @@ extension MyModelsView {
 
     private func createBookmark(for url: URL) -> Data? {
         #if os(macOS) || os(iOS) || os(visionOS)
+        #if os(macOS)
+        let options: URL.BookmarkCreationOptions = [.withSecurityScope]
+        #else
+        let options: URL.BookmarkCreationOptions = []
+        #endif
         return try? url.bookmarkData(
-            options: [.withSecurityScope],
+            options: options,
             includingResourceValuesForKeys: nil,
             relativeTo: nil
         )
