@@ -130,6 +130,58 @@ struct ComplexChatSessionTests {
         try? FileManager.default.removeItem(at: fileURL)
     }
 
+    @Test("Clearing messages must not delete chat diffusion configuration")
+    @MainActor
+    func clearingMessagesDoesNotDeleteDiffusorConfiguration() async throws {
+        let mockRag = MockRagging()
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: mockRag)
+        )
+
+        let database = try Database.new(configuration: config)
+        try await addRequiredModelsForComplexTests(database)
+
+        let defaultPersonalityId = try await getDefaultPersonalityId(database)
+        let chatId = try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
+        let chat = try await database.read(ChatCommands.GetFirst())
+        #expect(chat.id == chatId)
+
+        try await database.write(
+            MessageCommands.Create(
+                chatId: chat.id,
+                userInput: "Generate an image for config ownership test",
+                isDeepThinker: false
+            )
+        )
+
+        guard let messageId = chat.messages.first?.id else {
+            throw DatabaseError.messageNotFound
+        }
+
+        try await database.write(
+            ImageCommands.AddResponse(
+                messageId: messageId,
+                imageData: Data("img".utf8),
+                configuration: chat.imageModelConfig.id,
+                prompt: "test"
+            )
+        )
+
+        // Creating a chat again with the same personality clears existing messages.
+        // This must not delete chat.imageModelConfig.
+        _ = try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
+
+        let chatAfter = try await database.read(ChatCommands.GetFirst())
+        #expect(chatAfter.messages.isEmpty)
+
+        let imageConfig = try await database.read(
+            ImageCommands.GetImageConfiguration(chat: chatAfter.id, prompt: "sanity")
+        )
+        #expect(imageConfig.id == chatAfter.imageModelConfig.id)
+    }
+
     @Test("Edge cases in complex chat session")
     @MainActor
     func complexChatSessionEdgeCases() async throws {

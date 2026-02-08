@@ -30,8 +30,12 @@ public final class ImageAttachment: Identifiable, Equatable {
 
     // MARK: - Relationships
 
-    /// The configuration used to generate the image
-    @Relationship(deleteRule: .cascade)
+    /// The configuration used to generate the image.
+    ///
+    /// Image attachments should not own the diffusion configuration. The configuration is owned by the chat.
+    /// If an attachment is deleted (e.g. clearing chat history), we must not delete the configuration and
+    /// leave the chat with a dangling reference.
+    @Relationship(deleteRule: .nullify)
     public internal(set) var configuration: DiffusorConfiguration?
 
     // MARK: - Initialization
