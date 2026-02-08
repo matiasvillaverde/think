@@ -7,7 +7,11 @@ protocol CLIOutputting: Sendable {
 
 struct StdoutOutput: CLIOutputting {
     func write(_ text: String) {
-        print(text)
+        // Avoid stdio buffering so json-lines heartbeats are visible even when stdout is piped.
+        guard let data = (text + "\n").data(using: .utf8) else {
+            return
+        }
+        FileHandle.standardOutput.write(data)
     }
 
     func writeInline(_ text: String) {
@@ -72,6 +76,16 @@ struct CLIStreamChunk: Encodable, Sendable {
     }
 }
 
+struct CLIHeartbeatChunk: Encodable, Sendable {
+    let type: String
+    let at: Date
+
+    init(at: Date = Date()) {
+        type = "heartbeat"
+        self.at = at
+    }
+}
+
 struct CLIOutput: Sendable {
     private let writer: CLIOutputting
     private let format: CLIOutputFormat
@@ -98,6 +112,13 @@ struct CLIOutput: Sendable {
         case .json:
             return
         }
+    }
+
+    func heartbeat() {
+        guard format == .jsonLines else {
+            return
+        }
+        emitLine(CLIHeartbeatChunk())
     }
 
     func emit<T: Encodable>(_ value: T, fallback: String) {

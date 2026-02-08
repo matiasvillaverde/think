@@ -24,4 +24,11 @@ struct CLIError: Error, LocalizedError, Sendable {
             exitCode: .permission
         )
     }
+
+    static func timeout(action: String, seconds: Double) -> CLIError {
+        CLIError(
+            message: "Timed out during \(action) after \(Int(seconds))s.",
+            exitCode: .unavailable
+        )
+    }
 }

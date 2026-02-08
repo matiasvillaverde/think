@@ -12,7 +12,8 @@ struct ChatCommand: AsyncParsableCommand, GlobalOptionsAccessing {
             Send.self,
             History.self,
             Rename.self,
-            Delete.self
+            Delete.self,
+            Stop.self
         ]
     )
 
@@ -127,6 +128,18 @@ extension ChatCommand {
         )
         var noStream: Bool = false
 
+        @Option(
+            name: .long,
+            help: "Emit heartbeat every N seconds while waiting for generation. Set 0 to disable."
+        )
+        var heartbeatSeconds: Double = 15
+
+        @Option(
+            name: .long,
+            help: "Abort the request if it takes longer than N seconds. Set 0 to disable."
+        )
+        var timeoutSeconds: Double = 0
+
         func validate() throws {
             let resolved = (prompt ?? input)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             if resolved.isEmpty {
@@ -145,8 +158,34 @@ extension ChatCommand {
                 tools: tools,
                 noTools: noTools,
                 image: image,
-                stream: !noStream
+                stream: !noStream,
+                heartbeatSeconds: heartbeatSeconds,
+                timeoutSeconds: timeoutSeconds
             )
+        }
+    }
+
+    struct Stop: AsyncParsableCommand, GlobalOptionsAccessing {
+        static let configuration = CommandConfiguration(
+            abstract: "Stop the current generation (best-effort)."
+        )
+
+        @OptionGroup
+        var global: GlobalOptions
+
+        @ParentCommand
+        var parent: ChatCommand
+
+        var parentGlobal: GlobalOptions? { parent.resolvedGlobal }
+
+        @Option(name: .long, help: "Session UUID (used for diagnostics only).")
+        var session: String
+
+        func run() async throws {
+            let runtime = try await CLIRuntimeProvider.runtime(for: resolvedGlobal)
+            _ = try CLIParsing.parseUUID(session, field: "session")
+            try await runtime.orchestrator.stop()
+            runtime.output.emit("Stop requested.")
         }
     }
 

@@ -61,7 +61,9 @@ enum CLIChatService {
         tools: [String],
         noTools: Bool,
         image: Bool,
-        stream: Bool
+        stream: Bool,
+        heartbeatSeconds: Double,
+        timeoutSeconds: Double
     ) async throws {
         let identifiers = try CLIParsing.parseToolIdentifiers(tools)
         let resolvedTools = try await resolveTools(
@@ -74,21 +76,100 @@ enum CLIChatService {
         let options = GatewaySendOptions(action: action)
         let shouldStream = stream && runtime.output.supportsStreaming
         let tracker = CLIStreamTracker()
+
+        // Emit heartbeats to keep long requests observable.
+        // For json-lines:
+        // - If streaming is enabled, the generation streamer emits heartbeats.
+        // - If streaming is disabled, emit heartbeat lines while awaiting send result.
+        let heartbeatInterval = max(0, heartbeatSeconds)
+        let emitHeartbeatWhileAwaitingResult = heartbeatInterval > 0
+            && runtime.settings.outputFormat == .jsonLines
+            && !shouldStream
+
+        let heartbeatTask: Task<Void, Never>? = emitHeartbeatWhileAwaitingResult
+            ? Task {
+                while !Task.isCancelled {
+                    let nanos = UInt64(heartbeatInterval * 1_000_000_000)
+                    if nanos == 0 {
+                        return
+                    }
+                    try? await Task.sleep(nanoseconds: nanos)
+                    if Task.isCancelled {
+                        return
+                    }
+                    runtime.output.heartbeat()
+
+                    if runtime.settings.verbose {
+                        let data = Data("[heartbeat] waiting for result...\n".utf8)
+                        FileHandle.standardError.write(data)
+                    }
+                }
+            }
+            : nil
+
         let streamTask: Task<Void, Never>? = shouldStream
             ? Task {
                 await CLIGenerationStreamer.stream(
                     orchestrator: runtime.orchestrator,
                     output: runtime.output,
-                    tracker: tracker
+                    tracker: tracker,
+                    heartbeatSeconds: heartbeatSeconds,
+                    verbose: runtime.settings.verbose
                 )
             }
             : nil
 
-        let result = try await runtime.gateway.send(
-            sessionId: sessionId,
-            input: input,
-            options: options
-        )
+        defer { heartbeatTask?.cancel() }
+
+        let resolvedTimeout = max(0, timeoutSeconds)
+        let result: GatewaySendResult
+        if resolvedTimeout > 0 {
+            // Enforce a caller-specified timeout for long-running generations.
+            // Best-effort stop is issued on timeout.
+            result = try await withThrowingTaskGroup(of: GatewaySendResult.self) { group in
+                group.addTask {
+                    try await runtime.gateway.send(
+                        sessionId: sessionId,
+                        input: input,
+                        options: options
+                    )
+                }
+                group.addTask {
+                    try await Task.sleep(
+                        nanoseconds: UInt64(resolvedTimeout * 1_000_000_000)
+                    )
+                    throw CLIError.timeout(action: "chat send", seconds: resolvedTimeout)
+                }
+
+                do {
+                    guard let value = try await group.next() else {
+                        throw CLIError(
+                            message: "No result returned from chat send.",
+                            exitCode: .failure
+                        )
+                    }
+                    group.cancelAll()
+                    return value
+                } catch {
+                    group.cancelAll()
+                    if error is CLIError {
+                        try? await runtime.orchestrator.stop()
+                    }
+                    throw error
+                }
+            }
+        } else {
+            do {
+                result = try await runtime.gateway.send(
+                    sessionId: sessionId,
+                    input: input,
+                    options: options
+                )
+            } catch {
+                heartbeatTask?.cancel()
+                throw error
+            }
+        }
 
         if let streamTask {
             await CLIGenerationStreamer.awaitCompletion(
