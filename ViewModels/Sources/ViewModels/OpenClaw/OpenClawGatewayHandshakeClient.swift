@@ -222,24 +222,7 @@ internal struct OpenClawGatewayHandshakeClient: Sendable {
     }
 
     private static func normalizeWebSocketURL(_ raw: String) -> URL? {
-        let trimmed: String = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return nil
-        }
-
-        if let url: URL = URL(string: trimmed),
-           let scheme: String = url.scheme?.lowercased() {
-            if scheme == "ws" || scheme == "wss" {
-                return url
-            }
-            if scheme == "http" || scheme == "https" {
-                var components: URLComponents? = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                components?.scheme = (scheme == "https") ? "wss" : "ws"
-                return components?.url
-            }
-        }
-
-        return URL(string: "wss://\(trimmed)")
+        OpenClawGatewayURL.normalize(raw)
     }
 
     private static func platformValue() -> String {

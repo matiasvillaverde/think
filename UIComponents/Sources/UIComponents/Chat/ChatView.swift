@@ -36,6 +36,7 @@ public struct ChatView: View {
     @State private var isModelSelectionPopoverPresented: Bool = false
     @State private var isRatingsViewPresented: Bool = false
     @State private var isCanvasPresented: Bool = false
+    @State private var isOpenClawSettingsPresented: Bool = false
 
     @Namespace private var messagesBottomID: Namespace.ID
 
@@ -81,6 +82,10 @@ public struct ChatView: View {
             ToolbarItem(placement: .automatic) {
                 canvasButton
             }
+
+            ToolbarItem(placement: .automatic) {
+                OpenClawStatusButton(isSettingsPresented: $isOpenClawSettingsPresented)
+            }
         }
         .frame(maxWidth: Layout.maxContentWidth)
         #if os(iOS) || os(visionOS)
@@ -115,6 +120,10 @@ public struct ChatView: View {
             }
             .sheet(isPresented: $isCanvasPresented) {
                 CanvasView(chat: chat)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .sheet(isPresented: $isOpenClawSettingsPresented) {
+                OpenClawSettingsView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
     }

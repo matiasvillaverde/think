@@ -17,6 +17,7 @@ This project is under active development. Expect breaking changes, missing featu
 - An app‑focused implementation inspired by OpenClaw for Apple platforms.
 - Designed to run in a sandbox (required on iOS) with a clear security model.
 - Built with Swift, SwiftUI, and a modular architecture.
+- Can connect to a remote OpenClaw Gateway instance over WebSocket (pairing required).
 
 ## What This Is Not (Yet)
 
@@ -32,6 +33,12 @@ This project is under active development. Expect breaking changes, missing featu
 ## Repository Layout
 
 See `AGENTS.md` and `CLAUDE.md` for architecture and contribution guidance.
+
+## OpenClaw Remote Gateway
+
+Think can connect to a remote OpenClaw Gateway for “OpenClaw-style” remote operations.
+
+See `OPENCLAW_REMOTE.md` for setup instructions (App UI and ThinkCLI).
 
 ## License
 

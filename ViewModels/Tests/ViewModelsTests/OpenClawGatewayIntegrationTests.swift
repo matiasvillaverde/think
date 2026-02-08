@@ -182,7 +182,10 @@ private actor OpenClawGatewayRPCClient {
         authToken: String?,
         includeDevice: Bool
     ) async throws -> OpenClawGatewayRPCClient {
-        guard let url: URL = normalizeWebSocketURL(urlString) else {
+        guard let url: URL = OpenClawGatewayURL.normalize(
+            urlString,
+            securityPolicy: .allowInsecure
+        ) else {
             throw TestFailure("Invalid URL")
         }
 
@@ -304,30 +307,6 @@ private actor OpenClawGatewayRPCClient {
             throw TestFailure("Call failed: \(message)")
         }
     }
-}
-
-private func normalizeWebSocketURL(_ raw: String) -> URL? {
-    let trimmed: String = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-    if trimmed.isEmpty {
-        return nil
-    }
-
-    if let url: URL = URL(string: trimmed),
-       let scheme: String = url.scheme,
-       scheme == "ws" || scheme == "wss" {
-        return url
-    }
-    if let url: URL = URL(string: trimmed), url.scheme == "http" {
-        var components: URLComponents? = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        components?.scheme = "ws"
-        return components?.url
-    }
-    if let url: URL = URL(string: trimmed), url.scheme == "https" {
-        var components: URLComponents? = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        components?.scheme = "wss"
-        return components?.url
-    }
-    return nil
 }
 
 private struct TestFailure: Error, CustomStringConvertible {

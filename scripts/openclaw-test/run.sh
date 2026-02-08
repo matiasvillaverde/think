@@ -3,7 +3,9 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 IMAGE_NAME="${OPENCLAW_TEST_IMAGE:-think-openclaw-gateway-test:latest}"
-HOST_PORT="${OPENCLAW_TEST_PORT:-18789}"
+# Empirically, the OpenClaw gateway started in Docker can reject auth on 18789->18789
+# port mappings, while 18790->18789 works reliably for connect auth + pairing.
+HOST_PORT="${OPENCLAW_TEST_PORT:-18790}"
 TOKEN="${OPENCLAW_TEST_TOKEN:-}"
 
 if [[ -z "${TOKEN}" ]]; then
@@ -26,8 +28,8 @@ cleanup_state() {
 }
 trap cleanup_state EXIT
 
-mkdir -p "${STATE_DIR}"
-cat > "${STATE_DIR}/openclaw.json" <<EOF
+mkdir -p "${STATE_DIR}/openclaw-state"
+cat > "${STATE_DIR}/openclaw-state/openclaw.json" <<EOF
 {
   "gateway": {
     "mode": "local",
@@ -44,32 +46,38 @@ echo "==> Starting OpenClaw gateway container (host port ${HOST_PORT})"
 CID="$(docker run -d --rm \
   -p "${HOST_PORT}:18789" \
   -e "OPENCLAW_GATEWAY_TOKEN=${TOKEN}" \
-  -v "${STATE_DIR}:/root/.openclaw" \
+  -v "${STATE_DIR}/openclaw-state:/root/.openclaw" \
   "${IMAGE_NAME}" \
-  openclaw gateway run --allow-unconfigured --bind lan --port 18789 --auth token --token "${TOKEN}" --verbose)"
+  openclaw gateway --dev --force --bind lan --port 18789 --auth token --token "${TOKEN}" --verbose run)"
 cleanup() {
   echo "==> Stopping container ${CID}"
   docker stop "${CID}" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
-echo "==> Waiting for gateway HTTP surface..."
+echo "==> Waiting for gateway to be ready..."
 for i in {1..60}; do
-  if curl -fsS "http://127.0.0.1:${HOST_PORT}/" >/dev/null 2>&1; then
+  if docker logs "${CID}" | grep -q "listening on ws://"; then
     break
   fi
   sleep 1
 done
 
-if ! curl -fsS "http://127.0.0.1:${HOST_PORT}/" >/dev/null 2>&1; then
+if ! docker logs "${CID}" | grep -q "listening on ws://"; then
   echo "Gateway did not become ready. Recent logs:" >&2
   docker logs --tail 200 "${CID}" >&2 || true
   exit 1
 fi
 
+# The gateway can accept connections slightly before auth and subsystems settle.
+sleep 15
+
 echo "==> Running ViewModels acceptance test against gateway"
 (
   cd "${ROOT_DIR}/ViewModels"
+  # Avoid stale incremental artifacts affecting linking across packages.
+  swift package clean >/dev/null 2>&1 || true
+  rm -rf .build >/dev/null 2>&1 || true
   OPENCLAW_TEST_WS_URL="ws://127.0.0.1:${HOST_PORT}" \
   OPENCLAW_TEST_TOKEN="${TOKEN}" \
   swift test --filter OpenClawGatewayIntegrationTests || {

@@ -7,10 +7,22 @@ internal enum OpenClawGatewayProtocol {
     static let protocolVersion: Int = 3
 
     struct ConnectRequestFrame: Codable {
-        let type: String = "req"
+        let type: String
         let id: String
-        let method: String = "connect"
+        let method: String
         let params: ConnectParams
+
+        init(
+            id: String,
+            params: ConnectParams,
+            type: String = "req",
+            method: String = "connect"
+        ) {
+            self.type = type
+            self.id = id
+            self.method = method
+            self.params = params
+        }
     }
 
     struct ResponseFrame: Codable {
@@ -98,11 +110,31 @@ internal enum OpenClawGatewayProtocol {
         let minProtocol: Int
         let maxProtocol: Int
         let client: ClientInfo
-        let caps: [String] = []
+        let caps: [String]
         let auth: AuthInfo?
         let role: String
         let scopes: [String]
         let device: DeviceInfo?
+
+        init(
+            minProtocol: Int,
+            maxProtocol: Int,
+            client: ClientInfo,
+            auth: AuthInfo?,
+            role: String,
+            scopes: [String],
+            device: DeviceInfo?,
+            caps: [String] = []
+        ) {
+            self.minProtocol = minProtocol
+            self.maxProtocol = maxProtocol
+            self.client = client
+            self.caps = caps
+            self.auth = auth
+            self.role = role
+            self.scopes = scopes
+            self.device = device
+        }
     }
 
     struct ClientInfo: Codable {

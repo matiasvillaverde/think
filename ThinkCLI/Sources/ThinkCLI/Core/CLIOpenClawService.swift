@@ -196,27 +196,15 @@ private func loadTokenPresence(
 }
 
 private func normalizeWebSocketURL(_ raw: String) throws -> URL {
-    let trimmed: String = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-    guard !trimmed.isEmpty else {
-        throw ValidationError("URL is required.")
+    do {
+        return try OpenClawGatewayURL.normalizeOrThrow(raw)
+    } catch OpenClawGatewayURL.NormalizationError.invalidInput {
+        throw ValidationError("Invalid URL: \(raw)")
+    } catch OpenClawGatewayURL.NormalizationError.insecureTransportNotAllowed {
+        throw ValidationError("Insecure transport (ws://) is not allowed. Use wss:// instead.")
+    } catch {
+        throw ValidationError("Invalid URL: \(raw)")
     }
-
-    if let url: URL = URL(string: trimmed),
-       let scheme: String = url.scheme,
-       scheme == "ws" || scheme == "wss" {
-        return url
-    }
-
-    if let url: URL = URL(string: trimmed),
-       url.scheme == "http" || url.scheme == "https" {
-        var components: URLComponents? = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        components?.scheme = (url.scheme == "https") ? "wss" : "ws"
-        if let wsURL: URL = components?.url {
-            return wsURL
-        }
-    }
-
-    throw ValidationError("Invalid URL: \(raw)")
 }
 
 // MARK: - Minimal Gateway RPC
