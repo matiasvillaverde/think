@@ -6,6 +6,19 @@ extension RemoteProviderType {
     var keychainKey: String {
         "api_key_\(rawValue)"
     }
+
+    var environmentKeys: [String] {
+        switch self {
+        case .openRouter:
+            return ["OPENROUTER_API_KEY"]
+        case .openAI:
+            return ["OPENAI_API_KEY"]
+        case .anthropic:
+            return ["ANTHROPIC_API_KEY"]
+        case .google:
+            return ["GOOGLE_API_KEY", "GEMINI_API_KEY"]
+        }
+    }
 }
 
 /// Protocol for managing API keys.
@@ -51,6 +64,11 @@ public actor APIKeyManager: APIKeyManaging {
     }
 
     public func getKey(for provider: RemoteProviderType) async throws -> String? {
+        for envKey in provider.environmentKeys {
+            if let value = ProcessInfo.processInfo.environment[envKey], !value.isEmpty {
+                return value
+            }
+        }
         guard let data = try await storage.retrieve(forKey: provider.keychainKey) else {
             return nil
         }
@@ -65,7 +83,12 @@ public actor APIKeyManager: APIKeyManaging {
     }
 
     public func hasKey(for provider: RemoteProviderType) async -> Bool {
-        await storage.exists(forKey: provider.keychainKey)
+        for envKey in provider.environmentKeys {
+            if let value = ProcessInfo.processInfo.environment[envKey], !value.isEmpty {
+                return true
+            }
+        }
+        return await storage.exists(forKey: provider.keychainKey)
     }
 }
 
