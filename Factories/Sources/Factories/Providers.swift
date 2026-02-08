@@ -106,6 +106,31 @@ extension View {
     }
 }
 
+// MARK: - OpenClaw Instances Provider
+
+public struct OpenClawInstancesViewModelProvider: ViewModifier {
+    @Environment(\.database)
+    private var database: DatabaseProtocol
+
+    public init() {
+        // Initialize provider
+    }
+
+    public func body(content: Content) -> some View {
+        content
+            .environment(
+                \.openClawInstancesViewModel,
+                OpenClawInstancesViewModel(database: database)
+            )
+    }
+}
+
+extension View {
+    public func withOpenClawInstancesViewModel() -> some View {
+        modifier(OpenClawInstancesViewModelProvider())
+    }
+}
+
 // MARK: - ImageHandler Provider
 
 public struct ImageHandlerProvider: ViewModifier {

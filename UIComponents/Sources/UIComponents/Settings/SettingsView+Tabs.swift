@@ -27,6 +27,18 @@ extension SettingsView {
         .accessibility(label: Text("Models tab"))
     }
 
+    var openClawTabLabel: some View {
+        Label(
+            String(
+                localized: "OpenClaw",
+                bundle: .module,
+                comment: "Tab label for OpenClaw remote instances"
+            ),
+            systemImage: "bolt.horizontal.circle"
+        )
+        .accessibility(label: Text("OpenClaw tab"))
+    }
+
     var voiceTabLabel: some View {
         Label(
             String(
@@ -115,6 +127,12 @@ extension SettingsView {
 
     var modelsView: some View {
         APIKeySettingsView()
+    }
+
+    // MARK: - OpenClaw View
+
+    var openClawView: some View {
+        OpenClawSettingsView()
     }
 
     // MARK: - Plugins View

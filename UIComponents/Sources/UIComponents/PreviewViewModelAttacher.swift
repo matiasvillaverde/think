@@ -209,6 +209,55 @@ internal final actor PreviewNodeModeViewModel: NodeModeViewModeling {
     }
 }
 
+// swiftlint:disable unneeded_throws_rethrows
+internal final actor PreviewOpenClawInstancesViewModel: OpenClawInstancesViewModeling {
+    private let logger: Logger = .init(
+        subsystem: Bundle.main.bundleIdentifier ?? "",
+        category: "UI"
+    )
+
+    var instances: [OpenClawInstanceRecord] { [] }
+    var connectionStatuses: [UUID: OpenClawConnectionStatus] { [:] }
+
+    func refresh() async {
+        await Task.yield()
+        logger.warning("Default view model - refresh openclaw instances")
+    }
+
+    func upsertInstance(
+        id: UUID?,
+        name: String,
+        urlString: String,
+        authToken: String?
+    ) async throws {
+        _ = id
+        _ = name
+        _ = urlString
+        _ = authToken
+        await Task.yield()
+        logger.warning("Default view model - upsert openclaw instance")
+    }
+
+    func deleteInstance(id: UUID) async throws {
+        _ = id
+        await Task.yield()
+        logger.warning("Default view model - delete openclaw instance")
+    }
+
+    func setActiveInstance(id: UUID?) async throws {
+        _ = id
+        await Task.yield()
+        logger.warning("Default view model - set active openclaw instance")
+    }
+
+    func testConnection(id: UUID) async {
+        _ = id
+        await Task.yield()
+        logger.warning("Default view model - test openclaw connection")
+    }
+}
+// swiftlint:enable unneeded_throws_rethrows
+
 internal final actor PreviewPluginApprovalViewModel: PluginApprovalViewModeling {
     private let logger: Logger = .init(
         subsystem: Bundle.main.bundleIdentifier ?? "",

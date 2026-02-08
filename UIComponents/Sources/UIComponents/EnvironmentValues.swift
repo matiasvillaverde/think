@@ -145,6 +145,10 @@ extension EnvironmentValues {
     /// ViewModel for node mode controls
     @Entry public var nodeModeViewModel: NodeModeViewModeling = PreviewNodeModeViewModel()
 
+    /// ViewModel for managing remote OpenClaw gateway instances
+    @Entry public var openClawInstancesViewModel: OpenClawInstancesViewModeling =
+        PreviewOpenClawInstancesViewModel()
+
     /// Tool validator for checking tool requirements
     @Entry public var toolValidator: ToolValidating?
 

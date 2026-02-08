@@ -13,6 +13,7 @@ extension SettingsView {
         automationTab
         nodeModeTab
         modelsTab
+        openClawTab
         pluginsTab
         analyticsTab
         legalTab
@@ -52,6 +53,13 @@ extension SettingsView {
         modelsView
             .tabItem {
                 modelsTabLabel
+            }
+    }
+
+    private var openClawTab: some View {
+        openClawView
+            .tabItem {
+                openClawTabLabel
             }
     }
 
