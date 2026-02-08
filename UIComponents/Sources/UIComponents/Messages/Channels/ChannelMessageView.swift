@@ -90,6 +90,8 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
                 channelContent
             }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("channel.\(channel.type.rawValue).container")
     }
 
     @ViewBuilder private var channelHeader: some View {
@@ -98,7 +100,7 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
                 .accessibilityHidden(true)
                 .modifier(
                     PulsingAnimationModifier(
-                        isActive: channel.type == .analysis && !isCollapsed
+                        isActive: channel.type == .analysis && !isCollapsed && !channel.isComplete
                     )
                 )
             Text(computedChannelTitle)
@@ -130,6 +132,7 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
             ? String(localized: "Toggle thinking content", bundle: .module)
             : computedChannelTitle
         )
+        .accessibilityIdentifier("channel.\(channel.type.rawValue).header")
     }
 
     @ViewBuilder private var channelContent: some View {
@@ -151,33 +154,49 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
     }
 
     @ViewBuilder private var finalChannelContent: some View {
-        Markdown(channel.content.convertLaTeX())
-            .markdownTheme(ThemeCache.shared.getTheme())
-            .markdownImageProvider(MarkdownImageProvider(scaleFactor: imageScaleFactor))
-            .markdownInlineImageProvider(
-                MarkdownInlineImageProvider(scaleFactor: imageScaleFactor)
-            )
-            .markdownCodeSyntaxHighlighter(CodeHighlighter.theme)
-            .font(.body)
-            .foregroundColor(Color.textPrimary)
-            .padding(Constants.contentPadding)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(backgroundView)
-            .overlay(borderOverlay)
-            .contextMenu {
-                if  let copyAction = copyTextAction,
-                    let shareAction = shareTextAction {
-                    AssistantContextMenu(
-                        textToCopy: channel.content,
-                        message: message,
-                        showingSelectionView: $showingSelectionView,
-                        showingThinkingView: $showingThinkingView,
-                        showingStatsView: $showingStatsView,
-                        copyTextAction: copyAction,
-                        shareTextAction: shareAction
+        Group {
+            if channel.isComplete {
+                Markdown(channel.content.convertLaTeX())
+                    .markdownTheme(ThemeCache.shared.getTheme())
+                    .markdownImageProvider(MarkdownImageProvider(scaleFactor: imageScaleFactor))
+                    .markdownInlineImageProvider(
+                        MarkdownInlineImageProvider(scaleFactor: imageScaleFactor)
                     )
+                    .markdownCodeSyntaxHighlighter(CodeHighlighter.theme)
+            } else {
+                // Markdown parsing during streaming is expensive and causes jank.
+                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    Text(channel.content)
+                        .font(.body)
+                    StreamingCursorView()
+                        .padding(.leading, 1)
+                        .accessibilityHidden(true)
                 }
             }
+        }
+        .foregroundColor(Color.textPrimary)
+        .padding(Constants.contentPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(backgroundView)
+        .overlay(borderOverlay)
+        // Make this reliably queryable in XCUITests (MarkdownUI renders multiple nested views).
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(channel.content)
+        .accessibilityIdentifier("channel.final.content")
+        .contextMenu {
+            if  let copyAction = copyTextAction,
+                let shareAction = shareTextAction {
+                AssistantContextMenu(
+                    textToCopy: channel.content,
+                    message: message,
+                    showingSelectionView: $showingSelectionView,
+                    showingThinkingView: $showingThinkingView,
+                    showingStatsView: $showingStatsView,
+                    copyTextAction: copyAction,
+                    shareTextAction: shareAction
+                )
+            }
+        }
     }
 
     @ViewBuilder private var analysisChannelContent: some View {
@@ -192,17 +211,27 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(backgroundView)
             .overlay(borderOverlay)
+            .accessibilityIdentifier("channel.analysis.content")
     }
 
     @ViewBuilder private var commentaryChannelContent: some View {
-        Markdown(channel.content)
-            .markdownTheme(ThemeCache.shared.getTheme())
-            .font(.body)
-            .foregroundColor(Color.textPrimary)
-            .padding(Constants.contentPadding)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(backgroundView)
-            .overlay(borderOverlay)
+        Group {
+            if channel.isComplete {
+                Markdown(channel.content)
+                    .markdownTheme(ThemeCache.shared.getTheme())
+            } else {
+                Text(channel.content)
+                    .font(.body)
+            }
+        }
+        .foregroundColor(Color.textPrimary)
+        .padding(Constants.contentPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(backgroundView)
+        .overlay(borderOverlay)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(channel.content)
+        .accessibilityIdentifier("channel.commentary.content")
     }
 
     @ViewBuilder private var toolChannelContent: some View {
@@ -213,6 +242,7 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(backgroundView)
             .overlay(borderOverlay)
+            .accessibilityIdentifier("channel.tool.content")
     }
 
     // MARK: - Helper Views
@@ -266,6 +296,31 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
         lhs.channel.content == rhs.channel.content &&
         lhs.channel.isComplete == rhs.channel.isComplete &&
         lhs.channel.lastUpdated == rhs.channel.lastUpdated
+    }
+}
+
+/// Lightweight "streaming cursor" to communicate that text is still being produced,
+/// without animating the entire text layout on every delta.
+private struct StreamingCursorView: View {
+    private enum Constants {
+        static let blinkInterval: TimeInterval = 0.55
+        static let onOpacity: Double = 0.9
+        static let offOpacity: Double = 0.15
+        static let glyph: String = "▍"
+        static let phaseModulo: Int = 2
+    }
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: Constants.blinkInterval)) { context in
+            let timeInterval: TimeInterval = context.date.timeIntervalSinceReferenceDate
+            let phaseIndex: Int = Int(timeInterval / Constants.blinkInterval)
+            let isOn: Bool = (phaseIndex % Constants.phaseModulo) == 0
+
+            Text(Constants.glyph)
+                .font(.body)
+                .opacity(isOn ? Constants.onOpacity : Constants.offOpacity)
+                .foregroundColor(.textSecondary)
+        }
     }
 }
 

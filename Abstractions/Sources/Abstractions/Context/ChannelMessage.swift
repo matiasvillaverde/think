@@ -31,6 +31,12 @@ public struct ChannelMessage: Sendable, Equatable {
     /// The order of this message in the sequence
     public let order: Int
 
+    /// Whether this channel is complete (vs. currently streaming).
+    ///
+    /// Parsers should mark the currently-streaming (partial) channel as `false` so the UI can
+    /// avoid expensive rendering (e.g. Markdown parsing) until content is stable.
+    public let isComplete: Bool
+
     /// Optional recipient (e.g., "to=functions.toolname" or "to=user")
     public let recipient: String?
 
@@ -43,8 +49,28 @@ public struct ChannelMessage: Sendable, Equatable {
     ///   - type: The channel type
     ///   - content: The message content
     ///   - order: The sequence order
+    ///   - isComplete: Whether this channel is complete (non-streaming)
     ///   - recipient: Optional recipient specification
     ///   - toolRequest: Optional tool request for tool channels
+    public init(
+        id: UUID,
+        type: ChannelType,
+        content: String,
+        order: Int,
+        isComplete: Bool = true,
+        recipient: String? = nil,
+        toolRequest: ToolRequest? = nil
+    ) {
+        self.id = id
+        self.type = type
+        self.content = content
+        self.order = order
+        self.isComplete = isComplete
+        self.recipient = recipient
+        self.toolRequest = toolRequest
+    }
+
+    /// Backward-compatible initializer (pre `isComplete`).
     public init(
         id: UUID,
         type: ChannelType,
@@ -53,11 +79,14 @@ public struct ChannelMessage: Sendable, Equatable {
         recipient: String? = nil,
         toolRequest: ToolRequest? = nil
     ) {
-        self.id = id
-        self.type = type
-        self.content = content
-        self.order = order
-        self.recipient = recipient
-        self.toolRequest = toolRequest
+        self.init(
+            id: id,
+            type: type,
+            content: content,
+            order: order,
+            isComplete: true,
+            recipient: recipient,
+            toolRequest: toolRequest
+        )
     }
 }

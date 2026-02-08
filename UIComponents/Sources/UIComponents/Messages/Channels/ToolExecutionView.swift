@@ -31,6 +31,7 @@ internal struct ToolExecutionView: View {
         static let errorSpacing: CGFloat = 6
         static let iconSizeReduction: CGFloat = 2
         static let statusLineLimit: Int = 2
+        static let requestMaxHeightDivisor: CGFloat = 2
     }
 
     // MARK: - Properties
@@ -96,7 +97,8 @@ internal struct ToolExecutionView: View {
     }
 
     var hasContent: Bool {
-        toolExecution.response != nil
+        toolExecution.request != nil
+        || toolExecution.response != nil
         || toolExecution.errorMessage != nil
         || (toolExecution.sources?.isEmpty == false)
     }
@@ -125,6 +127,10 @@ internal struct ToolExecutionView: View {
             if isExpanded,
                 hasContent {
                 VStack(alignment: .leading, spacing: Constants.spacing) {
+                    if let request = toolExecution.request {
+                        toolRequestView(request)
+                    }
+
                     if let response = toolExecution.response {
                         toolResultView(response)
                     }
@@ -156,6 +162,31 @@ internal struct ToolExecutionView: View {
     // MARK: - Subviews
 
     @ViewBuilder
+    private func toolRequestView(_ request: ToolRequest) -> some View {
+        VStack(alignment: .leading, spacing: Constants.resultSpacing) {
+            HStack {
+                Text("Request")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+
+            ScrollView {
+                Text(request.arguments)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.primary)
+                    .textSelection(.enabled)
+            }
+            .frame(maxHeight: Constants.resultMaxHeight / Constants.requestMaxHeightDivisor)
+        }
+        .padding(Constants.resultPadding)
+        .background(Color.gray.opacity(Constants.resultBackgroundOpacity))
+        .cornerRadius(Constants.resultCornerRadius)
+        .accessibilityIdentifier("toolExecution.request.\(toolExecution.id.uuidString)")
+    }
+
+    @ViewBuilder
     private func toolResultView(_ response: ToolResponse) -> some View {
         VStack(alignment: .leading, spacing: Constants.resultSpacing) {
             resultHeader(response: response)
@@ -164,6 +195,10 @@ internal struct ToolExecutionView: View {
         .padding(Constants.resultPadding)
         .background(Color.gray.opacity(Constants.resultBackgroundOpacity))
         .cornerRadius(Constants.resultCornerRadius)
+        // Ensure nested controls (e.g. Raw/Formatted toggle) remain individually accessible
+        // for UI testing.
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("toolExecution.result.\(toolExecution.id.uuidString)")
     }
 
     @ViewBuilder
@@ -185,6 +220,7 @@ internal struct ToolExecutionView: View {
                         .foregroundColor(.blue)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("toolExecution.rawToggle.\(toolExecution.id.uuidString)")
             }
         }
     }

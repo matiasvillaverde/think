@@ -38,23 +38,36 @@ extension ModelStateCoordinator {
         return URL(fileURLWithPath: localPath)
     }
 
+    private func bookmarkedURLResolutionOptions() -> URL.BookmarkResolutionOptions {
+        #if os(macOS)
+        return [.withoutUI, .withSecurityScope]
+        #else
+        return [.withoutUI]
+        #endif
+    }
+
+    private func startAccessingSecurityScopeIfNeeded(url: URL, localPath: String) throws {
+        let started: Bool = url.startAccessingSecurityScopedResource()
+        #if os(macOS)
+        guard started else { throw ModelStateCoordinatorError.modelLocationNotResolved(localPath) }
+        #else
+        if !started { Self.logger.warning("Failed to start security-scoped access for path: \(localPath)") }
+        #endif
+        currentSecurityScopedURL = url
+    }
+
     private func resolveBookmarkedURL(localPath: String, bookmark: Data) throws -> URL {
         var isStale: Bool = false
         do {
             let resolvedURL: URL = try URL(
                 resolvingBookmarkData: bookmark,
-                options: [.withoutUI, .withSecurityScope],
+                options: bookmarkedURLResolutionOptions(),
                 relativeTo: nil,
                 bookmarkDataIsStale: &isStale
             )
-            if isStale {
-                Self.logger.warning("Local model bookmark is stale for path: \(localPath)")
-            }
-            let started: Bool = resolvedURL.startAccessingSecurityScopedResource()
-            if !started {
-                throw ModelStateCoordinatorError.modelLocationNotResolved(localPath)
-            }
-            currentSecurityScopedURL = resolvedURL
+            if isStale { Self.logger.warning("Local model bookmark is stale for path: \(localPath)") }
+
+            try startAccessingSecurityScopeIfNeeded(url: resolvedURL, localPath: localPath)
             return resolvedURL
         } catch {
             throw ModelStateCoordinatorError.modelLocationNotResolved(localPath)

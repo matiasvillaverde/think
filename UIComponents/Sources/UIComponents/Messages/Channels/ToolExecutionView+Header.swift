@@ -25,6 +25,7 @@ extension ToolExecutionView {
                 }
             }
         }
+        .accessibilityIdentifier("toolExecution.header.\(toolExecution.id.uuidString)")
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel("\(toolDisplayName), \(statusText)")
         .accessibilityHint(

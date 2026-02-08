@@ -79,7 +79,7 @@ public struct MessageView: View {
         AssistantBubbleView(
             message: message,
             showingSelectionView: $showingSelectionView,
-            showingThinkingView: $showingStatsView,
+            showingThinkingView: $showingThinkingView,
             showingStatsView: $showingStatsView,
             copyTextAction: copyTextToClipboard,
             shareTextAction: shareText

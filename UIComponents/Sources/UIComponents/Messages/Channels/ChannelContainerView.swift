@@ -12,6 +12,7 @@ internal struct ChannelContainerView: View {
         static let sectionSpacing: CGFloat = 8
         static let toolSpacing: CGFloat = 6
         static let animationDuration: Double = 0.2
+        static let queryAnimationDuration: Double = 0
         static let finalChannelOrder: Int = 2
         static let uuidPrefixLength: Int = 8
     }
@@ -62,7 +63,8 @@ internal struct ChannelContainerView: View {
 
         self._channels = Query(
             descriptor,
-            animation: .easeInOut(duration: Constants.animationDuration)
+            // Streaming channel updates can be very frequent; avoid implicit animations here.
+            animation: .linear(duration: Constants.queryAnimationDuration)
         )
     }
 
@@ -72,25 +74,7 @@ internal struct ChannelContainerView: View {
         VStack(alignment: .leading, spacing: Constants.containerSpacing) {
             // Channels are already sorted by the query
             ForEach(channels, id: \.id) { channel in
-                VStack(alignment: .leading, spacing: Constants.toolSpacing) {
-                    ChannelMessageView(
-                        channel: channel,
-                        message: message,
-                        associatedToolStatus: getToolStatus(for: channel),
-                        showingSelectionView: $showingSelectionView,
-                        showingThinkingView: $showingThinkingView,
-                        showingStatsView: $showingStatsView,
-                        copyTextAction: copyTextAction,
-                        shareTextAction: shareTextAction
-                    )
-                    .equatable()
-                    .id(channel.id) // Stable identity allows SwiftUI to diff
-
-                    // Render associated tool right after its commentary channel
-                    if let toolExecution = channel.toolExecution {
-                        ToolExecutionView(toolExecution: toolExecution)
-                    }
-                }
+                channelRow(channel)
             }
 
             // Render any remaining tools that aren't associated with channels
@@ -108,6 +92,43 @@ internal struct ChannelContainerView: View {
         }
         .listRowSeparator(.hidden)
         .listRowInsets(EdgeInsets())
+    }
+
+    @ViewBuilder
+    private func channelRow(_ channel: Channel) -> some View {
+        VStack(alignment: .leading, spacing: Constants.toolSpacing) {
+            if channel.type == .tool {
+                // Tool channels are rendered via ToolExecutionView to avoid duplicate tool blocks.
+                if let toolExecution = channel.toolExecution {
+                    ToolExecutionView(toolExecution: toolExecution)
+                } else {
+                    channelMessageView(channel)
+                }
+            } else {
+                channelMessageView(channel)
+
+                // Render associated tool right after its commentary channel
+                if let toolExecution = channel.toolExecution {
+                    ToolExecutionView(toolExecution: toolExecution)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func channelMessageView(_ channel: Channel) -> some View {
+        ChannelMessageView(
+            channel: channel,
+            message: message,
+            associatedToolStatus: getToolStatus(for: channel),
+            showingSelectionView: $showingSelectionView,
+            showingThinkingView: $showingThinkingView,
+            showingStatsView: $showingStatsView,
+            copyTextAction: copyTextAction,
+            shareTextAction: shareTextAction
+        )
+        .equatable()
+        .id(channel.id) // Stable identity allows SwiftUI to diff
     }
 
     private func getToolStatus(for channel: Channel) -> ToolExecutionState? {

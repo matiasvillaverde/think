@@ -37,6 +37,7 @@ public struct MessagesView: View {
         GeometryReader { geometry in
             ScrollViewReader { proxy in
                 ScrollView {
+                    // Used by UI tests; stable identifier for the message list.
                     LazyVStack(spacing: UIConstants.messageSpacing) {
                         ForEach(messages) { message in
                             MessageView(message: message)
@@ -52,8 +53,10 @@ public struct MessagesView: View {
                         viewModel.scrollToBottom = scrollToLastMessageAnimated
                         scrollToLastMessage(proxy: proxy)
                     }
-                    .onChange(of: messages.last) {
-                        // Scroll so the last message's top is at the top of the screen
+                    // Avoid jank: `messages.last` changes during streaming updates.
+                    // (SwiftData observation)
+                    // Only auto-scroll when a *new* message is appended.
+                    .onChange(of: messages.last?.id) { _, _ in
                         scrollToLastMessageAnimated()
                     }
                     .onTapGesture {
@@ -62,8 +65,9 @@ public struct MessagesView: View {
                     .accessibilityAddTraits(.isButton)
                     .accessibilityLabel("Dismiss keyboard")
                 }
+                .accessibilityIdentifier("chat.messages.scroll")
                 #if os(macOS)
-                .scrollIndicators(.never)
+                    .scrollIndicators(.never)
                 #endif
             }
         }
@@ -76,8 +80,7 @@ public struct MessagesView: View {
         if let lastMessage = messages.last {
             // Show generic loading indicator if message has input but no response yet
             if
-                lastMessage.thinking == nil,
-                lastMessage.response == nil,
+                lastMessage.channels?.isEmpty ?? true,
                 lastMessage.responseImage == nil,
                 lastMessage.userInput != nil ||
                 lastMessage.file != nil ||

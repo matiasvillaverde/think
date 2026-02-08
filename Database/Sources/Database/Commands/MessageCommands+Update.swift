@@ -59,25 +59,43 @@ extension MessageCommands {
                         // Update existing channel
                         existingChannel.updateContent(channelMessage.content)
                         existingChannel.recipient = channelMessage.recipient
-                        // Mark as complete if this is the final update and content is non-empty
-                        if channelMessage.type == .final, !channelMessage.content.isEmpty {
-                            existingChannel.markAsComplete()
+
+                        // Link tool metadata when available
+                        if channelMessage.type == .tool {
+                            existingChannel.associatedToolId = channelMessage.toolRequest?.id
+                        }
+
+                        // Update completion state based on parser streaming signal
+                        if channelMessage.isComplete {
+                            if existingChannel.isComplete == false {
+                                existingChannel.markAsComplete()
+                            }
+                        } else {
+                            existingChannel.isComplete = false
                         }
                     } else {
                         // Create new channel with UUID from ContextBuilder
+                        let initialContent: String
+                        var associatedToolId: UUID?
+                        if channelMessage.type == .tool, let toolRequest = channelMessage.toolRequest {
+                            // Keep UI-friendly summary in the channel; details live in ToolExecution.
+                            initialContent = "Tool: \(toolRequest.displayName ?? toolRequest.name)"
+                            associatedToolId = toolRequest.id
+                        } else {
+                            initialContent = channelMessage.content
+                        }
+
                         let newChannel = Channel(
                             id: channelMessage.id,
                             type: Channel.ChannelType(rawValue: channelMessage.type.rawValue) ?? .final,
-                            content: channelMessage.content,
+                            content: initialContent,
                             order: channelMessage.order,
-                            recipient: channelMessage.recipient
+                            recipient: channelMessage.recipient,
+                            associatedToolId: associatedToolId,
+                            toolExecution: nil,
+                            isComplete: channelMessage.isComplete
                         )
-                        
-                        // Mark as complete if this is the final update and content is non-empty
-                        if channelMessage.type == .final, !channelMessage.content.isEmpty {
-                            newChannel.markAsComplete()
-                        }
-                        
+
                         // Create ToolExecution for tool channels
                         if channelMessage.type == .tool, let toolRequest = channelMessage.toolRequest {
                             let toolExecution = ToolExecution(

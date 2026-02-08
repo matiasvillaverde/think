@@ -82,6 +82,32 @@ internal struct MessagePersistorChannelTests {
         #expect(message.channels?.isEmpty ?? true)
     }
 
+    @Test("UpdateProcessedOutput preserves streaming completion state")
+    @MainActor
+    internal func preservesStreamingCompletionState() async throws {
+        let env: TestEnvironment = try await setupTestEnvironment()
+
+        try await env.persistor.updateMessage(
+            messageId: env.messageId,
+            output: MessagePersistorTestHelpers.createIncompleteChannelOutput()
+        )
+        try await assertFinalChannelCompletion(
+            database: env.database,
+            messageId: env.messageId,
+            expected: false
+        )
+
+        try await env.persistor.updateMessage(
+            messageId: env.messageId,
+            output: MessagePersistorTestHelpers.createCompleteChannelOutput()
+        )
+        try await assertFinalChannelCompletion(
+            database: env.database,
+            messageId: env.messageId,
+            expected: true
+        )
+    }
+
     // MARK: - Test Helpers
 
     private struct TestEnvironment {
@@ -101,6 +127,20 @@ internal struct MessagePersistorChannelTests {
             persistor: persistor,
             messageId: messageId
         )
+    }
+
+    @MainActor
+    private func assertFinalChannelCompletion(
+        database: Database,
+        messageId: UUID,
+        expected: Bool
+    ) async throws {
+        let message: Message = try await database.read(
+            MessageCommands.Read(id: messageId)
+        )
+        let finalChannel: Channel? = message.channels?.first { $0.type == .final }
+        #expect(finalChannel != nil)
+        #expect(finalChannel?.isComplete == expected)
     }
 
     private func createTestDatabase() throws -> Database {

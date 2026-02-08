@@ -24,14 +24,23 @@ internal struct ChatMLOutputParser: OutputParser {
         var channels: [ChannelMessage] = []
         var order: Int = 0
 
-        // Extract analysis and commentary channels
         order = await extractTaggedChannels(
             from: output,
             to: &channels,
             startOrder: order
         )
 
-        // Extract tool calls
+        await appendToolCalls(from: output, to: &channels, order: &order)
+        await appendFinal(from: output, to: &channels, order: order)
+
+        return channels
+    }
+
+    private func appendToolCalls(
+        from output: String,
+        to channels: inout [ChannelMessage],
+        order: inout Int
+    ) async {
         let toolCalls: [ToolRequest] = extractToolCalls(from: output)
         for toolCall in toolCalls {
             let recipient: String = "functions.\(toolCall.name)"
@@ -48,34 +57,44 @@ internal struct ChatMLOutputParser: OutputParser {
                 type: .tool,
                 content: toolCall.arguments,
                 order: order,
+                isComplete: true,
                 recipient: recipient,
                 toolRequest: toolCall
             ))
             order += 1
         }
+    }
 
-        // Extract final content (everything else)
+    private func appendFinal(
+        from output: String,
+        to channels: inout [ChannelMessage],
+        order: Int
+    ) async {
         let finalContent: String = extractFinalContent(from: output)
-        if !finalContent.isEmpty {
-            let signature: String = createChannelSignature(
-                type: .final,
-                order: order,
-                finalContent,
-                recipient: nil
-            )
-            let channelId: UUID = await cache.getOrCreateChannelId(for: signature)
-
-            channels.append(ChannelMessage(
-                id: channelId,
-                type: .final,
-                content: finalContent,
-                order: order,
-                recipient: nil,
-                toolRequest: nil
-            ))
+        guard !finalContent.isEmpty else {
+            return
         }
 
-        return channels
+        let finalIsComplete: Bool = labels.endLabel.isEmpty
+            ? true
+            : output.contains(labels.endLabel)
+        let signature: String = createChannelSignature(
+            type: .final,
+            order: order,
+            finalContent,
+            recipient: nil
+        )
+        let channelId: UUID = await cache.getOrCreateChannelId(for: signature)
+
+        channels.append(ChannelMessage(
+            id: channelId,
+            type: .final,
+            content: finalContent,
+            order: order,
+            isComplete: finalIsComplete,
+            recipient: nil,
+            toolRequest: nil
+        ))
     }
 
     // swiftlint:disable:next function_body_length
@@ -115,6 +134,7 @@ internal struct ChatMLOutputParser: OutputParser {
                     type: .analysis,
                     content: result.content,
                     order: order,
+                    isComplete: result.isComplete,
                     recipient: nil,
                     toolRequest: nil
                 ))
@@ -147,6 +167,7 @@ internal struct ChatMLOutputParser: OutputParser {
                     type: .commentary,
                     content: result.content,
                     order: order,
+                    isComplete: result.isComplete,
                     recipient: nil,
                     toolRequest: nil
                 ))

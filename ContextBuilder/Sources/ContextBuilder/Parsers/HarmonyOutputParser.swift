@@ -50,6 +50,7 @@ internal struct HarmonyOutputParser: OutputParser {
                 type: .final,
                 content: content,
                 order: 0,
+                isComplete: true,
                 recipient: nil,
                 toolRequest: nil
             ))
@@ -135,6 +136,7 @@ internal struct HarmonyOutputParser: OutputParser {
             type: channelType,
             content: content,
             order: channels.count,
+            isComplete: false,
             recipient: recipient,
             toolRequest: toolRequest
         )
@@ -245,6 +247,7 @@ internal struct HarmonyOutputParser: OutputParser {
             type: channelType,
             content: content,
             order: order,
+            isComplete: true,
             recipient: recipient,
             toolRequest: toolRequest
         )

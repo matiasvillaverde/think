@@ -187,6 +187,7 @@ internal enum MessagePersistorTestHelpers {
                     type: .final,
                     content: "Streaming...",
                     order: 0,
+                    isComplete: false,
                     recipient: nil
                 )
             ]
@@ -201,6 +202,7 @@ internal enum MessagePersistorTestHelpers {
                     type: .final,
                     content: "Streaming... done!",
                     order: 0,
+                    isComplete: true,
                     recipient: nil
                 )
             ]
