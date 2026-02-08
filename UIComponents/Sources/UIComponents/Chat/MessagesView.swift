@@ -13,11 +13,16 @@ public struct MessagesView: View {
         static let scrollOffsetX: CGFloat = 0.5
         static let scrollOffsetY: CGFloat = 1.2
         static let scrollAnimationDuration: TimeInterval = 0.3
+        static let pinnedThreshold: CGFloat = 44
+        static let bottomAnchorId: String = "chat.messages.bottom.anchor"
+        static let bottomAnchorHeight: CGFloat = 1
+        static let streamingCompleteBoost: Int = 10_000_000
     }
 
     @Environment(\.controller)
     private var viewModel: ViewInteractionController
     @State private var scrollProxy: ScrollViewProxy?
+    @State private var isPinnedToBottom: Bool = true
 
     @Query private var messages: [Message]
 
@@ -35,42 +40,73 @@ public struct MessagesView: View {
 
     public var body: some View {
         GeometryReader { geometry in
-            ScrollViewReader { proxy in
-                ScrollView {
-                    // Used by UI tests; stable identifier for the message list.
-                    LazyVStack(spacing: UIConstants.messageSpacing) {
-                        ForEach(messages) { message in
-                            MessageView(message: message)
-                                .id(message.id)
-                                .padding(.bottom, UIConstants.messageBottomPadding)
-                        }
-                        loadingIndicator()
-                    }
-                    .padding(.bottom, geometry.size.height - UIConstants.scrollViewBottomOffset)
-                    .onAppear {
-                        // Initially scroll to bottom (or top) as needed
-                        scrollProxy = proxy
-                        viewModel.scrollToBottom = scrollToLastMessageAnimated
-                        scrollToLastMessage(proxy: proxy)
-                    }
-                    // Avoid jank: `messages.last` changes during streaming updates.
-                    // (SwiftData observation)
-                    // Only auto-scroll when a *new* message is appended.
-                    .onChange(of: messages.last?.id) { _, _ in
-                        scrollToLastMessageAnimated()
-                    }
-                    .onTapGesture {
-                        viewModel.removeFocus?()
-                    }
-                    .accessibilityAddTraits(.isButton)
-                    .accessibilityLabel("Dismiss keyboard")
+            messagesScrollView(geometry: geometry)
+        }
+    }
+
+    private func messagesScrollView(geometry: GeometryProxy) -> some View {
+        ScrollViewReader { proxy in
+            messagesScrollContent(geometry: geometry, proxy: proxy)
+        }
+    }
+
+    private func messagesScrollContent(
+        geometry: GeometryProxy,
+        proxy: ScrollViewProxy
+    ) -> some View {
+        ScrollView {
+            // Used by UI tests; stable identifier for the message list.
+            LazyVStack(spacing: UIConstants.messageSpacing) {
+                ForEach(messages) { message in
+                    MessageView(message: message)
+                        .id(message.id)
+                        .padding(.bottom, UIConstants.messageBottomPadding)
                 }
-                .accessibilityIdentifier("chat.messages.scroll")
-                #if os(macOS)
-                    .scrollIndicators(.never)
-                #endif
+                loadingIndicator()
+                bottomAnchor()
+            }
+            .padding(.bottom, geometry.size.height - UIConstants.scrollViewBottomOffset)
+            .onAppear {
+                // Initially scroll to bottom (or top) as needed
+                scrollProxy = proxy
+                viewModel.scrollToBottom = scrollToLastMessageAnimated
+                scrollToLastMessage(proxy: proxy)
+            }
+            // Avoid jank: `messages.last` changes during streaming updates (SwiftData observation).
+            // Only auto-scroll when a *new* message is appended.
+            .onChange(of: messages.last?.id) { _, _ in
+                scrollToLastMessageAnimated()
+            }
+            // If we're pinned to the bottom, keep the bottom anchored during streaming updates.
+            // This matches ChatGPT behavior: stay pinned unless the user scrolls away.
+            .onChange(of: streamingRevision) { _, _ in
+                guard isPinnedToBottom else {
+                    return
+                }
+                scrollToBottomAnchor(proxy: proxy)
+            }
+            .onTapGesture {
+                viewModel.removeFocus?()
+            }
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel("Dismiss keyboard")
+        }
+        .accessibilityIdentifier("chat.messages.scroll")
+        .coordinateSpace(name: "chat.messages.scrollSpace")
+        .onPreferenceChange(BottomAnchorFrameKey.self) { frame in
+            guard let frame else {
+                return
+            }
+
+            let pinned: Bool = frame.maxY <=
+                geometry.size.height + UIConstants.pinnedThreshold
+            if pinned != isPinnedToBottom {
+                isPinnedToBottom = pinned
             }
         }
+        #if os(macOS)
+            .scrollIndicators(.never)
+        #endif
     }
 
     // MARK: - Loading indicator
@@ -101,24 +137,56 @@ public struct MessagesView: View {
     /// Scrolls so that the bottom anchor is at the bottom of the screen
     @MainActor
     private func scrollToLastMessage(proxy: ScrollViewProxy) {
-        guard let lastMessage = messages.last else {
-            return
-        }
-        proxy.scrollTo(lastMessage.id, anchor: .top)
+        scrollToBottomAnchor(proxy: proxy)
     }
 
     @MainActor
     private func scrollToLastMessageAnimated() {
-        guard let lastMessage = messages.last, let proxy = scrollProxy else {
+        guard let proxy = scrollProxy else {
             return
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + UIConstants.scrollAnimationDelay) {
             withAnimation(.easeOut(duration: UIConstants.scrollAnimationDuration)) {
-                proxy.scrollTo(
-                    lastMessage.id,
-                    anchor: .top
-                )
+                scrollToBottomAnchor(proxy: proxy)
             }
         }
+    }
+
+    @MainActor
+    private func scrollToBottomAnchor(proxy: ScrollViewProxy) {
+        proxy.scrollTo(UIConstants.bottomAnchorId, anchor: .bottom)
+    }
+
+    private var streamingRevision: Int {
+        guard let lastMessage = messages.last else {
+            return 0
+        }
+        if let channels = lastMessage.channels,
+            let final = channels.first(where: { $0.type == .final }) {
+            return final.content.count +
+                (final.isComplete ? UIConstants.streamingCompleteBoost : 0)
+        }
+        return (lastMessage.response ?? "").count
+    }
+
+    private func bottomAnchor() -> some View {
+        GeometryReader { geo in
+            Color.clear
+                .preference(
+                    key: BottomAnchorFrameKey.self,
+                    value: geo.frame(in: .named("chat.messages.scrollSpace"))
+                )
+        }
+        .frame(height: UIConstants.bottomAnchorHeight)
+        .id(UIConstants.bottomAnchorId)
+        .accessibilityIdentifier("chat.messages.bottom")
+    }
+}
+
+private enum BottomAnchorFrameKey: PreferenceKey {
+    static var defaultValue: CGRect? { nil }
+
+    static func reduce(value: inout CGRect?, nextValue: () -> CGRect?) {
+        value = nextValue()
     }
 }

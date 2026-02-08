@@ -105,7 +105,8 @@ internal enum AgentOrchestratorTestHelpers {
 
     internal static func createOrchestrator(
         database: Database,
-        mlxSession: MockLLMSession
+        mlxSession: MockLLMSession,
+        contextBuilder: (any ContextBuilding)? = nil
     ) -> AgentOrchestrator {
         let mockDownloader: MockModelDownloader = MockModelDownloader()
         mockDownloader.configureForStandardTests()
@@ -123,7 +124,7 @@ internal enum AgentOrchestratorTestHelpers {
         return AgentOrchestrator(
             modelCoordinator: coordinator,
             persistor: persistor,
-            contextBuilder: ContextBuilder(tooling: toolManager)
+            contextBuilder: contextBuilder ?? ContextBuilder(tooling: toolManager)
         )
     }
 

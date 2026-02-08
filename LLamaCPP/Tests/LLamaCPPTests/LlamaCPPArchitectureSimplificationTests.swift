@@ -9,9 +9,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Core generation works with minimal abstractions")
     internal func testMinimalGeneration() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -34,9 +32,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Session works with simplified generation flow")
     internal func testSimplifiedSessionFlow() async throws {
-        guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let config: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -71,9 +67,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Tokenization works directly")
     internal func testDirectTokenization() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         guard let ptr = model.pointer else {
             throw LLMError.invalidConfiguration("Model pointer is nil")
@@ -105,9 +99,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("State management is consolidated")
     internal func testConsolidatedStateManagement() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -144,9 +136,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Error handling is simplified")
     internal func testSimplifiedErrorHandling() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         // All errors should be LLMError
         do {
             _ = try LlamaCPPModel(path: "/invalid")
@@ -171,9 +161,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Configuration is simplified")
     internal func testSimplifiedConfiguration() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
 
         // Simple configuration
@@ -194,9 +182,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Metrics are simplified")
     internal func testSimplifiedMetrics() async throws {
-        guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let config: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(

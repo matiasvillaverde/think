@@ -9,9 +9,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Stop sequences correctly stop generation")
     internal func testStopSequenceDetection() async throws {
-        guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let config: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -65,9 +63,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Multiple stop sequences work correctly")
     internal func testMultipleStopSequences() async throws {
-        guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let config: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -128,9 +124,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Stop sequence checking is efficient")
     internal func testStopSequenceEfficiency() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -189,9 +183,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Partial stop sequence matches don't stop generation")
     internal func testPartialMatchHandling() async throws {
-        guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let config: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -245,9 +237,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Empty stop sequences are handled correctly")
     internal func testEmptyStopSequences() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -276,9 +266,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Stop sequences are case sensitive")
     internal func testStopSequenceCaseSensitivity() async throws {
-        guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let config: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -332,9 +320,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Unicode stop sequences work correctly")
     internal func testUnicodeStopSequences() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -363,9 +349,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Stop sequences do not appear in generated output")
     internal func testStopSequencesNotInOutput() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
         for try await _ in await session.preload(
             configuration: configuration
@@ -402,9 +386,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Qwen-style stop sequences work correctly")
     internal func testQwenStyleStopSequences() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
         for try await _ in await session.preload(
             configuration: configuration

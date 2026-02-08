@@ -9,9 +9,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Resources are properly freed on deallocation")
     internal func testResourcesFreedOnDeallocation() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         // Create and destroy multiple instances to detect leaks
         for iteration in 0..<3 {
             let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
@@ -42,9 +40,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Resources are freed in correct order")
     internal func testCleanupOrder() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -76,9 +72,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Double-free is safely handled")
     internal func testDoubleFreeProtection() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -100,9 +94,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Resources are cleaned up properly on error paths")
     internal func testResourceCleanupOnError() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -132,9 +124,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Session properly manages memory lifecycle")
     internal func testSessionMemoryManagement() async throws {
-        guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let config: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         // Load model
@@ -181,9 +171,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Handles large allocations without memory issues")
     internal func testLargeAllocationStress() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
 
         // Create context with large size
@@ -214,9 +202,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Sampler chain memory is properly managed")
     internal func testSamplerMemoryManagement() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)

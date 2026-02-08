@@ -15,11 +15,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("LLMSession generates expected response for Hello")
     internal func testLLMSessionHelloResponse() async throws {
-        guard let configuration: ProviderConfiguration =
-            TestHelpers.createAcceptanceTestConfiguration()
-        else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createAcceptanceTestConfiguration()
         // Use the protocol type, not the concrete implementation
         let session: LLMSession = LlamaCPPSession()
 
@@ -61,11 +57,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("LLMSession generates deterministic output with seed")
     internal func testDeterministicGenerationWithSeed() async throws {
-        guard let configuration: ProviderConfiguration =
-            TestHelpers.createAcceptanceTestConfiguration()
-        else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createAcceptanceTestConfiguration()
         let session: LLMSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -123,11 +115,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("LLMSession completes simple prompts correctly")
     internal func testSimplePromptCompletion() async throws {
-        guard let configuration: ProviderConfiguration =
-            TestHelpers.createAcceptanceTestConfiguration()
-        else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createAcceptanceTestConfiguration()
         let session: LLMSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -205,11 +193,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("LLMSession respects max tokens limit in acceptance")
     internal func testMaxTokensLimitAcceptance() async throws {
-        guard let configuration: ProviderConfiguration =
-            TestHelpers.createAcceptanceTestConfiguration()
-        else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createAcceptanceTestConfiguration()
         let session: LLMSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -248,11 +232,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("LLMSession provides valid metrics")
     internal func testMetricsValidity() async throws {
-        guard let configuration: ProviderConfiguration =
-            TestHelpers.createAcceptanceTestConfiguration()
-        else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createAcceptanceTestConfiguration()
         let session: LLMSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(

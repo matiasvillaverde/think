@@ -9,9 +9,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Batch processing is efficient")
     internal func testBatchProcessingPerformance() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -64,9 +62,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Batch processing handles boundary conditions")
     internal func testBatchBoundaryConditions() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let config: ComputeConfiguration = ComputeConfiguration(
             contextSize: 512,
@@ -105,9 +101,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Batch processing is memory efficient")
     internal func testBatchMemoryEfficiency() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -148,9 +142,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Parallel batch processing works correctly")
     internal func testParallelBatchProcessing() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
 
         // Create contexts sequentially to avoid concurrent access to model
@@ -204,9 +196,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Batch processing maintains correct position tracking")
     internal func testBatchPositionTracking() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -250,9 +240,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Optimal batch size is determined correctly")
     internal func testOptimalBatchSize() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
 
         // Test finding optimal batch size for different thread counts

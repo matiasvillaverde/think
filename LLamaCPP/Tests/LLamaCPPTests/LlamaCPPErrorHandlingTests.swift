@@ -9,9 +9,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("All error conditions throw appropriate errors")
     internal func testAllErrorsThrow() async throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         // Test 1: Invalid model path
         await TestAssertions.assertThrowsLLMError(
             { _ = try LlamaCPPModel(path: "/nonexistent/model.gguf") },
@@ -96,9 +94,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Error messages for invalid configuration")
     internal func testInvalidConfigurationErrorMessage() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         // Test invalid configuration error messages
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
@@ -155,9 +151,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("No silent failures with return 0")
     internal func testNoSilentFailures() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         // This test verifies that we don't have silent failures
         // where functions return 0 instead of throwing
 
@@ -192,9 +186,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Error recovery is possible")
     internal func testErrorRecovery() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         // Test that after an error, the system can recover
 
         // First, cause an error

@@ -6,9 +6,7 @@ import Testing
 extension LlamaCPPModelTestSuite {
     @Test("Debug simple generation with BF16 model")
     internal func testSimpleGeneration() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(

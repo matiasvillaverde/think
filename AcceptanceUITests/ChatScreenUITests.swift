@@ -27,7 +27,11 @@ final class ChatScreenUITests: XCTestCase {
         let chatView = any("uiTest.chatView", in: app)
         XCTAssertTrue(chatView.waitForExistence(timeout: 15))
 
-        let finalContent = any("channel.final.content", in: app)
+        let finalContent = element(
+            withIdentifier: "channel.final.content",
+            labelContains: "Here is a stre",
+            in: app
+        )
         XCTAssertTrue(finalContent.waitForExistence(timeout: 15))
 
         // Partial streaming content should appear quickly.
@@ -67,7 +71,11 @@ final class ChatScreenUITests: XCTestCase {
         let chatView = any("uiTest.chatView", in: app)
         XCTAssertTrue(chatView.waitForExistence(timeout: 15))
 
-        let thinkingContent = any("channel.analysis.content", in: app)
+        let thinkingContent = element(
+            withIdentifier: "channel.analysis.content",
+            labelContains: "Thinking about the best answer... done.",
+            in: app
+        )
         XCTAssertTrue(thinkingContent.waitForExistence(timeout: 15))
 
         let thinkingToggle = any("channel.analysis.header", in: app)
@@ -119,5 +127,67 @@ final class ChatScreenUITests: XCTestCase {
         toolHeader.tap()
         let request = any("toolExecution.request.\(toolId)", in: app)
         XCTAssertTrue(request.waitForExistence(timeout: 10))
+    }
+
+    func testStreamingKeepsPinnedToBottom() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        let chatView = any("uiTest.chatView", in: app)
+        XCTAssertTrue(chatView.waitForExistence(timeout: 15))
+
+        let scroll = any("chat.messages.scroll", in: app)
+        XCTAssertTrue(scroll.waitForExistence(timeout: 15))
+
+        let bottom = any("chat.messages.bottom", in: app)
+        XCTAssertTrue(bottom.waitForExistence(timeout: 15))
+
+        // Wait for streaming to start.
+        let step0 = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", "AUTO_SCROLL_STREAM step 0"))
+            .firstMatch
+        XCTAssertTrue(step0.waitForExistence(timeout: 15))
+
+        // As content grows, the bottom anchor should remain visible/hittable when pinned.
+        let step10 = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", "AUTO_SCROLL_STREAM step 10"))
+            .firstMatch
+        XCTAssertTrue(step10.waitForExistence(timeout: 15))
+        XCTAssertTrue(bottom.isHittable)
+    }
+
+    func testStreamingDoesNotAutoScrollWhenUserScrollsUp() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        let chatView = any("uiTest.chatView", in: app)
+        XCTAssertTrue(chatView.waitForExistence(timeout: 15))
+
+        let scroll = any("chat.messages.scroll", in: app)
+        XCTAssertTrue(scroll.waitForExistence(timeout: 15))
+
+        let bottom = any("chat.messages.bottom", in: app)
+        XCTAssertTrue(bottom.waitForExistence(timeout: 15))
+
+        let step0 = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", "AUTO_SCROLL_STREAM step 0"))
+            .firstMatch
+        XCTAssertTrue(step0.waitForExistence(timeout: 15))
+
+        // Scroll up to unpin.
+        scroll.swipeDown()
+        scroll.swipeDown()
+        scroll.swipeDown()
+
+        XCTAssertFalse(bottom.isHittable)
+
+        // Streaming continues, but we should not be forced back to the bottom.
+        let step14 = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", "AUTO_SCROLL_STREAM step 14"))
+            .firstMatch
+        XCTAssertTrue(step14.waitForExistence(timeout: 15))
+        XCTAssertFalse(bottom.isHittable)
     }
 }

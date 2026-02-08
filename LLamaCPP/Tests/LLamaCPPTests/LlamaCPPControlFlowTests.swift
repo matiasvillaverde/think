@@ -6,9 +6,7 @@ import Testing
 extension LlamaCPPModelTestSuite {
     @Test("Stop cancels active generation")
     internal func testStopCancels() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -45,9 +43,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Stop sequences halt generation")
     internal func testStopSequences() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(

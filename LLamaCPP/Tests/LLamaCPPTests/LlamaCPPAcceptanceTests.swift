@@ -12,9 +12,7 @@ extension LlamaCPPModelTestSuite {
     }
     @Test("LLMSession generates deterministic text with temperature 0")
     internal func testLLMSessionGeneratesDeterministicText() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         // Use the protocol type, not the concrete implementation
         let session: LLMSession = LlamaCPPSession()
 
@@ -77,9 +75,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("LLMSession generates non-empty text for prompts")
     internal func testLLMSessionGeneratesNonEmptyText() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         // Use protocol type for true acceptance testing
         let session: LLMSession = LlamaCPPSession()
 
@@ -132,9 +128,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("LLMSession provides consistent metrics")
     internal func testLLMSessionProvidesMetrics() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LLMSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -209,9 +203,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("LLMSession handles multi-turn conversation")
     internal func testLLMSessionMultiTurnConversation() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LLMSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(

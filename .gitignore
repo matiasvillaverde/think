@@ -84,6 +84,10 @@ MLXSession/Tests/MLX*/Resources/**/temp_clone/
 !MLXSession/Tests/MLX*/Resources/*/download.sh
 !MLXSession/Tests/MLX*/Resources/download.sh
 
+# LLamaCPP test models
+# Download on demand and point tests at the local paths via environment variables.
+LLamaCPP/Tests/LLamaCPPTests/Resources/*.gguf
+
 # ===========================
 # Xcode Build Artifacts
 # ===========================
@@ -297,3 +301,6 @@ Localizable.xcstrings.original
 # End of .gitignore
 # Icon generator - one-time-use scripts with hardcoded paths
 scripts/icon-generator/
+
+# Local quarantine folder used during repository hygiene checks.
+.quarantine/

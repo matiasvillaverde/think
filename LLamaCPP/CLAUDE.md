@@ -59,9 +59,16 @@ make duplication       # Check for code duplication
 - Uses SwiftTesting framework (@Test, @Suite) NOT XCTest
 
 ### Test Models
-Test models are included in `Tests/LLamaCPPTests/Resources/`:
-- **Qwen3-0.6B-UD-IQ1_S.gguf**: Ultra-quantized for fast unit tests
-- **Qwen3-0.6B-BF16.gguf**: Higher quality for acceptance tests
+For open-source friendliness, large `.gguf` weights are **not** committed to this repo.
+
+To run tests that require a model, provide local paths via environment variables:
+- `LLAMACPP_TEST_MODEL_PATH`: a small GGUF for unit tests
+- `LLAMACPP_ACCEPTANCE_MODEL_PATH`: a higher quality GGUF for acceptance tests
+
+Helper script:
+```bash
+bash LLamaCPP/Tests/LLamaCPPTests/Resources/download.sh
+```
 
 ### Key Test Suites
 - **LlamaCPPIntegrationTests**: End-to-end protocol compliance

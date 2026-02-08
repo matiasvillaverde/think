@@ -6,9 +6,7 @@ import Testing
 extension LlamaCPPModelTestSuite {
     @Test("Prompts are truncated to fit the context window")
     internal func testPromptTruncationFitsContext() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
             configuration: configuration

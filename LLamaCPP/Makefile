@@ -40,7 +40,30 @@ build-ci: lint ## Build with warnings as errors
 
 test: build ## Run unit tests
 	@echo "🧪 Testing LLamaCPP..."
-	@LLAMA_CPP_FORCE_CPU=1 LLAMA_CPP_TEST_SHARED_MODEL=1 swift test $(SWIFT_TEST_FLAGS)
+	@if [ -n "$$LLAMACPP_TEST_MODEL_PATH" ] && [ -f "$$LLAMACPP_TEST_MODEL_PATH" ]; then \
+		echo "$(BLUE)Using LLAMACPP_TEST_MODEL_PATH=$$LLAMACPP_TEST_MODEL_PATH$(NC)"; \
+		LLAMA_CPP_FORCE_CPU=1 LLAMA_CPP_TEST_SHARED_MODEL=1 swift test $(SWIFT_TEST_FLAGS); \
+	elif ls Tests/LLamaCPPTests/Resources/*.gguf >/dev/null 2>&1; then \
+		echo "$(BLUE)Using local GGUF model(s) in Tests/LLamaCPPTests/Resources/$(NC)"; \
+		LLAMA_CPP_FORCE_CPU=1 LLAMA_CPP_TEST_SHARED_MODEL=1 swift test $(SWIFT_TEST_FLAGS); \
+	else \
+		echo "$(YELLOW)No GGUF model found; skipping model-backed tests (LlamaCPPModelTestSuite).$(NC)"; \
+		echo "$(YELLOW)Set LLAMACPP_TEST_MODEL_PATH or run: bash Tests/LLamaCPPTests/Resources/download.sh$(NC)"; \
+		LLAMA_CPP_FORCE_CPU=1 LLAMA_CPP_TEST_SHARED_MODEL=1 swift test $(SWIFT_TEST_FLAGS) --skip "LlamaCPPModelTestSuite"; \
+	fi
+
+test-with-model: build ## Run model-backed tests (requires GGUF model)
+	@if [ -n "$$LLAMACPP_TEST_MODEL_PATH" ] && [ -f "$$LLAMACPP_TEST_MODEL_PATH" ]; then \
+		echo "$(BLUE)Using LLAMACPP_TEST_MODEL_PATH=$$LLAMACPP_TEST_MODEL_PATH$(NC)"; \
+		LLAMA_CPP_FORCE_CPU=1 LLAMA_CPP_TEST_SHARED_MODEL=1 swift test $(SWIFT_TEST_FLAGS); \
+	elif ls Tests/LLamaCPPTests/Resources/*.gguf >/dev/null 2>&1; then \
+		echo "$(BLUE)Using local GGUF model(s) in Tests/LLamaCPPTests/Resources/$(NC)"; \
+		LLAMA_CPP_FORCE_CPU=1 LLAMA_CPP_TEST_SHARED_MODEL=1 swift test $(SWIFT_TEST_FLAGS); \
+	else \
+		echo "$(RED)✗ No GGUF model available for model-backed tests$(NC)"; \
+		echo "$(RED)  Set LLAMACPP_TEST_MODEL_PATH or run: bash Tests/LLamaCPPTests/Resources/download.sh$(NC)"; \
+		exit 1; \
+	fi
 
 # MARK: - Quality Targets
 

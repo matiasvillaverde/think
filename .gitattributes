@@ -4,4 +4,3 @@
 **/coremldata.bin filter=lfs diff=lfs merge=lfs -text
 **/*.mlmodelc/model.mil filter=lfs diff=lfs merge=lfs -text
 **/*.mlpackage/Data/*.bin filter=lfs diff=lfs merge=lfs -text
-LLamaCPP/Tests/LLamaCPPTests/Resources/Qwen3-0.6B-BF16.gguf filter=lfs diff=lfs merge=lfs -text

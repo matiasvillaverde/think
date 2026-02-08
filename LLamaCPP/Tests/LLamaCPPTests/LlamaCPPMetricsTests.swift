@@ -6,9 +6,7 @@ import Testing
 extension LlamaCPPModelTestSuite {
     @Test("Stream includes timing metrics")
     internal func testTimingMetrics() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -42,9 +40,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Stream includes usage metrics")
     internal func testUsageMetrics() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(

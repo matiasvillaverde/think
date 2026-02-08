@@ -31,7 +31,7 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
     private let persistor: MessagePersistor
     private let database: DatabaseProtocol
     private let decisionChain: DecisionHandler
-    private let contextBuilder: ContextBuilder
+    private let contextBuilder: any ContextBuilding
     private let tooling: Tooling?
     private let workspaceContextProvider: WorkspaceContextProvider?
     private let workspaceSkillLoader: WorkspaceSkillLoader?
@@ -150,7 +150,7 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
     internal init(
         modelCoordinator: ModelStateCoordinator,
         persistor: MessagePersistor,
-        contextBuilder: ContextBuilder,
+        contextBuilder: any ContextBuilding,
         tooling: Tooling? = nil,
         workspaceContextProvider: WorkspaceContextProvider? = nil,
         workspaceSkillLoader: WorkspaceSkillLoader? = nil,
@@ -588,6 +588,14 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         var currentText: String
         var currentMetrics: ChunkMetrics?
         var lastUpdate: ContinuousClock.Instant
+        var hasInitializedChannels: Bool
+    }
+
+    private struct StreamChunkResult {
+        let accumulatedText: String
+        let metrics: ChunkMetrics?
+        let didInitializeChannels: Bool
+        let lastUpdateTime: ContinuousClock.Instant
     }
 
     private func initializeStreamState() -> StreamState {
@@ -605,13 +613,14 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         input: LLMInput,
         state: GenerationState,
         streamState: StreamState
-    ) async throws -> (String, ChunkMetrics?) {
+    ) async throws -> StreamChunkResult {
         var chunkContext: StreamChunkContext = StreamChunkContext(
             state: state,
             throttleInterval: streamState.throttleInterval,
             currentText: streamState.accumulatedText,
             currentMetrics: streamState.metrics,
-            lastUpdate: streamState.lastUpdateTime
+            lastUpdate: streamState.lastUpdateTime,
+            hasInitializedChannels: false
         )
 
         let streamSequence: AsyncThrowingStream<LLMStreamChunk, Error> =
@@ -621,7 +630,12 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             try await handleStreamChunk(streamChunk, context: &chunkContext)
         }
 
-        return (chunkContext.currentText, chunkContext.currentMetrics)
+        return StreamChunkResult(
+            accumulatedText: chunkContext.currentText,
+            metrics: chunkContext.currentMetrics,
+            didInitializeChannels: chunkContext.hasInitializedChannels,
+            lastUpdateTime: chunkContext.lastUpdate
+        )
     }
 
     private func handleStreamChunk(
@@ -639,10 +653,7 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         let elapsed: Duration = context.lastUpdate.duration(to: now)
 
         if elapsed >= context.throttleInterval {
-            try await updatePartialOutput(
-                accumulatedText: context.currentText,
-                state: context.state
-            )
+            try await updateStreamingOutput(context: &context)
             context.lastUpdate = now
         }
     }
@@ -650,13 +661,51 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
     private func finalizeStreamUpdates(
         accumulatedText: String,
         state: GenerationState,
-        lastUpdateTime: ContinuousClock.Instant
+        lastUpdateTime: ContinuousClock.Instant,
+        didInitializeChannels: Bool
     ) async throws {
         if lastUpdateTime.duration(to: ContinuousClock.now) > .zero {
-            try await updatePartialOutput(
-                accumulatedText: accumulatedText,
-                state: state
-            )}
+            if didInitializeChannels {
+                try await persistor.updateStreamingFinalChannel(
+                    messageId: state.messageId,
+                    content: accumulatedText,
+                    isComplete: false
+                )
+            } else {
+                let partialOutput: ProcessedOutput = try await contextBuilder.process(
+                    output: accumulatedText,
+                    model: state.model
+                )
+                try await persistor.updateMessage(
+                    messageId: state.messageId,
+                    output: partialOutput
+                )
+            }
+        }
+    }
+
+    private func updateStreamingOutput(context: inout StreamChunkContext) async throws {
+        if context.hasInitializedChannels == false {
+            // First update: run the full parser once to establish stable channel UUIDs.
+            let partialOutput: ProcessedOutput = try await contextBuilder.process(
+                output: context.currentText,
+                model: context.state.model
+            )
+            try await persistor.updateMessage(
+                messageId: context.state.messageId,
+                output: partialOutput
+            )
+            context.hasInitializedChannels = true
+            return
+        }
+
+        // Subsequent updates: update only the final channel content (cheap, avoids re-processing
+        // accumulated output over and over as it grows).
+        try await persistor.updateStreamingFinalChannel(
+            messageId: context.state.messageId,
+            content: context.currentText,
+            isComplete: false
+        )
     }
 
     private func processStream(
@@ -665,19 +714,20 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
     ) async throws -> (String, ChunkMetrics?) {
         let streamState: StreamState = initializeStreamState()
 
-        let (accumulatedText, metrics): (String, ChunkMetrics?) = try await processStreamChunks(
+        let result: StreamChunkResult = try await processStreamChunks(
             input: input,
             state: state,
             streamState: streamState
         )
 
         try await finalizeStreamUpdates(
-            accumulatedText: accumulatedText,
+            accumulatedText: result.accumulatedText,
             state: state,
-            lastUpdateTime: streamState.lastUpdateTime
+            lastUpdateTime: result.lastUpdateTime,
+            didInitializeChannels: result.didInitializeChannels
         )
 
-        return (accumulatedText, metrics)
+        return (result.accumulatedText, result.metrics)
     }
 
     private func updatePartialOutput(

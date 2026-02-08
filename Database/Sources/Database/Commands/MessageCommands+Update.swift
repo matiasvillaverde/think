@@ -6,6 +6,81 @@ import SwiftUI
 
 // MARK: - Message Update Commands
 extension MessageCommands {
+    /// Updates the final channel content for a message without re-processing all channels.
+    ///
+    /// Intended for high-frequency streaming updates to keep UI smooth and reliable.
+    public struct UpdateFinalChannelContent: WriteCommand {
+        public typealias Result = UUID
+
+        private static let logger = Logger(
+            subsystem: "Database", category: "MessageCommands"
+        )
+
+        private let messageId: UUID
+        private let content: String
+        private let isComplete: Bool
+        public var requiresRag: Bool { false }
+
+        public init(messageId: UUID, content: String, isComplete: Bool) {
+            self.messageId = messageId
+            self.content = content
+            self.isComplete = isComplete
+        }
+
+        public func execute(
+            in context: ModelContext,
+            userId: PersistentIdentifier?,
+            rag: Ragging?
+        ) throws -> UUID {
+            let descriptor = FetchDescriptor<Message>(
+                predicate: #Predicate<Message> { $0.id == messageId }
+            )
+
+            guard let message = try context.fetch(descriptor).first else {
+                Self.logger.error("Message not found with ID: \(messageId)")
+                throw DatabaseError.messageNotFound
+            }
+
+            if let channels = message.channels,
+                let finalChannel = channels
+                .filter({ $0.type == .final })
+                .min(by: { $0.order < $1.order }) {
+                finalChannel.updateContent(content)
+                if isComplete {
+                    if finalChannel.isComplete == false {
+                        finalChannel.markAsComplete()
+                    }
+                } else {
+                    finalChannel.isComplete = false
+                }
+            } else {
+                // Fallback: create a final channel if the message was not initialized with channels yet.
+                // This should be rare in production; normal streaming initializes channels first.
+                let newChannel = Channel(
+                    id: UUID(),
+                    type: .final,
+                    content: content,
+                    order: 0,
+                    recipient: nil,
+                    associatedToolId: nil,
+                    toolExecution: nil,
+                    isComplete: isComplete
+                )
+                newChannel.message = message
+                context.insert(newChannel)
+                if message.channels == nil {
+                    message.channels = [newChannel]
+                } else {
+                    message.channels?.append(newChannel)
+                }
+            }
+
+            message.version += 1
+            try context.save()
+            return message.id
+        }
+    }
+
     public struct UpdateProcessedOutput: WriteCommand {
         // MARK: - Properties
 

@@ -6,9 +6,7 @@ import Testing
 extension LlamaCPPModelTestSuite {
     @Test("MaxTokens limit is enforced")
     internal func testMaxTokensLimit() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
             configuration: configuration
@@ -60,9 +58,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Timeout cancels generation")
     internal func testTimeout() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
             configuration: configuration

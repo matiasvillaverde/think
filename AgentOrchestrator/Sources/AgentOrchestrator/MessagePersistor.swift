@@ -65,6 +65,20 @@ internal final actor MessagePersistor {
         )
     }
 
+    internal func updateStreamingFinalChannel(
+        messageId: UUID,
+        content: String,
+        isComplete: Bool
+    ) async throws {
+        try await database.write(
+            MessageCommands.UpdateFinalChannelContent(
+                messageId: messageId,
+                content: content,
+                isComplete: isComplete
+            )
+        )
+    }
+
     internal func saveToolResults(messageId: UUID, results: [ToolResponse]) async throws {
         Self.logger.debug("Saving tool results for message: \(messageId, privacy: .private)")
         Self.logger.debug("Tool results count: \(results.count)")

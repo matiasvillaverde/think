@@ -9,9 +9,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Position resets when context resets")
     internal func testPositionResetsWithContext() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -56,9 +54,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Context reset syncs generator position without manual reset")
     internal func testContextResetSyncsGeneratorPosition() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -103,9 +99,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Position remains consistent across all operations")
     internal func testPositionConsistency() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -192,9 +186,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Position tracking with large batches")
     internal func testPositionWithLargeBatches() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -231,9 +223,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Position tracking across multiple resets")
     internal func testPositionAcrossMultipleResets() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -269,9 +259,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Position boundary conditions")
     internal func testPositionBoundaryConditions() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let config: ComputeConfiguration = ComputeConfiguration(
             contextSize: 128,  // Small context for testing

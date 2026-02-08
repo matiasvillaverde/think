@@ -12,9 +12,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Can load GGUF model from file")
     internal func testLoadModel() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let isLoaded: Bool = model.isLoaded
         #expect(isLoaded)
@@ -24,9 +22,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Can get model metadata - vocab size")
     internal func testGetVocabSize() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let vocabSize: Int32 = model.vocabSize
         // Exact vocab size for Qwen3-0.6B model
@@ -40,9 +36,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Can get model metadata - context length")
     internal func testGetContextLength() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let contextLength: Int32 = model.contextLength
         // Exact context length for Qwen3-0.6B model
@@ -56,9 +50,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Can get model metadata - embedding size")
     internal func testGetEmbeddingSize() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let embeddingSize: Int32 = model.embeddingSize
         // For Qwen3-0.6B model, we need to determine the exact embedding size
@@ -73,9 +65,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Model can be freed without crash")
     internal func testModelFree() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         model.free()
 
@@ -85,9 +75,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Model free is idempotent")
     internal func testModelFreeIdempotent() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         model.free()
         model.free()
@@ -100,9 +88,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Can create context from model")
     internal func testCreateContext() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
 
@@ -115,9 +101,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Can create context with custom configuration")
     internal func testCreateContextWithConfig() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let config: ComputeConfiguration = ComputeConfiguration(
             contextSize: 2_048,
@@ -150,9 +134,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Can tokenize simple text")
     internal func testTokenizeSimpleText() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let tokenizer: LlamaCPPTokenizer = LlamaCPPTokenizer()
         guard let ptr = model.pointer else {
@@ -181,9 +163,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Can detokenize tokens back to text")
     internal func testDetokenize() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let tokenizer: LlamaCPPTokenizer = LlamaCPPTokenizer()
         guard let ptr = model.pointer else {
@@ -205,9 +185,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Can generate single token")
     internal func testGenerateSingleToken() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -231,9 +209,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Greedy sampling selects highest probability")
     internal func testGreedySampling() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -270,9 +246,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Temperature affects generation")
     internal func testTemperatureSampling() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -305,9 +279,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Different sampling parameters produce valid outputs")
     internal func testSamplingVariation() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         let context: LlamaCPPContext = try LlamaCPPContext(model: model, configuration: .medium)
         let generator: LlamaCPPGenerator = LlamaCPPGenerator(model: model, context: context)
@@ -344,9 +316,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Throws error for invalid tokenizer model")
     internal func testTokenizerWithInvalidModel() throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let model: LlamaCPPModel = try TestHelpers.createTestModel(path: modelPath)
         model.free() // Free the model to simulate invalid state
 

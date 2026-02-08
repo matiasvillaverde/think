@@ -7,9 +7,7 @@ import Testing
 extension LlamaCPPModelTestSuite {
     @Test("Buffered text is emitted when stop() is called")
     internal func testBufferedTextEmittedOnStop() async throws {
-        guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let config: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let stopAfterTokensConstant: Int = 5
         let session: LlamaCPPSession = LlamaCPPSession()
         try await preloadSession(session, config: config)
@@ -72,9 +70,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Buffered text with partial stop sequence is emitted on user stop")
     internal func testPartialStopSequenceEmittedOnStop() async throws {
-        guard let config: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let config: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let stopAfterChunksConstant: Int = 8
         let session: LlamaCPPSession = LlamaCPPSession()
         try await preloadSession(session, config: config)

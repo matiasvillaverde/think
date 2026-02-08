@@ -14,7 +14,11 @@ internal enum TestHelpers {
 
     internal static var testModelPath: String? {
         _ = environmentConfigured
-        return resolveModelPath(
+        if let path = resolveModelPathFromEnvironment(variable: "LLAMACPP_TEST_MODEL_PATH") {
+            return path
+        }
+
+        return resolveModelPathFromBundle(
             resourceName: "Resources/Qwen3-0.6B-UD-IQ1_S",
             withExtension: "gguf"
         )
@@ -23,10 +27,54 @@ internal enum TestHelpers {
     /// Path to the higher quality BF16 model for acceptance tests
     internal static var acceptanceTestModelPath: String? {
         _ = environmentConfigured
-        return resolveModelPath(
+        if let path = resolveModelPathFromEnvironment(variable: "LLAMACPP_ACCEPTANCE_MODEL_PATH") {
+            return path
+        }
+
+        return resolveModelPathFromBundle(
             resourceName: "Resources/Qwen3-0.6B-BF16",
             withExtension: "gguf"
         )
+    }
+
+    internal static func requireTestModelPath(
+        file _: StaticString = #file,
+        line _: UInt = #line
+    ) throws -> String {
+        guard let path = testModelPath else {
+            throw TestSkip(
+                """
+                LLamaCPP unit-test model not available.
+
+                Set LLAMACPP_TEST_MODEL_PATH to a local .gguf file, or download one into:
+                LLamaCPP/Tests/LLamaCPPTests/Resources/
+
+                Helper:
+                bash LLamaCPP/Tests/LLamaCPPTests/Resources/download.sh
+                """
+            )
+        }
+        return path
+    }
+
+    internal static func requireAcceptanceTestModelPath(
+        file _: StaticString = #file,
+        line _: UInt = #line
+    ) throws -> String {
+        guard let path = acceptanceTestModelPath else {
+            throw TestSkip(
+                """
+                LLamaCPP acceptance-test model not available.
+
+                Set LLAMACPP_ACCEPTANCE_MODEL_PATH to a local .gguf file, or download one into:
+                LLamaCPP/Tests/LLamaCPPTests/Resources/
+
+                Helper:
+                bash LLamaCPP/Tests/LLamaCPPTests/Resources/download.sh
+                """
+            )
+        }
+        return path
     }
 
     internal static func createTestModel(path: String) throws -> LlamaCPPModel {
@@ -34,10 +82,8 @@ internal enum TestHelpers {
         return try LlamaCPPModel(path: path, configuration: configuration)
     }
 
-    internal static func createTestConfiguration() -> ProviderConfiguration? {
-        guard let modelPath = testModelPath else {
-            return nil
-        }
+    internal static func createTestConfiguration() throws -> ProviderConfiguration {
+        let modelPath: String = try requireTestModelPath()
 
         return ProviderConfiguration(
             location: URL(fileURLWithPath: modelPath),
@@ -48,10 +94,8 @@ internal enum TestHelpers {
     }
 
     /// Create configuration for acceptance tests with higher quality model
-    internal static func createAcceptanceTestConfiguration() -> ProviderConfiguration? {
-        guard let modelPath = acceptanceTestModelPath else {
-            return nil
-        }
+    internal static func createAcceptanceTestConfiguration() throws -> ProviderConfiguration {
+        let modelPath: String = try requireAcceptanceTestModelPath()
 
         return ProviderConfiguration(
             location: URL(fileURLWithPath: modelPath),
@@ -87,7 +131,27 @@ internal enum TestHelpers {
         return chunks
     }
 
-    private static func resolveModelPath(resourceName: String, withExtension ext: String) -> String? {
+    private static func resolveModelPathFromEnvironment(variable: String) -> String? {
+        guard let raw: String = ProcessInfo.processInfo.environment[variable], !raw.isEmpty else {
+            return nil
+        }
+
+        let expanded: String = expandTilde(in: raw)
+        let url: URL = URL(fileURLWithPath: expanded)
+
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            return nil
+        }
+        guard isValidGGUF(at: url) else {
+            return nil
+        }
+        return url.path
+    }
+
+    private static func resolveModelPathFromBundle(
+        resourceName: String,
+        withExtension ext: String
+    ) -> String? {
         guard let url = Bundle.module.url(
             forResource: resourceName,
             withExtension: ext
@@ -100,6 +164,25 @@ internal enum TestHelpers {
         }
 
         return url.path
+    }
+
+    private static func expandTilde(in path: String) -> String {
+        let tilde: String = "~"
+        let tildeSlash: String = "~/"
+        let tildeSlashPrefixLength: Int = 2
+
+        guard path.hasPrefix("~") else {
+            return path
+        }
+
+        let home: String = FileManager.default.homeDirectoryForCurrentUser.path
+        if path == tilde {
+            return home
+        }
+        if path.hasPrefix(tildeSlash) {
+            return home + "/" + String(path.dropFirst(tildeSlashPrefixLength))
+        }
+        return path
     }
 
     private static func isValidGGUF(at url: URL) -> Bool {

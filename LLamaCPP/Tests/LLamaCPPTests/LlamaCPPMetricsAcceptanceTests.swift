@@ -17,9 +17,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Detailed metrics collection when flag is enabled")
     internal func testDetailedMetricsCollection() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -116,9 +114,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Minimal metrics collection when flag is disabled")
     internal func testMinimalMetricsCollection() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -176,9 +172,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Prompt processing time is tracked correctly")
     internal func testPromptProcessingMetrics() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -228,9 +222,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Context window information is tracked")
     internal func testContextWindowMetrics() async throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         let configuration: ProviderConfiguration = ProviderConfiguration(
             location: URL(fileURLWithPath: modelPath),
             authentication: .noAuth,
@@ -285,9 +277,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Stop reason is correctly identified for max tokens")
     internal func testStopReasonMaxTokens() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -328,9 +318,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Stop reason is correctly identified for stop sequence")
     internal func testStopReasonStopSequence() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -382,9 +370,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Tokens per second calculation is accurate")
     internal func testTokensPerSecondCalculation() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(

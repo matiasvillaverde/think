@@ -13,9 +13,7 @@ extension LlamaCPPModelTestSuite {
         // This test documents the current behavior, even if partially broken
         // It serves as our regression detector throughout refactoring
 
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -79,9 +77,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Full memory lifecycle from load to cleanup")
     internal func testMemoryLifecycle() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         // Phase 1: Preload
@@ -139,9 +135,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Multiple concurrent generations work correctly")
     internal func testConcurrentGenerations() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         // Create multiple sessions
         let session1: LlamaCPPSession = LlamaCPPSession()
         let session2: LlamaCPPSession = LlamaCPPSession()
@@ -195,9 +189,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("Rapid stop and resume operations maintain consistency")
     internal func testStopResumeCycles() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LlamaCPPSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
@@ -251,9 +243,7 @@ extension LlamaCPPModelTestSuite {
 
     @Test("All resource limits are properly enforced")
     internal func testResourceLimitsIntegration() async throws {
-        guard let modelPath: String = TestHelpers.testModelPath else {
-            return
-        }
+        let modelPath: String = try TestHelpers.requireTestModelPath()
         // Use a large context to avoid hitting memory limits during timeout test
         let configuration: ProviderConfiguration = ProviderConfiguration(
             location: URL(fileURLWithPath: modelPath),

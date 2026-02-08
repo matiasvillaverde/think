@@ -7,9 +7,7 @@ import Testing
 extension LlamaCPPModelTestSuite {
     @Test("Debug: See what model generates for various prompts")
     internal func testDebugModelGeneration() async throws {
-        guard let configuration: ProviderConfiguration = TestHelpers.createTestConfiguration() else {
-            return
-        }
+        let configuration: ProviderConfiguration = try TestHelpers.createTestConfiguration()
         let session: LLMSession = LlamaCPPSession()
 
         let preloadStream: AsyncThrowingStream<Progress, Error> = await session.preload(
