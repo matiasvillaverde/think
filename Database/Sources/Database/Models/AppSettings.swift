@@ -37,6 +37,16 @@ public final class AppSettings: Identifiable, Equatable {
     @Attribute()
     public internal(set) var nodeModeAuthToken: String?
 
+    // MARK: - OpenClaw Gateway
+
+    /// User-configured remote OpenClaw gateway instances.
+    @Relationship(deleteRule: .cascade)
+    public internal(set) var openClawInstances: [OpenClawInstance] = []
+
+    /// The active OpenClaw instance ID (if any).
+    @Attribute()
+    public internal(set) var activeOpenClawInstanceId: UUID?
+
     // MARK: - Initializer
 
     init(
@@ -45,7 +55,9 @@ public final class AppSettings: Identifiable, Equatable {
         wakePhrase: String = "hey think",
         nodeModeEnabled: Bool = false,
         nodeModePort: Int = 9876,
-        nodeModeAuthToken: String? = nil
+        nodeModeAuthToken: String? = nil,
+        openClawInstances: [OpenClawInstance] = [],
+        activeOpenClawInstanceId: UUID? = nil
     ) {
         self.talkModeEnabled = talkModeEnabled
         self.wakeWordEnabled = wakeWordEnabled
@@ -53,6 +65,8 @@ public final class AppSettings: Identifiable, Equatable {
         self.nodeModeEnabled = nodeModeEnabled
         self.nodeModePort = nodeModePort
         self.nodeModeAuthToken = nodeModeAuthToken
+        self.openClawInstances = openClawInstances
+        self.activeOpenClawInstanceId = activeOpenClawInstanceId
     }
 }
 
