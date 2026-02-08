@@ -25,7 +25,7 @@ internal enum DatabaseStoreLocator {
 
 internal enum DatabaseStoreResetPolicy {
     // Bump this when a backward-incompatible SwiftData change requires a reset.
-    static let currentSchemaVersion: Int = 3
+    static let currentSchemaVersion: Int = 5
     private static let versionFileExtension: String = "version"
 
     static func prepareStoreIfNeeded(storeURL: URL, logger: Logger = .database) {
@@ -67,14 +67,35 @@ internal enum DatabaseStoreResetPolicy {
     private static func removeStoreArtifacts(storeURL: URL, logger: Logger) {
         let fileManager = FileManager.default
         let baseURL = storeURL.deletingPathExtension()
-        let candidateURLs: [URL] = [
+        
+        // SwiftData/CoreData store artifacts have varied across versions and configurations.
+        // Be conservative and delete all plausible variants for the provided storeURL.
+        let possibleStoreURLs: [URL] = Array(Set([
             storeURL,
+            // If caller passed a name without ".store", SwiftData may still create a ".store" file.
+            storeURL.pathExtension == "store" ? storeURL : storeURL.appendingPathExtension("store"),
+            // Legacy SQLite naming
             baseURL.appendingPathExtension("sqlite"),
-            baseURL.appendingPathExtension("sqlite-wal"),
-            baseURL.appendingPathExtension("sqlite-shm")
-        ]
+            // Some configurations have created a ".store" artifact from a ".store" name.
+            baseURL.appendingPathExtension("store")
+        ]))
 
-        for url in candidateURLs where fileManager.fileExists(atPath: url.path) {
+        var candidateURLs: [URL] = []
+        for url in possibleStoreURLs {
+            candidateURLs.append(url)
+
+            // Classic SQLite WAL/SHM suffixes
+            candidateURLs.append(url.appendingPathExtension("sqlite-wal"))
+            candidateURLs.append(url.appendingPathExtension("sqlite-shm"))
+            candidateURLs.append(url.appendingPathExtension("store-wal"))
+            candidateURLs.append(url.appendingPathExtension("store-shm"))
+
+            // Hyphen-suffixed WAL/SHM
+            candidateURLs.append(URL(fileURLWithPath: url.path + "-wal"))
+            candidateURLs.append(URL(fileURLWithPath: url.path + "-shm"))
+        }
+
+        for url in Array(Set(candidateURLs)) where fileManager.fileExists(atPath: url.path) {
             do {
                 try fileManager.removeItem(at: url)
             } catch {
