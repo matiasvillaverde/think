@@ -95,3 +95,30 @@ function_parameter_count:
 large_tuple:
   warning: 4
   error: 5
+
+custom_rules:
+  no_direct_color_literals:
+    name: "No direct Color literals"
+    regex: '\\bColor\\.(red|green|blue|orange|yellow|pink|purple|gray|black|white|clear|primary|secondary)\\b'
+    message: "Use UIComponents Color tokens (UIComponents/Sources/UIComponents/Color.swift) instead of Color.red/Color.gray/etc."
+    severity: error
+  no_color_primary_secondary_shorthand:
+    name: "No .primary/.secondary shorthand"
+    regex: '\\.(foregroundColor|foregroundStyle)\\(\\s*\\.(primary|secondary)\\s*\\)'
+    message: "Use Color.textPrimary/Color.textSecondary (tokens) instead of .primary/.secondary."
+    severity: error
+  no_system_color_constructors:
+    name: "No UIColor/NSColor construction"
+    regex: 'Color\\(\\s*(UIColor|NSColor)\\.'
+    message: "Use UIComponents Color tokens backed by Assets.xcassets."
+    severity: error
+  no_rgb_color_construction:
+    name: "No RGB Color construction"
+    regex: 'Color\\(\\s*red\\s*:|Color\\(\\s*\\.sRGB'
+    message: "Define colors in UIComponents Assets.xcassets and expose via Color.swift."
+    severity: error
+  no_color_hex_initializer:
+    name: "No Color(hex:) construction"
+    regex: 'Color\\(\\s*hex\\s*:|\\.init\\(\\s*hex\\s*:'
+    message: "Use Color.userProvided(hex:) for user colors; otherwise define colors in Assets.xcassets."
+    severity: error
