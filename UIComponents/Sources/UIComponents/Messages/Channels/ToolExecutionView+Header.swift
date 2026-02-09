@@ -2,29 +2,37 @@ import SwiftUI
 
 extension ToolExecutionView {
     var toolHeader: some View {
-        HStack(spacing: Constants.headerSpacing) {
-            statusIconView
-            toolNameView
-            statusSeparatorView
-            statusTextView
-
-            Spacer()
-
-            headerTrailingView
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            if hasContent {
-                withAnimation(
-                    .spring(
-                        response: Constants.animationResponse,
-                        dampingFraction: Constants.animationDamping
-                    )
-                ) {
-                    toggleExpanded()
-                }
+        Button {
+            guard hasContent else {
+                return
             }
+            if isExpandedValue == false {
+                // If the user expands a tool while the assistant is streaming, stop auto-scroll
+                // so the UI doesn't yank the disclosure offscreen mid-read.
+                controller.suppressAutoScroll?()
+            }
+            withAnimation(
+                .spring(
+                    response: Constants.animationResponse,
+                    dampingFraction: Constants.animationDamping
+                )
+            ) {
+                toggleExpanded()
+            }
+        } label: {
+            HStack(spacing: Constants.headerSpacing) {
+                statusIconView
+                toolNameView
+                statusSeparatorView
+                statusTextView
+
+                Spacer()
+
+                headerTrailingView
+            }
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
         .accessibilityIdentifier("toolExecution.header.\(toolExecution.id.uuidString)")
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel("\(toolDisplayName), \(statusText)")
@@ -45,7 +53,7 @@ extension ToolExecutionView {
         Text(toolDisplayName)
             .font(.system(.subheadline, design: .rounded))
             .fontWeight(.medium)
-            .foregroundColor(.primary)
+            .foregroundColor(Color.textPrimary)
     }
 
     var statusSeparatorView: some View {
@@ -82,7 +90,7 @@ extension ToolExecutionView {
     var chevronIndicator: some View {
         Image(systemName: isExpandedValue ? "chevron.up" : "chevron.down")
             .font(.system(size: Constants.chevronSize, weight: .medium))
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
             .accessibilityHidden(true)
     }
 }

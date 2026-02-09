@@ -44,7 +44,7 @@ public struct SideViewToolbar: ToolbarContent {
                 )
             }
             .foregroundColor(Color.iconPrimary)
-            .tint(Color.secondary)
+            .tint(Color.textSecondary)
             .font(.title2)
             .keyboardShortcut("k", modifiers: [.command, .shift])
         }

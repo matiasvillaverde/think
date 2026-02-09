@@ -110,6 +110,9 @@ public final class ViewInteractionController {
     @MainActor var removeFocus: (() -> Void)?
     @MainActor var focus: (() -> Void)?
     @MainActor var scrollToBottom: (() -> Void)?
+    // Used by the chat UI to stop auto-scroll during user interaction (e.g. expanding tool output)
+    // while streaming updates are arriving.
+    @MainActor var suppressAutoScroll: (() -> Void)?
 
     deinit {
         logger.warning("ViewInteractionController deallocated")

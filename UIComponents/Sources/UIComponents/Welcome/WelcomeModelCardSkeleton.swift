@@ -17,7 +17,7 @@ internal struct WelcomeModelCardSkeleton: View {
     @ViewBuilder private var headerSkeleton: some View {
         HStack {
             Circle()
-                .fill(Color.gray.opacity(WelcomeConstants.skeletonOpacity))
+                .fill(Color.paletteGray.opacity(WelcomeConstants.skeletonOpacity))
                 .frame(
                     width: WelcomeConstants.skeletonCircleSize,
                     height: WelcomeConstants.skeletonCircleSize
@@ -26,7 +26,7 @@ internal struct WelcomeModelCardSkeleton: View {
 
             VStack(alignment: .leading, spacing: WelcomeConstants.spacingTiny) {
                 RoundedRectangle(cornerRadius: WelcomeConstants.skeletonCornerRadius)
-                    .fill(Color.gray.opacity(WelcomeConstants.skeletonOpacity))
+                    .fill(Color.paletteGray.opacity(WelcomeConstants.skeletonOpacity))
                     .frame(
                         width: WelcomeConstants.skeletonTitleWidth,
                         height: WelcomeConstants.skeletonTitleHeight
@@ -34,7 +34,7 @@ internal struct WelcomeModelCardSkeleton: View {
                     .skeleton(with: true)
 
                 RoundedRectangle(cornerRadius: WelcomeConstants.skeletonCornerRadius)
-                    .fill(Color.gray.opacity(WelcomeConstants.skeletonOpacity))
+                    .fill(Color.paletteGray.opacity(WelcomeConstants.skeletonOpacity))
                     .frame(
                         width: WelcomeConstants.skeletonSubtitleWidth,
                         height: WelcomeConstants.skeletonSubtitleHeight
@@ -50,7 +50,7 @@ internal struct WelcomeModelCardSkeleton: View {
         HStack(spacing: WelcomeConstants.spacingMedium) {
             ForEach(0 ..< WelcomeConstants.capabilityLimit, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: WelcomeConstants.skeletonCornerRadius)
-                    .fill(Color.gray.opacity(WelcomeConstants.skeletonOpacity))
+                    .fill(Color.paletteGray.opacity(WelcomeConstants.skeletonOpacity))
                     .frame(
                         width: WelcomeConstants.skeletonStatWidth,
                         height: WelcomeConstants.skeletonStatHeight

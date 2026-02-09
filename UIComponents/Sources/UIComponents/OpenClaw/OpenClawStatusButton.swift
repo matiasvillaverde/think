@@ -47,7 +47,7 @@ public struct OpenClawStatusButton: View {
             Text("Active: \(activeInstance.name)")
             Text(activeInstance.urlString)
                 .font(.caption)
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.textSecondary)
 
             Divider()
 
@@ -57,7 +57,7 @@ public struct OpenClawStatusButton: View {
             if case .pairingRequired(let requestId) = status {
                 Text("requestId: \(requestId)")
                     .font(.caption2)
-                    .foregroundStyle(Color.secondary)
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Divider()
@@ -160,7 +160,7 @@ public struct OpenClawStatusButton: View {
         }
     }
 
-    private func testActiveConnection() async {
+    func testActiveConnection() async {
         guard let id: UUID = activeInstance?.id else {
             await refreshState()
             return

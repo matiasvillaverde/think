@@ -65,12 +65,12 @@ internal struct ChannelListView: View {
         VStack(spacing: Constants.emptyStateSpacing) {
             Image(systemName: "bubble.left.and.bubble.right")
                 .font(.largeTitle)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .accessibilityHidden(true)
 
             Text("No channels to display")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()

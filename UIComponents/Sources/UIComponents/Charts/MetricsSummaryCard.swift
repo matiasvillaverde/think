@@ -84,7 +84,7 @@ public struct MetricsSummaryCard: View {
                 .accessibilityLabel("Chart icon")
             Text("Metrics Summary")
                 .font(.headline)
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.textPrimary)
             Spacer()
         }
     }
@@ -135,7 +135,7 @@ public struct MetricsSummaryCard: View {
             // Showing placeholder message
             Text("Quality metrics coming soon")
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
                 .italic()
         }
     }
@@ -173,12 +173,12 @@ public struct MetricsSummaryCard: View {
         HStack {
             Text(label)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
             Spacer()
             Text(value)
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.textPrimary)
         }
     }
 

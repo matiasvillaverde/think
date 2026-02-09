@@ -81,7 +81,7 @@ internal struct SingleMetricDashboard: View {
 
                 Text("Created: \(metric.createdAt.formatted())")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
@@ -93,7 +93,7 @@ internal struct SingleMetricDashboard: View {
             HStack {
                 Label("Model", systemImage: "cpu")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                 Spacer()
                 Text(modelInfo)
                     .font(.subheadline)
@@ -115,7 +115,7 @@ internal struct SingleMetricDashboard: View {
 
                 Text(systemPrompt)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                     .lineLimit(Constants.maxPromptLines)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

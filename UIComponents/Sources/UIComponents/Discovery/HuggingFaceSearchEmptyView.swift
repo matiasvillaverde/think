@@ -10,7 +10,7 @@ internal struct HuggingFaceSearchEmptyView: View {
         VStack(spacing: DesignConstants.Spacing.large) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: Constants.iconSize))
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.textSecondary)
                 .accessibilityLabel("Search icon")
 
             Text("No models found", bundle: .module)

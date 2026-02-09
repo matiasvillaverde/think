@@ -134,8 +134,8 @@ public struct ModelComparisonChartCard: View {
         .chartLegend(.hidden)
         .chartPlotStyle { plotArea in
             plotArea
-                .background(Color.gray.opacity(Constants.chartBackgroundOpacity))
-                .border(Color.gray.opacity(Constants.borderOpacity), width: Constants.borderWidth)
+                .background(Color.paletteGray.opacity(Constants.chartBackgroundOpacity))
+                .border(Color.paletteGray.opacity(Constants.borderOpacity), width: Constants.borderWidth)
         }
         .frame(height: Constants.chartHeight)
         .animation(
@@ -168,14 +168,14 @@ public struct ModelComparisonChartCard: View {
 
                         Text(modelName)
                             .font(.caption)
-                            .foregroundColor(.primary)
+                            .foregroundColor(Color.textPrimary)
                             .lineLimit(1)
 
                         // Show latest value
                         if let latestValue = getLatestValue(for: modelName) {
                             Text("(\(formatValue(latestValue)))")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(Color.textSecondary)
                         }
                     }
                 }

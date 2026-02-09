@@ -60,20 +60,20 @@ internal struct CompactProgressBar: View {
             HStack {
                 Text(downloadedSize)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
 
                 Spacer()
 
                 Text("\(Int(progress * Double(Constants.percentMultiplier)))%")
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                     .monospacedDigit()
 
                 Spacer()
 
                 Text(totalSize)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
             }
         }
         .accessibilityElement(children: .combine)

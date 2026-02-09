@@ -11,7 +11,7 @@ public struct ReviewSettingsView: View {
                 bundle: .module,
                 comment: "Placeholder for empty general settings"
             ))
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
         }
     }
 }

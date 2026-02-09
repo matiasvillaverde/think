@@ -258,8 +258,8 @@ public struct SettingsView: View {
             .padding()
             .background(
                 chats.isEmpty
-                    ? Color.gray.opacity(Constants.disabledBackgroundOpacity)
-                    : (isDeleteAllHovered ? Color.red.opacity(Constants.hoverOpacity) : Color.red)
+                    ? Color.paletteGray.opacity(Constants.disabledBackgroundOpacity)
+                    : (isDeleteAllHovered ? Color.paletteRed.opacity(Constants.hoverOpacity) : Color.paletteRed)
             )
             .cornerRadius(Constants.cornerRadius)
         }

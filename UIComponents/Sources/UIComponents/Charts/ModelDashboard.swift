@@ -141,12 +141,12 @@ internal struct ModelDashboard: View {
                 HStack {
                     Text("\(metrics.count) total messages")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.textSecondary)
 
                     if let dateRange = getDateRange() {
                         Text("• \(dateRange)")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
             }
@@ -256,7 +256,7 @@ internal struct ModelDashboard: View {
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                 Text(value)
                     .font(.title3)
                     .fontWeight(.semibold)

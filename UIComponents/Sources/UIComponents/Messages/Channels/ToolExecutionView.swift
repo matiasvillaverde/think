@@ -1,5 +1,6 @@
 import Abstractions
 import Database
+import Foundation
 import MarkdownUI
 import SwiftUI
 
@@ -37,6 +38,8 @@ internal struct ToolExecutionView: View {
     // MARK: - Properties
 
     @Bindable var toolExecution: ToolExecution
+    @Environment(\.controller)
+    var controller: ViewInteractionController
     @State private var isExpanded: Bool = false
     @State private var showRawJSON: Bool = false
 
@@ -98,6 +101,7 @@ internal struct ToolExecutionView: View {
 
     var hasContent: Bool {
         toolExecution.request != nil
+        || !toolExecution.requestJSON.isEmpty
         || toolExecution.response != nil
         || toolExecution.errorMessage != nil
         || (toolExecution.sources?.isEmpty == false)
@@ -120,15 +124,15 @@ internal struct ToolExecutionView: View {
             if shouldShowStatusMessage {
                 Text(statusMessage)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                     .lineLimit(Constants.statusLineLimit)
             }
 
             if isExpanded,
                 hasContent {
                 VStack(alignment: .leading, spacing: Constants.spacing) {
-                    if let request = toolExecution.request {
-                        toolRequestView(request)
+                    if !requestArgumentsText.isEmpty {
+                        toolRequestView(requestArgumentsText)
                     }
 
                     if let response = toolExecution.response {
@@ -162,28 +166,50 @@ internal struct ToolExecutionView: View {
     // MARK: - Subviews
 
     @ViewBuilder
-    private func toolRequestView(_ request: ToolRequest) -> some View {
+    private func toolRequestView(_ argumentsText: String) -> some View {
         VStack(alignment: .leading, spacing: Constants.resultSpacing) {
             HStack {
                 Text("Request")
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                 Spacer()
             }
 
             ScrollView {
-                Text(request.arguments)
+                Text(argumentsText)
                     .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
                     .textSelection(.enabled)
             }
             .frame(maxHeight: Constants.resultMaxHeight / Constants.requestMaxHeightDivisor)
         }
         .padding(Constants.resultPadding)
-        .background(Color.gray.opacity(Constants.resultBackgroundOpacity))
+        .background(Color.paletteGray.opacity(Constants.resultBackgroundOpacity))
         .cornerRadius(Constants.resultCornerRadius)
+        // Collapse this block into a single accessible element so UI tests can reliably query it
+        // and VoiceOver users get a meaningful summary.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Request")
+        .accessibilityValue(argumentsText)
         .accessibilityIdentifier("toolExecution.request.\(toolExecution.id.uuidString)")
+    }
+
+    private var requestArgumentsText: String {
+        if let request = toolExecution.request {
+            return request.arguments
+        }
+
+        guard let data = toolExecution.requestJSON.data(using: .utf8) else {
+            return toolExecution.requestJSON
+        }
+        guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return toolExecution.requestJSON
+        }
+        if let arguments = object["arguments"] as? String {
+            return arguments
+        }
+        return toolExecution.requestJSON
     }
 
     @ViewBuilder
@@ -193,7 +219,7 @@ internal struct ToolExecutionView: View {
             resultContent(response: response)
         }
         .padding(Constants.resultPadding)
-        .background(Color.gray.opacity(Constants.resultBackgroundOpacity))
+        .background(Color.paletteGray.opacity(Constants.resultBackgroundOpacity))
         .cornerRadius(Constants.resultCornerRadius)
         // Ensure nested controls (e.g. Raw/Formatted toggle) remain individually accessible
         // for UI testing.
@@ -207,7 +233,7 @@ internal struct ToolExecutionView: View {
             Text("Result")
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Spacer()
 
@@ -239,14 +265,14 @@ internal struct ToolExecutionView: View {
             if showRawJSON {
                 Text(response.result)
                     .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
                     .textSelection(.enabled)
             } else {
                 Markdown(response.result)
                     .markdownTheme(ThemeCache.shared.getTheme())
                     .markdownCodeSyntaxHighlighter(CodeHighlighter.theme)
                     .font(.caption)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
             }
         }
         .frame(maxHeight: Constants.resultMaxHeight)
@@ -265,7 +291,7 @@ internal struct ToolExecutionView: View {
                 .foregroundColor(.red)
         }
         .padding(Constants.resultPadding)
-        .background(Color.red.opacity(Constants.resultBackgroundOpacity))
+        .background(Color.paletteRed.opacity(Constants.resultBackgroundOpacity))
         .cornerRadius(Constants.resultCornerRadius)
     }
 

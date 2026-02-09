@@ -50,9 +50,9 @@ internal struct RepetitionRateChart: View {
         .chartYScale(domain: 0 ... 1)
         .chartPlotStyle { plotArea in
             plotArea
-                .background(Color.gray.opacity(Constants.chartOpacity))
+                .background(Color.paletteGray.opacity(Constants.chartOpacity))
                 .border(
-                    Color.gray.opacity(Constants.borderOpacity),
+                    Color.paletteGray.opacity(Constants.borderOpacity),
                     width: Constants.borderWidth
                 )
         }
@@ -107,14 +107,14 @@ internal struct RepetitionRateChart: View {
 
     @ChartContentBuilder private var baselineMarks: some ChartContent {
         RuleMark(y: .value("Baseline", viewModel.baselineThreshold()))
-            .foregroundStyle(Color.orange.opacity(Constants.baselineOpacity))
+            .foregroundStyle(Color.paletteOrange.opacity(Constants.baselineOpacity))
             .lineStyle(StrokeStyle(
                 lineWidth: Constants.baselineLineWidth,
                 dash: [Constants.dashPatternLong, Constants.dashPatternShort]
             ))
 
         RuleMark(y: .value("Warning", viewModel.warningThreshold()))
-            .foregroundStyle(Color.red.opacity(Constants.baselineOpacity))
+            .foregroundStyle(Color.paletteRed.opacity(Constants.baselineOpacity))
             .lineStyle(StrokeStyle(
                 lineWidth: Constants.baselineLineWidth,
                 dash: [Constants.dashPatternLong, Constants.dashPatternShort]

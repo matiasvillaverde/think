@@ -33,7 +33,7 @@ internal struct ProcessingTimeRow: View {
             // Label
             Text(data.label)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .frame(width: Constants.labelWidth, alignment: .leading)
 
             // Stacked bar
@@ -46,12 +46,12 @@ internal struct ProcessingTimeRow: View {
                 .frame(height: Constants.barHeight)
                 .background(
                     RoundedRectangle(cornerRadius: Constants.barCornerRadius)
-                        .fill(Color.gray.opacity(Constants.grayOpacity))
+                        .fill(Color.paletteGray.opacity(Constants.grayOpacity))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: Constants.barCornerRadius)
                         .stroke(
-                            Color.gray.opacity(Constants.strokeOpacity),
+                            Color.paletteGray.opacity(Constants.strokeOpacity),
                             lineWidth: Constants.strokeWidth
                         )
                 )
@@ -62,7 +62,7 @@ internal struct ProcessingTimeRow: View {
             // Total time
             Text(formatTime(data.total))
                 .font(.caption.monospacedDigit())
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
                 .frame(width: Constants.totalTimeWidth, alignment: .trailing)
         }
         .opacity(dataHasAppeared ? 1 : 0)

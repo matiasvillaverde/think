@@ -69,7 +69,23 @@ internal enum UITestSeedMessages {
         longRunningToolRequest: ToolRequest
     ) async throws {
         let ids = UITestIDs.shared
-        let partial = ProcessedOutput(
+        let partial = makeStreamingPartialOutput(
+            ids: ids,
+            toolRequest: toolRequest,
+            longRunningToolRequest: longRunningToolRequest
+        )
+
+        _ = try await database.write(
+            MessageCommands.UpdateProcessedOutput(messageId: messageId, processedOutput: partial)
+        )
+    }
+
+    private static func makeStreamingPartialOutput(
+        ids: UITestIDs,
+        toolRequest: ToolRequest,
+        longRunningToolRequest: ToolRequest
+    ) -> ProcessedOutput {
+        ProcessedOutput(
             channels: [
                 ChannelMessage(
                     id: ids.analysisChannelId,
@@ -111,10 +127,6 @@ internal enum UITestSeedMessages {
                     isComplete: false
                 )
             ]
-        )
-
-        _ = try await database.write(
-            MessageCommands.UpdateProcessedOutput(messageId: messageId, processedOutput: partial)
         )
     }
 

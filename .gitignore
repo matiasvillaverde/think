@@ -304,3 +304,8 @@ scripts/icon-generator/
 
 # Local quarantine folder used during repository hygiene checks.
 .quarantine/
+
+# Large, optional test artifacts (download on-demand; never commit).
+ImageGenerator/Tests/ImageGeneratorTests/Resources/TestModel/
+RAG/Tests/all-MiniLM-L6-v2/model.safetensors
+MLXSession/Tests/MLXSessionTests/Resources/.keep

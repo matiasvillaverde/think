@@ -57,7 +57,7 @@ public struct AboutView: View {
                 comment: "App tagline in about section"
             ))
             .font(.subheadline)
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
         }
     }
 
@@ -115,12 +115,12 @@ public struct AboutView: View {
         HStack(alignment: .top) {
             Text(label)
                 .fontWeight(.medium)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .frame(minWidth: Constants.infoRowMinWidth, alignment: .leading)
 
             Text(value)
                 .textSelection(.enabled)
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
 
             Spacer()
         }

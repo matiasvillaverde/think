@@ -1,8 +1,8 @@
 // Personality.swift
 import Abstractions
+import Combine
 import DataAssets
 import Foundation
-import SwiftUI
 import SwiftData
 
 /// Represents a personality configuration that combines system instructions with UI metadata
@@ -86,14 +86,6 @@ public final class Personality: Identifiable, Equatable, ObservableObject {
         customImage
     }
 
-    /// Returns the tint color for UI
-    public var tintColor: Color {
-        if let hex = tintColorHex {
-            return Color(hex: hex) ?? Color.accentColor
-        }
-        return Color.accentColor
-    }
-
     /// Returns the soul memory associated with this personality (first soul-type memory)
     public var soul: Memory? {
         memories.first { $0.type == .soul }
@@ -134,7 +126,7 @@ public final class Personality: Identifiable, Equatable, ObservableObject {
         description: String,
         imageName: String? = nil,
         category: PersonalityCategory,
-        tintColor: Color = Color.accentColor,
+        tintColorHex: String? = nil,
         prompts: [Prompt] = [],
         image: Data? = nil,
         isFeature: Bool = false,
@@ -148,7 +140,7 @@ public final class Personality: Identifiable, Equatable, ObservableObject {
         self.imageName = imageName
         self.image = image
         self.category = category
-        self.tintColorHex = tintColor.toHex()
+        self.tintColorHex = tintColorHex
         self.prompts = prompts
         self.user = user
         self.isCustom = isCustom
@@ -259,162 +251,5 @@ extension Personality {
             category: .creative
         )
     }
-}
-#endif
-
-#if canImport(UIKit)
-import UIKit
-#elseif canImport(AppKit)
-import AppKit
-#endif
-
-extension Color {
-    /// Convert Color to hex string
-    func toHex() -> String? {
-        #if canImport(UIKit)
-        // Convert SwiftUI Color to UIColor
-        let uiColor = UIColor(self)
-
-        // Get RGB components
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
-
-        guard uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
-            return nil
-        }
-
-        // Convert to hex format
-        let redComponent = Int(red * 255)
-        let greenComponent = Int(green * 255)
-        let blueComponent = Int(blue * 255)
-
-        return String(format: "#%02X%02X%02X", redComponent, greenComponent, blueComponent)
-
-        #elseif canImport(AppKit)
-        // Convert SwiftUI Color to NSColor
-        let nsColor = NSColor(self)
-
-        // Convert to RGB color space if needed
-        guard let rgbColor = nsColor.usingColorSpace(.sRGB) else {
-            return nil
-        }
-
-        // Get RGB components
-        let red = rgbColor.redComponent
-        let green = rgbColor.greenComponent
-        let blue = rgbColor.blueComponent
-
-        // Convert to hex format
-        let redComponent = Int(red * 255)
-        let greenComponent = Int(green * 255)
-        let blueComponent = Int(blue * 255)
-
-        return String(format: "#%02X%02X%02X", redComponent, greenComponent, blueComponent)
-
-        #else
-        // Fallback for other platforms
-        return "#007AFF"
-        #endif
-    }
-
-    /// Create Color from hex string
-    init?(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-
-        guard Scanner(string: hex).scanHexInt64(&int) else {
-            return nil
-        }
-
-        let alpha, red, green, blue: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (alpha, red, green, blue) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (alpha, red, green, blue) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (alpha, red, green, blue) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            return nil
-        }
-
-        self.init(
-            .sRGB,
-            red: Double(red) / 255,
-            green: Double(green) / 255,
-            blue: Double(blue) / 255,
-            opacity: Double(alpha) / 255
-        )
-    }
-}
-
-// MARK: - Convenience initializers
-extension Color {
-    /// Create Color from hex integer
-    init(hex: Int, alpha: Double = 1.0) {
-        let red = Double((hex >> 16) & 0xFF) / 255.0
-        let green = Double((hex >> 8) & 0xFF) / 255.0
-        let blue = Double(hex & 0xFF) / 255.0
-
-        self.init(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
-    }
-
-    /// Create Color from RGB values (0-255)
-    init(red: Int, green: Int, blue: Int, alpha: Double = 1.0) {
-        self.init(
-            .sRGB,
-            red: Double(red) / 255.0,
-            green: Double(green) / 255.0,
-            blue: Double(blue) / 255.0,
-            opacity: alpha
-        )
-    }
-}
-
-// MARK: - Example Usage
-#if DEBUG
-struct ColorHexPreview: View {
-    let testColors: [(String, Color)] = [
-        ("Red", Color.red),
-        ("Blue", Color.blue),
-        ("Green", Color.green),
-        ("Purple", Color.purple),
-        ("Custom", Color(hex: "#FF6B6B") ?? Color.gray)
-    ]
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Color Hex Conversion Examples")
-                .font(.title2)
-                .fontWeight(.semibold)
-
-            ForEach(testColors, id: \.0) { name, color in
-                HStack {
-                    Rectangle()
-                        .fill(color)
-                        .frame(width: 60, height: 40)
-                        .cornerRadius(8)
-
-                    VStack(alignment: .leading) {
-                        Text(name)
-                            .fontWeight(.medium)
-                        Text(color.toHex() ?? "N/A")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    Spacer()
-                }
-                .padding(.horizontal)
-            }
-        }
-        .padding()
-    }
-}
-
-#Preview {
-    ColorHexPreview()
 }
 #endif

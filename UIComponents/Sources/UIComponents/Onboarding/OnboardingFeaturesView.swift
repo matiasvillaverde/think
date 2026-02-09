@@ -182,7 +182,7 @@ internal struct OnboardingFeaturesView: View {
                     features[selectedFeatureIndex].color.opacity(
                         OnboardingConstants.featureRadialOpacitySecondary
                     ),
-                    Color.clear
+                    Color.paletteClear
                 ],
                 center: .center,
                 startRadius: OnboardingConstants.gradientStartRadius,

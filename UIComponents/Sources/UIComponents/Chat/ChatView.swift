@@ -96,6 +96,11 @@ public struct ChatView: View {
                 controller.removeFocus?()
             }
             .onChange(of: messages) { _, newValue in
+                // UI tests seed a large history up front. Avoid presenting overlays (RatingsView)
+                // that make the view tree non-deterministic and block interactions.
+                guard !isUITesting else {
+                    return
+                }
                 if newValue.count > Layout.minMessagesForReview {
                     // It is a good action
                     Task(priority: .utility) {
@@ -152,6 +157,10 @@ public struct ChatView: View {
     }
 
     // MARK: - Properties
+
+    private var isUITesting: Bool {
+        ProcessInfo.processInfo.arguments.contains("--ui-testing")
+    }
 
     private var shouldShowPrompts: Bool {
         messages.count == 1 && chat.languageModel.runtimeState == .loaded

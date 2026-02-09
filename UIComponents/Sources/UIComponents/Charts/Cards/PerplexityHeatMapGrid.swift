@@ -48,7 +48,7 @@ internal struct PerplexityHeatMapGrid: View {
             .overlay(
                 RoundedRectangle(cornerRadius: Constants.cornerRadius)
                     .stroke(
-                        selectedCell?.id == cell.id ? Color.white : Color.clear,
+                        selectedCell?.id == cell.id ? Color.paletteWhite : Color.paletteClear,
                         lineWidth: Constants.selectedCellBorderWidth
                     )
             )

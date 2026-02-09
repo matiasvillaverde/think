@@ -6,7 +6,7 @@ import OSLog
 import SwiftUI
 
 /// A view that renders a single channel message based on its type
-internal struct ChannelMessageView: View, @preconcurrency Equatable {
+internal struct ChannelMessageView: View {
     private static let kLogger: Logger = Logger(
         subsystem: "UIComponents",
         category: "ChannelMessageView"
@@ -95,44 +95,49 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
     }
 
     @ViewBuilder private var channelHeader: some View {
-        HStack(spacing: Constants.headerSpacing) {
-            channelIcon
-                .accessibilityHidden(true)
-                .modifier(
-                    PulsingAnimationModifier(
-                        isActive: channel.type == .analysis && !isCollapsed && !channel.isComplete
-                    )
-                )
-            Text(computedChannelTitle)
-                .font(.caption)
-                .foregroundColor(channelColor)
-            if channel.type == .commentary,
-                associatedToolStatus == .executing {
-                LoadingDotsView()
+        Button {
+            guard channel.type == .analysis else {
+                return
             }
-            Spacer()
-            if channel.type == .analysis {
-                Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                    .font(.caption)
-                    .foregroundColor(.textSecondary)
+            withAnimation(.easeInOut(duration: Constants.animationDuration)) {
+                isCollapsed.toggle()
+            }
+        } label: {
+            HStack(spacing: Constants.headerSpacing) {
+                channelIcon
                     .accessibilityHidden(true)
-            }
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            if channel.type == .analysis {
-                withAnimation(.easeInOut(duration: Constants.animationDuration)) {
-                    isCollapsed.toggle()
+                    .modifier(
+                        PulsingAnimationModifier(
+                            isActive: channel.type == .analysis
+                                && !isCollapsed
+                                && !channel.isComplete
+                        )
+                    )
+                Text(computedChannelTitle)
+                    .font(.caption)
+                    .foregroundColor(channelColor)
+                if channel.type == .commentary, associatedToolStatus == .executing {
+                    LoadingDotsView()
+                }
+                Spacer()
+                if channel.type == .analysis {
+                    Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                        .font(.caption)
+                        .foregroundColor(.textSecondary)
+                        .accessibilityHidden(true)
                 }
             }
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(
             channel.type == .analysis
-            ? String(localized: "Toggle thinking content", bundle: .module)
-            : computedChannelTitle
+                ? String(localized: "Toggle thinking content", bundle: .module)
+                : computedChannelTitle
         )
-        .accessibilityIdentifier("channel.\(channel.type.rawValue).header")
+        // Make headers reliably targetable when multiple channels of the same type exist.
+        .accessibilityIdentifier("channel.\(channel.type.rawValue).header.\(channel.id.uuidString)")
     }
 
     @ViewBuilder private var channelContent: some View {
@@ -184,8 +189,7 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
         .accessibilityLabel(channel.content)
         .accessibilityIdentifier("channel.final.content")
         .contextMenu {
-            if  let copyAction = copyTextAction,
-                let shareAction = shareTextAction {
+            if let copyAction = copyTextAction, let shareAction = shareTextAction {
                 AssistantContextMenu(
                     textToCopy: channel.content,
                     message: message,
@@ -211,7 +215,7 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(backgroundView)
             .overlay(borderOverlay)
-            .accessibilityIdentifier("channel.analysis.content")
+            .accessibilityIdentifier("channel.analysis.content.\(channel.id.uuidString)")
     }
 
     @ViewBuilder private var commentaryChannelContent: some View {
@@ -260,42 +264,33 @@ internal struct ChannelMessageView: View, @preconcurrency Equatable {
     private var channelBackgroundColor: Color {
         switch channel.type {
         case .final:
-            return Color.gray.opacity(Constants.backgroundOpacity)
+            return Color.paletteGray.opacity(Constants.backgroundOpacity)
 
         case .analysis:
-            return Color.blue.opacity(Constants.backgroundOpacity)
+            return Color.paletteBlue.opacity(Constants.backgroundOpacity)
 
         case .commentary:
-            return Color.orange.opacity(Constants.backgroundOpacity)
+            return Color.paletteOrange.opacity(Constants.backgroundOpacity)
 
         case .tool:
-            return Color.purple.opacity(Constants.backgroundOpacity)
+            return Color.palettePurple.opacity(Constants.backgroundOpacity)
         }
     }
 
     private var channelBorderColor: Color {
         switch channel.type {
         case .final:
-            return Color.gray.opacity(Constants.borderOpacity)
+            return Color.paletteGray.opacity(Constants.borderOpacity)
 
         case .analysis:
-            return Color.blue.opacity(Constants.borderOpacity)
+            return Color.paletteBlue.opacity(Constants.borderOpacity)
 
         case .commentary:
-            return Color.orange.opacity(Constants.borderOpacity)
+            return Color.paletteOrange.opacity(Constants.borderOpacity)
 
         case .tool:
-            return Color.purple.opacity(Constants.borderOpacity)
+            return Color.palettePurple.opacity(Constants.borderOpacity)
         }
-    }
-
-    // MARK: - Equatable
-
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.channel.id == rhs.channel.id &&
-        lhs.channel.content == rhs.channel.content &&
-        lhs.channel.isComplete == rhs.channel.isComplete &&
-        lhs.channel.lastUpdated == rhs.channel.lastUpdated
     }
 }
 
@@ -323,78 +318,3 @@ private struct StreamingCursorView: View {
         }
     }
 }
-
-// MARK: - Preview
-
-#if DEBUG
-    #Preview("Final Response") {
-        @Previewable @State var channel: Channel = Channel(
-            type: .final,
-            content: """
-                Here's the solution to your problem:
-
-                ```swift
-                func calculate() -> Int {
-                    return 42
-                }
-                ```
-                """,
-            order: 0,
-            isComplete: true
-        )
-        @Previewable @State var message: Message = Message.previewWithResponse
-        @Previewable @State var showingSelection: Bool = false
-        @Previewable @State var showingThinking: Bool = false
-        @Previewable @State var showingStats: Bool = false
-
-        ChannelMessageView(
-            channel: channel,
-            message: message,
-            showingSelectionView: $showingSelection,
-            showingThinkingView: $showingThinking,
-            showingStatsView: $showingStats,
-            copyTextAction: { _ in
-                // no-op
-            },
-            shareTextAction: { _ in
-                // no-op
-            }
-        )
-        .padding()
-    }
-
-    #Preview("Analysis Thinking") {
-        @Previewable @State var channel: Channel = Channel(
-            type: .analysis,
-            content: """
-                Analyzing the request... This involves multiple steps to solve the problem.
-                """,
-            order: 0,
-            isComplete: false
-        )
-        @Previewable @State var message: Message = Message.previewWithThinking
-
-        ChannelMessageView(
-            channel: channel,
-            message: message
-        )
-        .padding()
-    }
-
-    #Preview("Commentary with Tool") {
-        @Previewable @State var channel: Channel = Channel(
-            type: .commentary,
-            content: "Running calculation to determine the result...",
-            order: 0,
-            isComplete: false
-        )
-        @Previewable @State var message: Message = Message.previewWithResponse
-
-        ChannelMessageView(
-            channel: channel,
-            message: message,
-            associatedToolStatus: .executing
-        )
-        .padding()
-    }
-#endif

@@ -86,6 +86,7 @@ internal struct ChannelContainerView: View {
                 VStack(alignment: .leading, spacing: Constants.toolSpacing) {
                     ForEach(unassociatedTools, id: \.id) { toolExecution in
                         ToolExecutionView(toolExecution: toolExecution)
+                            .id(toolExecution.id)
                     }
                 }
             }
@@ -100,7 +101,11 @@ internal struct ChannelContainerView: View {
             if channel.type == .tool {
                 // Tool channels are rendered via ToolExecutionView to avoid duplicate tool blocks.
                 if let toolExecution = channel.toolExecution {
+                    // ToolExecutionView keeps local disclosure state.
+                    // Provide a stable identity so it doesn't reset during frequent SwiftData
+                    // re-fetches or streaming updates.
                     ToolExecutionView(toolExecution: toolExecution)
+                        .id(toolExecution.id)
                 } else {
                     channelMessageView(channel)
                 }
@@ -110,6 +115,7 @@ internal struct ChannelContainerView: View {
                 // Render associated tool right after its commentary channel
                 if let toolExecution = channel.toolExecution {
                     ToolExecutionView(toolExecution: toolExecution)
+                        .id(toolExecution.id)
                 }
             }
         }
@@ -117,18 +123,32 @@ internal struct ChannelContainerView: View {
 
     @ViewBuilder
     private func channelMessageView(_ channel: Channel) -> some View {
-        ChannelMessageView(
-            channel: channel,
-            message: message,
-            associatedToolStatus: getToolStatus(for: channel),
-            showingSelectionView: $showingSelectionView,
-            showingThinkingView: $showingThinkingView,
-            showingStatsView: $showingStatsView,
-            copyTextAction: copyTextAction,
-            shareTextAction: shareTextAction
-        )
-        .equatable()
-        .id(channel.id) // Stable identity allows SwiftUI to diff
+        if channel.type == .analysis {
+            ChannelMessageView(
+                channel: channel,
+                message: message,
+                associatedToolStatus: getToolStatus(for: channel),
+                showingSelectionView: $showingSelectionView,
+                showingThinkingView: $showingThinkingView,
+                showingStatsView: $showingStatsView,
+                copyTextAction: copyTextAction,
+                shareTextAction: shareTextAction
+            )
+            .id(channel.id) // Stable identity allows SwiftUI to diff
+        } else {
+            ChannelMessageView(
+                channel: channel,
+                message: message,
+                associatedToolStatus: getToolStatus(for: channel),
+                showingSelectionView: $showingSelectionView,
+                showingThinkingView: $showingThinkingView,
+                showingStatsView: $showingStatsView,
+                copyTextAction: copyTextAction,
+                shareTextAction: shareTextAction
+            )
+            .equatable()
+            .id(channel.id) // Stable identity allows SwiftUI to diff
+        }
     }
 
     private func getToolStatus(for channel: Channel) -> ToolExecutionState? {

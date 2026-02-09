@@ -176,7 +176,7 @@ public struct AccessibleChartLegend: View {
                     if let value = item.value {
                         Text("(\(value))")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textSecondary)
                     }
 
                     Spacer()

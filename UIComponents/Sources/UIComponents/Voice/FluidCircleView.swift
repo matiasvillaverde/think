@@ -23,7 +23,7 @@ internal struct FluidCircleView: View {
         }
         .background(
             Circle()
-                .fill(Color.white)
+                .fill(Color.paletteWhite)
                 .shadow(
                     color: .blue.opacity(StyleConstants.Opacity.shadowEffect),
                     radius: StyleConstants.Shadow.radius,

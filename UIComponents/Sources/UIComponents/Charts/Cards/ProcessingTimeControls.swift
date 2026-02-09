@@ -19,7 +19,7 @@ internal struct ProcessingTimeControls: View {
         HStack {
             Text("Sort:")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Spacer()
 
@@ -37,11 +37,11 @@ internal struct ProcessingTimeControls: View {
             HStack {
                 Text("Show:")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
 
                 Text("\(maxItems) metrics")
                     .font(.subheadline.weight(.medium))
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
 
                 Spacer()
             }

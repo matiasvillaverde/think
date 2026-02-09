@@ -49,20 +49,15 @@ internal enum UITestSeedScrolling {
 
         // Keep streaming updates running while UITests are executing.
         Task(priority: .userInitiated) {
-            for stepIndex in 1...18 {
+            for stepIndex in 1...60 {
                 _ = try? await writeScrollStreamingUpdate(
                     database: database,
                     messageId: messageId,
                     step: stepIndex,
                     isComplete: false
                 )
-                try? await Task.sleep(for: .milliseconds(140))
+                try? await Task.sleep(for: .milliseconds(200))
             }
-
-            _ = try? await writeScrollStreamingComplete(
-                database: database,
-                messageId: messageId
-            )
         }
     }
 
@@ -73,7 +68,8 @@ internal enum UITestSeedScrolling {
         isComplete: Bool
     ) async throws {
         let ids = UITestIDs.shared
-        let growth: String = String(repeating: "x", count: step * 80)
+        let growthCount: Int = min(step * 80, 2_400)
+        let growth: String = String(repeating: "x", count: growthCount)
         let output = ProcessedOutput(
             channels: [
                 ChannelMessage(
@@ -86,27 +82,6 @@ internal enum UITestSeedScrolling {
             ]
         )
 
-        _ = try await database.write(
-            MessageCommands.UpdateProcessedOutput(messageId: messageId, processedOutput: output)
-        )
-    }
-
-    private static func writeScrollStreamingComplete(
-        database: DatabaseProtocol,
-        messageId: UUID
-    ) async throws {
-        let ids = UITestIDs.shared
-        let output = ProcessedOutput(
-            channels: [
-                ChannelMessage(
-                    id: ids.scrollStreamingFinalChannelId,
-                    type: .final,
-                    content: "AUTO_SCROLL_STREAM complete",
-                    order: 0,
-                    isComplete: true
-                )
-            ]
-        )
         _ = try await database.write(
             MessageCommands.UpdateProcessedOutput(messageId: messageId, processedOutput: output)
         )

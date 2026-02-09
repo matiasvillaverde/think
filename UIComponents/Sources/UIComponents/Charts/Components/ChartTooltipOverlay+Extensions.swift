@@ -8,7 +8,7 @@ extension ChartTooltipOverlay {
         VStack(alignment: .leading, spacing: ChartDataPointOverlay.Constants.tooltipSpacing) {
             Text(title)
                 .font(.caption.bold())
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
 
             ForEach(values, id: \.label) { tooltipValue in
                 tooltipValueRow(tooltipValue)
@@ -32,11 +32,11 @@ extension ChartTooltipOverlay {
 
             Text("\(tooltipValue.label):")
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Text(tooltipValue.value)
                 .font(.caption2.bold())
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
         }
     }
 
@@ -69,7 +69,7 @@ extension ChartRulerOverlay {
             path.addLine(to: CGPoint(x: position.x, y: chartBounds.maxY))
         }
         .stroke(
-            Color.blue.opacity(ChartDataPointOverlay.Constants.rulerOpacity),
+            Color.paletteBlue.opacity(ChartDataPointOverlay.Constants.rulerOpacity),
             lineWidth: ChartDataPointOverlay.Constants.rulerLineWidth
         )
     }
@@ -83,14 +83,14 @@ extension ChartRulerOverlay {
             path.addLine(to: CGPoint(x: chartBounds.maxX, y: position.y))
         }
         .stroke(
-            Color.blue.opacity(ChartDataPointOverlay.Constants.rulerOpacity),
+            Color.paletteBlue.opacity(ChartDataPointOverlay.Constants.rulerOpacity),
             lineWidth: ChartDataPointOverlay.Constants.rulerLineWidth
         )
     }
 
     private var crosshairCenter: some View {
         Circle()
-            .fill(Color.blue)
+            .fill(Color.paletteBlue)
             .frame(
                 width: ChartDataPointOverlay.Constants.crosshairSize,
                 height: ChartDataPointOverlay.Constants.crosshairSize
@@ -104,7 +104,7 @@ extension ChartRulerOverlay {
             .padding(ChartDataPointOverlay.Constants.axisLabelPadding)
             .background(
                 Capsule()
-                    .fill(Color.blue)
+                    .fill(Color.paletteBlue)
             )
             .foregroundColor(.white)
             .position(
@@ -119,7 +119,7 @@ extension ChartRulerOverlay {
             .padding(ChartDataPointOverlay.Constants.axisLabelPadding)
             .background(
                 Capsule()
-                    .fill(Color.blue)
+                    .fill(Color.paletteBlue)
             )
             .foregroundColor(.white)
             .position(

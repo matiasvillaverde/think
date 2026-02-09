@@ -35,6 +35,9 @@ internal struct MemoryBenchmarkTests {
 
     @Test("Memory usage without RAG access remains minimal")
     func testMemoryFootprintWithoutAccess() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let initialMemory: Int64 = getMemoryUsage()
 
         // Create RAG instance with lazy loading
@@ -55,6 +58,9 @@ internal struct MemoryBenchmarkTests {
 
     @Test("Memory usage with RAG access shows model loading")
     func testMemoryFootprintWithAccess() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
         let beforeUseMemory: Int64 = getMemoryUsage()
 
@@ -80,6 +86,9 @@ internal struct MemoryBenchmarkTests {
 
     @Test("Eager loading uses memory immediately")
     func testEagerLoadingMemoryUsage() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let initialMemory: Int64 = getMemoryUsage()
 
         // Create RAG instance with eager loading
@@ -99,6 +108,9 @@ internal struct MemoryBenchmarkTests {
 
     @Test("Memory usage comparison between lazy and eager loading")
     func testMemoryUsageComparison() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let baseMemory: Int64 = getMemoryUsage()
 
         // Test lazy loading memory usage
@@ -127,6 +139,9 @@ internal struct MemoryBenchmarkTests {
 
     @Test("Memory usage after model loading is stable")
     func testMemoryStabilityAfterLoading() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         // Trigger model loading
@@ -166,6 +181,9 @@ internal struct MemoryBenchmarkTests {
 
     @Test("First operation latency with lazy loading is acceptable")
     func testFirstOperationLatency() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         let content: String = "Test content for latency measurement."
@@ -189,6 +207,9 @@ internal struct MemoryBenchmarkTests {
 
     @Test("Subsequent operations have minimal latency")
     func testSubsequentOperationsLatency() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         // First operation to load model

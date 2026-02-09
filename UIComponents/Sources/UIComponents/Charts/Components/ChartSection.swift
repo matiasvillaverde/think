@@ -39,7 +39,7 @@ public struct ChartSection<Content: View>: View {
         HStack {
             Text(title)
                 .font(.system(size: ChartConstants.Typography.sectionHeaderSize, weight: .bold))
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
 
             Spacer()
 
@@ -61,7 +61,7 @@ public struct ChartSection<Content: View>: View {
                                 weight: .semibold
                             )
                         )
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                         .accessibilityHidden(true)
                 }
                 .buttonStyle(.plain)
@@ -104,7 +104,7 @@ public struct ChartsDashboardList<Content: View>: View {
                     trailing: ChartConstants.Layout.horizontalPadding
                 ))
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
+                .listRowBackground(Color.paletteClear)
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)

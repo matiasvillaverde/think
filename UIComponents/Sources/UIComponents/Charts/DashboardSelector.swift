@@ -116,25 +116,25 @@ public struct DashboardSelector: View {
             HStack {
                 Image(systemName: selectedType.icon)
                     .font(.system(size: Constants.iconSize))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                     .frame(width: Constants.iconSize, height: Constants.iconSize)
                     .accessibilityLabel("Dashboard type: \(selectedType.rawValue)")
 
                 VStack(alignment: .leading, spacing: Constants.captionSpacing) {
                     Text(selectedType.rawValue)
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color.textPrimary)
 
                     Text(selectedType.description)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
 
                 Spacer()
 
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                     .rotationEffect(.degrees(isExpanded ? 0 : 0))
                     .accessibilityLabel(isExpanded ? "Collapse" : "Expand")
             }
@@ -168,18 +168,18 @@ public struct DashboardSelector: View {
             HStack {
                 Image(systemName: type.icon)
                     .font(.system(size: Constants.iconSize))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                     .frame(width: Constants.iconSize, height: Constants.iconSize)
                     .accessibilityLabel("Dashboard type: \(type.rawValue)")
 
                 VStack(alignment: .leading, spacing: Constants.captionSpacing) {
                     Text(type.rawValue)
                         .font(.subheadline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color.textPrimary)
 
                     Text(type.description)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
 
                 Spacer()
@@ -187,10 +187,10 @@ public struct DashboardSelector: View {
                 if !isAvailable(type) {
                     Text("Not Available")
                         .font(.caption2)
-                        .foregroundColor(Color.secondary)
+                        .foregroundColor(Color.textSecondary)
                         .padding(.horizontal, Constants.badgePaddingHorizontal)
                         .padding(.vertical, Constants.badgePaddingVertical)
-                        .background(Color.secondary.opacity(Constants.badgeOpacity))
+                        .background(Color.textSecondary.opacity(Constants.badgeOpacity))
                         .cornerRadius(Constants.badgeCornerRadius)
                 }
             }
@@ -224,13 +224,9 @@ public struct DashboardSelector: View {
 
     private var backgroundView: some View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
-        #if os(iOS) || os(visionOS)
-            .fill(Color(UIColor.secondarySystemBackground))
-        #else
-            .fill(Color(NSColor.controlBackgroundColor))
-        #endif
+            .fill(Color.backgroundSecondary)
             .shadow(
-                color: Color.black.opacity(Constants.shadowOpacity),
+                color: Color.paletteBlack.opacity(Constants.shadowOpacity),
                 radius: Constants.shadowRadius,
                 x: 0,
                 y: Constants.shadowY
@@ -239,7 +235,7 @@ public struct DashboardSelector: View {
 
     private var borderOverlay: some View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
-            .stroke(Color.gray.opacity(Constants.borderOpacity), lineWidth: Constants.borderWidth)
+            .stroke(Color.paletteGray.opacity(Constants.borderOpacity), lineWidth: Constants.borderWidth)
     }
 }
 

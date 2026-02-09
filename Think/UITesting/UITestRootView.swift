@@ -11,6 +11,7 @@ struct UITestRootView: View {
     @Environment(\.database) private var database: DatabaseProtocol
 
     @State private var didSeed: Bool = false
+    @State private var seedComplete: Bool = false
     @State private var seedError: String?
 
     var body: some View {
@@ -24,6 +25,9 @@ struct UITestRootView: View {
                         .textSelection(.enabled)
                 }
                 .padding()
+            } else if !seedComplete {
+                ProgressView()
+                    .accessibilityIdentifier("uiTest.seeding")
             } else {
                 UITestChatHostView()
             }
@@ -38,6 +42,9 @@ struct UITestRootView: View {
     private func seedIfNeeded() async {
         do {
             try await UITestSeed.run(database: database)
+            await MainActor.run {
+                seedComplete = true
+            }
         } catch {
             await MainActor.run {
                 seedError = String(describing: error)

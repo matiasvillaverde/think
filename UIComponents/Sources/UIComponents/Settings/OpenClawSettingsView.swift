@@ -29,7 +29,7 @@ public struct OpenClawSettingsView: View {
             if let errorMessage {
                 Text(errorMessage)
                     .font(.caption)
-                    .foregroundStyle(Color.red)
+                    .foregroundStyle(Color.paletteRed)
             }
 
             OpenClawInstancesListView(
@@ -63,7 +63,7 @@ public struct OpenClawSettingsView: View {
                 .fontWeight(.bold)
             Text(String(localized: Constants.headerSubtitle, bundle: .module))
                 .font(.caption)
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.textSecondary)
         }
     }
 
@@ -154,7 +154,7 @@ private struct OpenClawInstancesListView: View {
             if instances.isEmpty {
                 Text(String(localized: "No instances configured.", bundle: .module))
                     .font(.caption)
-                    .foregroundStyle(Color.secondary)
+                    .foregroundStyle(Color.textSecondary)
             } else {
                 ForEach(instances) { instance in
                     instanceRow(instance)
@@ -175,7 +175,7 @@ private struct OpenClawInstancesListView: View {
 
             Text(instance.urlString)
                 .font(.caption)
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.textSecondary)
 
             let status: OpenClawConnectionStatus = statuses[instance.id] ?? .idle
             statusLine(status)
@@ -225,7 +225,7 @@ private struct OpenClawInstancesListView: View {
                 .frame(width: Constants.statusDotSize, height: Constants.statusDotSize)
             Text(statusText(status))
                 .font(.caption)
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.textSecondary)
         }
     }
 

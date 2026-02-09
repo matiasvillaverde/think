@@ -20,7 +20,7 @@ internal struct MemoryUsageControls: View {
         HStack {
             Text("Time Range:")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Spacer()
 

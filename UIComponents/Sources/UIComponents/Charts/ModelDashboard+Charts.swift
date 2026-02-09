@@ -159,7 +159,7 @@ extension ModelDashboard {
 
                 Text("\(metrics.count) messages")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
             }
 
             HStack(spacing: Constants.spacing) {
@@ -191,7 +191,7 @@ extension ModelDashboard {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
             Text(value)
                 .font(.caption)
                 .fontWeight(.medium)

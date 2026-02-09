@@ -77,12 +77,12 @@ internal struct ToolSourcesListView: View {
         HStack(spacing: Constants.headerSpacing) {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: Constants.iconSize))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .accessibilityHidden(true)
 
             Text("Sources (\(sources.count))")
                 .font(.system(size: Constants.headerFontSize, weight: .semibold))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 
@@ -97,13 +97,13 @@ internal struct ToolSourcesListView: View {
             VStack(alignment: .leading, spacing: Constants.sourceRowItemSpacing) {
                 Text(source.displayName)
                     .font(.caption)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
                     .lineLimit(1)
                     .truncationMode(.tail)
 
                 Text(source.url.absoluteString)
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                     .lineLimit(1)
                     .truncationMode(.middle)
             }
@@ -150,13 +150,13 @@ internal struct ToolSourcesListView: View {
 
     private var backgroundView: some View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
-            .fill(Color.blue.opacity(Constants.backgroundOpacity))
+            .fill(Color.paletteBlue.opacity(Constants.backgroundOpacity))
     }
 
     private var borderOverlay: some View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
             .stroke(
-                Color.blue.opacity(Constants.borderOpacity),
+                Color.paletteBlue.opacity(Constants.borderOpacity),
                 lineWidth: Constants.borderWidth
             )
     }

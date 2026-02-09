@@ -12,6 +12,11 @@ internal enum TestHelpers {
             .appendingPathComponent("all-MiniLM-L6-v2")
     }
 
+    static var isLocalModelAvailable: Bool {
+        let modelURL: URL = localModelURL.appendingPathComponent("model.safetensors")
+        return FileManager.default.fileExists(atPath: modelURL.path)
+    }
+
     /// Creates a Rag instance with the local test model
     static func createTestRag(
         from hubRepoId: String = "sentence-transformers/all-MiniLM-L6-v2",
@@ -25,6 +30,22 @@ internal enum TestHelpers {
             from: hubRepoId,
             local: shouldUseLocal ? localModelURL : nil,
             useBackgroundSession: false,
+            database: database,
+            loadingStrategy: loadingStrategy
+        )
+    }
+
+    static func createTestRagIfAvailable(
+        from hubRepoId: String = "sentence-transformers/all-MiniLM-L6-v2",
+        database: DatabaseLocation = .inMemory,
+        loadingStrategy: RagLoadingStrategy = .lazy
+    ) async throws -> Rag? {
+        guard isLocalModelAvailable else {
+            return nil
+        }
+
+        return try await createTestRag(
+            from: hubRepoId,
             database: database,
             loadingStrategy: loadingStrategy
         )

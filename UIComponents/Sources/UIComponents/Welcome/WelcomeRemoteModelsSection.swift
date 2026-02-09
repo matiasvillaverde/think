@@ -211,7 +211,7 @@ internal struct WelcomeRemoteModelsSection: View {
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.textSecondary)
             .textCase(.uppercase)
             .padding(.top, WelcomeRemoteModelsConstants.sectionHeaderTopPadding)
     }
@@ -316,14 +316,14 @@ private struct WelcomeRemoteModelRow: View {
         HStack(spacing: WelcomeConstants.spacingSmall) {
             Text(model.displayName)
                 .font(.headline)
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.textPrimary)
 
             if model.pricing == .free {
                 Text("Free", bundle: .module)
                     .font(.caption2)
                     .padding(.horizontal, WelcomeRemoteModelsConstants.freeBadgeHorizontalPadding)
                     .padding(.vertical, WelcomeRemoteModelsConstants.freeBadgeVerticalPadding)
-                    .background(Color.green.opacity(WelcomeRemoteModelsConstants.freeBadgeOpacity))
+                    .background(Color.paletteGreen.opacity(WelcomeRemoteModelsConstants.freeBadgeOpacity))
                     .clipShape(Capsule())
             }
         }
@@ -332,14 +332,14 @@ private struct WelcomeRemoteModelRow: View {
     private var modelIdRow: some View {
         Text(model.modelId)
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.textSecondary)
     }
 
     @ViewBuilder private var descriptionRow: some View {
         if let description = model.description, !description.isEmpty {
             Text(description)
                 .font(.footnote)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
                 .lineLimit(WelcomeRemoteModelsConstants.descriptionLineLimit)
         }
     }
@@ -353,7 +353,7 @@ private struct WelcomeRemoteModelRow: View {
                 )
             )
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.textSecondary)
         }
     }
 
@@ -365,7 +365,7 @@ private struct WelcomeRemoteModelRow: View {
                     .accessibilityHidden(true)
             } else {
                 Image(systemName: "circle")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                     .accessibilityHidden(true)
             }
         }

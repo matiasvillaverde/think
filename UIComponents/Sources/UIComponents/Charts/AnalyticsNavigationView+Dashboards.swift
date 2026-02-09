@@ -56,7 +56,7 @@ extension AnalyticsNavigationView {
     func chatRowView(for chat: Chat) -> some View {
         HStack {
             Image(systemName: "bubble.left.and.bubble.right")
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .accessibilityLabel("Chat icon")
             VStack(alignment: .leading) {
                 Text(chat.name)
@@ -65,7 +65,7 @@ extension AnalyticsNavigationView {
                     let messageCount: Int = chat.messages.count
                     Text("\(messageCount) messages")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
         }
@@ -81,11 +81,11 @@ private struct EmptyStateView: View {
         VStack(spacing: AnalyticsNavigationView.Constants.emptyStateSpacing) {
             Image(systemName: "chart.xyaxis.line")
                 .font(.system(size: AnalyticsNavigationView.Constants.emptyStateIconSize))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .accessibilityLabel("Empty chart icon")
             Text(message)
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

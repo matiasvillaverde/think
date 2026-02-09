@@ -10,7 +10,7 @@ internal struct HuggingFaceSearchPlaceholderView: View {
         VStack(spacing: DesignConstants.Spacing.large) {
             Image(systemName: "sparkles")
                 .font(.system(size: Constants.iconSize))
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.textSecondary)
                 .accessibilityLabel("Sparkles icon")
 
             Text("Search HuggingFace", bundle: .module)

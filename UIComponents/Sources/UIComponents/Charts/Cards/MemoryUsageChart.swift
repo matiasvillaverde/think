@@ -60,9 +60,9 @@ internal struct MemoryUsageChart: View {
         }
         .chartPlotStyle { plotArea in
             plotArea
-                .background(Color.gray.opacity(Constants.chartBackgroundOpacity))
+                .background(Color.paletteGray.opacity(Constants.chartBackgroundOpacity))
                 .border(
-                    Color.gray.opacity(Constants.borderOpacity),
+                    Color.paletteGray.opacity(Constants.borderOpacity),
                     width: Constants.borderWidth
                 )
         }

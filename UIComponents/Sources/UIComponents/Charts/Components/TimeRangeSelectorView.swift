@@ -28,12 +28,12 @@ internal struct TimeRangeSelectorView: View {
                             .background(
                                 selectedTimeRange == range ?
                                     Color.accentColor.opacity(constants.selectedOpacity) :
-                                    Color.secondary.opacity(constants.unselectedOpacity)
+                                    Color.textSecondary.opacity(constants.unselectedOpacity)
                             )
                             .foregroundColor(
                                 selectedTimeRange == range ?
                                     Color.accentColor :
-                                    Color.primary
+                                    Color.textPrimary
                             )
                             .clipShape(RoundedRectangle(cornerRadius: constants.cornerRadius))
                     }

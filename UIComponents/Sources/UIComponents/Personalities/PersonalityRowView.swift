@@ -53,7 +53,7 @@ internal struct PersonalityRowView: View {
 
                 Text(personality.name)
                     .font(.body)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.textPrimary)
 
                 Spacer()
             }

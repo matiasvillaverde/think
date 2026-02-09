@@ -40,7 +40,7 @@ public struct PrivacyPolicyView: View {
                     comment: "Last updated date for Privacy Policy"
                 ))
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
                 privacyContent
             }

@@ -28,14 +28,14 @@ internal struct PerformanceStats: View {
 
             Text(metric.rawValue)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Spacer()
 
             if let latestValue = viewModel.getLatestValue(for: metric, timeRange: timeRange) {
                 Text("\(viewModel.formatValue(latestValue, unit: metric.unit)) \(metric.unit)")
                     .font(.caption.weight(.medium))
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
             }
         }
     }

@@ -74,7 +74,7 @@ public struct AssistantBubbleView: View {
             .font(.body)
             .foregroundColor(Color.textPrimary)
             .padding(.top, MessageLayout.bubblePadding)
-            .background(Color.clear)
+            .background(Color.paletteClear)
             .cornerRadius(MessageLayout.cornerRadius)
             .contextMenu {
                 AssistantContextMenu(

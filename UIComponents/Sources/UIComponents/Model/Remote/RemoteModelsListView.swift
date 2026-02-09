@@ -43,7 +43,7 @@ internal struct RemoteModelsListView: View {
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.textSecondary)
             .textCase(.uppercase)
             .padding(.top, RemoteModelsViewConstants.sectionHeaderTopPadding)
     }

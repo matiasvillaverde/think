@@ -82,7 +82,7 @@ public struct TokenTimingChartCard: View {
                 if item.value > Constants.annotationThreshold, dataHasAppeared {
                     Text(String(format: "%.0f", item.value))
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
         }
@@ -110,10 +110,10 @@ public struct TokenTimingChartCard: View {
         .chartPlotStyle { plotArea in
             plotArea
                 .background(
-                    Color.gray.opacity(Constants.backgroundOpacityQuarter)
+                    Color.paletteGray.opacity(Constants.backgroundOpacityQuarter)
                 )
                 .border(
-                    Color.gray.opacity(Constants.backgroundOpacity),
+                    Color.paletteGray.opacity(Constants.backgroundOpacity),
                     width: Constants.borderWidth
                 )
         }
@@ -142,7 +142,7 @@ public struct TokenTimingChartCard: View {
 
                     Text(category)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
             Spacer()
@@ -156,7 +156,7 @@ public struct TokenTimingChartCard: View {
                 VStack(alignment: .leading, spacing: Constants.statSpacing) {
                     Text("Avg TTFT")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                     Text(String(format: "%.1f ms", avgTTFT))
                         .font(.subheadline.weight(.bold))
                         .foregroundColor(.blue)
@@ -168,7 +168,7 @@ public struct TokenTimingChartCard: View {
                 VStack(alignment: .leading, spacing: Constants.statSpacing) {
                     Text("Avg Token")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                     Text(String(format: "%.1f ms", avgTokenTime))
                         .font(.subheadline.weight(.bold))
                         .foregroundColor(.green)
@@ -179,7 +179,7 @@ public struct TokenTimingChartCard: View {
             VStack(alignment: .leading, spacing: Constants.statSpacing) {
                 Text("Messages")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                 Text("\(min(messageCount, metrics.count))")
                     .font(.subheadline.weight(.bold))
                     .foregroundColor(.orange)
@@ -195,7 +195,7 @@ public struct TokenTimingChartCard: View {
             HStack {
                 Text("Messages to show:")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
 
                 Spacer()
 

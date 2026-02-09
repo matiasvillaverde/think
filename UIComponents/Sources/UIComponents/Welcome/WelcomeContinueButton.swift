@@ -35,7 +35,7 @@ internal struct WelcomeContinueButton: View {
                     .fill(
                         isEnabled
                             ? Color.marketingPrimary
-                            : Color.gray.opacity(WelcomeConstants.disabledButtonOpacity)
+                            : Color.paletteGray.opacity(WelcomeConstants.disabledButtonOpacity)
                     )
             )
         }

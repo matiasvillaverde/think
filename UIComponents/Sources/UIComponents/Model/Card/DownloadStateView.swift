@@ -65,7 +65,7 @@ internal struct DownloadStateView: View {
                 StateIndicator(
                     icon: "brain.filled.head.profile",
                     text: "Generating",
-                    color: Color.green
+                    color: Color.paletteGreen
                 )
 
             case .loaded, .notLoaded:
@@ -144,7 +144,7 @@ internal struct DownloadStateView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(model.displayName)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                 DownloadStateView(
                     model: model,
                     isConfirmationPresented: .constant(false),

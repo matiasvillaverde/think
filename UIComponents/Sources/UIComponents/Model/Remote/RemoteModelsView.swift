@@ -65,7 +65,7 @@ internal struct RemoteModelsView: View {
                 bundle: .module
             )
             .font(.subheadline)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -297,7 +297,7 @@ internal struct RemoteModelRow: View {
                     .font(.caption2)
                     .padding(.horizontal, RemoteModelsViewConstants.freeBadgeHorizontalPadding)
                     .padding(.vertical, RemoteModelsViewConstants.freeBadgeVerticalPadding)
-                    .background(Color.green.opacity(RemoteModelsViewConstants.freeBadgeOpacity))
+                    .background(Color.paletteGreen.opacity(RemoteModelsViewConstants.freeBadgeOpacity))
                     .clipShape(Capsule())
             }
         }
@@ -306,14 +306,14 @@ internal struct RemoteModelRow: View {
     private var modelIdRow: some View {
         Text(model.modelId)
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.textSecondary)
     }
 
     @ViewBuilder private var descriptionRow: some View {
         if let description = model.description, !description.isEmpty {
             Text(description)
                 .font(.footnote)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
                 .lineLimit(RemoteModelsViewConstants.descriptionLineLimit)
         }
     }
@@ -322,7 +322,7 @@ internal struct RemoteModelRow: View {
         if let contextLength = model.contextLength {
             Text("Context: \(contextLength) tokens", bundle: .module)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
         }
     }
 

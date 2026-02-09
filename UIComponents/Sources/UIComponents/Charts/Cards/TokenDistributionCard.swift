@@ -109,7 +109,7 @@ public struct TokenDistributionCard: View {
         }
         .chartBackground { _ in
             Circle()
-                .fill(Color.gray.opacity(Constants.backgroundOpacity))
+                .fill(Color.paletteGray.opacity(Constants.backgroundOpacity))
         }
         .scaleEffect(dataHasAppeared ? 1 : Constants.scaleEffectMin)
         .animation(
@@ -131,11 +131,11 @@ public struct TokenDistributionCard: View {
         VStack(spacing: Constants.centerLabelSpacing) {
             Text("\(totalTokens)")
                 .font(.title2.weight(.bold))
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
 
             Text("Total")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .opacity(dataHasAppeared ? 1 : 0)
         .animation(
@@ -182,7 +182,7 @@ public struct TokenDistributionCard: View {
             .background(
                 RoundedRectangle(cornerRadius: Constants.legendCornerRadius)
                     .fill(selectedCategory == data.category ? data.color
-                        .opacity(Constants.selectedBackgroundOpacity) : Color.clear)
+                        .opacity(Constants.selectedBackgroundOpacity) : Color.paletteClear)
             )
         }
         .buttonStyle(.plain)
@@ -192,16 +192,16 @@ public struct TokenDistributionCard: View {
         VStack(alignment: .leading, spacing: Constants.legendItemsSpacing) {
             Text(data.category)
                 .font(.subheadline)
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
 
             HStack(spacing: Constants.legendStatsSpacing) {
                 Text("\(data.count)")
                     .font(.caption.weight(.bold))
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
 
                 Text("(\(String(format: "%.1f%%", data.percentage)))")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
             }
         }
     }
@@ -296,13 +296,13 @@ private struct TokenStatRow: View {
         HStack {
             Text(label)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Spacer()
 
             Text(value)
                 .font(.caption.weight(.bold))
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
         }
     }
 }

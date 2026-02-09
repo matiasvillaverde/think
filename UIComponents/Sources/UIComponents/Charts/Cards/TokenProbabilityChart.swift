@@ -66,7 +66,7 @@ internal struct TokenProbabilityChart: View {
         .chartPlotStyle { plotArea in
             plotArea
                 .border(
-                    Color.gray.opacity(Constants.borderOpacity),
+                    Color.paletteGray.opacity(Constants.borderOpacity),
                     width: Constants.borderWidth
                 )
         }
@@ -95,14 +95,14 @@ internal struct TokenProbabilityChart: View {
             x: .value("Position", 0),
             y: .value("Trend", trendStartY)
         )
-        .foregroundStyle(Color.blue.opacity(Constants.trendOpacity))
+        .foregroundStyle(Color.paletteBlue.opacity(Constants.trendOpacity))
         .lineStyle(StrokeStyle(lineWidth: Constants.trendLineWidth))
 
         LineMark(
             x: .value("Position", maxTokenPosition),
             y: .value("Trend", trendEndY)
         )
-        .foregroundStyle(Color.blue.opacity(Constants.trendOpacity))
+        .foregroundStyle(Color.paletteBlue.opacity(Constants.trendOpacity))
         .lineStyle(StrokeStyle(lineWidth: Constants.trendLineWidth))
     }
 
@@ -115,20 +115,20 @@ internal struct TokenProbabilityChart: View {
                 trendStartY + (1 - trendStartY) * Constants.upperConfidenceMultiplier
             )
         )
-        .foregroundStyle(Color.blue.opacity(Constants.confidenceOpacity))
+        .foregroundStyle(Color.paletteBlue.opacity(Constants.confidenceOpacity))
 
         AreaMark(
             x: .value("Position", maxTokenPosition),
             yStart: .value("Lower", trendEndY * Constants.lowerConfidenceMultiplier),
             yEnd: .value("Upper", trendEndY + (1 - trendEndY) * Constants.upperConfidenceMultiplier)
         )
-        .foregroundStyle(Color.blue.opacity(Constants.confidenceOpacity))
+        .foregroundStyle(Color.paletteBlue.opacity(Constants.confidenceOpacity))
 
         LineMark(
             x: .value("Position", 0),
             y: .value("Upper", trendStartY + (1 - trendStartY) * Constants.upperPositionMultiplier)
         )
-        .foregroundStyle(Color.blue.opacity(Constants.confidenceLineOpacity))
+        .foregroundStyle(Color.paletteBlue.opacity(Constants.confidenceLineOpacity))
         .lineStyle(StrokeStyle(
             lineWidth: Constants.confidenceLineWidth,
             dash: [Constants.dashPatternOne, Constants.dashPatternTwo]
@@ -138,7 +138,7 @@ internal struct TokenProbabilityChart: View {
             x: .value("Position", 0),
             y: .value("Lower", trendStartY * Constants.lowerPositionMultiplier)
         )
-        .foregroundStyle(Color.blue.opacity(Constants.confidenceLineOpacity))
+        .foregroundStyle(Color.paletteBlue.opacity(Constants.confidenceLineOpacity))
         .lineStyle(StrokeStyle(
             lineWidth: Constants.confidenceLineWidth,
             dash: [Constants.dashPatternOne, Constants.dashPatternTwo]
@@ -147,7 +147,7 @@ internal struct TokenProbabilityChart: View {
 
     private var chartBackgroundContent: some View {
         Rectangle()
-            .fill(Color.gray.opacity(Constants.chartOpacity))
+            .fill(Color.paletteGray.opacity(Constants.chartOpacity))
     }
 
     private var xAxisContent: some AxisContent {
@@ -158,7 +158,7 @@ internal struct TokenProbabilityChart: View {
                     dash: [Constants.dashLength, Constants.dashSpacing]
                 )
             )
-            .foregroundStyle(Color.secondary.opacity(Constants.borderOpacity))
+            .foregroundStyle(Color.textSecondary.opacity(Constants.borderOpacity))
             AxisValueLabel()
                 .font(.caption)
         }
@@ -172,7 +172,7 @@ internal struct TokenProbabilityChart: View {
                     dash: [Constants.dashLength, Constants.dashSpacing]
                 )
             )
-            .foregroundStyle(Color.secondary.opacity(Constants.borderOpacity))
+            .foregroundStyle(Color.textSecondary.opacity(Constants.borderOpacity))
 
             AxisValueLabel {
                 if let doubleValue = value.as(Double.self) {

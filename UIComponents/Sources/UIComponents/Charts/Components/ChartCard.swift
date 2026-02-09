@@ -82,7 +82,7 @@ public struct ChartCard<Content: View, Controls: View>: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: ChartConstants.Styling.cornerRadius))
         .shadow(
-            color: Color.black.opacity(ChartConstants.Styling.shadowOpacity),
+            color: Color.paletteBlack.opacity(ChartConstants.Styling.shadowOpacity),
             radius: ChartConstants.Styling.shadowRadius,
             x: ChartCardConstants.zeroOffset,
             y: ChartCardConstants.shadowYOffset
@@ -136,14 +136,14 @@ public struct ChartCard<Content: View, Controls: View>: View {
                         weight: .semibold
                     )
                 )
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
 
             if let subtitle {
                 Text(subtitle)
                     .font(
                         .system(size: ChartConstants.Typography.chartSubtitleSize)
                     )
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
             }
         }
     }
@@ -165,7 +165,7 @@ public struct ChartCard<Content: View, Controls: View>: View {
             .font(
                 .system(size: ChartConstants.Typography.sectionHeaderSize)
             )
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
             .accessibilityLabel(isExpanded ? "Collapse" : "Expand")
         }
         .buttonStyle(.plain)

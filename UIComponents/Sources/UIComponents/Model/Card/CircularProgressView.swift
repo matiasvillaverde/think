@@ -22,7 +22,7 @@ internal struct CircularProgressView: View {
         ZStack {
             // Circular track
             Circle()
-                .stroke(Color.gray.opacity(Constants.trackOpacity), lineWidth: Constants.lineWidth)
+                .stroke(Color.paletteGray.opacity(Constants.trackOpacity), lineWidth: Constants.lineWidth)
 
             // Progress arc
             processCircle

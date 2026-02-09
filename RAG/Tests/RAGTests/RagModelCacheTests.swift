@@ -6,6 +6,9 @@ import Testing
 internal struct RagModelCacheTests {
     @Test("Model cache reuses model across instances")
     func testModelCacheReusesModelAcrossInstances() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let cache: RagModelCache = RagModelCache.shared
         await cache.reset()
 

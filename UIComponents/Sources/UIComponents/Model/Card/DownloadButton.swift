@@ -46,7 +46,7 @@ internal struct DownloadButton: View {
     private var sizeLabel: some View {
         Text(formattedSize)
             .font(.caption2)
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
             .accessibilityLabel(
                 String(
                     localized: "File size \(formattedSize)",

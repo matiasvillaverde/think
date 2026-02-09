@@ -35,7 +35,7 @@ internal struct ToolSelectionButton: View {
         } label: {
             Image(systemName: "slider.horizontal.3")
                 .font(.system(size: ToolConstants.toolsButtonIconSize, weight: .medium))
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
                 .accessibilityLabel(String(
                     localized: "Tools",
                     bundle: .module,
@@ -220,7 +220,7 @@ internal struct ToolSelectionButton: View {
                 chat: chat,
                 selectedAction: $selectedAction
             )
-            .background(Color.gray.opacity(0.2))
+            .background(Color.paletteGray.opacity(0.2))
         }
         .padding()
     }

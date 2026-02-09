@@ -1,34 +1,5 @@
 import SwiftUI
 
-/// Color constants for architecture logos
-private enum Colors {
-    static let redZero: Double = 0.0
-    static let redLow: Double = 0.1
-    static let redMedium: Double = 0.3
-    static let redHigh: Double = 0.5
-    static let redVeryHigh: Double = 0.7
-    static let redExtreme: Double = 0.8
-    static let redMax: Double = 0.9
-    static let redSuper: Double = 0.95
-
-    static let greenZero: Double = 0.0
-    static let greenLow: Double = 0.1
-    static let greenMedium: Double = 0.3
-    static let greenHigh: Double = 0.5
-    static let greenVeryHigh: Double = 0.7
-    static let greenExtreme: Double = 0.8
-    static let greenMax: Double = 0.9
-    static let greenSuper: Double = 0.95
-
-    static let blueLow: Double = 0.1
-    static let blueMedium: Double = 0.3
-    static let blueHigh: Double = 0.6
-    static let blueVeryHigh: Double = 0.7
-    static let blueExtreme: Double = 0.8
-    static let blueMax: Double = 0.9
-    static let blueSuper: Double = 0.95
-}
-
 /// Provides logo assets or SF Symbols for model architectures
 internal enum ArchitectureLogoProvider {
     /// Logo source type
@@ -212,34 +183,19 @@ internal enum ArchitectureLogoProvider {
     ) -> (primary: Color, secondary: Color)? {
         switch name {
         case let name where name.contains("deepseek"):
-            (
-                Color(red: Colors.redLow, green: Colors.greenHigh, blue: Colors.blueExtreme),
-                Color(red: Colors.redHigh, green: Colors.greenExtreme, blue: Colors.blueMax)
-            )
+            (Color.brandDeepseekPrimary, Color.brandDeepseekSecondary)
 
         case let name where name.contains("mistral") || name.contains("mixtral"):
-            (
-                Color(red: Colors.redExtreme, green: Colors.greenMedium, blue: Colors.redLow),
-                Color(red: Colors.redMax, green: Colors.greenVeryHigh, blue: Colors.redHigh)
-            )
+            (Color.brandMistralPrimary, Color.brandMistralSecondary)
 
         case let name where name.contains("gemini"):
-            (
-                Color(red: Colors.redLow, green: Colors.greenExtreme, blue: Colors.blueExtreme),
-                Color(red: Colors.redHigh, green: Colors.greenMax, blue: Colors.blueMax)
-            )
+            (Color.brandGeminiPrimary, Color.brandGeminiSecondary)
 
         case let name where name.contains("gemma"):
-            (
-                Color(red: Colors.redHigh, green: Colors.redLow, blue: Colors.blueExtreme),
-                Color(red: Colors.greenExtreme, green: Colors.redHigh, blue: Colors.blueMax)
-            )
+            (Color.brandGemmaPrimary, Color.brandGemmaSecondary)
 
         case let name where name.contains("llama"):
-            (
-                Color(red: Colors.redLow, green: Colors.greenVeryHigh, blue: Colors.blueMax),
-                Color(red: Colors.redHigh, green: Colors.greenMax, blue: Colors.blueSuper)
-            )
+            (Color.brandLlamaPrimary, Color.brandLlamaSecondary)
 
         default:
             nil
@@ -252,32 +208,16 @@ internal enum ArchitectureLogoProvider {
     ) -> (primary: Color, secondary: Color)? {
         switch name {
         case let name where name.contains("phi"):
-            (
-                Color(
-                    red: Colors.greenZero,
-                    green: Colors.greenVeryHigh,
-                    blue: Colors.blueVeryHigh
-                ),
-                Color(red: Colors.redLow, green: Colors.greenMax, blue: Colors.blueExtreme)
-            )
+            (Color.brandPhiPrimary, Color.brandPhiSecondary)
 
         case let name where name.contains("qwen"):
-            (
-                Color(red: Colors.redLow, green: Colors.greenHigh, blue: Colors.blueExtreme),
-                Color(red: Colors.redHigh, green: Colors.greenExtreme, blue: Colors.blueMax)
-            )
+            (Color.brandQwenPrimary, Color.brandQwenSecondary)
 
         case let name where name.contains("claude"):
-            (
-                Color(red: Colors.redExtreme, green: Colors.redHigh, blue: Colors.redLow),
-                Color(red: Colors.redMax, green: Colors.greenExtreme, blue: Colors.redHigh)
-            )
+            (Color.brandClaudePrimary, Color.brandClaudeSecondary)
 
         case let name where name.contains("gpt"):
-            (
-                Color(red: Colors.redLow, green: Colors.greenMax, blue: Colors.redHigh),
-                Color(red: Colors.redHigh, green: Colors.greenSuper, blue: Colors.greenExtreme)
-            )
+            (Color.brandGptPrimary, Color.brandGptSecondary)
 
         default:
             nil
@@ -300,8 +240,8 @@ internal enum ArchitectureLogoProvider {
 
         // Default colors
         return (
-            Color(red: Colors.greenMedium, green: Colors.greenMedium, blue: Colors.redHigh),
-            Color(red: Colors.greenVeryHigh, green: Colors.greenVeryHigh, blue: Colors.greenExtreme)
+            Color.brandDefaultPrimary,
+            Color.brandDefaultSecondary
         )
     }
 
@@ -332,7 +272,7 @@ internal enum ArchitectureLogoProvider {
             // Subtle radial gradient overlay for depth
             RadialGradient(
                 gradient: Gradient(colors: [
-                    Color.clear,
+                    Color.paletteClear,
                     colors.primary.opacity(DiscoveryConstants.Opacity.extraLight)
                 ]),
                 center: .center,

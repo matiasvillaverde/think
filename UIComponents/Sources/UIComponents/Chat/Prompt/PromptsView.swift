@@ -161,9 +161,9 @@ private struct SkeletonPromptItem: View {
     private var shimmerGradient: some ShapeStyle {
         LinearGradient(
             colors: [
-                Color.gray.opacity(PromptsView.Constants.skeletonPrimaryOpacity),
-                Color.gray.opacity(PromptsView.Constants.skeletonSecondaryOpacity),
-                Color.gray.opacity(PromptsView.Constants.skeletonPrimaryOpacity)
+                Color.paletteGray.opacity(PromptsView.Constants.skeletonPrimaryOpacity),
+                Color.paletteGray.opacity(PromptsView.Constants.skeletonSecondaryOpacity),
+                Color.paletteGray.opacity(PromptsView.Constants.skeletonPrimaryOpacity)
             ],
             startPoint: .init(
                 x: shimmerOffset + PromptsView.Constants.skeletonGradientStartOffset,

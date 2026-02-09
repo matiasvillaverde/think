@@ -94,14 +94,14 @@ internal struct FileAttachmentView: View {
                 .fontWeight(.medium)
                 .lineLimit(Constants.lineLimit)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.textPrimary)
 
             Text(file.type.uppercased())
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .lineLimit(Constants.lineLimit)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.textPrimary)
         }
     }
 
@@ -197,7 +197,7 @@ internal struct FileAttachmentView: View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
             .fill(Color.backgroundPrimary)
             .shadow(
-                color: Color.black.opacity(Constants.shadowOpacity),
+                color: Color.paletteBlack.opacity(Constants.shadowOpacity),
                 radius: Constants.shadowRadius,
                 x: 0,
                 y: Constants.shadowOffsetY

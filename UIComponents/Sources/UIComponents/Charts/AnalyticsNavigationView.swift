@@ -262,13 +262,13 @@ private struct StatCard: View {
         VStack(spacing: AnalyticsNavigationView.Constants.statCardSpacing) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .accessibilityLabel("\(title) icon")
             Text(value)
                 .font(.title3.bold())
             Text(title)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .padding()
         .frame(minWidth: AnalyticsNavigationView.Constants.statCardMinWidth)

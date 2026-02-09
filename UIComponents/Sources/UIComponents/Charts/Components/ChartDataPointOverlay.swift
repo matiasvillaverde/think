@@ -90,7 +90,7 @@ public struct ChartDataPointOverlay: View {
                 )
                 .overlay(
                     Circle()
-                        .stroke(Color.white, lineWidth: Constants.strokeWidth)
+                        .stroke(Color.paletteWhite, lineWidth: Constants.strokeWidth)
                 )
                 .shadow(radius: Constants.shadowRadius)
 
@@ -114,11 +114,11 @@ public struct ChartDataPointOverlay: View {
         VStack(alignment: .leading, spacing: Constants.annotationSpacing) {
             Text(dataPoint.label)
                 .font(.caption2.bold())
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
 
             Text(dataPoint.value)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .padding(Constants.tooltipPadding)
         .background(
@@ -280,7 +280,7 @@ public struct ChartAnnotationOverlay: View {
 
                 Text(annotation.text)
                     .font(.caption2)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
                     .padding(ChartDataPointOverlay.Constants.annotationPadding)
                     .background(
                         Capsule()

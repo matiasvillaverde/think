@@ -32,7 +32,7 @@ extension DiscoveryModelCard {
         ZStack {
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color.red.opacity(DiscoveryConstants.Opacity.extraLight),
+                    Color.paletteRed.opacity(DiscoveryConstants.Opacity.extraLight),
                     Color.backgroundPrimary
                 ]),
                 startPoint: .topLeading,
@@ -56,8 +56,8 @@ extension DiscoveryModelCard {
             .strokeBorder(
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        Color.white.opacity(DesignConstants.Opacity.trackBackground),
-                        Color.clear
+                        Color.paletteWhite.opacity(DesignConstants.Opacity.trackBackground),
+                        Color.paletteClear
                     ]),
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing

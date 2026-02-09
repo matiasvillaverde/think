@@ -55,7 +55,7 @@ public struct SupportButtons: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(Color.clear)
+        .background(Color.paletteClear)
         .alert(isPresented: $showingEmailAlert) {
             emailAlert
         }
@@ -165,7 +165,7 @@ public struct SupportButtons: View {
                     .foregroundColor(
                         chats.isEmpty ? Color.textSecondary.opacity(
                             Constants.opacity
-                        ) : Color.red
+                        ) : Color.paletteRed
                     )
                     .cornerRadius(Constants.cornerRadius)
             }
@@ -183,7 +183,7 @@ public struct SupportButtons: View {
                 if isPerformingDelete {
                     ProgressView()
                         .progressViewStyle(
-                            CircularProgressViewStyle(tint: Color.red)
+                            CircularProgressViewStyle(tint: Color.paletteRed)
                         )
                         .scaleEffect(Constants.progressViewScale)
                         .accessibility(

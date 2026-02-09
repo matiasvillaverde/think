@@ -54,7 +54,7 @@ internal struct ModelTypeFilterBar: View {
             .background(
                 selection == filter
                     ? Color.backgroundPrimary
-                    : Color.clear
+                    : Color.paletteClear
             )
         })
         .buttonStyle(.plain)

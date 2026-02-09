@@ -16,14 +16,14 @@ public struct ToolHeaderView: View {
         }
         .padding(.vertical, ToolUsageConstants.headerVerticalPadding)
         .padding(.horizontal, ToolUsageConstants.headerHorizontalPadding)
-        .background(Color.clear)
+        .background(Color.paletteClear)
     }
 
     // MARK: - Private UI Components
 
     private func toolIcon() -> some View {
         Image(systemName: "wrench")
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
             .accessibilityLabel(
                 String(
                     localized: "Tool icon",
@@ -38,7 +38,7 @@ public struct ToolHeaderView: View {
                 size: ToolUsageConstants.headerFontSize,
                 weight: .medium
             ))
-            .foregroundColor(.primary)
+            .foregroundColor(Color.textPrimary)
     }
 
     private func statusIndicator() -> some View {
@@ -65,7 +65,7 @@ public struct ToolHeaderView: View {
 
     private func expandCollapseIcon() -> some View {
         Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
             .padding(.leading, ToolUsageConstants.headerSpacing)
             .accessibilityLabel(
                 String(

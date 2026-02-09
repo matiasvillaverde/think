@@ -196,7 +196,7 @@ private struct CanvasEditor: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: CanvasConstants.editorCornerRadius)
                         .stroke(
-                            Color.gray.opacity(CanvasConstants.editorBorderOpacity),
+                            Color.paletteGray.opacity(CanvasConstants.editorBorderOpacity),
                             lineWidth: CanvasConstants.editorBorderWidth
                         )
                 )

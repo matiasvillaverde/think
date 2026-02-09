@@ -5,14 +5,17 @@ import Testing
 
 @Suite("Additional RAG Integration")
 internal struct RagIntegrationAdditionalTests {
-    let rag: Rag
+    let rag: Rag?
 
     init() async throws {
-        rag = try await TestHelpers.createTestRag()
+        rag = try await TestHelpers.createTestRagIfAvailable()
     }
 
     @Test("Adding empty text creates no chunks")
     func testAddEmptyTextProducesNoResults() async throws {
+        guard let rag else {
+            return
+        }
         for try await progress in await rag.add(text: "", id: UUID()) {
             #expect(progress.completedUnitCount > 0)
         }
@@ -24,6 +27,9 @@ internal struct RagIntegrationAdditionalTests {
 
     @Test("Unsupported file extensions are rejected")
     func testUnsupportedFileTypeThrows() async throws {
+        guard let rag else {
+            return
+        }
         let fileURL: URL = try TestHelpers.createTempFile(content: "unsupported", fileExtension: "foo")
         defer { try? FileManager.default.removeItem(at: fileURL) }
 
@@ -36,6 +42,9 @@ internal struct RagIntegrationAdditionalTests {
 
     @Test("Table isolation keeps results scoped")
     func testTableIsolation() async throws {
+        guard let rag else {
+            return
+        }
         let customTable: String = "custom_table_isolation"
         let fileURL: URL = try TestHelpers.createTempFile(
             content: "Unique token for custom table",

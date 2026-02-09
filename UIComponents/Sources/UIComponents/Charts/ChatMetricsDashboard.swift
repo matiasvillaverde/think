@@ -145,11 +145,11 @@ public struct ChatMetricsDashboard: View {
                     if let chatId {
                         Text("ID: \(chatId)")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                     Text("\(metrics.count) messages")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
 
@@ -238,7 +238,7 @@ public struct ChatMetricsDashboard: View {
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                 Text(value)
                     .font(.title3)
                     .fontWeight(.semibold)

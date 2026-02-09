@@ -72,12 +72,12 @@ internal struct UnifiedModelView: View {
                 .fontWeight(.medium)
                 .multilineTextAlignment(.center)
                 .lineLimit(DesignConstants.Font.lineLimit)
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
 
             // Author
             Text(viewModel.author)
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .lineLimit(1)
 
             // Error state
@@ -112,24 +112,24 @@ internal struct UnifiedModelView: View {
                 Text(viewModel.title)
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
                     .lineLimit(DesignConstants.Font.lineLimit)
 
                 // Author
                 Text(viewModel.author)
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                     .lineLimit(1)
 
                 // Backend and size info
                 HStack(spacing: DesignConstants.Spacing.medium) {
                     Label(viewModel.backendType, systemImage: "cpu")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
 
                     Label(viewModel.formattedSize, systemImage: "externaldrive")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
 
@@ -193,11 +193,11 @@ internal struct UnifiedModelView: View {
 
     @ViewBuilder private var modelIconPlaceholder: some View {
         RoundedRectangle(cornerRadius: DesignConstants.Radius.small)
-            .fill(Color.secondary.opacity(DesignConstants.Opacity.backgroundSubtle))
+            .fill(Color.textSecondary.opacity(DesignConstants.Opacity.backgroundSubtle))
             .overlay(
                 Image(systemName: "cube.box")
                     .font(.system(size: viewModel.isSmallMode ? iconSizeSmall : iconSizeLarge))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                     .accessibilityLabel(Text("Model icon", bundle: .module))
             )
     }
@@ -246,7 +246,7 @@ internal struct UnifiedModelView: View {
         .padding(DesignConstants.Spacing.small)
         .background(
             RoundedRectangle(cornerRadius: DesignConstants.Radius.small)
-                .fill(Color.red.opacity(DesignConstants.Opacity.backgroundSubtle))
+                .fill(Color.paletteRed.opacity(DesignConstants.Opacity.backgroundSubtle))
         )
     }
 
@@ -257,7 +257,7 @@ internal struct UnifiedModelView: View {
 
             Text("Loading...", bundle: .module)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .padding(DesignConstants.Spacing.small)
     }

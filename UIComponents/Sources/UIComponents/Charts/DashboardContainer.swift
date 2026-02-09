@@ -87,12 +87,12 @@ public struct DashboardContainer: View {
         VStack(spacing: Constants.emptyStateSpacing) {
             Image(systemName: "chart.xyaxis.line")
                 .font(.system(size: Constants.emptyStateIconSize))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .accessibilityLabel("Empty chart")
 
             Text(message)
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()

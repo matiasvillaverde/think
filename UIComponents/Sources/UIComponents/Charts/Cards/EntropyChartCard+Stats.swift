@@ -18,7 +18,7 @@ extension EntropyChartCard {
         VStack(alignment: .leading, spacing: Constants.statSpacing) {
             Text("Average")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(String(format: "%.2f", averageEntropy))
                 .font(.subheadline.weight(.bold))
                 .foregroundColor(.blue)
@@ -29,7 +29,7 @@ extension EntropyChartCard {
         VStack(alignment: .leading, spacing: Constants.statSpacing) {
             Text("Trend")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(entropyTrend)
                 .font(.subheadline.weight(.bold))
                 .foregroundColor(trendColor)
@@ -41,7 +41,7 @@ extension EntropyChartCard {
             VStack(alignment: .leading, spacing: Constants.statSpacing) {
                 Text("Min")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                 Text(String(format: "%.2f", min))
                     .font(.subheadline.weight(.bold))
                     .foregroundColor(.green)
@@ -54,7 +54,7 @@ extension EntropyChartCard {
             VStack(alignment: .leading, spacing: Constants.statSpacing) {
                 Text("Max")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                 Text(String(format: "%.2f", max))
                     .font(.subheadline.weight(.bold))
                     .foregroundColor(.red)

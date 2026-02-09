@@ -123,7 +123,7 @@ internal struct PersonalityEditView: View {
         } footer: {
             Text("The display name for this personality", bundle: .module)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 
@@ -139,7 +139,7 @@ internal struct PersonalityEditView: View {
         } footer: {
             Text("A short description of what this personality does", bundle: .module)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 
@@ -153,7 +153,7 @@ internal struct PersonalityEditView: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: DesignConstants.Radius.small)
                         .stroke(
-                            Color.gray.opacity(DesignConstants.Opacity.trackBackground),
+                            Color.paletteGray.opacity(DesignConstants.Opacity.trackBackground),
                             lineWidth: 1
                         )
                 )
@@ -204,7 +204,7 @@ internal struct PersonalityEditView: View {
         } footer: {
             Text("Select a new image (max \(Constants.imageSizeLimitMB)MB)", bundle: .module)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 
@@ -234,7 +234,7 @@ internal struct PersonalityEditView: View {
             .italic()
         }
         .font(.caption)
-        .foregroundColor(.secondary)
+        .foregroundColor(Color.textSecondary)
     }
 
     // MARK: - Components
@@ -251,7 +251,7 @@ internal struct PersonalityEditView: View {
 
     private var loadingOverlay: some View {
         ZStack {
-            Color.black.opacity(Constants.overlayOpacity)
+            Color.paletteBlack.opacity(Constants.overlayOpacity)
                 .ignoresSafeArea()
 
             VStack(spacing: DesignConstants.Spacing.medium) {
@@ -264,7 +264,7 @@ internal struct PersonalityEditView: View {
                     bundle: .module
                 )
                 .font(.headline)
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
             }
             .padding(DesignConstants.Spacing.large)
             .background(.regularMaterial)

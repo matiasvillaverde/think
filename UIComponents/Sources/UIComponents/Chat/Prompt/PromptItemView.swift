@@ -59,6 +59,6 @@ internal struct PromptItemView: View {
             }
         }
         .padding()
-        .background(Color.black.opacity(0.8))
+        .background(Color.paletteBlack.opacity(0.8))
     }
 #endif

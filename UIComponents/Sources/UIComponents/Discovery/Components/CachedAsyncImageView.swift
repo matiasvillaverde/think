@@ -93,7 +93,7 @@ internal struct CachedAsyncImageView: View {
 private struct ImagePlaceholder: View {
     var body: some View {
         RoundedRectangle(cornerRadius: ViewConstants.cornerRadius)
-            .fill(Color.gray.opacity(ViewConstants.placeholderOpacity))
+            .fill(Color.paletteGray.opacity(ViewConstants.placeholderOpacity))
             .overlay(
                 Image(systemName: "photo")
                     .font(.title2)
@@ -106,7 +106,7 @@ private struct ImagePlaceholder: View {
 private struct ImageErrorView: View {
     var body: some View {
         RoundedRectangle(cornerRadius: ViewConstants.cornerRadius)
-            .fill(Color.red.opacity(ViewConstants.errorOpacity))
+            .fill(Color.paletteRed.opacity(ViewConstants.errorOpacity))
             .overlay(
                 Image(systemName: "photo.badge.exclamationmark")
                     .font(.title2)

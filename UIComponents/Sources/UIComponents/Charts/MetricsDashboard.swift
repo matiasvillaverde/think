@@ -82,7 +82,7 @@ internal struct MetricsDashboard: View {
             if !metrics.isEmpty {
                 Text("\(metrics.count) Messages")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
             }
         }
     }

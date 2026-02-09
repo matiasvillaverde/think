@@ -25,7 +25,7 @@ public struct ToggleButtonStyle: ViewModifier {
             .padding(.horizontal, ToggleConstants.horizontalPadding)
             .padding(.vertical, ToggleConstants.verticalPadding)
             .frame(height: ToggleConstants.buttonHeight) // Fixed height for all buttons
-            .background(isActive ? Color.marketingSecondary : Color.clear)
+            .background(isActive ? Color.marketingSecondary : Color.paletteClear)
             .overlay(
                 RoundedRectangle(cornerRadius: ToggleConstants.cornerRadius)
                     .stroke(Color.textSecondary, lineWidth: ToggleConstants.lineWidth)

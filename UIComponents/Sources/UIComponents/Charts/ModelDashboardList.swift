@@ -318,11 +318,11 @@ private struct StatBox: View {
 
             Text(value)
                 .font(.system(size: Constants.valueFontSize, weight: .bold))
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
 
             Text(title)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)

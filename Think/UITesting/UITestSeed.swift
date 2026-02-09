@@ -13,7 +13,7 @@ internal enum UITestSeed {
 
         // Ensure the message list is scrollable, then start a long-running streaming update on the
         // last message so UITests can validate pinned-to-bottom behavior.
-        try await UITestSeedScrolling.seedHistory(database: database, chatId: chatId, messageCount: 24)
+        try await UITestSeedScrolling.seedHistory(database: database, chatId: chatId, messageCount: 10)
         try await UITestSeedMessages.seedSecondMessage(database: database, chatId: chatId)
         try await UITestSeedMessages.seedFirstMessage(database: database, chatId: chatId)
         try await UITestSeedScrolling.seedStreamingScrollMessage(database: database, chatId: chatId)

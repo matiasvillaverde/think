@@ -28,7 +28,7 @@ public struct PersonalityListSection: View {
                             systemImage: "trash"
                         )
                     }
-                    .tint(Color.orange)
+                    .tint(Color.paletteOrange)
                 }
             }
             .contextMenu {

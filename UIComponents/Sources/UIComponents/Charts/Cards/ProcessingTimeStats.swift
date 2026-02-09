@@ -18,7 +18,7 @@ internal struct ProcessingTimeStats: View {
         VStack(alignment: .leading, spacing: verticalSpacing) {
             Text("Total")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(viewModel.formatTime(
                 viewModel.totalProcessingTime(for: processingData)
             ))
@@ -31,7 +31,7 @@ internal struct ProcessingTimeStats: View {
         VStack(alignment: .leading, spacing: verticalSpacing) {
             Text("Average")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(viewModel.formatTime(
                 viewModel.averageProcessingTime(for: processingData)
             ))
@@ -45,7 +45,7 @@ internal struct ProcessingTimeStats: View {
             VStack(alignment: .leading, spacing: verticalSpacing) {
                 Text("Slowest")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                 Text(viewModel.formatTime(slowest.total))
                     .font(.subheadline.weight(.bold))
                     .foregroundColor(.orange)

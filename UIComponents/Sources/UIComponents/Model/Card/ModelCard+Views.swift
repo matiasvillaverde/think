@@ -29,7 +29,7 @@ extension ModelCard {
                 handleAnalyticsButtonTap()
             } label: {
                 Image(systemName: "chart.bar.xaxis")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                     .accessibilityLabel("View Model Analytics")
             }
             .buttonStyle(.plain)
@@ -114,7 +114,7 @@ extension ModelCard {
                 StateIndicator(
                     icon: "brain.filled.head.profile",
                     text: "Generating",
-                    color: Color.green
+                    color: Color.paletteGreen
                 )
 
             case .loaded, .notLoaded:

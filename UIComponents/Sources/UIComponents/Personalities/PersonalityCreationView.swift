@@ -116,7 +116,7 @@ internal struct PersonalityCreationView: View {
         } footer: {
             Text("Give your personality a unique name", bundle: .module)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 
@@ -132,7 +132,7 @@ internal struct PersonalityCreationView: View {
         } footer: {
             Text("Describe what makes this personality unique", bundle: .module)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 
@@ -146,7 +146,7 @@ internal struct PersonalityCreationView: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: DesignConstants.Radius.small)
                         .stroke(
-                            Color.gray.opacity(DesignConstants.Opacity.trackBackground),
+                            Color.paletteGray.opacity(DesignConstants.Opacity.trackBackground),
                             lineWidth: 1
                         )
                 )
@@ -164,7 +164,7 @@ internal struct PersonalityCreationView: View {
         } footer: {
             Text("Define how this personality should behave (10-5000 characters)", bundle: .module)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 
@@ -211,7 +211,7 @@ internal struct PersonalityCreationView: View {
                 bundle: .module
             )
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
         }
     }
 
@@ -242,7 +242,7 @@ internal struct PersonalityCreationView: View {
 
     private var loadingOverlay: some View {
         ZStack {
-            Color.black.opacity(Constants.overlayOpacity)
+            Color.paletteBlack.opacity(Constants.overlayOpacity)
                 .ignoresSafeArea()
 
             VStack(spacing: DesignConstants.Spacing.medium) {
@@ -252,7 +252,7 @@ internal struct PersonalityCreationView: View {
 
                 Text("Creating personality...", bundle: .module)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
             }
             .padding(DesignConstants.Spacing.large)
             .background(.regularMaterial)

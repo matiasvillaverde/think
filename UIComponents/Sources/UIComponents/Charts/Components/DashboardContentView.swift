@@ -83,16 +83,16 @@ private struct DashboardEmptyStateView: View {
         VStack(spacing: constants.spacing) {
             Image(systemName: "chart.bar.xaxis")
                 .font(.system(size: constants.iconWidth))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .accessibilityLabel("Empty chart icon")
 
             Text("No Metrics Available")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Text("Start using the app to generate metrics")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(constants.iconWidth)

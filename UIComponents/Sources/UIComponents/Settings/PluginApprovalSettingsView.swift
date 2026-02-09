@@ -40,7 +40,7 @@ public struct PluginApprovalSettingsView: View {
                 .fontWeight(.semibold)
             Text("Review and approve plugins before they run.", bundle: .module)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -131,10 +131,10 @@ public struct PluginApprovalSettingsView: View {
                     .font(.headline)
                 Text(entry.manifest.id)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                 Text(entry.manifest.version)
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
@@ -148,7 +148,7 @@ public struct PluginApprovalSettingsView: View {
         if !entry.decision.reasons.isEmpty {
             Text(reasonText(for: entry))
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
         }
     }
 

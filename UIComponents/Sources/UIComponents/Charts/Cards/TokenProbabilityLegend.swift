@@ -49,7 +49,7 @@ internal struct TokenProbabilityLegend: View {
                 .frame(width: Constants.legendCircleSize, height: Constants.legendCircleSize)
             Text(label)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 }

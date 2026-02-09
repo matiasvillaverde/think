@@ -4,7 +4,7 @@ import Foundation
 import Testing
 
 extension DeletionAndGlobalSearchTests {
-    func setupTablesForConcurrentTest(tables: [String], contents: [String]) async throws {
+    func setupTablesForConcurrentTest(rag: Rag, tables: [String], contents: [String]) async throws {
         for (table, content) in zip(tables, contents) {
             let fileURL: URL = try createTextFile(with: content)
             let config: Configuration = Configuration(table: table)
@@ -22,7 +22,7 @@ extension DeletionAndGlobalSearchTests {
         }
     }
 
-    func getTable1ContentForConcurrentTest() async throws -> String? {
+    func getTable1ContentForConcurrentTest(rag: Rag) async throws -> String? {
         let initialResults: [SearchResult] = try await rag.semanticSearch(
             query: "AI",
             numResults: Constants.Search.defaultResultCount,
@@ -41,7 +41,7 @@ extension DeletionAndGlobalSearchTests {
         return initialResults.first?.text
     }
 
-    func verifyConcurrentOperations() async throws {
+    func verifyConcurrentOperations(rag: Rag) async throws {
         try await withThrowingTaskGroup(of: Void.self) { group in
             group.addTask {
                 try await rag.deleteTable("table1")
@@ -60,7 +60,7 @@ extension DeletionAndGlobalSearchTests {
         }
     }
 
-    func verifyConcurrentTestResults(tables: [String], table1Content: String?) async throws {
+    func verifyConcurrentTestResults(rag: Rag, tables: [String], table1Content: String?) async throws {
         try await Task.sleep(nanoseconds: Constants.Testing.concurrentTestSleepNanoseconds)
 
         let finalResults: [SearchResult] = try await rag.semanticSearchEverywhere(

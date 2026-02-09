@@ -29,10 +29,10 @@ internal struct PerplexityHeatMapStats: View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
             Text("Average")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(String(format: "%.3f", viewModel.averagePerplexity(for: heatMapData)))
                 .font(.subheadline.weight(.bold))
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
         }
     }
 
@@ -40,14 +40,14 @@ internal struct PerplexityHeatMapStats: View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
             Text("Range")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(String(
                 format: "%.3f - %.3f",
                 viewModel.minPerplexity(for: heatMapData),
                 viewModel.maxPerplexity(for: heatMapData)
             ))
                 .font(.subheadline.weight(.bold))
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
         }
     }
 
@@ -59,14 +59,14 @@ internal struct PerplexityHeatMapStats: View {
             VStack(alignment: .leading, spacing: Constants.selectedInfoSpacing) {
                 Text("Selected")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                 HStack(spacing: Constants.selectedInfoSpacing) {
                     Text("[\(cell.row), \(cell.column)]")
                         .font(.caption.weight(.medium))
                     Text(String(format: "%.3f", cell.value))
                         .font(.caption.weight(.bold))
                 }
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
             }
         }
     }

@@ -119,8 +119,8 @@ public struct EntropyChartCard: View {
         .chartYAxisLabel("Entropy")
         .chartPlotStyle { plotArea in
             plotArea
-                .background(Color.gray.opacity(Constants.backgroundOpacity))
-                .border(Color.gray.opacity(Constants.borderOpacity), width: Constants.borderWidth)
+                .background(Color.paletteGray.opacity(Constants.backgroundOpacity))
+                .border(Color.paletteGray.opacity(Constants.borderOpacity), width: Constants.borderWidth)
         }
         .frame(height: Constants.chartHeight)
         .animation(
@@ -145,7 +145,7 @@ public struct EntropyChartCard: View {
             HStack {
                 Text("Time Range:")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
 
                 Spacer()
 

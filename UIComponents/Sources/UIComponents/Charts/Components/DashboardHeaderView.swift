@@ -36,26 +36,26 @@ internal struct DashboardHeaderView: View {
         HStack {
             Text("\(allMetricsCount) total metrics")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             if messagesWithMetricsCount > 0 {
                 Text("•")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
 
                 Text("\(messagesWithMetricsCount) messages")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
             }
 
             if activeModelsCount > 0 {
                 Text("•")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
 
                 Text("\(activeModelsCount) models")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
             }
         }
     }

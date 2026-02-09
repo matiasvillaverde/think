@@ -18,6 +18,9 @@ internal struct LazyLoadingTests {
 
     @Test("RAG initializes without loading model in lazy mode")
     func testLazyInitialization() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         _ = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         // At this point, the model should not be loaded yet
@@ -28,6 +31,9 @@ internal struct LazyLoadingTests {
 
     @Test("RAG loads model immediately in eager mode")
     func testEagerInitialization() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: any Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .eager)
 
         // In eager mode, model should be loaded during initialization
@@ -43,6 +49,9 @@ internal struct LazyLoadingTests {
 
     @Test("Default initialization uses lazy loading")
     func testDefaultInitializationIsLazy() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         _ = try await TestHelpers.createTestRag(database: .inMemory)
 
         // Default should be lazy loading
@@ -53,6 +62,9 @@ internal struct LazyLoadingTests {
 
     @Test("Model loads on first semantic search")
     func testModelLoadsOnFirstSemanticSearch() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: any Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         // Add some content first
@@ -76,6 +88,9 @@ internal struct LazyLoadingTests {
 
     @Test("Model loads on first file add operation")
     func testModelLoadsOnFirstAdd() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: any Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         let content: String = "This is a test document about artificial intelligence."
@@ -98,6 +113,9 @@ internal struct LazyLoadingTests {
 
     @Test("Model loads on first text add operation")
     func testModelLoadsOnFirstTextAdd() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: any Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         let content: String = "This is test content about deep learning algorithms."
@@ -121,6 +139,9 @@ internal struct LazyLoadingTests {
 
     @Test("Concurrent access during model loading is thread-safe")
     func testConcurrentModelAccess() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: any Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         // Add some test content
@@ -155,6 +176,9 @@ internal struct LazyLoadingTests {
 
     @Test("Multiple operations after model loaded work correctly")
     func testMultipleOperationsAfterModelLoaded() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: any Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         // First, trigger model loading with initial content
@@ -195,6 +219,9 @@ internal struct LazyLoadingTests {
 
     @Test("Model loading errors are propagated correctly")
     func testModelLoadingErrorHandling() async {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         // Test with invalid hub repo ID to trigger loading error
         do {
             let rag: any Ragging = try await TestHelpers.createTestRag(
@@ -220,6 +247,9 @@ internal struct LazyLoadingTests {
 
     @Test("Hybrid loading strategy preloads model after delay")
     func testHybridLoadingStrategy() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: any Ragging = try await TestHelpers.createTestRag(
             database: .inMemory,
             loadingStrategy: .hybrid(preloadAfter: 0.1)
@@ -250,6 +280,9 @@ internal struct LazyLoadingTests {
 
     @Test("Subsequent operations after model loaded show no performance regression")
     func testPerformanceAfterModelLoaded() async throws {
+        guard TestHelpers.isLocalModelAvailable else {
+            return
+        }
         let rag: any Ragging = try await TestHelpers.createTestRag(database: .inMemory, loadingStrategy: .lazy)
 
         // First operation to load model

@@ -40,7 +40,7 @@ internal struct ContextUtilizationChart: View {
         .chartPlotStyle { plotArea in
             plotArea
                 .border(
-                    Color.gray.opacity(Constants.borderOpacity),
+                    Color.paletteGray.opacity(Constants.borderOpacity),
                     width: Constants.borderWidth
                 )
         }
@@ -89,14 +89,14 @@ internal struct ContextUtilizationChart: View {
 
     @ChartContentBuilder private var thresholdMarks: some ChartContent {
         RuleMark(y: .value("Warning", Constants.warningThreshold))
-            .foregroundStyle(Color.orange.opacity(Constants.fillOpacity))
+            .foregroundStyle(Color.paletteOrange.opacity(Constants.fillOpacity))
             .lineStyle(StrokeStyle(
                 lineWidth: Constants.borderWidth,
                 dash: [Constants.dashLength, Constants.dashSpacing]
             ))
 
         RuleMark(y: .value("Danger", Constants.dangerThreshold))
-            .foregroundStyle(Color.red.opacity(Constants.fillOpacity))
+            .foregroundStyle(Color.paletteRed.opacity(Constants.fillOpacity))
             .lineStyle(StrokeStyle(
                 lineWidth: Constants.borderWidth,
                 dash: [Constants.dashLength, Constants.dashSpacing]
@@ -111,7 +111,7 @@ internal struct ContextUtilizationChart: View {
                     dash: [Constants.dashLength, Constants.dashSpacing]
                 )
             )
-            .foregroundStyle(Color.secondary.opacity(Constants.gridOpacity))
+            .foregroundStyle(Color.textSecondary.opacity(Constants.gridOpacity))
 
             AxisValueLabel {
                 if let intValue = value.as(Int.self) {
@@ -130,7 +130,7 @@ internal struct ContextUtilizationChart: View {
                     dash: [Constants.dashLength, Constants.dashSpacing]
                 )
             )
-            .foregroundStyle(Color.secondary.opacity(Constants.gridOpacity))
+            .foregroundStyle(Color.textSecondary.opacity(Constants.gridOpacity))
             AxisValueLabel()
                 .font(.caption)
         }

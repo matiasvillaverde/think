@@ -27,7 +27,7 @@ public struct ErrorView: View {
 
             Text(error.localizedDescription)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 

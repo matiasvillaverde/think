@@ -20,7 +20,7 @@ public struct PersonalitySidebarItemView: View {
                 if personality.hasConversation, let lastDate = personality.lastMessageDate {
                     Text(lastDate, style: .relative)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
 

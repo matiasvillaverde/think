@@ -21,7 +21,7 @@ internal struct MemoryUsageStats: View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
             Text("Average")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             let avgMemory: Double = viewModel.averageMemory(for: memoryData)
             Text(viewModel.formatMemory(avgMemory))
@@ -34,7 +34,7 @@ internal struct MemoryUsageStats: View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
             Text("Peak")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             let peak: Double = viewModel.peakMemory(for: memoryData)
             Text(viewModel.formatMemory(peak))
@@ -47,11 +47,11 @@ internal struct MemoryUsageStats: View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
             Text("Efficiency")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Text(String(format: "%.0f%%", viewModel.memoryEfficiency(for: memoryData)))
                 .font(.subheadline.weight(.bold))
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
         }
     }
 }

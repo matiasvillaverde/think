@@ -239,9 +239,9 @@ internal struct ModelCardSkeleton: View {
     private var shimmerGradient: some ShapeStyle {
         LinearGradient(
             colors: [
-                Color.gray.opacity(Constants.primaryOpacity),
-                Color.gray.opacity(Constants.secondaryOpacity),
-                Color.gray.opacity(Constants.primaryOpacity)
+                Color.paletteGray.opacity(Constants.primaryOpacity),
+                Color.paletteGray.opacity(Constants.secondaryOpacity),
+                Color.paletteGray.opacity(Constants.primaryOpacity)
             ],
             startPoint: .init(
                 x: shimmerOffset + Constants.gradientStartOffset,

@@ -15,7 +15,7 @@ internal struct PerplexityHeatMapControls: View {
         HStack {
             Text("Color Scheme:")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Spacer()
 

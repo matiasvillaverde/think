@@ -12,7 +12,7 @@ public struct FullScreenImageView: View {
     public var body: some View {
         zoomableImage
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.black) // Ensure a black background for a full-screen effect
+            .background(Color.paletteBlack) // Ensure a black background for a full-screen effect
             .ignoresSafeArea()
     }
 

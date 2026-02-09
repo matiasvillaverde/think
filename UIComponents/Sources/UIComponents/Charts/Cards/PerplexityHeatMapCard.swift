@@ -83,7 +83,7 @@ public struct PerplexityHeatMapCard: View {
                 viewModel: viewModel
             )
             .padding()
-            .background(Color.gray.opacity(Constants.backgroundOpacity))
+            .background(Color.paletteGray.opacity(Constants.backgroundOpacity))
             .cornerRadius(Constants.cornerRadius)
         }
         .frame(height: Constants.chartHeight)

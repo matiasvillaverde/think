@@ -136,7 +136,7 @@ internal struct FeatureCarouselView: View {
                         .fill(
                             index == selectedFeatureIndex
                                 ? Color.marketingPrimary
-                                : Color.gray.opacity(OnboardingConstants.dotGrayOpacity)
+                                : Color.paletteGray.opacity(OnboardingConstants.dotGrayOpacity)
                         )
                         .frame(
                             width: OnboardingConstants.featureDotSize,

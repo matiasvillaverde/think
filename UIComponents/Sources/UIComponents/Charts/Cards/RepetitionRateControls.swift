@@ -20,7 +20,7 @@ internal struct RepetitionRateControls: View {
         HStack {
             Text("N-gram level:")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Spacer()
 

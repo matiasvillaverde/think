@@ -114,7 +114,7 @@ internal struct MyModelsEmptyState: View {
             .padding(.vertical, DesignConstants.Spacing.small)
             .background(
                 RoundedRectangle(cornerRadius: DesignConstants.Radius.standard)
-                    .fill(Color.orange.opacity(Layout.backgroundOpacity))
+                    .fill(Color.paletteOrange.opacity(Layout.backgroundOpacity))
             )
         }
         .buttonStyle(.plain)

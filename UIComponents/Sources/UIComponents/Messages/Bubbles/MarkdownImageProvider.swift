@@ -218,7 +218,7 @@ public struct LaTeXWrapper: View {
                     .renderingStyle(.original)
                     .imageRenderingMode(.template)
             } else {
-                Color.clear
+                Color.paletteClear
                     .onAppear {
                         isReady = true
                     }

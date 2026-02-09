@@ -43,9 +43,9 @@ internal struct ReviewCard: View {
 
                     HStack(spacing: .zero) {
                         Text(review.author)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(Color.textPrimary)
                         Text(" • ") + Text(review.date.relativeTime)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                     .font(.caption.weight(.medium))
                 }

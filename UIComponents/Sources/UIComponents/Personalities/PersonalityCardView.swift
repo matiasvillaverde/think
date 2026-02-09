@@ -40,7 +40,7 @@ internal struct PersonalityCardView: View {
         .background(cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: Layout.cornerRadius))
         .shadow(
-            color: Color.black.opacity(Colors.shadowOpacity),
+            color: Color.paletteBlack.opacity(Colors.shadowOpacity),
             radius: Layout.shadowRadius,
             x: .zero,
             y: Layout.shadowOffset

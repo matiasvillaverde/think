@@ -101,7 +101,7 @@ private struct StatCard: View {
             VStack(alignment: .leading) {
                 Text(title)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                 Text(value)
                     .font(.title3)
                     .fontWeight(.semibold)

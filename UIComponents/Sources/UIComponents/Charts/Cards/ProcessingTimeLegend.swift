@@ -13,9 +13,9 @@ internal struct ProcessingTimeLegend: View {
         HStack(spacing: ChartConstants.Layout.sectionSpacing) {
             // Legend items
             ForEach([
-                ("Inference", Color.blue),
-                ("Tokenization", Color.green),
-                ("Post-processing", Color.orange)
+                ("Inference", Color.paletteBlue),
+                ("Tokenization", Color.paletteGreen),
+                ("Post-processing", Color.paletteOrange)
             ], id: \.0) { label, color in
                 HStack(spacing: legendItemSpacing) {
                     RoundedRectangle(cornerRadius: Constants.legendCornerRadius)
@@ -24,7 +24,7 @@ internal struct ProcessingTimeLegend: View {
 
                     Text(label)
                         .font(.caption)
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color.textPrimary)
                 }
             }
 
@@ -33,7 +33,7 @@ internal struct ProcessingTimeLegend: View {
             // Data point count
             Text("\(processingData.count) metrics")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
     }
 }

@@ -13,6 +13,11 @@ internal struct EmbeddingFixtureTests {
             return
         }
 
+        guard TestHelpers.isLocalModelAvailable else {
+            // Optional test artifact; download model weights to run this test locally.
+            return
+        }
+
         let fixture: EmbeddingFixture = try loadFixture()
 
         let model: Bert.ModelBundle = try await Bert.loadModelBundle(from: TestHelpers.localModelURL)

@@ -69,7 +69,7 @@ public struct DashboardLoadingView: View {
 
                     Text("\(Int(progress * Double(LoadingConstants.progressPercentMultiplier)))%")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             } else {
                 // Show indeterminate progress
@@ -80,7 +80,7 @@ public struct DashboardLoadingView: View {
 
             Text(message)
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(LoadingConstants.padding)
@@ -117,7 +117,7 @@ public struct ChartSkeletonView: View {
 
     private var titleSkeleton: some View {
         RoundedRectangle(cornerRadius: SkeletonConstants.titleCornerRadius)
-            .fill(Color.gray.opacity(SkeletonConstants.opacityMedium))
+            .fill(Color.paletteGray.opacity(SkeletonConstants.opacityMedium))
             .frame(width: SkeletonConstants.titleWidth, height: SkeletonConstants.titleHeight)
     }
 
@@ -126,14 +126,14 @@ public struct ChartSkeletonView: View {
             ForEach(0 ..< SkeletonConstants.legendItemCount, id: \.self) { _ in
                 HStack(spacing: SkeletonConstants.legendItemSpacing) {
                     Circle()
-                        .fill(Color.gray.opacity(SkeletonConstants.opacityMedium))
+                        .fill(Color.paletteGray.opacity(SkeletonConstants.opacityMedium))
                         .frame(
                             width: SkeletonConstants.legendCircleSize,
                             height: SkeletonConstants.legendCircleSize
                         )
 
                     RoundedRectangle(cornerRadius: SkeletonConstants.legendRectCornerRadius)
-                        .fill(Color.gray.opacity(SkeletonConstants.opacityMedium))
+                        .fill(Color.paletteGray.opacity(SkeletonConstants.opacityMedium))
                         .frame(
                             width: SkeletonConstants.legendRectWidth,
                             height: SkeletonConstants.legendRectHeight
@@ -148,9 +148,9 @@ public struct ChartSkeletonView: View {
             .fill(
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        Color.gray.opacity(SkeletonConstants.opacityMedium),
-                        Color.gray.opacity(SkeletonConstants.opacityLow),
-                        Color.gray.opacity(SkeletonConstants.opacityMedium)
+                        Color.paletteGray.opacity(SkeletonConstants.opacityMedium),
+                        Color.paletteGray.opacity(SkeletonConstants.opacityLow),
+                        Color.paletteGray.opacity(SkeletonConstants.opacityMedium)
                     ]),
                     startPoint: .leading,
                     endPoint: .trailing
@@ -166,9 +166,9 @@ public struct ChartSkeletonView: View {
                 .fill(
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            Color.clear,
-                            Color.white.opacity(SkeletonConstants.opacityMedium),
-                            Color.clear
+                            Color.paletteClear,
+                            Color.paletteWhite.opacity(SkeletonConstants.opacityMedium),
+                            Color.paletteClear
                         ]),
                         startPoint: .leading,
                         endPoint: .trailing

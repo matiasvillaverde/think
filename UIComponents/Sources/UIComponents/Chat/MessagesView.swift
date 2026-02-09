@@ -5,24 +5,28 @@ import SwiftUI
 public struct MessagesView: View {
     // MARK: - UI Constants
 
-    private enum UIConstants {
-        static let messageSpacing: CGFloat = 16
-        static let messageBottomPadding: CGFloat = 5
-        static let scrollViewBottomOffset: CGFloat = 100
-        static let scrollAnimationDelay: TimeInterval = 0.5
-        static let scrollOffsetX: CGFloat = 0.5
-        static let scrollOffsetY: CGFloat = 1.2
-        static let scrollAnimationDuration: TimeInterval = 0.3
-        static let pinnedThreshold: CGFloat = 44
-        static let bottomAnchorId: String = "chat.messages.bottom.anchor"
-        static let bottomAnchorHeight: CGFloat = 1
-        static let streamingCompleteBoost: Int = 10_000_000
-    }
+        private enum UIConstants {
+            static let messageSpacing: CGFloat = 16
+            static let messageBottomPadding: CGFloat = 5
+            static let scrollViewBottomOffset: CGFloat = 100
+            static let scrollAnimationDelay: TimeInterval = 0.5
+            static let scrollOffsetX: CGFloat = 0.5
+            static let scrollOffsetY: CGFloat = 1.2
+            static let scrollAnimationDuration: TimeInterval = 0.3
+            static let pinnedThreshold: CGFloat = 44
+            static let bottomAnchorId: String = "chat.messages.bottom.anchor"
+            static let bottomAnchorHeight: CGFloat = 1
+            static let uiTestBottomAnchorHeight: CGFloat = 44
+            static let uiTestHittableOpacity: Double = 0.01
+            static let streamingCompleteBoost: Int = 10_000_000
+        }
 
     @Environment(\.controller)
     private var viewModel: ViewInteractionController
     @State private var scrollProxy: ScrollViewProxy?
     @State private var isPinnedToBottom: Bool = true
+    @State private var isAutoScrollSuppressed: Bool = false
+    private let isUITesting: Bool = ProcessInfo.processInfo.arguments.contains("--ui-testing")
 
     @Query private var messages: [Message]
 
@@ -39,9 +43,27 @@ public struct MessagesView: View {
     }
 
     public var body: some View {
-        GeometryReader { geometry in
-            messagesScrollView(geometry: geometry)
+        ZStack(alignment: .topLeading) {
+            GeometryReader { geometry in
+                messagesScrollView(geometry: geometry)
+            }
+
+            if isUITesting {
+                pinnedProbeView
+            }
         }
+    }
+
+    private var pinnedProbeView: some View {
+        let label: String = isPinnedToBottom ? "pinned=true" : "pinned=false"
+        return Text(label)
+            .font(.system(size: 1))
+            .padding(1)
+            // Slight visibility ensures XCUITest will surface it in the accessibility tree.
+            .background(Color.paletteBlack.opacity(UIConstants.uiTestHittableOpacity))
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(label)
+            .accessibilityIdentifier("uiTest.pinnedProbe")
     }
 
     private func messagesScrollView(geometry: GeometryProxy) -> some View {
@@ -54,8 +76,21 @@ public struct MessagesView: View {
         geometry: GeometryProxy,
         proxy: ScrollViewProxy
     ) -> some View {
-        ScrollView {
-            // Used by UI tests; stable identifier for the message list.
+        configuredScrollView(
+            ScrollView {
+                scrollBody(geometry: geometry, proxy: proxy)
+            },
+            geometry: geometry
+        )
+    }
+
+    private func scrollBody(
+        geometry: GeometryProxy,
+        proxy: ScrollViewProxy
+    ) -> some View {
+        // Keep messages lazy, but make the bottom anchor non-lazy so it always exists in the
+        // view hierarchy (UI tests rely on it being discoverable).
+        VStack(spacing: 0) {
             LazyVStack(spacing: UIConstants.messageSpacing) {
                 ForEach(messages) { message in
                     MessageView(message: message)
@@ -63,50 +98,75 @@ public struct MessagesView: View {
                         .padding(.bottom, UIConstants.messageBottomPadding)
                 }
                 loadingIndicator()
-                bottomAnchor()
             }
-            .padding(.bottom, geometry.size.height - UIConstants.scrollViewBottomOffset)
-            .onAppear {
-                // Initially scroll to bottom (or top) as needed
-                scrollProxy = proxy
-                viewModel.scrollToBottom = scrollToLastMessageAnimated
-                scrollToLastMessage(proxy: proxy)
-            }
-            // Avoid jank: `messages.last` changes during streaming updates (SwiftData observation).
-            // Only auto-scroll when a *new* message is appended.
-            .onChange(of: messages.last?.id) { _, _ in
+            bottomAnchor()
+        }
+        // The large bottom padding improves usability in the real app (keeps the last message
+        // above the composer), but it makes deterministic UI testing harder by pushing the
+        // bottom sentinel out of view. Disable it under `--ui-testing`.
+        .padding(
+            .bottom,
+            isUITesting ? 0 : (geometry.size.height - UIConstants.scrollViewBottomOffset)
+        )
+        .onAppear {
+            // Initially scroll to bottom (or top) as needed
+            scrollProxy = proxy
+            viewModel.scrollToBottom = {
+                isAutoScrollSuppressed = false
                 scrollToLastMessageAnimated()
             }
-            // If we're pinned to the bottom, keep the bottom anchored during streaming updates.
-            // This matches ChatGPT behavior: stay pinned unless the user scrolls away.
-            .onChange(of: streamingRevision) { _, _ in
-                guard isPinnedToBottom else {
-                    return
-                }
-                scrollToBottomAnchor(proxy: proxy)
+            viewModel.suppressAutoScroll = {
+                isAutoScrollSuppressed = true
             }
-            .onTapGesture {
-                viewModel.removeFocus?()
-            }
-            .accessibilityAddTraits(.isButton)
-            .accessibilityLabel("Dismiss keyboard")
+            scrollToLastMessage(proxy: proxy)
         }
-        .accessibilityIdentifier("chat.messages.scroll")
-        .coordinateSpace(name: "chat.messages.scrollSpace")
-        .onPreferenceChange(BottomAnchorFrameKey.self) { frame in
-            guard let frame else {
+        // Avoid jank: `messages.last` changes during streaming updates (SwiftData observation).
+        // Only auto-scroll when a *new* message is appended.
+        .onChange(of: messages.last?.id) { _, _ in
+            scrollToLastMessageAnimated()
+        }
+        // If we're pinned to the bottom, keep the bottom anchored during streaming updates.
+        // This matches ChatGPT behavior: stay pinned unless the user scrolls away.
+        .onChange(of: streamingRevision) { _, _ in
+            guard isPinnedToBottom, !isAutoScrollSuppressed else {
                 return
             }
-
-            let pinned: Bool = frame.maxY <=
-                geometry.size.height + UIConstants.pinnedThreshold
-            if pinned != isPinnedToBottom {
-                isPinnedToBottom = pinned
-            }
+            scrollToBottomAnchor(proxy: proxy)
         }
-        #if os(macOS)
-            .scrollIndicators(.never)
-        #endif
+        .onTapGesture {
+            viewModel.removeFocus?()
+        }
+        // Keep the gesture discoverable for assistive tech (SwiftLint rule),
+        // but avoid overriding the scroll view's children semantics.
+        .accessibilityAddTraits(.isButton)
+    }
+
+    private func configuredScrollView<V: View>(
+        _ scrollView: V,
+        geometry: GeometryProxy
+    ) -> some View {
+        scrollView
+            // UI tests need to query and swipe the actual scroll view.
+            .accessibilityIdentifier("chat.messages.scroll")
+            .accessibilityElement(children: .contain)
+            .coordinateSpace(name: "chat.messages.scrollSpace")
+            .onPreferenceChange(BottomAnchorFrameKey.self) { frame in
+                updatePinnedState(from: frame, geometry: geometry)
+            }
+            #if os(macOS)
+                .scrollIndicators(.never)
+            #endif
+    }
+
+    private func updatePinnedState(from frame: CGRect?, geometry: GeometryProxy) {
+        guard let frame else {
+            return
+        }
+
+        let pinned: Bool = frame.maxY <= geometry.size.height + UIConstants.pinnedThreshold
+        if pinned != isPinnedToBottom {
+            isPinnedToBottom = pinned
+        }
     }
 
     // MARK: - Loading indicator
@@ -170,14 +230,35 @@ public struct MessagesView: View {
     }
 
     private func bottomAnchor() -> some View {
-        GeometryReader { geo in
-            Color.clear
-                .preference(
-                    key: BottomAnchorFrameKey.self,
-                    value: geo.frame(in: .named("chat.messages.scrollSpace"))
-                )
+        let height: CGFloat = isUITesting
+            ? UIConstants.uiTestBottomAnchorHeight
+            : UIConstants.bottomAnchorHeight
+
+            return ZStack {
+                if isUITesting {
+                    // XCUITest struggles to consider fully transparent/non-interactive elements
+                    // "hittable". This is a no-op sentinel we can query and drag against.
+                    Button(action: {
+                        // No-op: this button exists only as a deterministic UI-test sentinel.
+                    }, label: {
+                        Rectangle()
+                            .fill(Color.paletteBlack.opacity(UIConstants.uiTestHittableOpacity))
+                    })
+                    .buttonStyle(.plain)
+                } else {
+                    Rectangle().fill(Color.paletteClear)
+                }
+            }
+        .frame(height: height)
+        .background {
+            GeometryReader { geo in
+                Color.paletteClear
+                    .preference(
+                        key: BottomAnchorFrameKey.self,
+                        value: geo.frame(in: .named("chat.messages.scrollSpace"))
+                    )
+            }
         }
-        .frame(height: UIConstants.bottomAnchorHeight)
         .id(UIConstants.bottomAnchorId)
         .accessibilityIdentifier("chat.messages.bottom")
     }

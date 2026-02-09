@@ -13,7 +13,7 @@ internal struct StatRow: View {
         HStack {
             Text(label)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Spacer()
 
@@ -54,7 +54,7 @@ internal struct UtilizationStatsView: View {
                 HStack {
                     Text("Model:")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                     Text(modelName)
                         .font(.caption.weight(.bold))
                 }
@@ -126,26 +126,26 @@ internal struct UtilizationTrendChart: View {
         VStack(alignment: .leading, spacing: Constants.trendSpacing) {
             Text("Trend")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Chart(Array(metrics.enumerated()), id: \.offset) { index, metric in
                 LineMark(
                     x: .value("Index", index),
                     y: .value("Utilization", utilizationPercentage(metric))
                 )
-                .foregroundStyle(Color.blue)
+                .foregroundStyle(Color.paletteBlue)
 
                 PointMark(
                     x: .value("Index", index),
                     y: .value("Utilization", utilizationPercentage(metric))
                 )
-                .foregroundStyle(Color.blue)
+                .foregroundStyle(Color.paletteBlue)
                 .symbolSize(Constants.pointSymbolSize)
             }
             .chartXAxis(.hidden)
             .chartYAxis(.hidden)
             .frame(height: Constants.trendChartHeight)
-            .background(Color.gray.opacity(Constants.chartBackgroundOpacity))
+            .background(Color.paletteGray.opacity(Constants.chartBackgroundOpacity))
             .cornerRadius(Constants.chartCornerRadius)
         }
     }
@@ -215,7 +215,7 @@ internal struct PolylineChartView: View {
                     }
                 }
             }
-            .stroke(Color.blue, lineWidth: Constants.lineWidth)
+            .stroke(Color.paletteBlue, lineWidth: Constants.lineWidth)
         }
     }
 }

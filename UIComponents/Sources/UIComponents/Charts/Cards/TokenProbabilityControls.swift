@@ -17,7 +17,7 @@ internal struct TokenProbabilityControls: View {
         HStack {
             Text("Token Type:")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             Spacer()
 

@@ -56,7 +56,7 @@ internal struct APIKeyEntrySheet: View {
 
             Text(provider.description)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
         }
     }
 

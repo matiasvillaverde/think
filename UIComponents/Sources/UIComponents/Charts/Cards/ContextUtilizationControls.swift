@@ -12,7 +12,7 @@ internal struct ContextUtilizationControls: View {
             HStack {
                 Text("Capacity:")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
 
                 Spacer()
 

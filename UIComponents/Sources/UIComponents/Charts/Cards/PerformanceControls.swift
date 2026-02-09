@@ -55,7 +55,7 @@ internal struct PerformanceControls: View {
         VStack(alignment: .leading, spacing: ChartConstants.Layout.itemSpacing) {
             Text("Visible Metrics")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             ForEach(PerformanceLineChart.PerformanceMetric.allCases) { metric in
                 Toggle(isOn: Binding(

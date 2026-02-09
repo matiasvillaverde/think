@@ -47,10 +47,10 @@ internal struct PerformanceChart: View {
         .chartPlotStyle { plotArea in
             plotArea
                 .background(
-                    Color.gray.opacity(Constants.backgroundOpacityQuarter)
+                    Color.paletteGray.opacity(Constants.backgroundOpacityQuarter)
                 )
                 .border(
-                    Color.gray.opacity(Constants.backgroundOpacity),
+                    Color.paletteGray.opacity(Constants.backgroundOpacity),
                     width: Constants.borderWidth
                 )
         }

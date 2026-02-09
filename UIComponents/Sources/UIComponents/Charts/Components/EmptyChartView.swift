@@ -19,12 +19,12 @@ public struct EmptyChartView: View {
         VStack(spacing: Constants.spacing) {
             Image(systemName: "chart.line.uptrend.xyaxis")
                 .font(.system(size: Constants.iconSize))
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .accessibilityLabel("Empty chart icon")
 
             Text(message)
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, minHeight: Constants.minHeight)

@@ -287,7 +287,7 @@ extension SettingsView {
     private var nodeModeStatusRow: some View {
         HStack(spacing: Constants.compactSpacing) {
             Image(systemName: nodeModeRunningValue ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundStyle(nodeModeRunningValue ? Color.green : Color.red)
+                .foregroundStyle(nodeModeRunningValue ? Color.paletteGreen : Color.paletteRed)
             Text(
                 nodeModeRunningValue
                     ? String(localized: "Node mode running", bundle: .module)

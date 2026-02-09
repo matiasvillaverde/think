@@ -78,7 +78,7 @@ internal struct ModelDownloadProgressView: View {
             if let progress = downloadProgress {
                 Text("\(Int(progress * 100))% Downloaded", bundle: .module)
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
 
                 Spacer()
 
@@ -89,12 +89,12 @@ internal struct ModelDownloadProgressView: View {
                     timeRemaining > 0 {
                     Text(timeRemainingText(from: timeRemaining))
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             } else {
                 Text("Preparing download...", bundle: .module)
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
             }
         }
     }

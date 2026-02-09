@@ -28,7 +28,7 @@ internal struct APIKeyHeaderView: View {
                 )
             )
             .font(.subheadline)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

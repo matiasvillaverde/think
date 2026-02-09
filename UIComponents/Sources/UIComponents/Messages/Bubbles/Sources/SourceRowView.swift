@@ -16,17 +16,17 @@ public struct SourceRowView: View {
                     Text(metadataProvider.metadata.title.isEmpty
                         ? source.displayName : metadataProvider.metadata.title)
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color.textPrimary)
                         .lineLimit(SourceViewConstants.titleMaxLines)
 
                     Text(source.url.host ?? "")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textSecondary)
 
                     if !metadataProvider.metadata.description.isEmpty {
                         Text(metadataProvider.metadata.description)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textSecondary)
                             .lineLimit(SourceViewConstants.descriptionMaxLines)
                     }
                 }
@@ -77,7 +77,7 @@ public struct SourceRowView: View {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: SourceViewConstants.iconSize, height: SourceViewConstants.iconSize)
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
             .accessibilityLabel(
                 String(
                     localized: "Default website icon",

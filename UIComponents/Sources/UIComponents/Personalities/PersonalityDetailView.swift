@@ -126,12 +126,12 @@ internal struct PersonalityDetailView: View {
     private var customBadge: some View {
         Text("Custom", bundle: .module)
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.textSecondary)
             .padding(.horizontal, DesignConstants.Spacing.medium)
             .padding(.vertical, DesignConstants.Spacing.xSmall)
             .background(
                 Capsule()
-                    .fill(Color.secondary.opacity(DesignConstants.Opacity.trackBackground))
+                    .fill(Color.textSecondary.opacity(DesignConstants.Opacity.trackBackground))
             )
     }
 
@@ -153,7 +153,7 @@ internal struct PersonalityDetailView: View {
         VStack(alignment: .leading, spacing: DesignConstants.Spacing.small) {
             Text("Description", bundle: .module)
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(personality.displayDescription)
                 .font(.body)
         }
@@ -163,7 +163,7 @@ internal struct PersonalityDetailView: View {
         VStack(alignment: .leading, spacing: DesignConstants.Spacing.small) {
             Text("Category", bundle: .module)
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             HStack {
                 Image(systemName: personality.category.iconName)
                     .foregroundColor(personality.tintColor)
@@ -178,16 +178,16 @@ internal struct PersonalityDetailView: View {
         VStack(alignment: .leading, spacing: DesignConstants.Spacing.small) {
             Text("Soul", bundle: .module)
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             if let soul: Memory = personality.soul, !soul.content.isEmpty {
                 Text(soul.content)
                     .font(.body)
                     .lineLimit(PersonalityDetailConstants.soulPreviewLines)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
             } else {
                 Text("No soul defined. Edit to add personality identity.", bundle: .module)
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.textSecondary)
                     .italic()
             }
         }
@@ -229,7 +229,7 @@ internal struct PersonalityDetailView: View {
 
     private var loadingOverlay: some View {
         ZStack {
-            Color.black.opacity(PersonalityDetailConstants.overlayOpacity)
+            Color.paletteBlack.opacity(PersonalityDetailConstants.overlayOpacity)
                 .ignoresSafeArea()
             VStack(spacing: DesignConstants.Spacing.medium) {
                 ProgressView()
@@ -237,7 +237,7 @@ internal struct PersonalityDetailView: View {
                     .scaleEffect(PersonalityDetailConstants.progressViewScale)
                 Text("Deleting...", bundle: .module)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(Color.textPrimary)
             }
             .padding(DesignConstants.Spacing.large)
             .background(.regularMaterial)

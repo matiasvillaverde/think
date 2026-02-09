@@ -21,10 +21,10 @@ internal struct ContextUtilizationStats: View {
         VStack(alignment: .leading, spacing: Constants.verticalSpacing) {
             Text("Average")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(String(format: "%.1f%%", viewModel.averageUtilization(for: contextData)))
                 .font(.subheadline.weight(.bold))
-                .foregroundColor(.primary)
+                .foregroundColor(Color.textPrimary)
         }
     }
 
@@ -32,7 +32,7 @@ internal struct ContextUtilizationStats: View {
         VStack(alignment: .leading, spacing: Constants.verticalSpacing) {
             Text("Peak")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
             Text(String(format: "%.1f%%", viewModel.peakUtilization(for: contextData)))
                 .font(.subheadline.weight(.bold))
                 .foregroundColor(
@@ -45,7 +45,7 @@ internal struct ContextUtilizationStats: View {
         VStack(alignment: .leading, spacing: Constants.verticalSpacing) {
             Text("Trend")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             let trend: ContextUtilizationViewModel.TrendDirection = viewModel
                 .trendDirection(for: contextData)

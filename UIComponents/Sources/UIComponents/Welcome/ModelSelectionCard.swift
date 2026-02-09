@@ -108,7 +108,7 @@ internal struct ModelSelectionCard: View {
             .overlay(
                 RoundedRectangle(cornerRadius: WelcomeConstants.cornerRadius)
                     .stroke(
-                        isSelected || isHovered ? Color.marketingSecondary : Color.clear,
+                        isSelected || isHovered ? Color.marketingSecondary : Color.paletteClear,
                         lineWidth: WelcomeConstants.borderWidth
                     )
             )
@@ -190,30 +190,30 @@ internal struct ModelSelectionCard: View {
     private func badgeBackgroundColor(for type: RecommendedModels.RecommendationType) -> Color {
         switch type {
         case .fast:
-            Color.green.opacity(WelcomeConstants.badgeOpacity)
+            Color.paletteGreen.opacity(WelcomeConstants.badgeOpacity)
 
         case .complexTasks:
-            Color.green.opacity(WelcomeConstants.badgeOpacity)
+            Color.paletteGreen.opacity(WelcomeConstants.badgeOpacity)
         }
     }
 
     private func badgeForegroundColor(for type: RecommendedModels.RecommendationType) -> Color {
         switch type {
         case .fast:
-            Color.green
+            Color.paletteGreen
 
         case .complexTasks:
-            Color.green
+            Color.paletteGreen
         }
     }
 
     private func badgeBorderColor(for type: RecommendedModels.RecommendationType) -> Color {
         switch type {
         case .fast:
-            Color.green.opacity(WelcomeConstants.badgeBorderOpacity)
+            Color.paletteGreen.opacity(WelcomeConstants.badgeBorderOpacity)
 
         case .complexTasks:
-            Color.green.opacity(WelcomeConstants.badgeBorderOpacity)
+            Color.paletteGreen.opacity(WelcomeConstants.badgeBorderOpacity)
         }
     }
 }

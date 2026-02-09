@@ -23,7 +23,7 @@ internal struct RepetitionRateStats: View {
         VStack(alignment: .leading, spacing: Constants.spacingConstant) {
             Text("Average")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             let average: Double = viewModel.averageRate(for: repetitionData)
             Text(String(format: "%.1f%%", average * Constants.percentageMultiplier))
@@ -36,7 +36,7 @@ internal struct RepetitionRateStats: View {
         VStack(alignment: .leading, spacing: Constants.spacingConstant) {
             Text("Peak")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             let peak: Double = viewModel.peakRate(for: repetitionData)
             Text(String(format: "%.1f%%", peak * Constants.percentageMultiplier))
@@ -49,7 +49,7 @@ internal struct RepetitionRateStats: View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
             Text("Trend")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
             let trend: TrendDirection = viewModel.trendDirection(for: repetitionData)
             HStack(spacing: Constants.statsSpacing) {

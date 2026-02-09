@@ -47,7 +47,7 @@ internal struct APIKeyProviderRow: View {
         Image(systemName: providerSystemImage)
             .font(.title2)
             .frame(width: RowConstants.iconSize, height: RowConstants.iconSize)
-            .foregroundStyle(.primary)
+            .foregroundStyle(Color.textPrimary)
             .accessibilityLabel(
                 Text(
                     "\(state.provider.displayName) icon",
@@ -79,7 +79,7 @@ internal struct APIKeyProviderRow: View {
 
             Text(state.provider.description)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
                 .lineLimit(1)
         }
     }
@@ -100,7 +100,7 @@ internal struct APIKeyProviderRow: View {
                     .accessibilityHidden(true)
             }
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.textSecondary)
         }
     }
 
@@ -144,7 +144,7 @@ internal struct APIKeyProviderRow: View {
         } label: {
             Image(systemName: "ellipsis.circle")
                 .font(.title3)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.textSecondary)
                 .accessibilityLabel(
                     Text(
                         "More options",
@@ -174,7 +174,7 @@ internal struct APIKeyProviderRow: View {
 
     private var backgroundView: some View {
         RoundedRectangle(cornerRadius: RowConstants.cornerRadius)
-            .fill(isHovered ? Color.primary.opacity(RowConstants.hoverOpacity) : Color.clear)
+            .fill(isHovered ? Color.textPrimary.opacity(RowConstants.hoverOpacity) : Color.paletteClear)
     }
 }
 

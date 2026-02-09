@@ -40,7 +40,7 @@ public struct TermsOfUseView: View {
                     comment: "Last updated date for Terms of Use"
                 ))
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textSecondary)
 
                 Text(String(
                     localized: "Thank you for using Think AI!",
