@@ -4,7 +4,7 @@ Thank you for your interest in contributing to Think AI! This guide covers the e
 
 ## Code of Conduct
 
-By participating in this project, you agree to treat all contributors with respect and professionalism.
+By participating in this project, you agree to follow `CODE_OF_CONDUCT.md`.
 
 ## Getting Started
 
@@ -20,7 +20,7 @@ We follow Test-Driven Development (TDD):
 1. Write tests first using **SwiftTesting framework** (NOT XCTest)
 2. Implement minimal code to pass tests
 3. Refactor while keeping tests green
-4. Run `make test` before committing
+4. Run `make lint`, then `make build`, then `make test` before committing
 
 ## Commit Messages
 
@@ -83,4 +83,4 @@ When creating new modules:
 - Review architecture documentation
 - Ask questions in pull requests
 
-Thank you for contributing! 🎉
+Thank you for contributing!
