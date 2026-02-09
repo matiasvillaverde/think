@@ -1,22 +1,18 @@
 ## Summary
 
-<!-- Brief description of the changes -->
+<!-- What does this PR change and why? -->
 
-## Changes
+## Testing
 
-<!-- Bullet list of what was changed and why -->
+- [ ] `make lint`
+- [ ] `make build`
+- [ ] `make test`
 
--
+## Screenshots (UI Changes Only)
 
-## Test Plan
+<!-- macOS + iOS if applicable -->
 
-<!-- How were the changes tested? -->
+## Notes
 
-- [ ] `make lint` passes
-- [ ] `make build` passes
-- [ ] `make test` passes
-- [ ] Tested on: <!-- macOS / iOS / visionOS -->
+<!-- Risks, rollout plan, follow-ups, etc. -->
 
-## Related Issues
-
-<!-- Link any related issues: Fixes #123, Relates to #456 -->
