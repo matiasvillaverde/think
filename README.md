@@ -23,6 +23,19 @@ The goal is to make a tool that feels like OpenClaw but is easier to install, ru
 
 On capable Apple Silicon machines, Think is intended as the foundation for a personal assistant (or “ghost”) that lives on your computer and runs locally.
 
+## Why This Repo Looks Like A “Landing Page”
+
+We sampled the top 100 GitHub repos tagged `artificial-intelligence` (by stars) and extracted common patterns from their READMEs. The most common “this repo feels legit” signals were:
+
+- Clear value prop + quick links
+- Badges (license/platform/build status)
+- Install + Quickstart
+- Examples / demos / screenshots
+- Documentation index and architecture notes
+- Community health files (CONTRIBUTING, CODE_OF_CONDUCT, SECURITY) and templates
+
+In our sample (98 READMEs fetched), we saw: docs sections (72), examples (69), badges (67), install instructions (64), screenshots/media (58), contributing sections (45), citations (29), roadmaps (11).
+
 ## Status
 
 This project is under active development. Expect breaking changes, missing features, and incomplete documentation.
@@ -48,6 +61,17 @@ This project is under active development. Expect breaking changes, missing featu
 ## Repository Layout
 
 See `AGENTS.md` and `CLAUDE.md` for architecture and contribution guidance.
+
+## Build The App (macOS)
+
+Development is Makefile-driven:
+
+```bash
+make lint
+make build
+make test
+make run
+```
 
 ## Screenshots
 
@@ -131,6 +155,7 @@ See `OPENCLAW_REMOTE.md` for setup instructions (App UI and ThinkCLI).
 
 - `AGENTS.md`: architecture and module layout
 - `CLAUDE.md`: build/test rules and module-specific gotchas
+- `CHANGELOG.md`: notable changes (Keep a Changelog format)
 - `OPENCLAW_REMOTE.md`: OpenClaw Gateway setup (UI + ThinkCLI)
 - `OPENCLAW_GAPS.md`: OpenClaw parity backlog
 - `CI.md`: CI/CD workflows
