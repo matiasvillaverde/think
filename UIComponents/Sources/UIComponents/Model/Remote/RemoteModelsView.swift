@@ -22,7 +22,7 @@ internal struct RemoteModelsView: View {
 
     @Bindable var chat: Chat
 
-    @State private var selectedProvider: RemoteProviderType = .openRouter
+    @State private var selectedProvider: RemoteProviderType = .openAI
     @State private var models: [RemoteModel] = []
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?

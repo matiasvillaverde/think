@@ -2,7 +2,7 @@ import Abstractions
 import SwiftUI
 
 internal struct WelcomeSelectionContent: View {
-    let selectedSource: WelcomeView.ModelSource
+    @Binding var selectedSource: WelcomeView.ModelSource
     let languageModels: [DiscoveredModel]
     let isLoadingRecommended: Bool
     let recommendedError: Error?
@@ -21,6 +21,9 @@ internal struct WelcomeSelectionContent: View {
 
         case .remote:
             remoteSelectionContent
+
+        case .openClaw:
+            openClawSelectionContent
         }
     }
 
@@ -57,12 +60,22 @@ internal struct WelcomeSelectionContent: View {
             value: selectedRemoteModel
         )
     }
+
+    private var openClawSelectionContent: some View {
+        VStack(spacing: WelcomeConstants.spacingLarge) {
+            WelcomeOpenClawSection(
+                onPickLocal: { selectedSource = .local },
+                onPickRemote: { selectedSource = .remote }
+            )
+        }
+        .animation(.smooth(duration: WelcomeConstants.animationDuration), value: selectedSource)
+    }
 }
 
 #if DEBUG
 #Preview {
     WelcomeSelectionContent(
-        selectedSource: .local,
+        selectedSource: .constant(.local),
         languageModels: [],
         isLoadingRecommended: true,
         recommendedError: nil,

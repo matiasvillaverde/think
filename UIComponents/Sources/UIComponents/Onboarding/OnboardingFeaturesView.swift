@@ -199,10 +199,22 @@ internal struct OnboardingFeaturesView: View {
     @ViewBuilder private var headerSection: some View {
         VStack(spacing: OnboardingConstants.itemSpacing) {
             // Title
-            Text("Powerful Features", bundle: .module)
+            Text("Your Personal Team", bundle: .module)
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .foregroundColor(.textPrimary)
+
+            Text(
+                """
+                Create many assistants: a friend, a butler, a coach, a teacher, and more.
+                Each chat can have its own personality.
+                """,
+                bundle: .module
+            )
+            .font(.callout)
+            .foregroundColor(.textSecondary)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: OnboardingConstants.maxTextWidth)
 
             // Download progress indicator
             if downloadProgress > 0, downloadProgress < 1 {

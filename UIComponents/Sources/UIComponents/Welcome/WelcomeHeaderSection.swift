@@ -1,19 +1,24 @@
 import SwiftUI
 
 internal struct WelcomeHeaderSection: View {
+    private enum Layout {
+        static let shadowOpacity: Double = 0.18
+        static let shadowRadius: CGFloat = 16
+    }
+
     var body: some View {
         VStack(spacing: WelcomeConstants.spacingMedium) {
-            Image(systemName: "sparkles")
-                .font(.system(size: WelcomeConstants.iconSizeLarge))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.marketingPrimary, .marketingSecondary],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
+            Image(ImageResource(name: "openclaw-ghost", bundle: .module))
+                .resizable()
+                .scaledToFit()
+                .frame(
+                    width: WelcomeConstants.iconSizeLarge,
+                    height: WelcomeConstants.iconSizeLarge
                 )
-                .symbolRenderingMode(.hierarchical)
-                .symbolEffect(.bounce, value: UUID())
+                .shadow(
+                    color: .marketingPrimary.opacity(Layout.shadowOpacity),
+                    radius: Layout.shadowRadius
+                )
                 .accessibilityHidden(true)
 
             Text("Welcome to Think", bundle: .module)
@@ -22,7 +27,10 @@ internal struct WelcomeHeaderSection: View {
                 .foregroundColor(.textPrimary)
 
             Text(
-                "Choose a language model to get started with your first chat",
+                """
+                Choose how you want to run OpenClaw: fully local, remote APIs,
+                or connect an OpenClaw Gateway.
+                """,
                 bundle: .module
             )
             .font(.title3)

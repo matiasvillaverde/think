@@ -7,12 +7,13 @@ import SwiftUI
     internal struct ModelManagementView: View {
         @Bindable var chat: Chat
         @Binding var isPresented: Bool
-        @State private var selectedTab: Tab = .myModels
+        @State private var selectedTab: Tab = .local
 
         enum Tab {
-            case myModels
-            case discovery
             case remote
+            case local
+            case openClaw
+            case oneClick
         }
 
         internal init(chat: Chat, isPresented: Binding<Bool>) {
@@ -22,69 +23,44 @@ import SwiftUI
 
         internal var body: some View {
             TabView(selection: $selectedTab) {
-                myModelsTab
-
-                discoveryTab
-
+                localTab
                 remoteModelsTab
+                openClawTab
+                oneClickTab
             }
             .onReceive(
                 NotificationCenter.default.publisher(
                     for: Notification.Name("NavigateToMyModels")
                 )
             ) { _ in
-                selectedTab = .myModels
+                selectedTab = .local
             }
             .onReceive(
                 NotificationCenter.default.publisher(
                     for: Notification.Name("SwitchToDiscoveryTab")
                 )
             ) { _ in
-                selectedTab = .discovery
+                selectedTab = .local
             }
         }
 
         // MARK: - Private Views
 
-        private var myModelsTab: some View {
+        private var localTab: some View {
             NavigationStack {
-                MyModelsView(chat: chat)
-                    .navigationTitle("My Models")
+                LocalModelsHubView(chat: chat)
+                    .navigationTitle("Local Models")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            Button("Done") {
-                                isPresented = false
-                            }
+                            Button("Done") { isPresented = false }
                         }
                     }
             }
             .tabItem {
-                Label("My Models", systemImage: "tray.full")
+                Label("Local", systemImage: "laptopcomputer")
             }
-            .tag(Tab.myModels)
-        }
-
-        private var discoveryTab: some View {
-            NavigationStack {
-                DiscoveryCarouselView()
-                    .navigationTitle("Discover Models")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button("Done") {
-                                isPresented = false
-                            }
-                        }
-                    }
-                    .navigationDestination(for: DiscoveredModel.self) { model in
-                        DiscoveryModelDetailView(model: model)
-                    }
-            }
-            .tabItem {
-                Label("Discover", systemImage: "sparkles")
-            }
-            .tag(Tab.discovery)
+            .tag(Tab.local)
         }
 
         private var remoteModelsTab: some View {
@@ -105,6 +81,40 @@ import SwiftUI
             }
             .tag(Tab.remote)
         }
+
+        private var openClawTab: some View {
+            NavigationStack {
+                OpenClawSetupView()
+                    .navigationTitle("OpenClaw")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button("Done") { isPresented = false }
+                        }
+                    }
+            }
+            .tabItem {
+                Label("OpenClaw", systemImage: "link")
+            }
+            .tag(Tab.openClaw)
+        }
+
+        private var oneClickTab: some View {
+            NavigationStack {
+                OneClickSetupView()
+                    .navigationTitle("One-Click")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button("Done") { isPresented = false }
+                        }
+                    }
+            }
+            .tabItem {
+                Label("One-Click", systemImage: "wand.and.stars")
+            }
+            .tag(Tab.oneClick)
+        }
     }
 
     #if DEBUG
@@ -116,3 +126,123 @@ import SwiftUI
         }
     #endif
 #endif
+
+private struct LocalModelsHubView: View {
+    @Bindable var chat: Chat
+
+    private enum Mode: String, CaseIterable, Identifiable {
+        case myModels = "local_my_models"
+        case discover = "local_discover"
+
+        var id: String { rawValue }
+        var title: String {
+            switch self {
+            case .myModels:
+                return String(localized: "My Models", bundle: .module)
+
+            case .discover:
+                return String(localized: "Discover", bundle: .module)
+            }
+        }
+    }
+
+    private enum Layout {
+        static let stackSpacing: CGFloat = 12
+        static let horizontalPadding: CGFloat = 16
+    }
+
+    @State private var mode: Mode = .myModels
+
+    var body: some View {
+        VStack(spacing: Layout.stackSpacing) {
+            Picker(String(localized: "Local mode", bundle: .module), selection: $mode) {
+                ForEach(Mode.allCases) { mode in
+                    Text(mode.title).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, Layout.horizontalPadding)
+
+            Group {
+                switch mode {
+                case .myModels:
+                    MyModelsView(chat: chat)
+
+                case .discover:
+                    DiscoveryCarouselView()
+                        .navigationDestination(for: DiscoveredModel.self) { model in
+                            DiscoveryModelDetailView(model: model)
+                        }
+                }
+            }
+        }
+        .background(Color.backgroundPrimary)
+    }
+}
+
+private struct OneClickSetupView: View {
+    private enum Layout {
+        static let cornerRadius: CGFloat = 18
+        static let strokeOpacity: Double = 0.18
+        static let spacing: CGFloat = 16
+        static let padding: CGFloat = 16
+        static let innerSpacing: CGFloat = 10
+        static let outerPadding: CGFloat = 16
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Layout.spacing) {
+            card
+            Spacer()
+        }
+        .padding(Layout.outerPadding)
+        .background(Color.backgroundPrimary)
+    }
+
+    private var card: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: Layout.cornerRadius)
+                .fill(Color.backgroundSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Layout.cornerRadius)
+                        .stroke(Color.textSecondary.opacity(Layout.strokeOpacity), lineWidth: 1)
+                )
+
+            cardContent
+                .padding(Layout.padding)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var cardContent: some View {
+        VStack(alignment: .leading, spacing: Layout.innerSpacing) {
+            HStack(spacing: Layout.innerSpacing) {
+                Image(systemName: "wand.and.stars")
+                    .font(.title2)
+                    .foregroundStyle(Color.marketingSecondary)
+                    .accessibilityHidden(true)
+
+                Text("One-Click Setup", bundle: .module)
+                    .font(.title2)
+                    .fontWeight(.semibold)
+            }
+
+            Text(
+                """
+                One-click setup will provision and manage your stack for $50/month. Coming soon.
+                """,
+                bundle: .module
+            )
+            .font(.callout)
+            .foregroundStyle(Color.textSecondary)
+
+            Button {
+                // Coming soon.
+            } label: {
+                Text("Notify Me", bundle: .module)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(true)
+        }
+    }
+}

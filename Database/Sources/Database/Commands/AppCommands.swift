@@ -363,44 +363,163 @@ public struct AppInitializeCommand: AnonymousCommand {
             try performDetailedPersonalitySync(in: context)
         }
 
-        private func performDetailedPersonalitySync(in context: ModelContext) throws {
-            let factoryPersonalities = PersonalityFactory.createSystemPersonalities()
+	        private func performDetailedPersonalitySync(in context: ModelContext) throws {
+	            let factoryPersonalities = PersonalityFactory.createSystemPersonalities()
+	            let factoryInstructions: Set<SystemInstruction> = Set(factoryPersonalities.map(\.systemInstruction))
 
-            // Fetch existing system personalities
-            let systemPersonalitiesDescriptor = FetchDescriptor<Personality>(
-                predicate: #Predicate { !$0.isCustom }
-            )
-            let existingSystemPersonalities = try context.fetch(systemPersonalitiesDescriptor)
+	            // Fetch existing system personalities
+	            let systemPersonalitiesDescriptor = FetchDescriptor<Personality>(
+	                predicate: #Predicate { !$0.isCustom }
+	            )
+	            let existingSystemPersonalities = try context.fetch(systemPersonalitiesDescriptor)
 
-            // SAFE: Create lookup with duplicate detection and cleanup
-            let (existingLookup, duplicatesFound) = createSafePersonalityLookup(
-                from: existingSystemPersonalities,
-                in: context
-            )
+	            // SAFE: Create lookup with duplicate detection and cleanup
+	            let (existingLookup, duplicatesFound) = createSafePersonalityLookup(
+	                from: existingSystemPersonalities,
+	                in: context
+	            )
 
-            var hasChanges = duplicatesFound > 0
-            var addedCount = 0
+	            let removedCount: Int = removeDeprecatedSystemPersonalities(
+	                existingSystemPersonalities,
+	                keeping: factoryInstructions,
+	                in: context
+	            )
+	            let updatedCount: Int = updateExistingSystemPersonalities(
+	                factoryPersonalities: factoryPersonalities,
+	                existingLookup: existingLookup,
+	                in: context
+	            )
+	            let addedCount: Int = addMissingSystemPersonalities(
+	                factoryPersonalities: factoryPersonalities,
+	                existingLookup: existingLookup,
+	                in: context
+	            )
 
-            // Add missing personalities using safe method
-            for factoryPersonality in factoryPersonalities where existingLookup[factoryPersonality.systemInstruction] == nil {
-                // Use safe insertion to prevent race conditions
-                do {
-                    try PersonalityFactory.insertSystemPersonalitySafely(factoryPersonality, in: context)
-                    hasChanges = true
-                    addedCount += 1
-                    Self.logger.debug("Added missing personality: \(String(describing: factoryPersonality.systemInstruction))")
-                } catch PersonalityError.duplicateSystemPersonality(let instruction, _) {
-                    Self.logger.warning("Personality \(String(describing: instruction)) was created concurrently, skipping")
-                }
-            }
+	            let hasChanges: Bool = duplicatesFound > 0 || removedCount > 0 || updatedCount > 0 || addedCount > 0
+	            if hasChanges {
+	                try context.save()
+	                Self.logger.info(
+	                    "Detailed personality sync completed - added \(addedCount), updated \(updatedCount), removed \(removedCount), cleaned \(duplicatesFound) duplicates"
+	                )
+	            } else {
+	                Self.logger.info("Detailed personality sync completed - no changes needed")
+	            }
+	        }
 
-            if hasChanges {
-                try context.save()
-                Self.logger.info("Detailed personality sync completed - added \(addedCount) personalities, cleaned \(duplicatesFound) duplicates")
-            } else {
-                Self.logger.info("Detailed personality sync completed - no changes needed")
-            }
-        }
+	        private func removeDeprecatedSystemPersonalities(
+	            _ existingSystemPersonalities: [Personality],
+	            keeping factoryInstructions: Set<SystemInstruction>,
+	            in context: ModelContext
+	        ) -> Int {
+	            var removedCount = 0
+	            for personality in existingSystemPersonalities {
+	                guard factoryInstructions.contains(personality.systemInstruction) == false else {
+	                    continue
+	                }
+	                let isSafeToRemove: Bool = personality.chat?.messages.isEmpty ?? true
+	                if isSafeToRemove {
+	                    context.delete(personality)
+	                    removedCount += 1
+	                }
+	            }
+	            return removedCount
+	        }
+
+	        private func updateExistingSystemPersonalities(
+	            factoryPersonalities: [Personality],
+	            existingLookup: [SystemInstruction: Personality],
+	            in context: ModelContext
+	        ) -> Int {
+	            var updatedCount = 0
+	            for factoryPersonality in factoryPersonalities {
+	                guard let existing = existingLookup[factoryPersonality.systemInstruction] else {
+	                    continue
+	                }
+	                if applyFactoryDefaults(to: existing, from: factoryPersonality, in: context) {
+	                    updatedCount += 1
+	                }
+	            }
+	            return updatedCount
+	        }
+
+	        private func applyFactoryDefaults(
+	            to existing: Personality,
+	            from factory: Personality,
+	            in context: ModelContext
+	        ) -> Bool {
+	            var didUpdate = false
+
+	            if existing.name != factory.name {
+	                existing.name = factory.name
+	                didUpdate = true
+	            }
+	            if existing.displayDescription != factory.displayDescription {
+	                existing.displayDescription = factory.displayDescription
+	                didUpdate = true
+	            }
+	            if existing.category != factory.category {
+	                existing.category = factory.category
+	                didUpdate = true
+	            }
+	            if existing.imageName != factory.imageName {
+	                existing.imageName = factory.imageName
+	                didUpdate = true
+	            }
+	            if existing.tintColorHex != factory.tintColorHex {
+	                existing.tintColorHex = factory.tintColorHex
+	                didUpdate = true
+	            }
+
+	            // Only refresh prompts if the user hasn't started chatting with this personality.
+	            let shouldRefreshPrompts: Bool = existing.chat?.messages.isEmpty ?? true
+	            if shouldRefreshPrompts {
+	                didUpdate = refreshPrompts(for: existing, in: context) || didUpdate
+	            }
+
+	            return didUpdate
+	        }
+
+	        private func refreshPrompts(for personality: Personality, in context: ModelContext) -> Bool {
+	            // Remove existing prompts first (avoid stale examples).
+	            if !personality.prompts.isEmpty {
+	                for prompt in personality.prompts {
+	                    context.delete(prompt)
+	                }
+	            }
+
+	            let newPrompts: [Prompt] = PersonalityFactory.createPrompts(for: personality)
+	            for prompt in newPrompts {
+	                context.insert(prompt)
+	            }
+	            personality.prompts = newPrompts
+	            return true
+	        }
+
+	        private func addMissingSystemPersonalities(
+	            factoryPersonalities: [Personality],
+	            existingLookup: [SystemInstruction: Personality],
+	            in context: ModelContext
+	        ) -> Int {
+	            var addedCount = 0
+	            for factoryPersonality in factoryPersonalities where existingLookup[factoryPersonality.systemInstruction] == nil {
+	                do {
+	                    try PersonalityFactory.insertSystemPersonalitySafely(factoryPersonality, in: context)
+	                    addedCount += 1
+	                    Self.logger.debug(
+	                        "Added missing personality: \(String(describing: factoryPersonality.systemInstruction))"
+	                    )
+	                } catch PersonalityError.duplicateSystemPersonality(let instruction, _) {
+	                    Self.logger.warning(
+	                        "Personality \(String(describing: instruction)) was created concurrently, skipping"
+	                    )
+	                } catch {
+	                    Self.logger.error(
+	                        "Unexpected error inserting personality: \(error.localizedDescription)"
+	                    )
+	                }
+	            }
+	            return addedCount
+	        }
         
         /// Creates a safe personality lookup dictionary with duplicate detection and cleanup
         /// - Parameters:

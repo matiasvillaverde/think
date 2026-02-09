@@ -250,6 +250,47 @@ internal func testFormatCompatibility() async throws {
     #expect(coremlValidation.isCompatible)
 }
 
+@Test("ModelValidator should treat unknown architectures as warnings for GGUF")
+internal func testUnknownArchitectureIsWarningForGGUF() async throws {
+    let validator: ModelValidator = ModelValidator()
+
+    let config: LanguageModelConfiguration = LanguageModelConfiguration(
+        modelType: "llama",
+        architectures: ["TotallyUnknownForCausalLM"],
+        vocabSize: 32_000,
+        hiddenSize: 4_096,
+        intermediateSize: 11_008,
+        numHiddenLayers: 32,
+        numAttentionHeads: 32,
+        numKeyValueHeads: 32,
+        rmsNormEps: 1e-06,
+        maxPositionEmbeddings: 2_048,
+        ropeScaling: nil,
+        ropeTheta: 10_000.0,
+        bosTokenId: 1,
+        eosTokenId: 2,
+        padTokenId: 0,
+        tieWordEmbeddings: false,
+        torchDtype: "float16"
+    )
+
+    let ggufValidation: ModelValidationResult = try await validator.validateModel(
+        configuration: config,
+        backend: SendableModel.Backend.gguf
+    )
+
+    #expect(ggufValidation.isCompatible)
+    #expect(ggufValidation.errors.isEmpty)
+    #expect(!ggufValidation.warnings.isEmpty)
+
+    let mlxValidation: ModelValidationResult = try await validator.validateModel(
+        configuration: config,
+        backend: SendableModel.Backend.mlx
+    )
+    #expect(!mlxValidation.isCompatible)
+    #expect(!mlxValidation.errors.isEmpty)
+}
+
 @Test("ModelMetadataExtractor should extract model information")
 internal func testMetadataExtraction() async throws {
     let extractor: ModelMetadataExtractor = ModelMetadataExtractor()

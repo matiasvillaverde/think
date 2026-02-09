@@ -275,7 +275,9 @@ internal actor ModelValidator {
 
     private let supportedArchitectures: [String] = [
         "LlamaForCausalLM", "MistralForCausalLM", "MixtralForCausalLM",
-        "PhiForCausalLM", "Qwen2ForCausalLM", "GemmaForCausalLM",
+        "PhiForCausalLM", "Phi3ForCausalLM", "Phi4ForCausalLM",
+        "Qwen2ForCausalLM", "Qwen2VLForCausalLM",
+        "GemmaForCausalLM", "Gemma2ForCausalLM",
         "GPT2LMHeadModel", "GPTNeoXForCausalLM", "FalconForCausalLM",
         "MPTForCausalLM", "OPTForCausalLM", "BloomForCausalLM",
         "CodeGenForCausalLM", "StableLMForCausalLM"
@@ -308,7 +310,13 @@ internal actor ModelValidator {
         if let architectures = configuration.architectures, !architectures.isEmpty {
             let supportedArch: String? = architectures.first { supportedArchitectures.contains($0) }
             if supportedArch == nil {
-                errors.append("Unsupported architecture: \(architectures.joined(separator: ", "))")
+                let message: String = "Unsupported architecture: \(architectures.joined(separator: ", "))"
+                // GGUF can often run "unknown" transformer families via llama.cpp; treat as warning.
+                if backend == .gguf {
+                    warnings.append(message)
+                } else {
+                    errors.append(message)
+                }
             }
         } else {
             warnings.append("Architecture not specified in configuration")

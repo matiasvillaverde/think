@@ -1,7 +1,7 @@
 import Abstractions
 import SwiftUI
 
-/// The first onboarding screen that welcomes users to Think AI
+/// The first onboarding screen that welcomes users and explains what Think is.
 internal struct OnboardingWelcomeView: View {
     // MARK: - Environment
 
@@ -117,14 +117,14 @@ internal struct OnboardingWelcomeView: View {
 
     @ViewBuilder private var descriptionSection: some View {
         VStack(spacing: OnboardingConstants.largeSpacing) {
-            Text("Your AI Assistant", bundle: .module)
+            Text("OpenClaw, on your device.", bundle: .module)
                 .font(.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(.textPrimary)
 
             Text(
                 // swiftlint:disable:next line_length
-                "Experience the power of on-device AI with complete privacy and blazing-fast performance",
+                "Run self-hosted models locally or use remote providers when you need reach. Optionally connect to your OpenClaw Gateway to unlock OpenClaw-style workflows.",
                 bundle: .module
             )
             .font(.body)
@@ -186,7 +186,7 @@ private struct AnimatedBackground: View {
 
 // MARK: - Get Started Button
 
-private struct GetStartedButton: View {
+    private struct GetStartedButton: View {
     let action: () -> Void
 
     var body: some View {

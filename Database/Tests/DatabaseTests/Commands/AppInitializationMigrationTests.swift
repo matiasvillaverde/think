@@ -146,7 +146,7 @@ struct AppInitializationMigrationTests {
         let personalityDescriptor = FetchDescriptor<Personality>()
         let personalities = try database.modelContainer.mainContext.fetch(personalityDescriptor)
 
-        #expect(personalities.count >= 20)
+        #expect(personalities.count >= PersonalityFactory.createSystemPersonalities().count)
         #expect(personalities.contains { $0.isDefault })
     }
 }

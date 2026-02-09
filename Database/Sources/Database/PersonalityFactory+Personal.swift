@@ -16,6 +16,32 @@ extension PersonalityFactory {
         return personality
     }
 
+    static func createMother() -> Personality {
+        let personality = Personality(
+            systemInstruction: .mother,
+            name: String(localized: "Mother", bundle: .module),
+            description: String(localized: "Warm, grounding support and practical care", bundle: .module),
+            imageName: "mother-icon",
+            category: .personal
+        )
+
+        personality.prompts = createPersonalPrompts(for: personality)
+        return personality
+    }
+
+    static func createFather() -> Personality {
+        let personality = Personality(
+            systemInstruction: .father,
+            name: String(localized: "Father", bundle: .module),
+            description: String(localized: "Steady guidance, clear plans, and follow-through", bundle: .module),
+            imageName: "father-icon",
+            category: .personal
+        )
+
+        personality.prompts = createPersonalPrompts(for: personality)
+        return personality
+    }
+
     static func createRelationshipAdvisor() -> Personality {
         let personality = Personality(
             systemInstruction: .relationshipAdvisor,
@@ -35,7 +61,22 @@ extension PersonalityFactory {
             name: String(localized: "Life Coach", bundle: .module),
             description: String(localized: "Goal-setting and personal development mentor", bundle: .module),
             imageName: "coach-icon",
-            category: .personal
+            category: .personal,
+            isFeature: true
+        )
+
+        personality.prompts = createPersonalPrompts(for: personality)
+        return personality
+    }
+
+    static func createSupportivePsychologist() -> Personality {
+        let personality = Personality(
+            systemInstruction: .supportivePsychologist,
+            name: String(localized: "Psychologist", bundle: .module),
+            description: String(localized: "Gentle, evidence-informed mental health support", bundle: .module),
+            imageName: "psychologist-icon",
+            category: .personal,
+            isFeature: true
         )
 
         personality.prompts = createPersonalPrompts(for: personality)

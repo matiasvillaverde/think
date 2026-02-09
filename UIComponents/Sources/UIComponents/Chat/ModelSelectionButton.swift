@@ -104,7 +104,7 @@ public struct ModelSelectionButton: View {
     private var textView: some View {
         VStack(alignment: .center, spacing: Layout.tutorialStackSpacing) {
             Text(
-                "Download More Models! ✨",
+                "Try Different Assistants",
                 bundle: .module,
                 comment: "Tutorial headline for model selection button"
             )
@@ -115,8 +115,9 @@ public struct ModelSelectionButton: View {
             .padding(.bottom, Layout.tutorialHeadlineBottomPadding)
             Text(
                 """
-                Tap here to get smarter, more helpful responses for your conversations. \
-                100% Open-Source and free
+                Your chats can have many personalities:
+                a friend, a butler, a coach, a teacher, and more.
+                Tap here to download local models or connect remote providers.
                 """,
                 bundle: .module,
                 comment: "Tutorial text for model selection button"

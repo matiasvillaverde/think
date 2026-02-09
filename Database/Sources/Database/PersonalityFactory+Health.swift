@@ -2,6 +2,20 @@ import SwiftData
 
 // MARK: - Health & Wellness Personalities
 extension PersonalityFactory {
+    static func createNutritionist() -> Personality {
+        let personality = Personality(
+            systemInstruction: .dietitian,
+            name: String(localized: "Nutritionist", bundle: .module),
+            description: String(localized: "Healthy eating guidance and meal planning", bundle: .module),
+            imageName: "nutritionist-icon",
+            category: .health,
+            isFeature: true
+        )
+
+        personality.prompts = createHealthPrompts(for: personality)
+        return personality
+    }
+
     static func createNutritionExpert() -> Personality {
         let personality = Personality(
             systemInstruction: .dietitian,

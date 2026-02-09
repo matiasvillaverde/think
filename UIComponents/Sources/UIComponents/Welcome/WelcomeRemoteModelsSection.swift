@@ -20,7 +20,7 @@ internal struct WelcomeRemoteModelsSection: View {
 
     @Binding var selectedModel: RemoteModel?
 
-    @State private var selectedProvider: RemoteProviderType = .openRouter
+    @State private var selectedProvider: RemoteProviderType = .openAI
     @State private var models: [RemoteModel] = []
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?

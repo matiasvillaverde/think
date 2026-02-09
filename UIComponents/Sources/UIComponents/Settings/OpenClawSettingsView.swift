@@ -3,9 +3,16 @@ import SwiftUI
 
 public struct OpenClawSettingsView: View {
     enum Constants {
-        static let contentPadding: CGFloat = 16
+        static let contentPadding: CGFloat = 0
         static let sectionSpacing: CGFloat = 16
         static let smallSpacing: CGFloat = 6
+        static let cardCornerRadius: CGFloat = 16
+        static let cardPadding: CGFloat = 14
+        static let cardStrokeOpacity: Double = 0.16
+        static let headerHStackSpacing: CGFloat = 12
+        static let headerImageSize: CGFloat = 36
+        static let headerVStackSpacing: CGFloat = 2
+        static let cardInnerSpacing: CGFloat = 10
 
         static let headerSubtitle: String.LocalizationValue =
             "Add one or more remote OpenClaw Gateway instances (WebSocket) and test connectivity."
@@ -32,23 +39,8 @@ public struct OpenClawSettingsView: View {
                     .foregroundStyle(Color.paletteRed)
             }
 
-            OpenClawInstancesListView(
-                instances: instances,
-                statuses: statuses,
-                onUse: { id in Task { await useInstance(id: id) } },
-                onTest: { id in Task { await testInstance(id: id) } },
-                onDelete: { id in Task { await deleteInstance(id: id) } }
-            )
-
-            Divider()
-
-            OpenClawAddInstanceFormView(
-                name: $name,
-                urlString: $urlString,
-                authToken: $authToken,
-                onSave: { Task { await saveNewInstance() } },
-                onRefresh: { Task { await refresh() } }
-            )
+            instancesCard
+            addInstanceCard
 
             Spacer()
         }
@@ -57,14 +49,71 @@ public struct OpenClawSettingsView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: Constants.smallSpacing) {
-            Text(String(localized: "OpenClaw Remote", bundle: .module))
-                .font(.title2)
-                .fontWeight(.bold)
-            Text(String(localized: Constants.headerSubtitle, bundle: .module))
-                .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+        HStack(spacing: Constants.headerHStackSpacing) {
+            Image(ImageResource(name: "openclaw-ghost", bundle: .module))
+                .resizable()
+                .scaledToFit()
+                .frame(width: Constants.headerImageSize, height: Constants.headerImageSize)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: Constants.headerVStackSpacing) {
+                Text(String(localized: "OpenClaw Gateway", bundle: .module))
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Text(String(localized: Constants.headerSubtitle, bundle: .module))
+                    .font(.caption)
+                    .foregroundStyle(Color.textSecondary)
+            }
+
+            Spacer(minLength: 0)
         }
+    }
+
+    private var instancesCard: some View {
+        VStack(alignment: .leading, spacing: Constants.cardInnerSpacing) {
+            Text(String(localized: "Instances", bundle: .module))
+                .font(.headline)
+                .foregroundStyle(Color.textPrimary)
+
+            OpenClawInstancesListView(
+                instances: instances,
+                statuses: statuses,
+                onUse: { id in Task { await useInstance(id: id) } },
+                onTest: { id in Task { await testInstance(id: id) } },
+                onDelete: { id in Task { await deleteInstance(id: id) } }
+            )
+        }
+        .padding(Constants.cardPadding)
+        .background(Color.backgroundSecondary)
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.cardCornerRadius)
+                .stroke(Color.textSecondary.opacity(Constants.cardStrokeOpacity), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: Constants.cardCornerRadius))
+    }
+
+    private var addInstanceCard: some View {
+        VStack(alignment: .leading, spacing: Constants.cardInnerSpacing) {
+            Text(String(localized: "Add Instance", bundle: .module))
+                .font(.headline)
+                .foregroundStyle(Color.textPrimary)
+
+            OpenClawAddInstanceFormView(
+                name: $name,
+                urlString: $urlString,
+                authToken: $authToken,
+                onSave: { Task { await saveNewInstance() } },
+                onRefresh: { Task { await refresh() } }
+            )
+        }
+        .padding(Constants.cardPadding)
+        .background(Color.backgroundSecondary)
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.cardCornerRadius)
+                .stroke(Color.textSecondary.opacity(Constants.cardStrokeOpacity), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: Constants.cardCornerRadius))
     }
 
     private func refresh() async {
@@ -159,7 +208,9 @@ private struct OpenClawInstancesListView: View {
                 ForEach(instances) { instance in
                     instanceRow(instance)
                         .padding(.vertical, Constants.instanceRowVerticalPadding)
-                    Divider()
+                    if instance.id != instances.last?.id {
+                        Divider()
+                    }
                 }
             }
         }
@@ -260,7 +311,7 @@ private struct OpenClawInstancesListView: View {
             return String(localized: "Connected", bundle: .module)
 
         case .pairingRequired(let requestId):
-            return String(localized: "Pairing required: \(requestId)", bundle: .module)
+            return String(localized: "Pairing required (request: \(requestId))", bundle: .module)
 
         case .failed(let message):
             return String(localized: "Failed: \(message)", bundle: .module)
@@ -270,11 +321,9 @@ private struct OpenClawInstancesListView: View {
 
 private struct OpenClawAddInstanceFormView: View {
     enum Constants {
-        static let addFormSpacing: CGFloat = 10
+        static let addFormSpacing: CGFloat = 12
+        static let fieldSpacing: CGFloat = 6
         static let actionsSpacing: CGFloat = 10
-        static let labelWidth: CGFloat = 80
-        static let fieldWidth: CGFloat = 260
-        static let extendedFieldExtraWidth: CGFloat = 200
     }
 
     @Binding var name: String
@@ -286,7 +335,6 @@ private struct OpenClawAddInstanceFormView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Constants.addFormSpacing) {
-            titleRow
             nameRow
             urlRow
             tokenRow
@@ -294,38 +342,41 @@ private struct OpenClawAddInstanceFormView: View {
         }
     }
 
-    private var titleRow: some View {
-        Text(String(localized: "Add Instance", bundle: .module))
-            .font(.headline)
-    }
-
     private var nameRow: some View {
-        HStack(spacing: Constants.actionsSpacing) {
+        VStack(alignment: .leading, spacing: Constants.fieldSpacing) {
             Text(String(localized: "Name", bundle: .module))
-                .frame(width: Constants.labelWidth, alignment: .leading)
+                .font(.caption)
+                .foregroundStyle(Color.textSecondary)
             TextField(String(localized: "My OpenClaw", bundle: .module), text: $name)
                 .textFieldStyle(.roundedBorder)
-                .frame(width: Constants.fieldWidth)
         }
     }
 
     private var urlRow: some View {
-        HStack(spacing: Constants.actionsSpacing) {
+        VStack(alignment: .leading, spacing: Constants.fieldSpacing) {
             Text(String(localized: "URL", bundle: .module))
-                .frame(width: Constants.labelWidth, alignment: .leading)
+                .font(.caption)
+                .foregroundStyle(Color.textSecondary)
             TextField("wss://host.example/gateway", text: $urlString)
                 .textFieldStyle(.roundedBorder)
-                .frame(width: Constants.fieldWidth + Constants.extendedFieldExtraWidth)
+                #if os(iOS)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                #endif
         }
     }
 
     private var tokenRow: some View {
-        HStack(spacing: Constants.actionsSpacing) {
+        VStack(alignment: .leading, spacing: Constants.fieldSpacing) {
             Text(String(localized: "Token", bundle: .module))
-                .frame(width: Constants.labelWidth, alignment: .leading)
+                .font(.caption)
+                .foregroundStyle(Color.textSecondary)
             SecureField(String(localized: "Optional", bundle: .module), text: $authToken)
                 .textFieldStyle(.roundedBorder)
-                .frame(width: Constants.fieldWidth + Constants.extendedFieldExtraWidth)
+                #if os(iOS)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                #endif
         }
     }
 

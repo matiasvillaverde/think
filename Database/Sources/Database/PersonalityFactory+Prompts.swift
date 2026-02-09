@@ -4,30 +4,49 @@ import SwiftData
 
 // MARK: - Prompt Creators
 extension PersonalityFactory {
+    static func createPrompts(for personality: Personality) -> [Prompt] {
+        switch personality.category {
+        case .productivity:
+            return createProductivityPrompts(for: personality)
+        case .creative:
+            return createCreativePrompts(for: personality)
+        case .education:
+            return createEducationPrompts(for: personality)
+        case .entertainment:
+            return createEntertainmentPrompts(for: personality)
+        case .health:
+            return createHealthPrompts(for: personality)
+        case .personal:
+            return createPersonalPrompts(for: personality)
+        case .lifestyle:
+            return createLifestylePrompts(for: personality)
+        }
+    }
+
     static func createProductivityPrompts(for personality: Personality) -> [Prompt] {
         [
             Prompt(
-                title: String(localized: "Code Review Assistant", bundle: .module),
-                subtitle: String(localized: "analyze and improve code quality", bundle: .module),
-                prompt: String(localized: "Review this code for potential bugs, performance issues, and best practices. Provide specific suggestions for improvement with explanations.", bundle: .module),
+                title: String(localized: "Weekly Plan", bundle: .module),
+                subtitle: String(localized: "prioritize and schedule", bundle: .module),
+                prompt: String(localized: "Help me plan my week. My goals are: (1) __, (2) __. I have these constraints: __. Propose a realistic schedule and the first 3 next actions.", bundle: .module),
                 personality: personality
             ),
             Prompt(
-                title: String(localized: "Project Management Plan", bundle: .module),
-                subtitle: String(localized: "organize tasks and timelines", bundle: .module),
-                prompt: String(localized: "Help me create a detailed project plan for launching a mobile app, including milestones, resource allocation, and risk management strategies.", bundle: .module),
+                title: String(localized: "Write a Status Update", bundle: .module),
+                subtitle: String(localized: "clear and concise", bundle: .module),
+                prompt: String(localized: "Draft a short status update for my team. This week: __. Blockers: __. Next: __. Keep it crisp and action-oriented.", bundle: .module),
                 personality: personality
             ),
             Prompt(
-                title: String(localized: "Professional Email Templates", bundle: .module),
-                subtitle: String(localized: "effective business communication", bundle: .module),
-                prompt: String(localized: "Write a professional email template for following up on a job interview, including key points to emphasize and appropriate tone.", bundle: .module),
+                title: String(localized: "Decision Framework", bundle: .module),
+                subtitle: String(localized: "make a call", bundle: .module),
+                prompt: String(localized: "Help me decide between option A: __ and option B: __. My priorities are: __. Ask any key questions, then recommend one with reasons.", bundle: .module),
                 personality: personality
             ),
             Prompt(
-                title: String(localized: "Cybersecurity Assessment", bundle: .module),
-                subtitle: String(localized: "identify security vulnerabilities", bundle: .module),
-                prompt: String(localized: "Analyze my company's current security practices and suggest improvements for protecting against common cyber threats.", bundle: .module),
+                title: String(localized: "Email Draft", bundle: .module),
+                subtitle: String(localized: "polished and respectful", bundle: .module),
+                prompt: String(localized: "Draft an email to __ about __. Tone: __. Include these points: __.", bundle: .module),
                 personality: personality
             ),
             Prompt(
@@ -89,15 +108,15 @@ extension PersonalityFactory {
                 personality: personality
             ),
             Prompt(
-                title: String(localized: "Language Learning Assistant", bundle: .module),
-                subtitle: String(localized: "master new languages", bundle: .module),
-                prompt: String(localized: "Help me learn Spanish by creating a conversation practice scenario for ordering food at a restaurant.", bundle: .module),
+                title: String(localized: "Practice Quiz", bundle: .module),
+                subtitle: String(localized: "check understanding", bundle: .module),
+                prompt: String(localized: "Quiz me on __ with 10 questions. Mix easy and hard. After each answer, explain what I got right or wrong.", bundle: .module),
                 personality: personality
             ),
             Prompt(
-                title: String(localized: "Historical Analysis", bundle: .module),
-                subtitle: String(localized: "understand past events", bundle: .module),
-                prompt: String(localized: "Analyze the causes and effects of the French Revolution, focusing on economic, social, and political factors.", bundle: .module),
+                title: String(localized: "Learn by Example", bundle: .module),
+                subtitle: String(localized: "step-by-step", bundle: .module),
+                prompt: String(localized: "Teach me __ using 3 examples. For each example: explain, then ask me to try a similar one.", bundle: .module),
                 personality: personality
             ),
             Prompt(
@@ -153,9 +172,9 @@ extension PersonalityFactory {
                 personality: personality
             ),
             Prompt(
-                title: String(localized: "Workout Routine Builder", bundle: .module),
-                subtitle: String(localized: "personalized fitness plans", bundle: .module),
-                prompt: String(localized: "Design a 4-week beginner strength training program that can be done at home with minimal equipment.", bundle: .module),
+                title: String(localized: "Grocery List", bundle: .module),
+                subtitle: String(localized: "shop once", bundle: .module),
+                prompt: String(localized: "Turn this meal plan into a grocery list grouped by aisle: __", bundle: .module),
                 personality: personality
             ),
             Prompt(
@@ -165,9 +184,9 @@ extension PersonalityFactory {
                 personality: personality
             ),
             Prompt(
-                title: String(localized: "Mindfulness Practice Guide", bundle: .module),
-                subtitle: String(localized: "mental health support", bundle: .module),
-                prompt: String(localized: "Guide me through a 10-minute mindfulness exercise for reducing anxiety and improving focus.", bundle: .module),
+                title: String(localized: "Protein Ideas", bundle: .module),
+                subtitle: String(localized: "easy options", bundle: .module),
+                prompt: String(localized: "I want high-protein meals with minimal cooking. Give me 10 options with approximate protein per serving.", bundle: .module),
                 personality: personality
             ),
             Prompt(
@@ -182,9 +201,9 @@ extension PersonalityFactory {
     static func createPersonalPrompts(for personality: Personality) -> [Prompt] {
         [
             Prompt(
-                title: String(localized: "Relationship Communication", bundle: .module),
-                subtitle: String(localized: "strengthen connections", bundle: .module),
-                prompt: String(localized: "Help me have a difficult conversation with my partner about household responsibilities in a constructive way.", bundle: .module),
+                title: String(localized: "Talk It Out", bundle: .module),
+                subtitle: String(localized: "sort feelings", bundle: .module),
+                prompt: String(localized: "I’m feeling __ about __. Help me make sense of it and decide what to do next.", bundle: .module),
                 personality: personality
             ),
             Prompt(
@@ -194,9 +213,9 @@ extension PersonalityFactory {
                 personality: personality
             ),
             Prompt(
-                title: String(localized: "Confidence Building Coach", bundle: .module),
-                subtitle: String(localized: "overcome self-doubt", bundle: .module),
-                prompt: String(localized: "Help me prepare for a job interview by building confidence and practicing responses to challenging questions.", bundle: .module),
+                title: String(localized: "Hard Conversation", bundle: .module),
+                subtitle: String(localized: "say it well", bundle: .module),
+                prompt: String(localized: "Help me have a difficult conversation with __ about __. I want to be kind and clear. Draft what I can say.", bundle: .module),
                 personality: personality
             ),
             Prompt(

@@ -10,41 +10,17 @@ internal class PersonalityFactory {
     /// - Throws: Precondition failure if duplicates detected in factory
     static func createSystemPersonalities() -> [Personality] {
         let personalities = [
-            // Productivity
-            createGeneralAssistant(),
-            createCodeReviewer(),
-            createCyberSecuritySpecialist(),
-
-            // Creative
-            createWritingCoach(),
-            createScreenwriter(),
-            createStoryteller(),
-
-            // Education
-            createMathTeacher(),
-            createLanguageTranslator(),
-            createHistorian(),
-
-            // Entertainment
-            createGameMaster(),
-            createChessPlayer(),
-
-            // Health & Wellness
-            createNutritionExpert(),
-            createWellnessAdvisor(),
-
-            // Personal
+            // Ordered roughly by expected popularity.
             createSupportiveFriend(),
-            createRelationshipAdvisor(),
+            createGeneralAssistant(),
+            createWorkCoach(),
             createLifeCoach(),
-
-            // Lifestyle
-            createTravelGuide(),
-            createSocialMediaExpert(),
-
-            // Special personalities
-            createGenZBestie(),
-            createPhilosopher()
+            createSupportivePsychologist(),
+            createTeacher(),
+            createNutritionist(),
+            createButler(),
+            createMother(),
+            createFather()
         ]
 
         // VALIDATION: Ensure no duplicates in factory-created personalities
@@ -123,25 +99,15 @@ internal class PersonalityFactory {
         // Use lookup table to reduce complexity
         let personalityMap: [SystemInstruction: () -> Personality] = [
             .englishAssistant: createGeneralAssistant,
-            .codeReviewer: createCodeReviewer,
-            .cyberSecuritySpecialist: createCyberSecuritySpecialist,
-            .creativeWritingCouch: createWritingCoach,
-            .screenwriter: createScreenwriter,
-            .storyteller: createStoryteller,
-            .mathTeacher: createMathTeacher,
-            .languageTranslator: createLanguageTranslator,
-            .historian: createHistorian,
-            .textAdventureGame: createGameMaster,
-            .chessPlayer: createChessPlayer,
-            .dietitian: createNutritionExpert,
-            .mentalHealthAdviser: createWellnessAdvisor,
             .empatheticFriend: createSupportiveFriend,
-            .relationshipAdvisor: createRelationshipAdvisor,
             .lifeCoach: createLifeCoach,
-            .travelGuide: createTravelGuide,
-            .socialMediaManager: createSocialMediaExpert,
-            .generationZSlang: createGenZBestie,
-            .philosopher: createPhilosopher
+            .supportivePsychologist: createSupportivePsychologist,
+            .dietitian: createNutritionist,
+            .workCoach: createWorkCoach,
+            .butler: createButler,
+            .teacher: createTeacher,
+            .mother: createMother,
+            .father: createFather
         ]
         
         guard let factory = personalityMap[instruction] else {

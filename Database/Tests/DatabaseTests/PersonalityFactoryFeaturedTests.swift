@@ -6,15 +6,15 @@ import Abstractions
 /// Tests for PersonalityFactory featured personalities
 @Suite("PersonalityFactory Featured Personalities Tests")
 struct PersonalityFactoryFeaturedTests {
-    @Test("Factory creates exactly 5 featured personalities")
-    func factoryCreatesExactlyFiveFeaturedPersonalities() {
+    @Test("Factory creates the expected number of featured personalities")
+    func factoryCreatesExpectedFeaturedPersonalitiesCount() {
         // Given/When
         let personalities: [Personality] = PersonalityFactory.createSystemPersonalities()
         let featuredPersonalities: [Personality] = personalities.filter { $0.isFeature }
 
         // Then
-        #expect(featuredPersonalities.count == 5, """
-            Expected exactly 5 featured personalities, but found \(featuredPersonalities.count).
+        #expect(featuredPersonalities.count == 7, """
+            Expected exactly 7 featured personalities, but found \(featuredPersonalities.count).
             Featured: \(featuredPersonalities.map(\.name))
             """)
     }
@@ -24,10 +24,12 @@ struct PersonalityFactoryFeaturedTests {
         // Given
         let expectedFeaturedNames: Set<String> = [
             "General Assistant",
-            "Code Reviewer",
-            "Writing Coach",
-            "Philosopher",
-            "Supportive Friend"
+            "Supportive Friend",
+            "Work Coach",
+            "Life Coach",
+            "Psychologist",
+            "Teacher",
+            "Nutritionist"
         ]
 
         // When
@@ -36,11 +38,7 @@ struct PersonalityFactoryFeaturedTests {
         let featuredNames: Set<String> = Set(featuredPersonalities.map(\.name))
 
         // Then
-        #expect(featuredNames == expectedFeaturedNames, """
-            Featured personalities don't match expected set.
-            Expected: \(expectedFeaturedNames)
-            Got: \(featuredNames)
-            """)
+        #expect(featuredNames == expectedFeaturedNames)
     }
 
     @Test("Featured personalities are editable")
@@ -121,10 +119,6 @@ struct PersonalityFactoryFeaturedTests {
         // Given
         let personalities: [Personality] = PersonalityFactory.createSystemPersonalities()
 
-        // Then - Should have all 20 personalities for backwards compatibility
-        #expect(personalities.count == 20, """
-            Expected 20 system personalities for backwards compatibility,
-            but found \(personalities.count)
-            """)
+        #expect(personalities.count == 10)
     }
 }

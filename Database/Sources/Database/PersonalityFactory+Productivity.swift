@@ -43,4 +43,31 @@ extension PersonalityFactory {
         personality.prompts = createProductivityPrompts(for: personality)
         return personality
     }
+
+    static func createWorkCoach() -> Personality {
+        let personality = Personality(
+            systemInstruction: .workCoach,
+            name: String(localized: "Work Coach", bundle: .module),
+            description: String(localized: "Turn goals into next steps, plans, and drafts", bundle: .module),
+            imageName: "work-coach-icon",
+            category: .productivity,
+            isFeature: true
+        )
+
+        personality.prompts = createProductivityPrompts(for: personality)
+        return personality
+    }
+
+    static func createButler() -> Personality {
+        let personality = Personality(
+            systemInstruction: .butler,
+            name: String(localized: "Butler", bundle: .module),
+            description: String(localized: "Polished planning, reminders, and tasteful wording", bundle: .module),
+            imageName: "butler-icon",
+            category: .productivity
+        )
+
+        personality.prompts = createProductivityPrompts(for: personality)
+        return personality
+    }
 }

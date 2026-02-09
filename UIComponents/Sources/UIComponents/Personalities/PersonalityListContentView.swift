@@ -139,25 +139,25 @@ extension PersonalityCategory {
     /// Priority order for displaying categories
     var displayPriority: Int {
         switch self {
-        case .productivity:
+        case .personal:
             0
 
-        case .creative:
+        case .productivity:
             1
 
         case .education:
             2
 
-        case .personal:
+        case .health:
             3
 
         case .lifestyle:
             4
 
-        case .health:
+        case .entertainment:
             5
 
-        case .entertainment:
+        case .creative:
             6
         }
     }

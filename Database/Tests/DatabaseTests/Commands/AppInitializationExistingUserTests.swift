@@ -1,6 +1,7 @@
 import Testing
 import Foundation
 import SwiftData
+import DataAssets
 @testable import Database
 import AbstractionsTestUtilities
 import Abstractions
@@ -76,6 +77,44 @@ struct AppInitializationExistingUserTests {
 
         // Verify existing user with new chat returns chat screen
         #expect(result.targetScreen == .chat)
+    }
+
+    @Test("Prunes deprecated system personalities without conversation")
+    @MainActor
+    func existingUserPrunesDeprecatedSystemPersonalitiesWithoutConversation() async throws {
+        let mockRag = MockRagging()
+        let config = DatabaseConfiguration(
+            isStoredInMemoryOnly: true,
+            allowsSave: true,
+            ragFactory: MockRagFactory(mockRag: mockRag)
+        )
+        let database = try Database.new(configuration: config)
+
+        // First init creates the user + default system personalities.
+        _ = try await database.execute(AppCommands.Initialize())
+
+        // Insert a deprecated system personality that is not part of the current factory set.
+        let deprecated = Personality(
+            systemInstruction: .codeReviewer,
+            name: "Deprecated",
+            description: "Deprecated",
+            imageName: "code-review-icon",
+            category: .productivity,
+            isFeature: false,
+            isDefault: false,
+            isCustom: false
+        )
+        database.modelContainer.mainContext.insert(deprecated)
+        try database.modelContainer.mainContext.save()
+
+        // Second init should sync and prune it (no chat/messages).
+        _ = try await database.execute(AppCommands.Initialize())
+
+        let allPersonalities = try database.modelContainer.mainContext.fetch(FetchDescriptor<Personality>())
+        let remaining = allPersonalities.filter { personality in
+            personality.systemInstruction == .codeReviewer && !personality.isCustom
+        }
+        #expect(remaining.isEmpty)
     }
 
         @Test("Adds image model when existing user has v2 language only")

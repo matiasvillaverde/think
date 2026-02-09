@@ -111,7 +111,7 @@ internal struct LogoGlowRing: View {
 
 internal struct LogoImage: View {
     var body: some View {
-        Image(ImageResource(name: "think", bundle: .module))
+        Image(ImageResource(name: "openclaw-ghost", bundle: .module))
             .resizable()
             .scaledToFit()
             .frame(
@@ -123,7 +123,7 @@ internal struct LogoImage: View {
                 color: .marketingPrimary.opacity(OnboardingConstants.shadowOpacity),
                 radius: OnboardingConstants.shadowRadius
             )
-            .accessibilityLabel("Think AI Logo")
+            .accessibilityLabel("OpenClaw ghost")
     }
 }
 
@@ -136,7 +136,7 @@ internal struct TitleView: View {
                 .font(.title2)
                 .foregroundColor(.textSecondary)
 
-            Text("Think AI", bundle: .module)
+            Text("Think", bundle: .module)
                 .font(
                     .system(
                         size: OnboardingConstants.titleFontSize,
@@ -151,6 +151,10 @@ internal struct TitleView: View {
                         endPoint: .trailing
                     )
                 )
+
+            Text("An OpenClaw client for Apple platforms", bundle: .module)
+                .font(.callout)
+                .foregroundStyle(Color.textSecondary)
         }
     }
 }

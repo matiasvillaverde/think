@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Think/Assets.xcassets/AppIcon.appiconset/rounded_icon.png" width="128" alt="Think app icon" />
+</p>
+
 # Think (OpenClaw App)
 
 Think is an Apple‑platform app inspired by OpenClaw and transformed into a native iOS/macOS/visionOS experience. It is an experiment, and it is **not ready for production use**. Only use it if you understand how it works.
@@ -33,6 +37,43 @@ This project is under active development. Expect breaking changes, missing featu
 ## Repository Layout
 
 See `AGENTS.md` and `CLAUDE.md` for architecture and contribution guidance.
+
+## ThinkCLI
+
+ThinkCLI is a Swift executable named `think` (built with `swift-argument-parser`) that can manage chats, models, tools, RAG, and remote gateway connectivity from the terminal.
+
+### Install (One Command)
+
+This installs `think` into a standard `bin` directory (`/opt/homebrew/bin`, `/usr/local/bin`, or `~/.local/bin` depending on what is writable).
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/matiasvillaverde/think/main/scripts/install-think-cli.sh | bash
+```
+
+### Install From a Local Clone
+
+```bash
+cd ThinkCLI
+make install
+```
+
+### Quick Usage
+
+```bash
+think --help
+think doctor
+think models list
+think chat list
+```
+
+## LLM Inference Modes
+
+LLM inference can be:
+
+1. Remote (API key): OpenRouter, OpenAI, Anthropic, Google Gemini (set `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`/`GEMINI_API_KEY`).
+2. MLX models that run natively on Apple Silicon.
+3. llama.cpp models (GGUF).
+4. Connect to an instance of OpenClaw running remotely, and use the app as a client (via the OpenClaw Gateway).
 
 ## OpenClaw Remote Gateway
 

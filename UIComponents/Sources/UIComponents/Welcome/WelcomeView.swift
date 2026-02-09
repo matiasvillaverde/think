@@ -40,6 +40,7 @@ public struct WelcomeView: View {
     enum ModelSource: String, CaseIterable, Identifiable {
         case local = "localModels"
         case remote = "remoteModels"
+        case openClaw = "openClaw"
 
         var id: String { rawValue }
 
@@ -50,6 +51,9 @@ public struct WelcomeView: View {
 
             case .remote:
                 return String(localized: "Remote Models", bundle: .module)
+
+            case .openClaw:
+                return String(localized: "OpenClaw Gateway", bundle: .module)
             }
         }
     }
@@ -88,6 +92,10 @@ public struct WelcomeView: View {
 
         case .remote:
             return selectedRemoteModel != nil
+
+        case .openClaw:
+            // OpenClaw is optional setup; model selection continues via Local/Remote.
+            return false
         }
     }
 
@@ -100,7 +108,7 @@ public struct WelcomeView: View {
             WelcomeModelSourcePicker(selectedSource: $selectedSource)
 
             WelcomeSelectionContent(
-                selectedSource: selectedSource,
+                selectedSource: $selectedSource,
                 languageModels: languageModels,
                 isLoadingRecommended: isLoadingRecommended,
                 recommendedError: recommendedError,
@@ -127,6 +135,10 @@ public struct WelcomeView: View {
 
             case .remote:
                 selectedModelId = nil
+
+            case .openClaw:
+                selectedModelId = nil
+                selectedRemoteModel = nil
             }
         }
         .alert(
@@ -164,6 +176,10 @@ public struct WelcomeView: View {
 
         case .remote:
             await handleRemoteContinue()
+
+        case .openClaw:
+            // No-op: OpenClaw is configured in its own panel.
+            break
         }
     }
 

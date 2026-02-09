@@ -1,4 +1,5 @@
 // PersonalityGroupView.swift
+import DataAssets
 import Database
 import SwiftUI
 
@@ -10,9 +11,39 @@ internal struct PersonalityGroupView: View {
 
     private enum Layout {
         static let minItemWidth: CGFloat = 160
+        static let defaultPopularityRank: Int = .max
     }
 
+    private typealias Instruction = SystemInstruction
+
+    private func popularityRank(_ personality: Personality) -> Int {
+        Self.popularityOrder.firstIndex(of: personality.systemInstruction)
+            ?? Layout.defaultPopularityRank
+    }
+
+    private static let popularityOrder: [Instruction] = [
+        .empatheticFriend,
+        .englishAssistant,
+        .workCoach,
+        .lifeCoach,
+        .supportivePsychologist,
+        .teacher,
+        .dietitian,
+        .butler,
+        .mother,
+        .father
+    ]
+
     var body: some View {
+        let orderedPersonalities: [Personality] = personalities.sorted { first, second in
+            let firstRank: Int = popularityRank(first)
+            let secondRank: Int = popularityRank(second)
+            if firstRank != secondRank {
+                return firstRank < secondRank
+            }
+            return first.name.localizedCaseInsensitiveCompare(second.name) == .orderedAscending
+        }
+
         VStack(alignment: .leading, spacing: DesignConstants.Spacing.medium) {
             Text(title)
                 .font(.title)
@@ -29,7 +60,7 @@ internal struct PersonalityGroupView: View {
                 ],
                 spacing: DesignConstants.Spacing.medium
             ) {
-                ForEach(personalities) { personality in
+                ForEach(orderedPersonalities) { personality in
                     PersonalityCardView(personality: personality)
                         .onTapGesture {
                             onSelectPersonality(personality)

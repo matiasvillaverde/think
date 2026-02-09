@@ -69,11 +69,12 @@ struct AppInitializationNewInstallTests {
         let personalityDescriptor = FetchDescriptor<Personality>()
         let personalities = try database.modelContainer.mainContext.fetch(personalityDescriptor)
 
-        #expect(personalities.count >= 20) // Should have at least 20 system personalities
+        let expectedSystemCount: Int = PersonalityFactory.createSystemPersonalities().count
+        #expect(personalities.count >= expectedSystemCount)
         #expect(personalities.contains { $0.isDefault }) // Should have default personality
 
         let systemPersonalities = personalities.filter { !$0.isCustom }
-        #expect(systemPersonalities.count >= 20)
+        #expect(systemPersonalities.count == expectedSystemCount)
     }
 
     @Test("Does not create any chats on new install")

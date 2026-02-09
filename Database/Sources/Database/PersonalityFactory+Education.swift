@@ -2,6 +2,20 @@ import SwiftData
 
 // MARK: - Education Personalities
 extension PersonalityFactory {
+    static func createTeacher() -> Personality {
+        let personality = Personality(
+            systemInstruction: .teacher,
+            name: String(localized: "Teacher", bundle: .module),
+            description: String(localized: "Patient explanations and guided learning", bundle: .module),
+            imageName: "teacher-icon",
+            category: .education,
+            isFeature: true
+        )
+
+        personality.prompts = createEducationPrompts(for: personality)
+        return personality
+    }
+
     static func createMathTeacher() -> Personality {
         let personality = Personality(
             systemInstruction: .mathTeacher,
