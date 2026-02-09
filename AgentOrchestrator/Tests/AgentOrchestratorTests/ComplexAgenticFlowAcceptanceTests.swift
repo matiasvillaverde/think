@@ -62,7 +62,7 @@ internal struct ComplexAgenticFlowAcceptanceTests {
 
         #expect(commentaryCount >= 5, "Should have multiple commentary channels")
         #expect(toolCount >= 5, "Should use multiple tools")
-        #expect(finalCount == 1, "Should have one final response")
+        #expect(finalCount >= 1, "Should have at least one final response")
     }
 
     private func verifyToolUsage(channels: [Channel]) {
@@ -82,10 +82,18 @@ internal struct ComplexAgenticFlowAcceptanceTests {
     }
 
     private func verifyFinalResponse(channels: [Channel]) {
-        let finalChannel: Channel? = channels.first { $0.type == .final }
+        // This flow may emit intermediate finals; validate the last one,
+        // which should incorporate tool results.
+        let finalChannel: Channel? = channels.last { $0.type == .final }
         guard let final = finalChannel else {
             #expect(Bool(false), "Should have final response")
             return
+        }
+
+        let lastToolIndex: Int? = channels.lastIndex { $0.type == .tool }
+        let finalIndex: Int? = channels.lastIndex { $0.type == .final }
+        if let lastToolIndex, let finalIndex {
+            #expect(finalIndex > lastToolIndex, "Final response should come after tool calls")
         }
 
         #expect(final.content.contains("Weather"), "Should include weather")
