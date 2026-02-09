@@ -9,7 +9,9 @@ public struct MessagesView: View {
             static let messageSpacing: CGFloat = 16
             static let messageBottomPadding: CGFloat = 5
             static let scrollViewBottomOffset: CGFloat = 100
-            static let scrollAnimationDelay: TimeInterval = 0.5
+            // Keep new-message autoscroll feeling snappy. We still delay slightly so layout has
+            // time to settle before scrolling.
+            static let scrollAnimationDelay: TimeInterval = 0.1
             static let scrollOffsetX: CGFloat = 0.5
             static let scrollOffsetY: CGFloat = 1.2
             static let scrollAnimationDuration: TimeInterval = 0.3
@@ -38,7 +40,8 @@ public struct MessagesView: View {
         _messages = Query(
             filter: #Predicate<Message> { $0.chat?.id == id },
             sort: \Message.createdAt,
-            animation: .easeInOut
+            // Streaming updates can be frequent; avoid implicit list animations to reduce jank.
+            animation: .linear(duration: 0)
         )
     }
 

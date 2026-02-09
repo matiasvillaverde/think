@@ -15,6 +15,8 @@ Instead, please send an email to **contact.app** with:
 
 We will acknowledge your report within 48 hours and aim to provide a fix or mitigation plan within 7 days.
 
+If you are publishing this repository under a different contact address, update this file accordingly.
+
 ## Scope
 
 This policy applies to:

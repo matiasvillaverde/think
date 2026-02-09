@@ -61,6 +61,23 @@ final class ChatScreenUITests: XCTestCase {
         XCTFail("Streaming probe did not advance within \(timeout)s (label=\(initialLabel))", file: file, line: line)
     }
 
+    private func waitForElementLabelToChange(
+        _ element: XCUIElement,
+        from initialLabel: String,
+        timeout: TimeInterval,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.label != initialLabel {
+                return
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        }
+        XCTFail("Expected label to change within \(timeout)s (label=\(initialLabel))", file: file, line: line)
+    }
+
     private func scrollUntilExists(
         _ scrollView: XCUIElement,
         untilExists element: XCUIElement,
@@ -130,7 +147,7 @@ final class ChatScreenUITests: XCTestCase {
         let initialToggleLabel = rawToggle.label
         XCTAssertTrue(initialToggleLabel == "Raw" || initialToggleLabel == "Formatted")
         rawToggle.tap()
-        XCTAssertNotEqual(rawToggle.label, initialToggleLabel)
+        waitForElementLabelToChange(rawToggle, from: initialToggleLabel, timeout: 5)
     }
 
     func testFinalChannelContentIsQueryAccessibleWhileStreaming() {
@@ -141,7 +158,11 @@ final class ChatScreenUITests: XCTestCase {
         let chatView = any("uiTest.chatView", in: app)
         XCTAssertTrue(chatView.waitForExistence(timeout: 15))
 
-        let finalContent = any("channel.final.content", in: app)
+        let finalContent = element(
+            withIdentifier: "channel.final.content",
+            labelContains: "AUTO_SCROLL_STREAM step",
+            in: app
+        )
         XCTAssertTrue(finalContent.waitForExistence(timeout: 15))
         XCTAssertTrue(finalContent.label.contains("AUTO_SCROLL_STREAM step"))
     }
@@ -338,16 +359,18 @@ final class ChatScreenUITests: XCTestCase {
         let probe = any("uiTest.streamingProbe", in: app)
         XCTAssertTrue(probe.waitForExistence(timeout: 15))
 
-        let bottom = any("chat.messages.bottom", in: app)
-        XCTAssertTrue(bottom.waitForExistence(timeout: 15))
+        let streamingFinal = element(
+            withIdentifier: "channel.final.content",
+            labelContains: "AUTO_SCROLL_STREAM step",
+            in: app
+        )
+        XCTAssertTrue(streamingFinal.waitForExistence(timeout: 15))
+        XCTAssertTrue(streamingFinal.isHittable)
 
         // Wait for streaming to be underway (seed may advance beyond step 0 before tests start).
         let anyStepProbePredicate = NSPredicate(format: "label CONTAINS %@", "AUTO_SCROLL_STREAM step")
         expectation(for: anyStepProbePredicate, evaluatedWith: probe)
         waitForExpectations(timeout: 15)
-
-        // When pinned, the bottom sentinel should remain visible/hittable while streaming progresses.
-        XCTAssertTrue(bottom.isHittable)
 
         let firstLabel = probe.label
         let firstStep = extractAutoScrollStep(from: firstLabel)
@@ -356,7 +379,7 @@ final class ChatScreenUITests: XCTestCase {
         // Ensure the stream continues to update.
         waitForStreamingProbeToAdvance(probe, timeout: 20)
 
-        XCTAssertTrue(bottom.isHittable)
+        XCTAssertTrue(streamingFinal.isHittable)
     }
 
     func testStreamingDoesNotAutoScrollWhenUserScrollsUp() {

@@ -85,7 +85,9 @@ public enum FileCommands {
             let persistedId = attachment.id
 
             Logger.fileCommands.info("Starting background RAG processing task")
-            attachment.backgroundTask = Task.detached(priority: .background) {
+            // Use `.utility` so work starts promptly after attach, but doesn't compete with UI.
+            // `Task.detached` at `.background` can be starved in test runs, causing flaky RAG integration tests.
+            attachment.backgroundTask = Task(priority: .utility) {
                 Logger.fileCommands.debug("Background task started for file processing")
 
                 do {
@@ -229,7 +231,8 @@ public enum FileCommands {
             let id = file.id
             Logger.fileCommands.debug("Starting background RAG cleanup for table: \(tableName, privacy: .private)")
 
-            Task.detached(priority: .background) {
+            // Use `.utility` so cleanup is reliable and happens promptly.
+            Task(priority: .utility) {
                 do {
                     Logger.fileCommands.debug("Executing RAG deletion for file ID: \(id, privacy: .private)")
                     try await rag.delete(id: id, table: tableName)

@@ -12,7 +12,6 @@ extension ChatCommands {
 
         public init(chatId: UUID) {
             self.chatId = chatId
-            Logger.database.info("ChatCommands.Read initialized with chatId: \(chatId)")
         }
 
         public func execute(
@@ -20,13 +19,10 @@ extension ChatCommands {
             userId: PersistentIdentifier?,
             rag: Ragging?
         ) throws -> Chat {
-            Logger.database.info("ChatCommands.Read.execute started for chat: \(chatId)")
-
             let descriptor = FetchDescriptor<Chat>(
                 predicate: #Predicate<Chat> { $0.id == chatId }
             )
 
-            Logger.database.info("Fetching chat with id: \(chatId)")
             let chats = try context.fetch(descriptor)
 
             guard let chat = chats.first else {
@@ -34,7 +30,6 @@ extension ChatCommands {
                 throw DatabaseError.chatNotFound
             }
 
-            Logger.database.info("ChatCommands.Read.execute completed successfully")
             return chat
         }
     }

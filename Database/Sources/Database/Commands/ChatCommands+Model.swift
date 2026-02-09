@@ -88,7 +88,6 @@ extension ChatCommands {
         public init(chatId1: UUID, chatId2: UUID) {
             self.chatId1 = chatId1
             self.chatId2 = chatId2
-            Logger.database.info("ChatCommands.HaveSameModels initialized - chat1: \(chatId1), chat2: \(chatId2)")
         }
 
         public func execute(in context: ModelContext) throws -> Bool {
@@ -101,20 +100,13 @@ extension ChatCommands {
             userId: PersistentIdentifier?,
             rag: Ragging?
         ) throws -> Bool {
-            Logger.database.info("ChatCommands.HaveSameModels.execute started")
-
             let chat1 = try ChatCommands.Read(chatId: chatId1).execute(in: context, userId: userId, rag: rag)
             let chat2 = try ChatCommands.Read(chatId: chatId2).execute(in: context, userId: userId, rag: rag)
-
-            Logger.database.info("Comparing models between chats")
 
             let sameLanguageModel = chat1.languageModel.id == chat2.languageModel.id
             let sameImageModel = chat1.imageModel.id == chat2.imageModel.id
 
-            let result = sameLanguageModel && sameImageModel
-
-            Logger.database.info("ChatCommands.HaveSameModels.execute completed - same language: \(sameLanguageModel), same image: \(sameImageModel), result: \(result)")
-            return result
+            return sameLanguageModel && sameImageModel
         }
     }
 

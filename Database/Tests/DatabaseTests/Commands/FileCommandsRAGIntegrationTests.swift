@@ -40,7 +40,10 @@ struct FileCommandsRagTests {
             ))
 
             // Then
-            try await Task.sleep(nanoseconds: 100_000_000)
+            let didReceiveCall = await waitUntil(timeout: .seconds(2)) {
+                await mockRag.lastAddFileCall != nil
+            }
+            #expect(didReceiveCall)
             let lastCall = await mockRag.lastAddFileCall
             #expect(lastCall != nil)
             #expect(lastCall?.url.lastPathComponent == "rag-test.txt")
@@ -86,7 +89,10 @@ struct FileCommandsRagTests {
             try await database.write(FileCommands.Delete(fileId: fileId))
 
             // Then
-            try await Task.sleep(nanoseconds: 100_000_000)
+            let didDelete = await waitUntil(timeout: .seconds(2)) {
+                !(await mockRag.deleteIDCalls).isEmpty
+            }
+            #expect(didDelete)
             let deleteOperations = await mockRag.deleteIDCalls
             #expect(!deleteOperations.isEmpty)
             #expect(deleteOperations.contains { $0.id == fileId })
@@ -125,7 +131,10 @@ struct FileCommandsRagTests {
 
             // Then
             // Verify RAG received the file
-            try await Task.sleep(nanoseconds: 100_000_000)
+            let didReceiveCall = await waitUntil(timeout: .seconds(2)) {
+                await mockRag.lastAddFileCall != nil
+            }
+            #expect(didReceiveCall)
             let lastCall = await mockRag.lastAddFileCall
             #expect(lastCall != nil)
             #expect(lastCall?.url.lastPathComponent == "config-test.txt")
@@ -181,7 +190,10 @@ struct FileCommandsRagTests {
             try await database.write(FileCommands.Delete(fileId: fileToDelete))
 
             // Then
-            try await Task.sleep(nanoseconds: 100_000_000)
+            let didDelete = await waitUntil(timeout: .seconds(2)) {
+                !(await mockRag.deleteIDCalls).isEmpty
+            }
+            #expect(didDelete)
             let deleteOperations = await mockRag.deleteIDCalls
             #expect(!deleteOperations.isEmpty)
             #expect(deleteOperations.contains { $0.id == fileToDelete })
@@ -196,6 +208,24 @@ struct FileCommandsRagTests {
 }
 
 // MARK: - Helper Functions
+
+private func waitUntil(
+    timeout: Duration,
+    pollEvery: Duration = .milliseconds(25),
+    _ condition: @Sendable () async -> Bool
+) async -> Bool {
+    let clock = ContinuousClock()
+    let deadline = clock.now.advanced(by: timeout)
+
+    while clock.now < deadline {
+        if await condition() {
+            return true
+        }
+        try? await Task.sleep(for: pollEvery)
+    }
+
+    return await condition()
+}
 
 private func addRequiredModels(_ database: Database) async throws {
     // Initialize default personality first

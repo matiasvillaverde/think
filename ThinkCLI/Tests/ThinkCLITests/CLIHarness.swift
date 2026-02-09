@@ -38,6 +38,8 @@ struct TestRuntime {
         let database = try Database.new(configuration: config)
         try await waitForReady(database)
 
+        await gateway.bindDatabase(database)
+
         let output = BufferOutput()
         let settings = CLIRuntimeSettings(
             outputFormat: outputFormat,
@@ -193,6 +195,11 @@ actor StubGateway: GatewayServicing {
     private var lastSendSessionId: UUID?
     private var sendResult: GatewaySendResult?
     private var sendDelayNanoseconds: UInt64 = 0
+    private var database: (any DatabaseProtocol)?
+
+    func bindDatabase(_ database: any DatabaseProtocol) {
+        self.database = database
+    }
 
     func setSessions(_ sessions: [GatewaySession]) {
         self.sessions = sessions
@@ -211,6 +218,25 @@ actor StubGateway: GatewayServicing {
     }
 
     func createSession(title: String?) async throws -> GatewaySession {
+        if let database {
+            // Mirror LocalGatewayService behavior: session IDs match Chat IDs.
+            let personalityId = try await database.write(PersonalityCommands.WriteDefault())
+            let chatId = try await database.write(ChatCommands.Create(personality: personalityId))
+            if let title {
+                _ = try await database.write(ChatCommands.Rename(chatId: chatId, newName: title))
+            }
+
+            let now = Date()
+            let session = GatewaySession(
+                id: chatId,
+                title: title ?? "New Session",
+                createdAt: now,
+                updatedAt: now
+            )
+            sessions.append(session)
+            return session
+        }
+
         let session = GatewaySession(
             id: UUID(),
             title: title ?? "New Session",
