@@ -2,9 +2,11 @@ import Foundation
 
 #if DEBUG
 
+import OSLog
+
 @inline(__always)
 internal func logPrint(_ s: String) {
-    print(s)
+    Logger(subsystem: "AudioGenerator", category: "Debug").debug("\(s, privacy: .public)")
 }
 
 #else

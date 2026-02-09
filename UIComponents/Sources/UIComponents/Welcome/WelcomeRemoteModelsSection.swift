@@ -323,7 +323,9 @@ private struct WelcomeRemoteModelRow: View {
                     .font(.caption2)
                     .padding(.horizontal, WelcomeRemoteModelsConstants.freeBadgeHorizontalPadding)
                     .padding(.vertical, WelcomeRemoteModelsConstants.freeBadgeVerticalPadding)
-                    .background(Color.paletteGreen.opacity(WelcomeRemoteModelsConstants.freeBadgeOpacity))
+                    .background(
+                        Color.paletteGreen.opacity(WelcomeRemoteModelsConstants.freeBadgeOpacity)
+                    )
                     .clipShape(Capsule())
             }
         }

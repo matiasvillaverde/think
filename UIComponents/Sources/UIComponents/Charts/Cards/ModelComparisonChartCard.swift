@@ -135,7 +135,10 @@ public struct ModelComparisonChartCard: View {
         .chartPlotStyle { plotArea in
             plotArea
                 .background(Color.paletteGray.opacity(Constants.chartBackgroundOpacity))
-                .border(Color.paletteGray.opacity(Constants.borderOpacity), width: Constants.borderWidth)
+                .border(
+                    Color.paletteGray.opacity(Constants.borderOpacity),
+                    width: Constants.borderWidth
+                )
         }
         .frame(height: Constants.chartHeight)
         .animation(

@@ -120,7 +120,10 @@ public struct EntropyChartCard: View {
         .chartPlotStyle { plotArea in
             plotArea
                 .background(Color.paletteGray.opacity(Constants.backgroundOpacity))
-                .border(Color.paletteGray.opacity(Constants.borderOpacity), width: Constants.borderWidth)
+                .border(
+                    Color.paletteGray.opacity(Constants.borderOpacity),
+                    width: Constants.borderWidth
+                )
         }
         .frame(height: Constants.chartHeight)
         .animation(

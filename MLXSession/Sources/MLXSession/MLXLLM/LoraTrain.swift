@@ -6,6 +6,9 @@ import MLX
 import MLXNN
 import MLXOptimizers
 import Tokenizers
+import OSLog
+
+private let kLogger: Logger = Logger(subsystem: "MLXSession", category: "LoRATrain")
 
 /// Equivalent to `lora.py/iterate_batches()`. Used internally by ``LoRATrain``.
 struct LoRABatchIterator: Sequence, IteratorProtocol {
@@ -48,11 +51,11 @@ struct LoRABatchIterator: Sequence, IteratorProtocol {
         let maxLength = lengths.max() ?? 0
 
         if maxLength > 2_048 {
-            print(
+            kLogger.warning(
                 """
-                [WARNING] Some sequences are longer than 2048 tokens.
-                Consider pre-splitting your data to save memory.
-                """)
+                Some sequences are longer than 2048 tokens. Consider pre-splitting your data to save memory.
+                """
+            )
         }
 
         // pad to the max length
@@ -180,10 +183,14 @@ internal enum LoRATrain {
                     if let linear = child as? Linear {
                         update[key] = .value(LoRALinear.from(linear: linear))
                     } else {
-                        print("\(key) on \(layer) is not Linear")
+                        kLogger.warning(
+                            "\(key, privacy: .public) on \(String(describing: layer), privacy: .public) is not Linear"
+                        )
                     }
                 } else {
-                    print("failed to find key \(key) on \(layer)")
+                    kLogger.warning(
+                        "Failed to find key \(key, privacy: .public) on \(String(describing: layer), privacy: .public)"
+                    )
                 }
             }
             layer.update(modules: update)

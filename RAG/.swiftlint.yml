@@ -12,7 +12,7 @@ disabled_rules:
   - type_contents_order
   - redundant_type_annotation
   - extension_access_modifier
-  
+
   # Temporarily disabled to allow tests to run
   - type_body_length
   - file_name
@@ -44,3 +44,31 @@ function_parameter_count:
 large_tuple:
   warning: 3
   error: 4
+
+
+custom_rules:
+  no_direct_color_literals:
+    name: "No direct Color literals"
+    regex: '(^|[^A-Za-z0-9_])Color[.](red|green|blue|orange|yellow|pink|purple|gray|black|white|clear|primary|secondary)'
+    message: "Use UIComponents Color tokens (UIComponents/Sources/UIComponents/Color.swift) instead of Color.red/Color.gray/etc."
+    severity: error
+  no_color_primary_secondary_shorthand:
+    name: "No .primary/.secondary shorthand"
+    regex: '[.](foregroundColor|foregroundStyle)[(][ ]*[.](primary|secondary)[ ]*[)]'
+    message: "Use Color.textPrimary/Color.textSecondary (tokens) instead of .primary/.secondary."
+    severity: error
+  no_system_color_constructors:
+    name: "No UIColor/NSColor construction"
+    regex: '(^|[^A-Za-z0-9_])Color[(][ ]*(UIColor|NSColor)[.]'
+    message: "Use UIComponents Color tokens backed by Assets.xcassets."
+    severity: error
+  no_rgb_color_construction:
+    name: "No RGB Color construction"
+    regex: '(^|[^A-Za-z0-9_])Color[(][ ]*(red[ ]*:|[.]sRGB)'
+    message: "Define colors in UIComponents Assets.xcassets and expose via Color.swift."
+    severity: error
+  no_color_hex_initializer:
+    name: "No Color(hex:) construction"
+    regex: '(^|[^A-Za-z0-9_])(Color[(][ ]*hex[ ]*:|[.]init[(][ ]*hex[ ]*:)'
+    message: "Use Color.userProvided(hex:) for user colors; otherwise define colors in Assets.xcassets."
+    severity: error

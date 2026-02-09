@@ -1,5 +1,6 @@
 import Foundation
 import MarkdownUI
+import OSLog
 import SwiftUI
 
 // Extract magic numbers into constants
@@ -13,9 +14,14 @@ private enum Constants {
 @preconcurrency
 @MainActor
 public final class ThemeCache {
+    nonisolated private static let logger: Logger = Logger(
+        subsystem: "UIComponents",
+        category: "ThemeCache"
+    )
+
     deinit {
         #if DEBUG
-            print("deinit ThemeCache")
+            Self.logger.debug("deinit ThemeCache")
         #endif
     }
 

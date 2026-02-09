@@ -196,9 +196,6 @@ public actor Database: DatabaseProtocol {
             // Log to system log (viewable in Console.app)
             self.logger.error("\(errorDetails, privacy: .public)")
 
-            // Print to console for immediate debugging
-            print(errorDetails)
-
             // Log stack trace if available
             logger.error("Stack trace:\n\(Thread.callStackSymbols.joined(separator: "\n"), privacy: .public)")
 
@@ -226,7 +223,6 @@ public actor Database: DatabaseProtocol {
                         """
 
                 logger.fault("\(fallbackErrorDetails, privacy: .public)")
-                print(fallbackErrorDetails)
 
                 // You could also save these errors to a file before crashing
                 // This approach gives you time to log before the crash

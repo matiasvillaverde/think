@@ -49,7 +49,9 @@ internal enum UITestSeedScrolling {
 
         // Keep streaming updates running while UITests are executing.
         Task(priority: .userInitiated) {
-            for stepIndex in 1...60 {
+            // UI test suites can take a couple minutes end-to-end; keep the stream alive long
+            // enough that individual tests can always observe at least one update.
+            for stepIndex in 1...1200 {
                 _ = try? await writeScrollStreamingUpdate(
                     database: database,
                     messageId: messageId,

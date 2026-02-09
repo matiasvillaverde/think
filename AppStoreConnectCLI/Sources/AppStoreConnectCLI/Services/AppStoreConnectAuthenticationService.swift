@@ -42,14 +42,9 @@ public actor AppStoreConnectAuthenticationService: AuthenticationService {
             self.authenticationDate = Date()
             
             if configuration.verboseLogging {
-                // swiftlint:disable:next todo
-                // TODO: Replace with Logger when logging infrastructure is implemented
-                // swiftlint:disable:next no_print_statements
-                print("Successfully authenticated with App Store Connect API")
-                // swiftlint:disable:next no_print_statements
-                print("Issuer ID: \(configuration.issuerID)")
-                // swiftlint:disable:next no_print_statements
-                print("Key ID: \(configuration.keyID)")
+                CLIOutput.success("Successfully authenticated with App Store Connect API")
+                CLIOutput.keyValue("Issuer ID", configuration.issuerID)
+                CLIOutput.keyValue("Key ID", configuration.keyID)
             }
             
         } catch let error as AppStoreConnectError {

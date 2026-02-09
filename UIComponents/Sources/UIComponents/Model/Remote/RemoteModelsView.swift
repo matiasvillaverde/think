@@ -297,7 +297,9 @@ internal struct RemoteModelRow: View {
                     .font(.caption2)
                     .padding(.horizontal, RemoteModelsViewConstants.freeBadgeHorizontalPadding)
                     .padding(.vertical, RemoteModelsViewConstants.freeBadgeVerticalPadding)
-                    .background(Color.paletteGreen.opacity(RemoteModelsViewConstants.freeBadgeOpacity))
+                    .background(
+                        Color.paletteGreen.opacity(RemoteModelsViewConstants.freeBadgeOpacity)
+                    )
                     .clipShape(Capsule())
             }
         }

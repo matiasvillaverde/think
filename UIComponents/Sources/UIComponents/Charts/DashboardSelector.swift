@@ -235,7 +235,10 @@ public struct DashboardSelector: View {
 
     private var borderOverlay: some View {
         RoundedRectangle(cornerRadius: Constants.cornerRadius)
-            .stroke(Color.paletteGray.opacity(Constants.borderOpacity), lineWidth: Constants.borderWidth)
+            .stroke(
+                Color.paletteGray.opacity(Constants.borderOpacity),
+                lineWidth: Constants.borderWidth
+            )
     }
 }
 

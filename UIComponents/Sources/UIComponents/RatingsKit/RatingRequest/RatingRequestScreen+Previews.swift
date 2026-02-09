@@ -1,14 +1,20 @@
+import OSLog
 import SwiftUI
+
+private let kPreviewLogger: Logger = Logger(
+    subsystem: "UIComponents",
+    category: "RatingRequestPreview"
+)
 
 #Preview("Mock Reviews") {
     RatingRequestScreen(
         appId: "1658216708",
         appRatingProvider: MockAppRatingProvider.withMockReviews,
         primaryButtonAction: {
-            print("Rating Requested")
+            kPreviewLogger.debug("Rating Requested")
         },
         secondaryButtonAction: {
-            print("Maybe later tapped")
+            kPreviewLogger.debug("Maybe later tapped")
         }
     )
     .tint(.accentColor)
@@ -22,10 +28,10 @@ import SwiftUI
         appId: "1658216708",
         appRatingProvider: MockAppRatingProvider.noReviews,
         primaryButtonAction: {
-            print("Rating Requested")
+            kPreviewLogger.debug("Rating Requested")
         },
         secondaryButtonAction: {
-            print("Maybe later tapped")
+            kPreviewLogger.debug("Maybe later tapped")
         }
     )
     #if os(macOS)
@@ -38,10 +44,10 @@ import SwiftUI
         appId: "1658216708",
         appRatingProvider: MockAppRatingProvider.noRatingsOrReviews,
         primaryButtonAction: {
-            print("Rating Requested")
+            kPreviewLogger.debug("Rating Requested")
         },
         secondaryButtonAction: {
-            print("Maybe later tapped")
+            kPreviewLogger.debug("Maybe later tapped")
         }
     )
     #if os(macOS)
@@ -54,13 +60,15 @@ import SwiftUI
         appId: "1658216708",
         appRatingProvider: MockAppRatingProvider.throwsError,
         primaryButtonAction: {
-            print("Rating Requested")
+            kPreviewLogger.debug("Rating Requested")
         },
         secondaryButtonAction: {
-            print("Maybe later tapped")
+            kPreviewLogger.debug("Maybe later tapped")
         },
         onError: { error in
-            print("Error occurred: \(error)")
+            kPreviewLogger.error(
+                "Error occurred: \(error.localizedDescription, privacy: .public)"
+            )
         }
     )
     #if os(macOS)

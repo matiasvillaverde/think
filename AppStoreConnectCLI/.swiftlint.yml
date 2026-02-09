@@ -47,18 +47,30 @@ disabled_rules:
   - todo  # TODOs are acceptable for this phase of development
 
 # Custom rules for CLI-specific patterns
+
 custom_rules:
-  no_print_statements:
-    name: "No print statements"
-    regex: '^\s*print\s*\('
-    message: "Use Logger instead of print statements"
-    severity: warning
-    excluded:
-      - ".*CLIOutput\\.swift$"  # CLIOutput is exempt from print restrictions
-
-
-# Reporter
-reporter: "xcode"
-
-# Analyzer rules (disabled for faster builds)
-analyzer_rules: []
+  no_direct_color_literals:
+    name: "No direct Color literals"
+    regex: '(^|[^A-Za-z0-9_])Color[.](red|green|blue|orange|yellow|pink|purple|gray|black|white|clear|primary|secondary)'
+    message: "Use UIComponents Color tokens (UIComponents/Sources/UIComponents/Color.swift) instead of Color.red/Color.gray/etc."
+    severity: error
+  no_color_primary_secondary_shorthand:
+    name: "No .primary/.secondary shorthand"
+    regex: '[.](foregroundColor|foregroundStyle)[(][ ]*[.](primary|secondary)[ ]*[)]'
+    message: "Use Color.textPrimary/Color.textSecondary (tokens) instead of .primary/.secondary."
+    severity: error
+  no_system_color_constructors:
+    name: "No UIColor/NSColor construction"
+    regex: '(^|[^A-Za-z0-9_])Color[(][ ]*(UIColor|NSColor)[.]'
+    message: "Use UIComponents Color tokens backed by Assets.xcassets."
+    severity: error
+  no_rgb_color_construction:
+    name: "No RGB Color construction"
+    regex: '(^|[^A-Za-z0-9_])Color[(][ ]*(red[ ]*:|[.]sRGB)'
+    message: "Define colors in UIComponents Assets.xcassets and expose via Color.swift."
+    severity: error
+  no_color_hex_initializer:
+    name: "No Color(hex:) construction"
+    regex: '(^|[^A-Za-z0-9_])(Color[(][ ]*hex[ ]*:|[.]init[(][ ]*hex[ ]*:)'
+    message: "Use Color.userProvided(hex:) for user colors; otherwise define colors in Assets.xcassets."
+    severity: error

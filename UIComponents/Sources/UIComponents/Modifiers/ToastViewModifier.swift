@@ -39,7 +39,11 @@ public struct ToastViewModifier: ViewModifier {
                         .padding()
                         .background(
                             RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                                .fill(toast.style == .success ? Color.paletteGreen : Color.paletteRed)
+                                .fill(
+                                    toast.style == .success
+                                        ? Color.paletteGreen
+                                        : Color.paletteRed
+                                )
                         )
                         .padding(.bottom, Constants.bottomPadding)
                         .transition(.move(edge: .bottom).combined(with: .opacity))

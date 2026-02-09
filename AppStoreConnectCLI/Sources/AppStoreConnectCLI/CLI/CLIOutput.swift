@@ -2,6 +2,17 @@ import Foundation
 
 /// Utility for consistent CLI output formatting
 public struct CLIOutput {
+    // MARK: - Output Sink
+    @inline(__always)
+    private static func writeStdout(_ message: String, terminator: String = "\n") {
+        fputs(message + terminator, stdout)
+    }
+
+    @inline(__always)
+    private static func writeStderr(_ message: String, terminator: String = "\n") {
+        fputs(message + terminator, stderr)
+    }
+
     // MARK: - ANSI Colors
     private static let red = "\u{001B}[31m"
     private static let green = "\u{001B}[32m"
@@ -17,59 +28,59 @@ public struct CLIOutput {
     /// Print a success message
     public static func success(_ message: String, colored: Bool = true) {
         let prefix = colored ? "\(green)✓\(reset)" : "✓"
-        print("\(prefix) \(message)")
+        writeStdout("\(prefix) \(message)")
     }
     
     /// Print an error message
     public static func error(_ message: String, colored: Bool = true) {
         let prefix = colored ? "\(red)✗\(reset)" : "✗"
-        fputs("\(prefix) \(message)\n", stderr)
+        writeStderr("\(prefix) \(message)")
     }
     
     /// Print a warning message
     public static func warning(_ message: String, colored: Bool = true) {
         let prefix = colored ? "\(yellow)⚠\(reset)" : "⚠"
-        print("\(prefix) \(message)")
+        writeStdout("\(prefix) \(message)")
     }
     
     /// Print an info message
     public static func info(_ message: String, colored: Bool = true) {
         let prefix = colored ? "\(blue)ℹ\(reset)" : "ℹ"
-        print("\(prefix) \(message)")
+        writeStdout("\(prefix) \(message)")
     }
     
     /// Print a progress message
     public static func progress(_ message: String, colored: Bool = true) {
         let prefix = colored ? "\(cyan)→\(reset)" : "→"
-        print("\(prefix) \(message)")
+        writeStdout("\(prefix) \(message)")
     }
     
     /// Print a section header
     public static func section(_ title: String, colored: Bool = true) {
         let formatted = colored ? "\(bold)\(title)\(reset)" : title
-        print("\n\(formatted)")
+        writeStdout("\n\(formatted)")
         if colored {
-            print(String(repeating: "─", count: title.count))
+            writeStdout(String(repeating: "─", count: title.count))
         } else {
-            print(String(repeating: "-", count: title.count))
+            writeStdout(String(repeating: "-", count: title.count))
         }
     }
     
     /// Print a key-value pair
     public static func keyValue(_ key: String, _ value: String, colored: Bool = true) {
         let keyFormatted = colored ? "\(bold)\(key):\(reset)" : "\(key):"
-        print("  \(keyFormatted) \(value)")
+        writeStdout("  \(keyFormatted) \(value)")
     }
     
     /// Print a list item
     public static func listItem(_ item: String, colored: Bool = true) {
         let bullet = colored ? "\(white)•\(reset)" : "•"
-        print("  \(bullet) \(item)")
+        writeStdout("  \(bullet) \(item)")
     }
     
     /// Print raw text without formatting
     public static func text(_ message: String) {
-        print(message)
+        writeStdout(message)
     }
     
     /// Print a table with headers and rows
@@ -96,16 +107,16 @@ public struct CLIOutput {
         }.joined(separator: " | ")
         
         if colored {
-            print("\(bold)\(headerLine)\(reset)")
+            writeStdout("\(bold)\(headerLine)\(reset)")
         } else {
-            print(headerLine)
+            writeStdout(headerLine)
         }
         
         // Print separator
         let separator = columnWidths.map { width in
             String(repeating: "-", count: width)
         }.joined(separator: "-|-")
-        print(separator)
+        writeStdout(separator)
         
         // Print rows
         for row in rows {
@@ -113,7 +124,7 @@ public struct CLIOutput {
                 let width = index < columnWidths.count ? columnWidths[index] : cell.count
                 return cell.padding(toLength: width, withPad: " ", startingAt: 0)
             }.joined(separator: " | ")
-            print(rowLine)
+            writeStdout(rowLine)
         }
     }
     
@@ -121,7 +132,7 @@ public struct CLIOutput {
     public static func spinner(_ message: String, colored: Bool = true) {
         let spinChars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
         let prefix = colored ? "\(cyan)\(spinChars[0])\(reset)" : spinChars[0]
-        print("\(prefix) \(message)", terminator: "")
+        writeStdout("\(prefix) \(message)", terminator: "")
         fflush(stdout)
     }
 }

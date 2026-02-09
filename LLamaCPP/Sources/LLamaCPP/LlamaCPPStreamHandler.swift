@@ -1,6 +1,9 @@
 import Abstractions
 import Foundation
 #if DEBUG
+import os
+#endif
+#if DEBUG
 import os.signpost
 #endif
 
@@ -85,7 +88,12 @@ internal enum LlamaCPPStreamHandler {
         // Check for complete stop sequences
         if let stopSeq = findStopSequence(in: context.buffer, sequences: context.stopSequences) {
             #if DEBUG
-            print("[HANDLER DEBUG] Found stop sequence: '\(stopSeq)' in buffer: '\(context.buffer)'")
+            // `Logger.debug` takes an escaping autoclosure; avoid capturing the `inout` context.
+            let bufferLength: Int = context.buffer.count
+            os.Logger(subsystem: "LLamaCPP", category: "StreamHandler")
+                .debug(
+                    "Stop sequence: \(stopSeq, privacy: .public) len=\(bufferLength, privacy: .public)"
+                )
             #endif
             handleStopSequence(stopSeq, context: &context, deps: deps)
             return true
@@ -102,7 +110,10 @@ internal enum LlamaCPPStreamHandler {
         let debugTokenLimit: Int = 5
         if context.state.generatedTokenCount < debugTokenLimit {
             let tokenNum: Int = context.state.generatedTokenCount
-            print("[HANDLER DEBUG] Token \(tokenNum): '\(text)' buffer: '\(context.buffer)'")
+            os.Logger(subsystem: "LLamaCPP", category: "StreamHandler")
+                .debug(
+                    "Token \(tokenNum, privacy: .public): '\(text, privacy: .public)'"
+                )
         }
         #endif
     }

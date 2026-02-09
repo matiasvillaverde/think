@@ -170,6 +170,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		44AA00032F5A000100AA0001 /* AcceptanceUITests */ = {
+			isa = PBXGroup;
+			children = (
+				44AA00012F5A000100AA0001 /* ChatScreenUITests.swift */,
+			);
+			path = AcceptanceUITests;
+			sourceTree = "<group>";
+		};
 		44B648A92D47DB4400058AA6 = {
 			isa = PBXGroup;
 			children = (
@@ -184,14 +192,6 @@
 				44B648EC2D47DD4B00058AA6 /* Frameworks */,
 				44B648B32D47DB4400058AA6 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		44AA00032F5A000100AA0001 /* AcceptanceUITests */ = {
-			isa = PBXGroup;
-			children = (
-				44AA00012F5A000100AA0001 /* ChatScreenUITests.swift */,
-			);
-			path = AcceptanceUITests;
 			sourceTree = "<group>";
 		};
 		44B648B32D47DB4400058AA6 /* Products */ = {
@@ -490,8 +490,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-				shellScript = "#!/bin/bash\n\n# This script only runs SwiftLint in Debug configuration\n\nif [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  if which swiftlint >/dev/null; then\n    swiftlint lint --quiet \"${SRCROOT}/Think\"\n  else\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n  fi\nfi\n";
-			};
+			shellScript = "#!/bin/bash\n\n# This script only runs SwiftLint in Debug configuration\n\nif [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  if which swiftlint >/dev/null; then\n    swiftlint lint --quiet \"${SRCROOT}/Think\"\n  else\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n  fi\nfi\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */

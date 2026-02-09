@@ -12,6 +12,9 @@ import MLX
 import MLXFast
 
 import MLXNN
+import OSLog
+
+private let kLogger: Logger = Logger(subsystem: "MLXSession", category: "Gemma3Text")
 
 internal struct Gemma3TextConfiguration: Codable, Sendable {
     let modelType: String
@@ -396,7 +399,7 @@ internal class Gemma3TextModel: Module, LLMModel {
         let promptCount = promptTokens.shape[0]
 
         guard promptCount > 0 else {
-            print("Warning: Preparing with empty prompt tokens.")
+            kLogger.warning("Preparing with empty prompt tokens.")
             let emptyToken = MLXArray(Int32(0))[0 ..< 0]
             return .tokens(.init(tokens: emptyToken))
         }

@@ -39,6 +39,28 @@ final class ChatScreenUITests: XCTestCase {
         return Int(digits)
     }
 
+    private func waitForStreamingProbeToAdvance(
+        _ probe: XCUIElement,
+        timeout: TimeInterval,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let initialLabel = probe.label
+        let initialStep = extractAutoScrollStep(from: initialLabel) ?? -1
+        let deadline = Date().addingTimeInterval(timeout)
+
+        while Date() < deadline {
+            let currentLabel = probe.label
+            let currentStep = extractAutoScrollStep(from: currentLabel) ?? -1
+            if currentStep > initialStep || currentLabel != initialLabel {
+                return
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        }
+
+        XCTFail("Streaming probe did not advance within \(timeout)s (label=\(initialLabel))", file: file, line: line)
+    }
+
     private func scrollUntilExists(
         _ scrollView: XCUIElement,
         untilExists element: XCUIElement,
@@ -105,9 +127,84 @@ final class ChatScreenUITests: XCTestCase {
         // Raw toggle should flip state.
         let rawToggle = any("toolExecution.rawToggle.\(toolId)", in: app)
         XCTAssertTrue(rawToggle.waitForExistence(timeout: 5))
-        XCTAssertTrue(rawToggle.label == "Raw" || rawToggle.label == "Formatted")
+        let initialToggleLabel = rawToggle.label
+        XCTAssertTrue(initialToggleLabel == "Raw" || initialToggleLabel == "Formatted")
         rawToggle.tap()
-        XCTAssertTrue(rawToggle.label == "Raw" || rawToggle.label == "Formatted")
+        XCTAssertNotEqual(rawToggle.label, initialToggleLabel)
+    }
+
+    func testFinalChannelContentIsQueryAccessibleWhileStreaming() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        let chatView = any("uiTest.chatView", in: app)
+        XCTAssertTrue(chatView.waitForExistence(timeout: 15))
+
+        let finalContent = any("channel.final.content", in: app)
+        XCTAssertTrue(finalContent.waitForExistence(timeout: 15))
+        XCTAssertTrue(finalContent.label.contains("AUTO_SCROLL_STREAM step"))
+    }
+
+    func testCompletedToolShowsRequestAndResultWhenExpanded() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        let chatView = any("uiTest.chatView", in: app)
+        XCTAssertTrue(chatView.waitForExistence(timeout: 15))
+
+        let scrollView = chatScrollView(in: app)
+        XCTAssertTrue(scrollView.waitForExistence(timeout: 15))
+
+        let toolId = "55555555-5555-5555-5555-555555555555"
+        let toolHeader = any("toolExecution.header.\(toolId)", in: app)
+        scrollUntilExists(scrollView, untilExists: toolHeader, direction: .down, maxSwipes: 20)
+        XCTAssertTrue(toolHeader.waitForExistence(timeout: 15))
+        toolHeader.tap()
+
+        let request = any("toolExecution.request.\(toolId)", in: app)
+        scrollUntilExists(scrollView, untilExists: request, direction: .up, maxSwipes: 6, perSwipeTimeout: 0.2)
+        XCTAssertTrue(request.waitForExistence(timeout: 10))
+
+        let requestText = (request.value as? String) ?? request.label
+        XCTAssertTrue(requestText.contains("SwiftUI ScrollViewReader"))
+
+        let result = any("toolExecution.result.\(toolId)", in: app)
+        scrollUntilExists(scrollView, untilExists: result, direction: .up, maxSwipes: 6, perSwipeTimeout: 0.2)
+        XCTAssertTrue(result.waitForExistence(timeout: 10))
+    }
+
+    func testExecutingToolShowsStatusAndCanExpandButHasNoRawToggle() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+
+        let chatView = any("uiTest.chatView", in: app)
+        XCTAssertTrue(chatView.waitForExistence(timeout: 15))
+
+        let scrollView = chatScrollView(in: app)
+        XCTAssertTrue(scrollView.waitForExistence(timeout: 15))
+
+        let toolId = "88888888-8888-8888-8888-888888888888"
+        let toolHeader = any("toolExecution.header.\(toolId)", in: app)
+        scrollUntilExists(scrollView, untilExists: toolHeader, direction: .down, maxSwipes: 20)
+        XCTAssertTrue(toolHeader.waitForExistence(timeout: 15))
+
+        let status = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS %@", "Fetching results"))
+            .firstMatch
+        scrollUntilExists(scrollView, untilExists: status, direction: .down, maxSwipes: 20)
+        XCTAssertTrue(status.waitForExistence(timeout: 15))
+
+        toolHeader.tap()
+
+        let request = any("toolExecution.request.\(toolId)", in: app)
+        scrollUntilExists(scrollView, untilExists: request, direction: .up, maxSwipes: 6, perSwipeTimeout: 0.2)
+        XCTAssertTrue(request.waitForExistence(timeout: 10))
+
+        let rawToggle = any("toolExecution.rawToggle.\(toolId)", in: app)
+        XCTAssertFalse(rawToggle.exists)
     }
 
     func testThinkingCollapsesAndExpands() {
@@ -206,19 +303,22 @@ final class ChatScreenUITests: XCTestCase {
 
         let toolId = "55555555-5555-5555-5555-555555555555"
         let toolHeader = any("toolExecution.header.\(toolId)", in: app)
+        scrollUntilExists(scrollView, untilExists: toolHeader, direction: .down, maxSwipes: 20)
         XCTAssertTrue(toolHeader.waitForExistence(timeout: 15))
 
         toolHeader.tap()
 
         let result = any("toolExecution.result.\(toolId)", in: app)
+        // Expanding the tool can push the result below the fold depending on where the header
+        // sits in the scroll view. Make sure we scroll enough for the expanded content to exist
+        // in the accessibility tree.
+        scrollUntilExists(scrollView, untilExists: result, direction: .up, maxSwipes: 6, perSwipeTimeout: 0.2)
         XCTAssertTrue(result.waitForExistence(timeout: 10))
 
         let probe = any("uiTest.streamingProbe", in: app)
         XCTAssertTrue(probe.waitForExistence(timeout: 15))
 
-        let firstLabel = probe.label
-        expectation(for: NSPredicate(format: "label != %@", firstLabel), evaluatedWith: probe)
-        waitForExpectations(timeout: 15)
+        waitForStreamingProbeToAdvance(probe, timeout: 20)
 
         // Streaming can move the scroll position (when pinned), which may virtualize offscreen
         // rows. Scroll back to the tool and assert the disclosure state is preserved.
@@ -238,27 +338,25 @@ final class ChatScreenUITests: XCTestCase {
         let probe = any("uiTest.streamingProbe", in: app)
         XCTAssertTrue(probe.waitForExistence(timeout: 15))
 
-        let pinnedProbe = any("uiTest.pinnedProbe", in: app)
-        XCTAssertTrue(pinnedProbe.waitForExistence(timeout: 15))
+        let bottom = any("chat.messages.bottom", in: app)
+        XCTAssertTrue(bottom.waitForExistence(timeout: 15))
 
         // Wait for streaming to be underway (seed may advance beyond step 0 before tests start).
         let anyStepProbePredicate = NSPredicate(format: "label CONTAINS %@", "AUTO_SCROLL_STREAM step")
         expectation(for: anyStepProbePredicate, evaluatedWith: probe)
         waitForExpectations(timeout: 15)
 
-        // Pinned-to-bottom should remain true while streaming progresses.
-        expectation(for: NSPredicate(format: "label == %@", "pinned=true"), evaluatedWith: pinnedProbe)
-        waitForExpectations(timeout: 15)
+        // When pinned, the bottom sentinel should remain visible/hittable while streaming progresses.
+        XCTAssertTrue(bottom.isHittable)
 
         let firstLabel = probe.label
         let firstStep = extractAutoScrollStep(from: firstLabel)
         XCTAssertNotNil(firstStep)
 
         // Ensure the stream continues to update.
-        expectation(for: NSPredicate(format: "label != %@", firstLabel), evaluatedWith: probe)
-        waitForExpectations(timeout: 15)
+        waitForStreamingProbeToAdvance(probe, timeout: 20)
 
-        XCTAssertEqual(pinnedProbe.label, "pinned=true")
+        XCTAssertTrue(bottom.isHittable)
     }
 
     func testStreamingDoesNotAutoScrollWhenUserScrollsUp() {
@@ -283,7 +381,7 @@ final class ChatScreenUITests: XCTestCase {
         expectation(for: anyStepProbePredicate, evaluatedWith: probe)
         waitForExpectations(timeout: 15)
 
-        let visibleLabel = probe.label
+        _ = probe.label
 
         // Scroll up to unpin and reveal older messages.
         dragScrollViewUp(scroll, times: 2)
@@ -297,8 +395,7 @@ final class ChatScreenUITests: XCTestCase {
 
         // Streaming continues (probe updates regardless of whether the message is visible),
         // but we should not be forced back to the bottom.
-        expectation(for: NSPredicate(format: "label != %@", visibleLabel), evaluatedWith: probe)
-        waitForExpectations(timeout: 15)
+        waitForStreamingProbeToAdvance(probe, timeout: 20)
 
         XCTAssertTrue(secondUser.isHittable)
     }

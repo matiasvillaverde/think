@@ -41,8 +41,7 @@ struct AppStoreCLI: AsyncParsableCommand {
     // MARK: - Execution
     func run() async throws {
         // This should never be called directly since we have a default subcommand
-        // swiftlint:disable:next no_print_statements
-        print("Use 'app-store-cli --help' to see available commands")
+        CLIOutput.info("Use 'app-store-cli --help' to see available commands")
     }
 }
 

@@ -15,22 +15,22 @@ disabled_rules:
   - type_contents_order
   - redundant_type_annotation
   - extension_access_modifier
-  
+
   # ImageGenerator-specific exceptions
   - identifier_name # Domain-specific names in image processing
-  
+
   # Major refactoring required (hundreds/thousands of violations)
   - explicit_type_interface # 1052 violations - Would require adding type annotations everywhere
   - no_magic_numbers # 370 violations - Hard-coded numeric values (common in image processing)
   - missing_docs # 114 violations - Public documentation
-  
+
   # Medium effort to fix (50-100 violations)
   - indentation_width # 144 violations - Indentation consistency (98 + 46)
   - sorted_enum_cases # 82 violations - Enum case ordering
   - force_unwrapping # 66 violations - Force unwrapping (critical for safety)
   - number_separator # 52 violations - Underscores in large numbers
   - pattern_matching_keywords # 52 violations - Pattern matching
-  
+
   # Low effort to fix (under 50 violations)
   - explicit_top_level_acl # 48 violations - Top-level access control
   - switch_case_on_newline # 48 violations - Switch case newlines
@@ -59,7 +59,7 @@ disabled_rules:
   - attributes # 2 violations - Attribute placement
   - vertical_whitespace_closing_braces # 5 violations - Whitespace before closing braces
   - vertical_whitespace_opening_braces # 5 violations - Whitespace after opening braces
-  
+
 # Make rules strict
 strict: true
 
@@ -74,3 +74,31 @@ included:
   - Tests
 excluded:
   - .build
+
+
+custom_rules:
+  no_direct_color_literals:
+    name: "No direct Color literals"
+    regex: '(^|[^A-Za-z0-9_])Color[.](red|green|blue|orange|yellow|pink|purple|gray|black|white|clear|primary|secondary)'
+    message: "Use UIComponents Color tokens (UIComponents/Sources/UIComponents/Color.swift) instead of Color.red/Color.gray/etc."
+    severity: error
+  no_color_primary_secondary_shorthand:
+    name: "No .primary/.secondary shorthand"
+    regex: '[.](foregroundColor|foregroundStyle)[(][ ]*[.](primary|secondary)[ ]*[)]'
+    message: "Use Color.textPrimary/Color.textSecondary (tokens) instead of .primary/.secondary."
+    severity: error
+  no_system_color_constructors:
+    name: "No UIColor/NSColor construction"
+    regex: '(^|[^A-Za-z0-9_])Color[(][ ]*(UIColor|NSColor)[.]'
+    message: "Use UIComponents Color tokens backed by Assets.xcassets."
+    severity: error
+  no_rgb_color_construction:
+    name: "No RGB Color construction"
+    regex: '(^|[^A-Za-z0-9_])Color[(][ ]*(red[ ]*:|[.]sRGB)'
+    message: "Define colors in UIComponents Assets.xcassets and expose via Color.swift."
+    severity: error
+  no_color_hex_initializer:
+    name: "No Color(hex:) construction"
+    regex: '(^|[^A-Za-z0-9_])(Color[(][ ]*hex[ ]*:|[.]init[(][ ]*hex[ ]*:)'
+    message: "Use Color.userProvided(hex:) for user colors; otherwise define colors in Assets.xcassets."
+    severity: error

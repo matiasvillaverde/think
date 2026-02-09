@@ -174,7 +174,11 @@ internal struct APIKeyProviderRow: View {
 
     private var backgroundView: some View {
         RoundedRectangle(cornerRadius: RowConstants.cornerRadius)
-            .fill(isHovered ? Color.textPrimary.opacity(RowConstants.hoverOpacity) : Color.paletteClear)
+            .fill(
+                isHovered
+                    ? Color.textPrimary.opacity(RowConstants.hoverOpacity)
+                    : Color.paletteClear
+            )
     }
 }
 

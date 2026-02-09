@@ -204,7 +204,7 @@ extension DownloadCoordinator {
                         success: true
                     ))
                 } catch {
-                    print("[DownloadResumer] Failed to download \(file.path): \(error)")
+                    await kModelDownloaderLogger.error("Failed to download \(file.path)", error: error)
                     results.append(DownloadResult(
                         url: file.url,
                         localPath: file.localPath,

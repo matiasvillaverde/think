@@ -3,6 +3,9 @@
 import Foundation
 import MLX
 import MLXNN
+import OSLog
+
+private let kLogger: Logger = Logger(subsystem: "MLXSession", category: "KVCache")
 
 /// Implementation of KV cache functionality for MLX Swift
 ///
@@ -1171,7 +1174,7 @@ internal func loadPromptCache(
             // For now, create an empty CacheList - this may not work correctly
             // for complex cache hierarchies loaded from Python
             cache = CacheList()
-            print("Warning: CacheList loading may not preserve sub-cache structure correctly")
+            kLogger.warning("CacheList loading may not preserve sub-cache structure correctly")
         default:
             throw KVCacheError(message: "Unknown cache class: \(className)")
         }

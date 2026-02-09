@@ -1,7 +1,10 @@
 import Abstractions
 import Foundation
 import NaturalLanguage
+import OSLog
 import PDFKit
+
+private let kLogger: Logger = Logger(subsystem: "RAG", category: "PDFProcessor")
 
 private actor PDFStreamYielder {
     private var processedPages: Int = 0
@@ -201,9 +204,13 @@ extension FileProcessor {
         document: PDFDocument,
         pageIndex: Int
     ) -> String? {
-        guard let page = document.page(at: pageIndex),
-            let text = page.string else {
-            print("warning: could not extract text from page \(pageIndex + 1)")
+        guard
+            let page = document.page(at: pageIndex),
+            let text = page.string
+        else {
+            kLogger.warning(
+                "Could not extract text from page \(pageIndex + 1, privacy: .public)"
+            )
             return nil
         }
 

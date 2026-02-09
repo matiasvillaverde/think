@@ -12,32 +12,32 @@ disabled_rules:
   - type_contents_order
   - redundant_type_annotation
   - extension_access_modifier
-  
+
   # Database-specific exceptions
   - blanket_disable_command # Sometimes needed for edge cases
   - superfluous_disable_command # Sometimes needed for edge cases
   - nesting # Allow nested types for command pattern
   - convenience_type # 32 violations - Test structs and command pattern structs
   - required_deinit # 38 violations - Not needed for SwiftData models
-  
+
   # Major refactoring required (thousands of violations)
   - explicit_type_interface # 3050 violations - Would require adding type annotations everywhere
   - explicit_top_level_acl # 138 violations - Top-level access control
   - no_magic_numbers # 672 violations - Hard-coded numeric values
   - number_separator # 300 violations - Underscores in large numbers
-  
+
   # Medium effort to fix (100-200 violations)
   - missing_docs # 166 violations - Public declarations need documentation
   - unused_closure_parameter # 202 violations - Unused parameters (rag, userId, context)
   - indentation_width # 108 violations - Indentation consistency
   - vertical_whitespace_between_cases # 100 violations - Empty lines between switch cases
   - force_unwrapping # 110 violations - Force unwrapping should be avoided
-  
+
   # Very low effort to fix (fewer than 20 violations)
   - no_extension_access_modifier # 12 violations - Extension access modifiers
   - closure_body_length # 12 violations - Long closure bodies
   - function_body_length # 2 violations - Function length
-  
+
   # Low effort to fix (under 100 violations)
   - sorted_imports # 428 violations - Import ordering
   - direct_return # 30 violations - Direct returns
@@ -121,3 +121,31 @@ type_body_length:
 file_length:
   warning: 900
   error: 1000
+
+
+custom_rules:
+  no_direct_color_literals:
+    name: "No direct Color literals"
+    regex: '(^|[^A-Za-z0-9_])Color[.](red|green|blue|orange|yellow|pink|purple|gray|black|white|clear|primary|secondary)'
+    message: "Use UIComponents Color tokens (UIComponents/Sources/UIComponents/Color.swift) instead of Color.red/Color.gray/etc."
+    severity: error
+  no_color_primary_secondary_shorthand:
+    name: "No .primary/.secondary shorthand"
+    regex: '[.](foregroundColor|foregroundStyle)[(][ ]*[.](primary|secondary)[ ]*[)]'
+    message: "Use Color.textPrimary/Color.textSecondary (tokens) instead of .primary/.secondary."
+    severity: error
+  no_system_color_constructors:
+    name: "No UIColor/NSColor construction"
+    regex: '(^|[^A-Za-z0-9_])Color[(][ ]*(UIColor|NSColor)[.]'
+    message: "Use UIComponents Color tokens backed by Assets.xcassets."
+    severity: error
+  no_rgb_color_construction:
+    name: "No RGB Color construction"
+    regex: '(^|[^A-Za-z0-9_])Color[(][ ]*(red[ ]*:|[.]sRGB)'
+    message: "Define colors in UIComponents Assets.xcassets and expose via Color.swift."
+    severity: error
+  no_color_hex_initializer:
+    name: "No Color(hex:) construction"
+    regex: '(^|[^A-Za-z0-9_])(Color[(][ ]*hex[ ]*:|[.]init[(][ ]*hex[ ]*:)'
+    message: "Use Color.userProvided(hex:) for user colors; otherwise define colors in Assets.xcassets."
+    severity: error
