@@ -309,3 +309,8 @@ scripts/icon-generator/
 ImageGenerator/Tests/ImageGeneratorTests/Resources/TestModel/
 RAG/Tests/all-MiniLM-L6-v2/model.safetensors
 MLXSession/Tests/MLXSessionTests/Resources/.keep
+
+# MLXSession internal notes/artifacts (never commit).
+MLXSession/GIT_DOWNLOAD_TEST_RESULTS.md
+MLXSession/GIT_MIGRATION_STATUS.md
+MLXSession/QWEN_TEST_IMPLEMENTATION.md
