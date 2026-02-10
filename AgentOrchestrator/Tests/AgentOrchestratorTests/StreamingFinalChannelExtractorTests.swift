@@ -28,4 +28,16 @@ internal struct StreamingFinalChannelExtractorTests {
         let output: String = "Plain text response"
         #expect(StreamingFinalChannelExtractor.extract(from: output) == output)
     }
+
+    @Test("Does not leak Harmony tags before final channel is present")
+    internal func harmonyWithoutFinalReturnsEmpty() {
+        let output: String = "<|start|>assistant\n<|channel|>analysis<|message|>x"
+        #expect(StreamingFinalChannelExtractor.extract(from: output).isEmpty)
+    }
+
+    @Test("Strips ChatML think/commentary markup when no Harmony final marker exists")
+    internal func stripsChatMLMarkup() {
+        let output: String = "<think>hidden</think><commentary>nope</commentary>Hello<|im_end|>"
+        #expect(StreamingFinalChannelExtractor.extract(from: output) == "Hello")
+    }
 }

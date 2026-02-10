@@ -19,7 +19,16 @@ internal enum StreamingFinalChannelExtractor {
             of: finalMarker,
             options: [.backwards, .literal]
         ) else {
-            return accumulatedText
+            // Harmony output without a final marker is almost always just headers/tags.
+            // Returning raw text causes the UI to briefly show tokens like "<|channel|>".
+            // Prefer showing nothing until we have a user-facing final channel.
+            if accumulatedText.contains("<|channel|>") || accumulatedText.contains("<|start|>") {
+                return ""
+            }
+
+            // ChatML-style models can stream <think> or <commentary> blocks. Strip those so the
+            // UI doesn't show internal tags mid-stream.
+            return stripChatMLLikeMarkup(from: accumulatedText)
         }
 
         let afterMarker: Substring = accumulatedText[startRange.upperBound...]
@@ -35,5 +44,35 @@ internal enum StreamingFinalChannelExtractor {
         }
 
         return content.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func stripChatMLLikeMarkup(from accumulatedText: String) -> String {
+        var working: String = accumulatedText
+
+        // Remove complete and incomplete thinking/commentary blocks.
+        working = stripTaggedBlock(from: working, startTag: "<think>", endTag: "</think>")
+        working = stripTaggedBlock(from: working, startTag: "<commentary>", endTag: "</commentary>")
+        working = stripTaggedBlock(from: working, startTag: "<tool_call>", endTag: "</tool_call>")
+
+        working = working.replacingOccurrences(of: "<|im_end|>", with: "")
+        working = working.replacingOccurrences(of: "<|im_start|>assistant\n", with: "")
+
+        return working.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func stripTaggedBlock(from text: String, startTag: String, endTag: String) -> String {
+        var working: String = text
+        while let start = working.range(of: startTag) {
+            let searchRange: Range<String.Index> = start.upperBound..<working.endIndex
+            if let end = working.range(of: endTag, range: searchRange) {
+                working.removeSubrange(start.lowerBound..<end.upperBound)
+                continue
+            }
+
+            // Incomplete block; strip from start tag to end.
+            working.removeSubrange(start.lowerBound..<working.endIndex)
+            break
+        }
+        return working
     }
 }
