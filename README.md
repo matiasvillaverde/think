@@ -2,11 +2,11 @@
   <img src="Think/Assets.xcassets/AppIcon.appiconset/rounded_icon.png" width="128" alt="Think app icon" />
 </p>
 
-# Think (OpenClaw App)
+# Think
 
-Think is an Apple‑platform app inspired by OpenClaw and transformed into a native iOS/macOS/visionOS experience.
+**Think** is a fast, privacy-first AI assistant for Apple platforms. Run models locally on-device (MLX / llama.cpp), optionally connect remote providers, and use tools like web search and document retrieval (RAG) from a native SwiftUI app.
 
-**Status:** experimental, under active development, and **not ready for production use**.
+**Platforms:** iOS 18+, macOS 15+, visionOS 2+
 
 <p align="center">
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-black"></a>
@@ -15,90 +15,71 @@ Think is an Apple‑platform app inspired by OpenClaw and transformed into a nat
   <img alt="Build" src="https://img.shields.io/badge/build-Makefile%20only-black">
 </p>
 
-**Quick links:** [Screenshots](#screenshots) · [ThinkCLI](#thinkcli) · [LLM Inference Modes](#llm-inference-modes) · [OpenClaw Remote Gateway](#openclaw-remote-gateway) · [Contributing](CONTRIBUTING.md)
+**Quick links:** [Install](#install-from-source) · [Run](#run) · [ThinkCLI](#thinkcli) · [Inference](#inference-modes) · [OpenClaw Gateway](#openclaw-remote-gateway) · [Architecture](#architecture) · [Contributing](CONTRIBUTING.md)
 
-## Purpose
+## What You Can Do With Think
 
-The goal is to make a tool that feels like OpenClaw but is easier to install, runs locally, and can live safely in a sandboxed environment (especially on iOS). Think uses MLX on Apple Silicon to run models on‑device.
+- **Chat with local models** on Apple Silicon using **MLX** (on-device) or **llama.cpp** (GGUF).
+- **Use optional remote models** (OpenAI, Anthropic, Google Gemini, OpenRouter) when you want cloud capability.
+- **Search the web** via built-in browser tools (DuckDuckGo-backed) and extract readable content.
+- **Ask questions about your documents** using a Retrieval-Augmented Generation (RAG) pipeline.
+- **Generate images** on-device (Core ML pipelines, where supported).
+- **Keep secrets safe**: remote API keys and OpenClaw credentials are stored in **Keychain**.
 
-On capable Apple Silicon machines, Think is intended as the foundation for a personal assistant (or “ghost”) that lives on your computer and runs locally.
+By default, Think is designed to keep your data on-device. Network access is only used when you enable features that require it (for example: remote providers, web search, or model downloads).
 
-## Why This Repo Looks Like A “Landing Page”
+## Install From Source
 
-We sampled the top 100 GitHub repos tagged `artificial-intelligence` (by stars) and extracted common patterns from their READMEs. The most common “this repo feels legit” signals were:
+This repository uses a **Makefile-only workflow** for development (do not run from Xcode).
 
-- Clear value prop + quick links
-- Badges (license/platform/build status)
-- Install + Quickstart
-- Examples / demos / screenshots
-- Documentation index and architecture notes
-- Community health files (CONTRIBUTING, CODE_OF_CONDUCT, SECURITY) and templates
+### Requirements
 
-In our sample (98 READMEs fetched), we saw: docs sections (72), examples (69), badges (67), install instructions (64), screenshots/media (58), contributing sections (45), citations (29), roadmaps (11).
+- Xcode 16.2+ with Swift 6 (strict concurrency)
+- Apple Silicon Mac recommended (MLX/Metal support)
 
-## Status
-
-This project is under active development. Expect breaking changes, missing features, and incomplete documentation.
-
-## What This Is
-
-- An app‑focused implementation inspired by OpenClaw for Apple platforms.
-- Designed to run in a sandbox (required on iOS) with a clear security model.
-- Built with Swift, SwiftUI, and a modular architecture.
-- Can connect to a remote OpenClaw Gateway instance over WebSocket (pairing required).
-
-## What This Is Not (Yet)
-
-- A stable or fully supported release.
-- A complete replacement for the original OpenClaw tooling.
-
-## Platforms
-
-- iOS 18+
-- macOS 15+
-- visionOS 2+
-
-## Repository Layout
-
-See `AGENTS.md` and `CLAUDE.md` for architecture and contribution guidance.
-
-## Build The App (macOS)
-
-Development is Makefile-driven:
+### Setup
 
 ```bash
+make setup
 make lint
 make build
 make test
+```
+
+## Run
+
+### macOS app
+
+```bash
 make run
 ```
 
-## Screenshots
+### visionOS app
 
-This section is intentionally “large” so the README can act like a landing page.
+```bash
+make run-thinkVision
+```
 
-<details>
-  <summary><strong>macOS / iOS / visionOS screenshots (coming soon)</strong></summary>
-  <br />
+## Develop A Module
 
-  <p>
-    Add screenshots in a future PR and wire them here.
-    Suggested layout:
-  </p>
+Most packages can be built/tested in isolation:
 
-  <table>
-    <tr>
-      <td><strong>macOS</strong><br />Main chat, model picker, tools</td>
-      <td><strong>iOS</strong><br />Chat + model download</td>
-      <td><strong>visionOS</strong><br />Sidebar + chat</td>
-    </tr>
-    <tr>
-      <td>(drop image)</td>
-      <td>(drop image)</td>
-      <td>(drop image)</td>
-    </tr>
-  </table>
-</details>
+```bash
+cd ViewModels
+make lint
+make build
+make test
+```
+
+## Screenshots / Media
+
+<p align="center">
+  <img src="docs/readme/chat.png" width="280" alt="Chat" />
+  <img src="docs/readme/models.png" width="280" alt="Model selection" />
+  <img src="docs/readme/stats.png" width="280" alt="Performance and statistics" />
+</p>
+
+This repo includes a dedicated screenshot UI harness in `App-Screenshots/`, the test runner in `Screenshots/`, and a script to generate the README images: `scripts/take_readme_screenshots.sh`.
 
 ## ThinkCLI
 
@@ -128,16 +109,16 @@ think models list
 think chat list
 ```
 
-## LLM Inference Modes
+## Inference Modes
 
-LLM inference can be:
+Think supports multiple inference backends (configured in the app and/or via ThinkCLI):
 
-1. Remote (API key): OpenRouter, OpenAI, Anthropic, Google Gemini.
-2. MLX models that run natively on Apple Silicon.
-3. llama.cpp models (GGUF).
-4. Connect to an instance of OpenClaw running remotely, and use the app as a client (via the OpenClaw Gateway).
+1. **On-device (MLX)**: optimized for Apple Silicon.
+2. **On-device (llama.cpp / GGUF)**: run GGUF models locally.
+3. **Remote providers (API key)**: OpenRouter, OpenAI, Anthropic, Google Gemini.
+4. **OpenClaw Gateway**: connect to a remote gateway over WebSocket.
 
-Remote API keys:
+Remote API keys (used by ThinkCLI/tests and some scripts):
 - `OPENROUTER_API_KEY`
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
@@ -151,14 +132,38 @@ Think can connect to a remote OpenClaw Gateway for “OpenClaw-style” remote o
 
 See `OPENCLAW_REMOTE.md` for setup instructions (App UI and ThinkCLI).
 
+## Architecture
+
+Think is organized as a set of Swift packages plus app targets, with protocol-driven boundaries and dependency injection via `Factories/`.
+
+- Modules live at the repo root (for example: `Abstractions/`, `Database/`, `AgentOrchestrator/`, `ViewModels/`, `UIComponents/`, `Tools/`, `RAG/`, `MLXSession/`, `LLamaCPP/`).
+- App targets live in `Think/` (iOS/macOS) and `Think Vision/` (visionOS).
+
+- Start here: `AGENTS.md` (architecture + module layout)
+- Build/test rules: `CLAUDE.md` (root + module-specific `CLAUDE.md` files)
+
+## Troubleshooting
+
+- MLX/Metal-related modules may fail under `swift test`. Use each module's `make test` (or run from the repo root with `make test`).
+- If builds fail after toolchain updates, try `make clean` then `make build`.
+- If you hit SwiftLint violations, run `make lint-fix` before re-running `make lint`.
+
 ## Documentation Index
 
 - `AGENTS.md`: architecture and module layout
 - `CLAUDE.md`: build/test rules and module-specific gotchas
 - `CHANGELOG.md`: notable changes (Keep a Changelog format)
 - `OPENCLAW_REMOTE.md`: OpenClaw Gateway setup (UI + ThinkCLI)
-- `OPENCLAW_GAPS.md`: OpenClaw parity backlog
-- `CI.md`: CI/CD workflows
+- `CI.md`: CI/CD workflows and Makefile conventions
+- `scripts/.env.example`: App Store / deployment environment template (copy to `scripts/.env` when needed)
+
+## Contributing
+
+See `CONTRIBUTING.md`.
+
+## Security
+
+See `SECURITY.md`.
 
 ## License
 
