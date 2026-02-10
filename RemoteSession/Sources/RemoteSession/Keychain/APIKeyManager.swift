@@ -57,7 +57,12 @@ public actor APIKeyManager: APIKeyManaging {
     }
 
     public func setKey(_ key: String, for provider: RemoteProviderType) async throws {
-        guard let data = key.data(using: .utf8) else {
+        // Users commonly paste keys with trailing newlines/spaces; normalize to avoid 401s.
+        let trimmed: String = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            throw RemoteError.invalidAPIKey
+        }
+        guard let data = trimmed.data(using: .utf8) else {
             throw RemoteError.invalidAPIKey
         }
         try await storage.store(data, forKey: provider.keychainKey)
@@ -66,7 +71,8 @@ public actor APIKeyManager: APIKeyManaging {
     public func getKey(for provider: RemoteProviderType) async throws -> String? {
         for envKey in provider.environmentKeys {
             if let value = ProcessInfo.processInfo.environment[envKey], !value.isEmpty {
-                return value
+                let trimmed: String = value.trimmingCharacters(in: .whitespacesAndNewlines)
+                return trimmed.isEmpty ? nil : trimmed
             }
         }
         guard let data = try await storage.retrieve(forKey: provider.keychainKey) else {
@@ -75,7 +81,8 @@ public actor APIKeyManager: APIKeyManaging {
         guard let key = String(data: data, encoding: .utf8) else {
             throw KeychainError.invalidData
         }
-        return key
+        let trimmed: String = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
     }
 
     public func deleteKey(for provider: RemoteProviderType) async throws {

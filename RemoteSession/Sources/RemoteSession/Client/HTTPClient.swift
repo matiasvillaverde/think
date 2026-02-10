@@ -119,3 +119,18 @@ enum HTTPError: Error, Sendable {
     /// Request was cancelled
     case cancelled
 }
+
+extension HTTPError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .invalidResponse:
+            return "Invalid response from server."
+        case .statusCode(let statusCode, _):
+            return "Server returned HTTP \(statusCode)."
+        case .timeout:
+            return "Request timed out."
+        case .cancelled:
+            return "Request was cancelled."
+        }
+    }
+}

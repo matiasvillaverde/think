@@ -68,15 +68,29 @@ struct StreamParseResult: Sendable {
 
 /// Common request building utilities for providers.
 extension RemoteProvider {
+    private var maxReasonableOutputTokens: Int { 4_096 }
+
     /// Builds a standard OpenAI-format request body.
     func buildOpenAIRequestBody(
         input: LLMInput,
         model: String
     ) -> ChatCompletionRequest {
-        // Convert context to messages
-        // For simplicity, we treat the entire context as a user message
-        // In a real implementation, you might parse chat history
-        let messages = [
+        // Providers tend to reject absurdly high `max_tokens` values.
+        // Our app-level default is intentionally large for local models, but for remote APIs
+        // it is safer to omit max_tokens and let the provider decide.
+        let maxTokens: Int?
+        if input.limits.maxTokens <= 0 {
+            maxTokens = nil
+        } else if input.limits.maxTokens > maxReasonableOutputTokens {
+            maxTokens = nil
+        } else {
+            maxTokens = input.limits.maxTokens
+        }
+
+        // Convert context to messages. When the app builds a Harmony-formatted prompt
+        // (common for GPT/OpenRouter), parse it into role-based chat messages so remote
+        // providers receive a first-class chat request instead of a single giant user string.
+        let messages: [ChatMessage] = RemotePromptParser.parseMessages(from: input.context) ?? [
             ChatMessage(role: .user, content: input.context)
         ]
 
@@ -86,7 +100,7 @@ extension RemoteProvider {
             stream: true,
             temperature: input.sampling.temperature,
             topP: input.sampling.topP,
-            maxTokens: input.limits.maxTokens,
+            maxTokens: maxTokens,
             stop: input.sampling.stopSequences.isEmpty
                 ? nil
                 : input.sampling.stopSequences

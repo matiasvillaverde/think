@@ -19,7 +19,25 @@ struct RemoteErrorTests {
         if case .authenticationFailed(let message) = llmError {
             #expect(message == "Invalid API key")
         } else {
-            #expect(false, "Expected authenticationFailed error")
+            #expect(Bool(false), "Expected authenticationFailed error")
+        }
+    }
+
+    @Test("Map missing auth credential 401s to actionable authentication guidance")
+    func mapMissingAuthCredentialMessageToAuthenticationGuidance() {
+        let response = ProviderErrorResponse(
+            statusCode: 401,
+            errorType: nil,
+            message: "No cookie auth credentials found",
+            retryAfter: nil
+        )
+
+        let llmError = RemoteError.providerError(response).toLLMError()
+
+        if case .authenticationFailed(let message) = llmError {
+            #expect(message.localizedCaseInsensitiveContains("api key"))
+        } else {
+            #expect(Bool(false), "Expected authenticationFailed error")
         }
     }
 
@@ -37,7 +55,7 @@ struct RemoteErrorTests {
         if case .rateLimitExceeded(let retryAfter) = llmError {
             #expect(retryAfter == .seconds(60))
         } else {
-            #expect(false, "Expected rateLimitExceeded error")
+            #expect(Bool(false), "Expected rateLimitExceeded error")
         }
     }
 
@@ -55,7 +73,7 @@ struct RemoteErrorTests {
         if case .modelNotFound(let message) = llmError {
             #expect(message == "Model gpt-5 not found")
         } else {
-            #expect(false, "Expected modelNotFound error")
+            #expect(Bool(false), "Expected modelNotFound error")
         }
     }
 
@@ -74,7 +92,29 @@ struct RemoteErrorTests {
             #expect(code == "internal_error")
             #expect(message == "Internal server error")
         } else {
-            #expect(false, "Expected providerError")
+            #expect(Bool(false), "Expected providerError")
+        }
+    }
+
+    @Test("Map OpenRouter data policy blocks to invalid configuration with guidance")
+    func mapOpenRouterPrivacyPolicyBlockToInvalidConfiguration() {
+        let response = ProviderErrorResponse(
+            statusCode: 403,
+            errorType: nil,
+            message: """
+            No endpoints found matching your data policy (Free model publication). Configure: \
+            https://openrouter.ai/settings/privacy
+            """,
+            retryAfter: nil
+        )
+
+        let llmError = RemoteError.providerError(response).toLLMError()
+
+        if case .invalidConfiguration(let message) = llmError {
+            #expect(message.localizedCaseInsensitiveContains("OpenRouter blocked this request"))
+            #expect(message.localizedCaseInsensitiveContains("privacy"))
+        } else {
+            #expect(Bool(false), "Expected invalidConfiguration error")
         }
     }
 
@@ -135,7 +175,7 @@ struct RemoteErrorTests {
         if case .authenticationFailed(let message) = llmError {
             #expect(message.contains("openAI"))
         } else {
-            #expect(false, "Expected authenticationFailed error")
+            #expect(Bool(false), "Expected authenticationFailed error")
         }
     }
 
@@ -147,7 +187,7 @@ struct RemoteErrorTests {
         if case .invalidConfiguration(let message) = llmError {
             #expect(message.contains("foo"))
         } else {
-            #expect(false, "Expected invalidConfiguration error")
+            #expect(Bool(false), "Expected invalidConfiguration error")
         }
     }
 }

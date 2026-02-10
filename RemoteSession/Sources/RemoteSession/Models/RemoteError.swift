@@ -75,8 +75,25 @@ extension RemoteError {
     }
 
     private func mapProviderError(_ response: ProviderErrorResponse) -> LLMError {
+        if isOpenRouterPrivacyPolicyBlock(response) {
+            return .invalidConfiguration(
+                """
+                OpenRouter blocked this request due to your data policy. \
+                Update your OpenRouter privacy settings to allow an endpoint for this model and retry. \
+                (OpenRouter: Settings -> Privacy)
+                """
+            )
+        }
+
         switch response.statusCode {
         case 401:
+            if isMissingAuthCredentials(response.message) {
+                return .authenticationFailed(
+                    """
+                    Missing or invalid API key. Add or update your API key for this provider and retry.
+                    """
+                )
+            }
             return .authenticationFailed(response.message)
         case 403:
             return .authenticationFailed("Access denied: \(response.message)")
@@ -91,6 +108,23 @@ extension RemoteError {
             )
         }
     }
+
+    private func isOpenRouterPrivacyPolicyBlock(_ response: ProviderErrorResponse) -> Bool {
+        // OpenRouter can return plain text bodies for some policy failures.
+        // Example:
+        // "No endpoints found matching your data policy (Free model publication). Configure:"
+        // "https://openrouter.ai/settings/privacy"
+        response.message.localizedCaseInsensitiveContains("No endpoints found matching your data policy")
+    }
+
+    private func isMissingAuthCredentials(_ message: String) -> Bool {
+        // Some gateways (and certain provider proxies) return this 401 message when no API key is sent.
+        // Normalize it into actionable guidance instead of leaking gateway wording.
+        let lowered = message.lowercased()
+        return lowered.contains("no cookie auth credentials found") ||
+            lowered.contains("no auth credentials found") ||
+            lowered.contains("missing authentication")
+    }
 }
 
 /// Parses error responses from providers.
@@ -103,6 +137,27 @@ enum ErrorResponseParser {
                 let message: String
                 let type: String?
                 let code: String?
+
+                init(from decoder: Decoder) throws {
+                    let container = try decoder.container(keyedBy: CodingKeys.self)
+                    self.message = try container.decode(String.self, forKey: .message)
+                    self.type = try container.decodeIfPresent(String.self, forKey: .type)
+
+                    // `code` is inconsistently typed across providers (String vs Int).
+                    if let codeString = try? container.decode(String.self, forKey: .code) {
+                        self.code = codeString
+                    } else if let codeInt = try? container.decode(Int.self, forKey: .code) {
+                        self.code = String(codeInt)
+                    } else {
+                        self.code = nil
+                    }
+                }
+
+                private enum CodingKeys: String, CodingKey {
+                    case message
+                    case type
+                    case code
+                }
             }
         }
 

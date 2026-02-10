@@ -136,61 +136,113 @@ actor RemoteSession: LLMSession {
         // Reset stop flag
         await stopFlag.reset()
 
-        // Stream response
+        try await streamRequest(
+            request,
+            provider: provider,
+            continuation: continuation
+        )
+    }
+
+    private func streamRequest(
+        _ request: URLRequest,
+        provider: RemoteProvider,
+        continuation: AsyncThrowingStream<LLMStreamChunk, Error>.Continuation
+    ) async throws {
         var latestMetrics: ChunkMetrics?
-        for try await data in httpClient.stream(request) {
-            // Check for stop
-            if await stopFlag.isStopped {
-                continuation.finish()
-                return
-            }
-
-            // Parse SSE events
-            let events = SSEParser.parse(data)
-
-            for event in events {
-                // Check for done marker
-                if SSEParser.isDone(event.data) {
-                    continuation.yield(LLMStreamChunk(
-                        text: "",
-                        event: .finished,
-                        metrics: latestMetrics
-                    ))
+        do {
+            for try await data in httpClient.stream(request) {
+                if await stopFlag.isStopped {
                     continuation.finish()
                     return
                 }
 
-                // Parse chunk
-                do {
-                    let result = try provider.parseStreamChunk(event.data)
-                    let metrics = result.usage.map(buildMetrics)
-                    if let metrics {
-                        latestMetrics = metrics
-                    }
-
-                    if !result.content.isEmpty {
-                        continuation.yield(LLMStreamChunk(
-                            text: result.content,
-                            event: .text,
-                            metrics: metrics
-                        ))
-                    }
-
-                    if result.isDone {
-                        finishStreaming(
-                            continuation: continuation,
-                            metrics: metrics ?? latestMetrics
-                        )
-                        return
-                    }
-                } catch {
-                    // Log parsing errors but continue streaming
-                    // Some events may not contain parseable data
+                let isFinished = await processStreamData(
+                    data,
+                    provider: provider,
+                    continuation: continuation,
+                    latestMetrics: &latestMetrics
+                )
+                if isFinished {
+                    return
                 }
+            }
+            continuation.finish()
+        } catch {
+            throw mapStreamingError(error, provider: provider)
+        }
+    }
+
+    private func processStreamData(
+        _ data: Data,
+        provider: RemoteProvider,
+        continuation: AsyncThrowingStream<LLMStreamChunk, Error>.Continuation,
+        latestMetrics: inout ChunkMetrics?
+    ) async -> Bool {
+        let events = SSEParser.parse(data)
+
+        for event in events {
+            if SSEParser.isDone(event.data) {
+                continuation.yield(LLMStreamChunk(
+                    text: "",
+                    event: .finished,
+                    metrics: latestMetrics
+                ))
+                continuation.finish()
+                return true
+            }
+
+            do {
+                let result = try provider.parseStreamChunk(event.data)
+                let metrics = result.usage.map(buildMetrics)
+                if let metrics {
+                    latestMetrics = metrics
+                }
+
+                if !result.content.isEmpty {
+                    continuation.yield(LLMStreamChunk(
+                        text: result.content,
+                        event: .text,
+                        metrics: metrics
+                    ))
+                }
+
+                if result.isDone {
+                    finishStreaming(
+                        continuation: continuation,
+                        metrics: metrics ?? latestMetrics
+                    )
+                    return true
+                }
+            } catch {
+                // Intentionally ignore parsing errors from non-data events.
             }
         }
 
-        continuation.finish()
+        return false
+    }
+
+    private func mapStreamingError(_ error: Error, provider: RemoteProvider) -> Error {
+        if let httpError = error as? HTTPError {
+            switch httpError {
+            case let .statusCode(statusCode, body):
+                let parsed = provider.parseError(body, statusCode: statusCode)
+                return RemoteError.providerError(parsed)
+
+            case .timeout, .invalidResponse:
+                return RemoteError.networkError(httpError)
+
+            case .cancelled:
+                return RemoteError.cancelled
+            }
+        }
+
+        if error is CancellationError {
+            return RemoteError.cancelled
+        }
+
+        // Always normalize remote-session failures into an LLMError so call sites
+        // (and UI) get consistent, user-friendly error messaging.
+        return RemoteError.networkError(error)
     }
 
     private func finishStreaming(
