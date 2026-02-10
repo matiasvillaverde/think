@@ -77,7 +77,10 @@ make test
   <img src="docs/readme/chat.png" width="280" alt="Chat" />
   <img src="docs/readme/models.png" width="280" alt="Model selection" />
   <img src="docs/readme/stats.png" width="280" alt="Performance and statistics" />
+  <img src="docs/readme/personalities.png" width="280" alt="Personalities" />
 </p>
+
+Each personality is its own OpenClaw instance, with its own model choices, tools, skills, and memory.
 
 This repo includes a dedicated screenshot UI harness in `App-Screenshots/`, the test runner in `Screenshots/`, and a script to generate the README images: `scripts/take_readme_screenshots.sh`.
 

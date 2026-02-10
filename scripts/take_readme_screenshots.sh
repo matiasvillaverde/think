@@ -7,6 +7,7 @@
 #   docs/readme/chat.png
 #   docs/readme/models.png
 #   docs/readme/stats.png
+#   docs/readme/personalities.png
 #
 
 set -euo pipefail
@@ -77,7 +78,7 @@ xcrun simctl boot "$UDID" >/dev/null 2>&1 || true
 xcrun simctl bootstatus "$UDID" -b >/dev/null 2>&1 || true
 
 # Make screenshots look like App Store marketing shots.
-xcrun simctl ui "$UDID" appearance light >/dev/null 2>&1 || true
+xcrun simctl ui "$UDID" appearance dark >/dev/null 2>&1 || true
 xcrun simctl status_bar "$UDID" override \
   --time '9:41' \
   --dataNetwork wifi \
@@ -134,9 +135,10 @@ take_shot() {
 take_shot "SHOW_CHAT_MESSAGES" "$OUT_DIR/chat.png"
 take_shot "SHOW_MODEL_SELECTION" "$OUT_DIR/models.png"
 take_shot "SHOW_STATISTICS" "$OUT_DIR/stats.png"
+take_shot "SHOW_PERSONALITIES" "$OUT_DIR/personalities.png"
 
 # Keep file sizes reasonable for GitHub rendering.
-for f in "$OUT_DIR/chat.png" "$OUT_DIR/models.png" "$OUT_DIR/stats.png"; do
+for f in "$OUT_DIR/chat.png" "$OUT_DIR/models.png" "$OUT_DIR/stats.png" "$OUT_DIR/personalities.png"; do
   if command -v sips >/dev/null 2>&1; then
     sips -Z 1400 "$f" >/dev/null 2>&1 || true
   fi
@@ -146,3 +148,4 @@ echo "Wrote:"
 echo "  $OUT_DIR/chat.png"
 echo "  $OUT_DIR/models.png"
 echo "  $OUT_DIR/stats.png"
+echo "  $OUT_DIR/personalities.png"
