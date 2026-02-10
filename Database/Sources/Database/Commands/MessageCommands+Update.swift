@@ -92,6 +92,12 @@ extension MessageCommands {
         private let processedOutput: ProcessedOutput
         public var requiresRag: Bool { false }
 
+        private struct ChannelIdentityKey: Hashable {
+            let type: Channel.ChannelType
+            let recipient: String?
+            let order: Int
+        }
+
         // MARK: - Initialization
 
         public init(messageId: UUID, processedOutput: ProcessedOutput) {
@@ -100,6 +106,146 @@ extension MessageCommands {
         }
 
         // MARK: - Command Execution
+
+        private func identityKey(forExisting channel: Channel) -> ChannelIdentityKey {
+            ChannelIdentityKey(
+                type: channel.type,
+                recipient: channel.recipient,
+                order: channel.order
+            )
+        }
+
+        private func identityKey(forIncoming message: ChannelMessage) -> ChannelIdentityKey {
+            ChannelIdentityKey(
+                type: Channel.ChannelType(rawValue: message.type.rawValue) ?? .final,
+                recipient: message.recipient,
+                order: message.order
+            )
+        }
+
+        private func findStreamingPlaceholderChannel(
+            for incoming: ChannelMessage,
+            among existing: [Channel]
+        ) -> Channel? {
+            let incomingType = Channel.ChannelType(rawValue: incoming.type.rawValue) ?? .final
+            guard incomingType != .tool else {
+                return nil
+            }
+
+            let sameType: [Channel] = existing.filter {
+                $0.type == incomingType && $0.recipient == incoming.recipient
+            }
+            guard sameType.contains(where: { $0.order == incoming.order }) == false else {
+                return nil
+            }
+
+            // Common case: streaming created a single incomplete channel before parsing produced an order.
+            // We merge into that single incomplete placeholder to avoid duplicates.
+            guard sameType.count == 1, let only = sameType.first, only.isComplete == false else {
+                return nil
+            }
+            return only
+        }
+
+        private func indexAndDedupeExistingChannels(
+            existingChannels: [Channel],
+            context: ModelContext
+        ) -> (byId: [UUID: Channel], byIdentity: [ChannelIdentityKey: Channel]) {
+            var byId: [UUID: Channel] = [:]
+            var byIdentity: [ChannelIdentityKey: Channel] = [:]
+
+            for channel in existingChannels {
+                byId[channel.id] = channel
+                let key: ChannelIdentityKey = identityKey(forExisting: channel)
+                if byIdentity[key] == nil {
+                    byIdentity[key] = channel
+                } else {
+                    let keeper = byIdentity[key]
+                    let shouldReplace: Bool = (keeper?.toolExecution == nil) && (channel.toolExecution != nil)
+                    if shouldReplace {
+                        byIdentity[key] = channel
+                    }
+                }
+            }
+
+            let keepers: Set<UUID> = Set(byIdentity.values.map(\.id))
+            for channel in existingChannels where !keepers.contains(channel.id) {
+                context.delete(channel)
+            }
+
+            return (byId: byId, byIdentity: byIdentity)
+        }
+
+        private func applyIncomingChannelMessage(
+            _ channelMessage: ChannelMessage,
+            to existingChannel: Channel
+        ) {
+            existingChannel.updateContent(channelMessage.content)
+            existingChannel.recipient = channelMessage.recipient
+            existingChannel.order = channelMessage.order
+
+            if channelMessage.type == .tool {
+                // Preserve the originally associated tool id to keep tool executions stable.
+                if existingChannel.associatedToolId == nil {
+                    existingChannel.associatedToolId = channelMessage.toolRequest?.id
+                }
+            }
+
+            if channelMessage.isComplete {
+                if existingChannel.isComplete == false {
+                    existingChannel.markAsComplete()
+                }
+            } else {
+                existingChannel.isComplete = false
+            }
+        }
+
+        private func createChannelEntity(
+            from channelMessage: ChannelMessage,
+            message: Message,
+            context: ModelContext
+        ) -> Channel {
+            let initialContent: String
+            var associatedToolId: UUID?
+            if channelMessage.type == .tool, let toolRequest = channelMessage.toolRequest {
+                // Keep UI-friendly summary in the channel; details live in ToolExecution.
+                initialContent = "Tool: \(toolRequest.displayName ?? toolRequest.name)"
+                associatedToolId = toolRequest.id
+            } else {
+                initialContent = channelMessage.content
+            }
+
+            let newChannel = Channel(
+                id: channelMessage.id,
+                type: Channel.ChannelType(rawValue: channelMessage.type.rawValue) ?? .final,
+                content: initialContent,
+                order: channelMessage.order,
+                recipient: channelMessage.recipient,
+                associatedToolId: associatedToolId,
+                toolExecution: nil,
+                isComplete: channelMessage.isComplete
+            )
+
+            if channelMessage.type == .tool, let toolRequest = channelMessage.toolRequest {
+                let toolExecution = ToolExecution(
+                    request: toolRequest,
+                    state: .pending,
+                    channel: newChannel
+                )
+                newChannel.toolExecution = toolExecution
+                context.insert(toolExecution)
+            }
+
+            newChannel.message = message
+            context.insert(newChannel)
+            if message.channels == nil {
+                message.channels = [newChannel]
+            } else {
+                message.channels?.append(newChannel)
+            }
+
+            return newChannel
+        }
 
         public func execute(
             in context: ModelContext,
@@ -121,75 +267,31 @@ extension MessageCommands {
             if !processedOutput.channels.isEmpty {
                 // Fetch existing channels for this message
                 let existingChannels = message.channels ?? []
-                var channelsDict: [UUID: Channel] = [:]
-                
-                // Create a dictionary of existing channels by UUID
-                for channel in existingChannels {
-                    channelsDict[channel.id] = channel
-                }
+                var (channelsById, channelsByIdentity): ([UUID: Channel], [ChannelIdentityKey: Channel]) =
+                    indexAndDedupeExistingChannels(existingChannels: existingChannels, context: context)
                 
                 // Update existing or create new channels for current iteration
                 for channelMessage in processedOutput.channels {
-                    if let existingChannel = channelsDict[channelMessage.id] {
-                        // Update existing channel
-                        existingChannel.updateContent(channelMessage.content)
-                        existingChannel.recipient = channelMessage.recipient
+                    let incomingKey: ChannelIdentityKey = identityKey(forIncoming: channelMessage)
 
-                        // Link tool metadata when available
-                        if channelMessage.type == .tool {
-                            existingChannel.associatedToolId = channelMessage.toolRequest?.id
-                        }
+                    // Prefer UUID match when possible; otherwise fall back to identity match.
+                    let dedupedExisting: [Channel] = Array(channelsByIdentity.values)
+                    let existingChannel: Channel? =
+                        channelsById[channelMessage.id]
+                        ?? channelsByIdentity[incomingKey]
+                        ?? findStreamingPlaceholderChannel(for: channelMessage, among: dedupedExisting)
 
-                        // Update completion state based on parser streaming signal
-                        if channelMessage.isComplete {
-                            if existingChannel.isComplete == false {
-                                existingChannel.markAsComplete()
-                            }
-                        } else {
-                            existingChannel.isComplete = false
-                        }
+                    if let existingChannel {
+                        applyIncomingChannelMessage(channelMessage, to: existingChannel)
                     } else {
-                        // Create new channel with UUID from ContextBuilder
-                        let initialContent: String
-                        var associatedToolId: UUID?
-                        if channelMessage.type == .tool, let toolRequest = channelMessage.toolRequest {
-                            // Keep UI-friendly summary in the channel; details live in ToolExecution.
-                            initialContent = "Tool: \(toolRequest.displayName ?? toolRequest.name)"
-                            associatedToolId = toolRequest.id
-                        } else {
-                            initialContent = channelMessage.content
-                        }
-
-                        let newChannel = Channel(
-                            id: channelMessage.id,
-                            type: Channel.ChannelType(rawValue: channelMessage.type.rawValue) ?? .final,
-                            content: initialContent,
-                            order: channelMessage.order,
-                            recipient: channelMessage.recipient,
-                            associatedToolId: associatedToolId,
-                            toolExecution: nil,
-                            isComplete: channelMessage.isComplete
+                        let newChannel: Channel = createChannelEntity(
+                            from: channelMessage,
+                            message: message,
+                            context: context
                         )
 
-                        // Create ToolExecution for tool channels
-                        if channelMessage.type == .tool, let toolRequest = channelMessage.toolRequest {
-                            let toolExecution = ToolExecution(
-                                request: toolRequest,
-                                state: .pending,
-                                channel: newChannel
-                            )
-                            newChannel.toolExecution = toolExecution
-                            context.insert(toolExecution)
-                        }
-                        
-                        newChannel.message = message
-                        context.insert(newChannel)
-                        // Add new channel to existing channels list
-                        if message.channels == nil {
-                            message.channels = [newChannel]
-                        } else {
-                            message.channels?.append(newChannel)
-                        }
+                        channelsById[newChannel.id] = newChannel
+                        channelsByIdentity[identityKey(forExisting: newChannel)] = newChannel
                     }
                 }
             }
