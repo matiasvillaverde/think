@@ -47,13 +47,13 @@ test-macos: ## Run tests on macOS with proper Metal support (SERIAL execution fo
 	@echo "🧪 Testing MLXSession..."
 	@echo "$(YELLOW)⚠️  Tests run serially to avoid GPU conflicts$(NC)"
 	@set -o pipefail; \
-	cd .. && xcodebuild test $(XCODEBUILD_SETTINGS) \
+	cd .. && xcodebuild test $(XCODEBUILD_SETTINGS) -quiet \
 		-workspace Think.xcworkspace \
 		-scheme MLXSession \
 		-destination 'platform=macOS' \
 		-parallel-testing-enabled NO \
 		-maximum-concurrent-test-simulator-destinations 1 \
-		2>&1 | tee /tmp/test_output.log; \
+		2>&1 | xcbeautify --is-ci | tee /tmp/test_output.log; \
 	TEST_EXIT_CODE=$$?; \
 	if [ $$TEST_EXIT_CODE -eq 0 ]; then \
 		echo "$(GREEN)✅ MLXSession: All tests passed$(NC)"; \
