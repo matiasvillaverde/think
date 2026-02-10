@@ -66,6 +66,29 @@ internal struct GeneratorEventStreamTests {
         #expect(execution?.statusMessage == "Downloading model")
     }
 
+    @Test("Generation failed event persists an actionable error in the final channel")
+    func generationFailedPersistsFinalChannelError() async throws {
+        let env: TestEnvironment = try await TestEnvironment.create()
+        await env.generator.load(chatId: env.chatId)
+        await Task.yield()
+
+        let errorMessage: String = """
+        OpenRouter blocked this request due to your data policy.
+        Update your OpenRouter privacy settings to allow an endpoint for this model and retry.
+        (OpenRouter: Settings -> Privacy)
+        """
+
+        await env.orchestrator.emitEvent(.generationFailed(runId: env.messageId, error: errorMessage))
+
+        try await Self.waitForMessageFinalChannel(
+            database: env.database,
+            messageId: env.messageId
+        ) { finalContent in
+            finalContent.localizedCaseInsensitiveContains("OpenRouter blocked")
+                && finalContent.localizedCaseInsensitiveContains("openrouter.ai/settings/privacy")
+        }
+    }
+
     private static func waitForToolExecution(
         database: Database,
         executionId: UUID,
@@ -82,6 +105,27 @@ internal struct GeneratorEventStreamTests {
             try await Task.sleep(nanoseconds: 20_000_000)
         }
     }
+
+    private static func waitForMessageFinalChannel(
+        database: Database,
+        messageId: UUID,
+        timeoutSeconds: TimeInterval = 2.0,
+        predicate: (String) -> Bool
+    ) async throws {
+        let deadline: Date = Date().addingTimeInterval(timeoutSeconds)
+        while Date() < deadline {
+            if let message = try? await database.read(MessageCommands.Read(id: messageId)) {
+                let finalContent: String = message.channels?
+                    .filter { $0.type == .final }
+                    .min { $0.order < $1.order }?
+                    .content ?? ""
+                if predicate(finalContent) {
+                    return
+                }
+            }
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+    }
 }
 
 private struct TestEnvironment {
@@ -89,6 +133,7 @@ private struct TestEnvironment {
     let orchestrator: MockAgentOrchestrator
     let generator: ViewModelGenerator
     let chatId: UUID
+    let messageId: UUID
     let requestId: UUID
 
     static func create() async throws -> Self {
@@ -113,6 +158,7 @@ private struct TestEnvironment {
             orchestrator: orchestrator,
             generator: generator,
             chatId: chatId,
+            messageId: messageId,
             requestId: requestId
         )
     }

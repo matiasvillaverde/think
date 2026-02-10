@@ -46,9 +46,11 @@ public final actor ViewModelGenerator: ViewModelGenerating {
     public func generate(prompt: String, overrideAction: Abstractions.Action?) async {
         // Trigger a strong haptic feedback when prompt is received
         #if os(iOS)
+        #if !targetEnvironment(simulator)
         let notificationFeedback: UINotificationFeedbackGenerator = await UINotificationFeedbackGenerator()
         await notificationFeedback.prepare()
         await notificationFeedback.notificationOccurred(.success)
+        #endif
         #endif
 
         let action: Action = overrideAction ?? .textGeneration([])

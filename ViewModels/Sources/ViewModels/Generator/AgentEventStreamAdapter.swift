@@ -58,6 +58,9 @@ public final actor AgentEventStreamAdapter {
         case let .toolCompleted(requestId, _, _):
             await updateToolProgress(requestId: requestId, progress: 1.0, status: nil)
 
+        case let .generationFailed(runId, errorMessage):
+            await persistGenerationFailure(messageId: runId, errorMessage: errorMessage)
+
         default:
             break
         }
@@ -89,5 +92,53 @@ public final actor AgentEventStreamAdapter {
         } catch {
             logger.debug("Skipping tool progress update: \(error.localizedDescription)")
         }
+    }
+
+    private func persistGenerationFailure(messageId: UUID, errorMessage: String) async {
+        do {
+            _ = try await database.write(
+                MessageCommands.AppendFinalChannelContent(
+                    messageId: messageId,
+                    appendedContent: Self.userFacingErrorMarkdown(for: errorMessage),
+                    isComplete: true
+                )
+            )
+        } catch {
+            logger.debug("Skipping generation failure persistence: \(error.localizedDescription)")
+        }
+    }
+
+    private static func userFacingErrorMarkdown(for errorMessage: String) -> String {
+        let normalized: String = errorMessage.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // OpenRouter data policy block: make it actionable and non-mysterious.
+        if normalized.localizedCaseInsensitiveContains("OpenRouter blocked this request due to your data policy")
+            || normalized.localizedCaseInsensitiveContains("No endpoints found matching your data policy") {
+            return """
+            **OpenRouter blocked this request due to your privacy settings.**
+
+            1. Open OpenRouter Settings -> Privacy.
+            2. Allow an endpoint for this model (free models commonly require enabling Free model publication).
+            3. Retry your message.
+
+            https://openrouter.ai/settings/privacy
+            """
+        }
+
+        if normalized.localizedCaseInsensitiveContains("No API key configured")
+            || normalized.localizedCaseInsensitiveContains("Missing or invalid API key")
+            || normalized.localizedCaseInsensitiveContains("Invalid API key") {
+            return """
+            **Remote model needs an API key.**
+
+            Go to Settings -> API Keys, add a key for your provider, then retry.
+            """
+        }
+
+        return """
+        **Generation failed**
+
+        \(normalized)
+        """
     }
 }
