@@ -19,7 +19,12 @@ internal struct GeneratorEventStreamTests {
             toolName: "calculator"
         ))
 
-        try await Self.waitForUpdates()
+        try await Self.waitForToolExecution(
+            database: env.database,
+            executionId: env.requestId
+        ) { execution in
+            execution.state == .executing
+        }
 
         let execution: ToolExecution? = try await env.database.read(
             ToolExecutionCommands.Get(executionId: env.requestId)
@@ -43,7 +48,16 @@ internal struct GeneratorEventStreamTests {
             status: "Downloading model"
         ))
 
-        try await Self.waitForUpdates()
+        try await Self.waitForToolExecution(
+            database: env.database,
+            executionId: env.requestId
+        ) { execution in
+            guard let progress = execution.progress else {
+                return false
+            }
+            let progressMatches: Bool = abs(progress - 0.42) < 0.0001
+            return progressMatches && execution.statusMessage == "Downloading model"
+        }
 
         let execution: ToolExecution? = try await env.database.read(
             ToolExecutionCommands.Get(executionId: env.requestId)
@@ -52,8 +66,21 @@ internal struct GeneratorEventStreamTests {
         #expect(execution?.statusMessage == "Downloading model")
     }
 
-    private static func waitForUpdates() async throws {
-        try await Task.sleep(nanoseconds: 80_000_000)
+    private static func waitForToolExecution(
+        database: Database,
+        executionId: UUID,
+        timeoutSeconds: TimeInterval = 2.0,
+        predicate: (ToolExecution) -> Bool
+    ) async throws {
+        let deadline: Date = Date().addingTimeInterval(timeoutSeconds)
+        while Date() < deadline {
+            if let execution = try await database.read(
+                ToolExecutionCommands.Get(executionId: executionId)
+            ), predicate(execution) {
+                return
+            }
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
     }
 }
 

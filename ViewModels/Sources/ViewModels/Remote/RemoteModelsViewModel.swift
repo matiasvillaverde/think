@@ -36,11 +36,11 @@ public final actor RemoteModelsViewModel: RemoteModelsViewModeling {
     public func loadModels(for provider: RemoteProviderType) async {
         internalIsLoading = true
         internalErrorMessage = nil
-        internalModels = []
 
         let apiKey: String? = try? await apiKeyManager.getKey(for: provider)
         guard let apiKey, !apiKey.isEmpty else {
             internalIsLoading = false
+            internalModels = []
             internalErrorMessage = String(
                 localized: "Add an API key for \(provider.displayName) to load models.",
                 bundle: .module
@@ -58,6 +58,7 @@ public final actor RemoteModelsViewModel: RemoteModelsViewModeling {
             }
         } catch {
             logger.error("Failed to load models: \(error.localizedDescription)")
+            // Keep any previously loaded list so the UI doesn't "go blank" on transient failures.
             internalErrorMessage = String(
                 localized: "Failed to load models. Please try again.",
                 bundle: .module
@@ -81,6 +82,7 @@ public final actor RemoteModelsViewModel: RemoteModelsViewModeling {
 
     public func selectModel(_ model: RemoteModel, chatId: UUID) async throws -> UUID {
         _ = chatId
+        let resolvedArchitecture: Architecture = resolveArchitecture(for: model)
         return try await database.write(
             ModelCommands.CreateRemoteModel(
                 name: model.modelId,
@@ -88,8 +90,21 @@ public final actor RemoteModelsViewModel: RemoteModelsViewModeling {
                 displayDescription: model.description ?? model.displayName,
                 location: model.location,
                 type: model.type,
-                architecture: .unknown
+                architecture: resolvedArchitecture
             )
         )
+    }
+
+    private func resolveArchitecture(for model: RemoteModel) -> Architecture {
+        // Remote providers in this app use OpenAI-compatible chat APIs. Treat conversational
+        // remote models as GPT/Harmony formatting so ContextBuilder doesn't reject them.
+        let detected: Architecture = Architecture.detect(from: model.modelId)
+        switch model.type {
+        case .language, .deepLanguage, .flexibleThinker, .visualLanguage:
+            return detected == .unknown ? .gpt : detected
+
+        case .diffusion, .diffusionXL:
+            return detected == .unknown ? .stableDiffusion : detected
+        }
     }
 }

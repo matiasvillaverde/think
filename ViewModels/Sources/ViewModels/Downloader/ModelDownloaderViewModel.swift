@@ -219,58 +219,70 @@ extension ModelDownloaderViewModel {
         }
     }
 
-    /// Deletes a downloaded model
+    /// Deletes a model from the user's library.
+    ///
+    /// - For remote models: remove the SwiftData record entirely (no filesystem work).
+    /// - For downloaded hub models: delete files best-effort, then mark as not downloaded so the entry can be re-downloaded.
+    /// - For local referenced models: remove the reference (no filesystem work).
     public func delete(modelId: UUID) async {
         logger.notice("🗑️ Deleting model: \(modelId)")
 
-        // Cancel download if active
         if activeDownloads.contains(modelId) {
             await cancelDownload(modelId: modelId)
         }
 
+        let modelName: String
         do {
-            // First, check if the model exists in the database
-            let modelName: String
-            do {
-                modelName = try await database.readInBackground(ModelCommands.GetModelName(id: modelId))
-                logger.debug("Retrieved model name: \(modelName)")
-            } catch DatabaseError.modelNotFound {
-                logger.warning("Model not found in database: \(modelId)")
-                await createErrorNotification(message: "Model not found in database")
-                return
-            } catch {
-                logger.error("Failed to retrieve model name: \(error.localizedDescription)")
-                await createErrorNotification(message: "Failed to access model information")
-                return
-            }
+            modelName = try await database.readInBackground(ModelCommands.GetModelName(id: modelId))
+        } catch DatabaseError.modelNotFound {
+            logger.warning("Model not found in database: \(modelId)")
+            await createErrorNotification(message: "Model not found in database")
+            return
+        } catch {
+            logger.error("Failed to retrieve model name: \(error.localizedDescription)")
+            await createErrorNotification(message: "Failed to access model information")
+            return
+        }
 
-            // Try to delete model files from disk (skip for local referenced models)
-            do {
-                let sendableModel: SendableModel = try await database.read(ModelCommands.GetSendableModel(id: modelId))
-                if sendableModel.locationKind == .localFile {
-                    logger.info("Local model reference removed; no files deleted from disk")
-                } else {
-                    logger.info("Deleting model files from disk...")
-                    try await modelDownloader.deleteModel(model: sendableModel.location)
-                    logger.info("Model files deleted successfully")
-                }
-            } catch {
-                logger.warning("Failed to delete model files (may not exist): \(error.localizedDescription)")
-                // Continue with database cleanup even if file deletion fails
-            }
+        guard let sendableModel = try? await database.read(ModelCommands.GetSendableModel(id: modelId)) else {
+            await createErrorNotification(message: "Failed to access model information")
+            return
+        }
 
-            // Update model state in database
-            do {
-                logger.info("Updating model state in database...")
+        await deleteModelFilesIfNeeded(sendableModel)
+
+        do {
+            switch sendableModel.locationKind {
+            case .remote:
+                try await database.writeInBackground(ModelCommands.DeleteModel(model: modelId))
+
+            case .huggingFace, .localFile:
                 try await database.writeInBackground(ModelCommands.DeleteModelLocation(model: modelId))
-                logger.info("Model deleted successfully: \(modelName)")
-                try await database.writeInBackground(
-                    NotificationCommands.Create(type: .success, message: "Model \(modelName) deleted successfully")
-                )
-            } catch {
-                logger.error("Failed to update model state in database: \(error.localizedDescription)")
-                await createErrorNotification(message: "Failed to update model state: \(error.localizedDescription)")
             }
+
+            try await database.writeInBackground(
+                NotificationCommands.Create(type: .success, message: "Model \(modelName) deleted successfully")
+            )
+        } catch {
+            logger.error("Failed to update model state in database: \(error.localizedDescription)")
+            await createErrorNotification(message: "Failed to update model state: \(error.localizedDescription)")
+        }
+    }
+
+    private func deleteModelFilesIfNeeded(_ sendableModel: SendableModel) async {
+        do {
+            switch sendableModel.locationKind {
+            case .localFile:
+                logger.info("Local model reference removed; no files deleted from disk")
+
+            case .remote:
+                logger.info("Remote model has no local files; skipping filesystem deletion")
+
+            case .huggingFace:
+                try await modelDownloader.deleteModel(model: sendableModel.location)
+            }
+        } catch {
+            logger.warning("Failed to delete model files (may not exist): \(error.localizedDescription)")
         }
     }
 

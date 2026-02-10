@@ -114,5 +114,6 @@ internal struct RemoteModelsViewModelTests {
         #expect(stored?.id == modelId)
         #expect(stored?.backend == .remote)
         #expect(stored?.locationKind == .remote)
+        #expect(stored?.architecture == .gpt || stored?.architecture == .harmony)
     }
 }

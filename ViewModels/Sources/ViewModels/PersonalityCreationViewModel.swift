@@ -36,6 +36,7 @@ public final class PersonalityCreationViewModel: PersonalityCreationViewModeling
     @Published public var isCreating: Bool = false
     @Published public var validationError: String?
     @Published public var shouldDismiss: Bool = false
+    @Published public private(set) var createdPersonalityId: UUID?
 
     // MARK: - Private Properties
 
@@ -103,6 +104,7 @@ public final class PersonalityCreationViewModel: PersonalityCreationViewModeling
 
         if let personalityId {
             logger.info("Personality created successfully with ID: \(personalityId)")
+            createdPersonalityId = personalityId
             shouldDismiss = true
             return true
         }

@@ -86,7 +86,7 @@ public final actor ChatViewModel: ChatViewModeling {
 
     public func deleteAll() async {
         do {
-            try await database.write(ChatCommands.ResetAllChats(systemInstruction: .englishAssistant))
+            try await database.write(ChatCommands.ResetAllChats(systemInstruction: .empatheticFriend))
             logger.info("All chats deleted")
         } catch {
             logger.error("Failed to delete all chats: \(error.localizedDescription)")
