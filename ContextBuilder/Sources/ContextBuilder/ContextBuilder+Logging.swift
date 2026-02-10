@@ -17,7 +17,6 @@ extension ContextBuilder {
                 Action Type: Text Generation
                 Tool Count: \(tools.count)
                 Tools in Action: [\(toolIdentifiers.joined(separator: ", "))]
-                Has Reasoning Tool: \(tools.contains(.reasoning))
                 Raw Action: .textGeneration(\(tools.map(\.rawValue).sorted()))
                 ========== ACTION DETAILS END ==========
                 """)

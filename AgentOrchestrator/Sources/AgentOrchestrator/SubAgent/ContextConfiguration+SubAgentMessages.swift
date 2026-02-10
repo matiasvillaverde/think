@@ -6,7 +6,6 @@ extension ContextConfiguration {
             systemInstruction: systemInstruction,
             contextMessages: messages,
             maxPrompt: maxPrompt,
-            reasoningLevel: reasoningLevel,
             includeCurrentDate: includeCurrentDate,
             knowledgeCutoffDate: knowledgeCutoffDate,
             currentDateOverride: currentDateOverride,

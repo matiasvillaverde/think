@@ -59,7 +59,6 @@ extension HarmonyContextFormatter {
                 allToolDefinitions: context.toolDefinitions,
                 hasToolResponses: !context.toolResponses.isEmpty,
                 knowledgeCutoff: context.contextConfiguration.knowledgeCutoffDate,
-                reasoningLevel: context.contextConfiguration.reasoningLevel,
                 includeDate: includeDate,
                 hasConversationHistory: hasConversationHistory
             )

@@ -2,6 +2,5 @@
 Knowledge cutoff: 2021-01
 Current date: 2021-01-01
 
-Reasoning: medium
 
 # Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>What is 42 * pi?<|end|><|start|>assistant

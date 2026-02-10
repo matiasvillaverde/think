@@ -1,7 +1,6 @@
 import Foundation
 
 public enum ToolIdentifier: String, CaseIterable, Hashable, Sendable {
-    case reasoning = "Reason"
     case imageGeneration = "Generate an image"
     case browser = "Browser"
     case python = "Python"
@@ -29,7 +28,6 @@ extension ToolIdentifier {
         case .weather: return "weather"
         case .duckduckgo: return "duckduckgo_search"
         case .braveSearch: return "brave_search"
-        case .reasoning: return "reasoning"
         case .imageGeneration: return "image_generation"
         case .memory: return "memory"
         case .subAgent: return "sub_agent"

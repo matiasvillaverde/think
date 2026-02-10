@@ -43,7 +43,6 @@ internal struct HarmonyInputTestSimpleConvoHighEffort {
             systemInstruction: systemInstruction,
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "high",
             includeCurrentDate: false,
             knowledgeCutoffDate: "2024-06"
         )

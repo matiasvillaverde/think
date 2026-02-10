@@ -64,7 +64,6 @@ internal struct QwenWeatherToolsResponseTests {
             systemInstruction: "You are a helpful assistant.",
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "basic",
             includeCurrentDate: false
         )
 

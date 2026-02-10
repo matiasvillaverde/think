@@ -41,7 +41,6 @@ internal struct HarmonyRenderFunctionsTest {
             systemInstruction: systemInstruction,
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "high",
             includeCurrentDate: true,
             knowledgeCutoffDate: "2024-06",
             currentDateOverride: "2025-06-28"

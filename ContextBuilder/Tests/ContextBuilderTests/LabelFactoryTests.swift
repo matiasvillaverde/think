@@ -27,7 +27,7 @@ internal struct LabelFactoryTests {
 
     @Test(
         "Creates Harmony labels for Harmony/GPT architectures",
-        arguments: [Architecture.harmony, .gpt]
+        arguments: [Architecture.harmony, .gpt, .unknown]
     )
     func testHarmonyCreation(architecture: Architecture) throws {
         let labels: any StopSequenceLabels = try LabelFactory.createLabels(for: architecture)
@@ -62,8 +62,7 @@ internal struct LabelFactoryTests {
             .t5,
             .stableDiffusion,
             .flux,
-            .whisper,
-            .unknown
+            .whisper
         ]
     )
     func testUnsupportedArchitectures(architecture: Architecture) {

@@ -8,9 +8,6 @@ public enum AgentEvent: Sendable {
     /// Text token received during streaming
     case textDelta(text: String)
 
-    /// Extended thinking/reasoning content (if enabled)
-    case reasoningDelta(text: String)
-
     /// A tool execution has started
     case toolStarted(requestId: UUID, toolName: String)
 
@@ -73,9 +70,6 @@ extension AgentEvent: Equatable {
             return lhsId == rhsId
 
         case let (.textDelta(lhsText), .textDelta(rhsText)):
-            return lhsText == rhsText
-
-        case let (.reasoningDelta(lhsText), .reasoningDelta(rhsText)):
             return lhsText == rhsText
 
         case let (.toolStarted(lhsId, lhsName), .toolStarted(rhsId, rhsName)):

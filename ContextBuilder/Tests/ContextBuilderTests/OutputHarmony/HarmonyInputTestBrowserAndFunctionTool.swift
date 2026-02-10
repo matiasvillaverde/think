@@ -30,7 +30,6 @@ internal struct HarmonyInputTestBrowserAndFunctionTool {
             systemInstruction: systemInstr,
             contextMessages: [],
             maxPrompt: 4_096,
-            reasoningLevel: "medium",
             includeCurrentDate: true,
             knowledgeCutoffDate: "2024-06",
             currentDateOverride: "2025-06-28"

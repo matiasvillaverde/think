@@ -5,9 +5,9 @@ import Testing
 
 @Suite("ContextBuilder Qwen History Tests")
 internal struct ContextBuilderQwenHistoryTests {
-    @Test("ContextBuilder produces expected Qwen output with history and /think command")
+    @Test("ContextBuilder produces expected Qwen output with history (no /think directives)")
     func testQwenConversationWithHistoryAndThink() async throws {
-        let tooling = MockReasoningTooling()
+        let tooling = MockTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
 
         let parameters = createQwenHistoryTestParameters()
@@ -57,14 +57,13 @@ internal struct ContextBuilderQwenHistoryTests {
             systemInstruction: "You are a helpful assistant.",
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "basic",
             includeCurrentDate: true,
             knowledgeCutoffDate: "2024-06",
             currentDateOverride: "2025-08-21"
         )
 
         return BuildParameters(
-            action: .textGeneration([.reasoning]),  // Reasoning enabled, so should add /think
+            action: .textGeneration([]),
             contextConfiguration: contextConfig,
             toolResponses: [],
             model: model

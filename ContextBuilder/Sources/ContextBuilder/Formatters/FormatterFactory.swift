@@ -13,7 +13,7 @@ internal enum FormatterFactory {
         let labels: any StopSequenceLabels = try LabelFactory.createLabels(for: model.architecture)
 
         switch model.architecture {
-        case .harmony, .gpt:
+        case .harmony, .gpt, .unknown:
             return try createHarmonyFormatter(labels: labels, architecture: model.architecture)
 
         case .qwen:

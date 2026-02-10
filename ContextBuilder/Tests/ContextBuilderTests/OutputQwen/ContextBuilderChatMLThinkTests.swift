@@ -3,11 +3,11 @@ import Abstractions
 import Foundation
 import Testing
 
-@Suite("ContextBuilder ChatML Think Tests")
+@Suite("ContextBuilder ChatML Tests")
 internal struct ContextBuilderChatMLThinkTests {
-    @Test("ContextBuilder produces expected ChatML output with /think command for Qwen")
-    func testChatMLSimpleConversationWithThink() async throws {
-        let tooling = MockReasoningTooling()
+    @Test("ContextBuilder produces expected ChatML output for Qwen (no /think directives)")
+    func testChatMLSimpleConversation() async throws {
+        let tooling = MockTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
 
         let parameters = createChatMLThinkTestParameters()
@@ -60,12 +60,11 @@ internal struct ContextBuilderChatMLThinkTests {
             systemInstruction: "You are a helpful AI assistant.",
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "basic",
             includeCurrentDate: false
         )
 
         return BuildParameters(
-            action: .textGeneration([.reasoning]),
+            action: .textGeneration([]),
             contextConfiguration: contextConfig,
             toolResponses: [],
             model: model

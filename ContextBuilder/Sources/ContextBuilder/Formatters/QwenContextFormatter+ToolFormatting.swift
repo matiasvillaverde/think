@@ -10,11 +10,6 @@ extension QwenContextFormatter {
             return ""
         }
 
-        let nonReasoningTools: [ToolDefinition] = definitions.filter { $0.name != "reasoning" }
-        guard !nonReasoningTools.isEmpty else {
-            return ""
-        }
-
         var result: String = ""
 
         // Section title
@@ -26,7 +21,7 @@ extension QwenContextFormatter {
         // Tools definitions
         result += "<tools>\n"
 
-        let toolsJSON: [String] = nonReasoningTools.map { tool in
+        let toolsJSON: [String] = definitions.map { tool in
             // Compact the JSON schema by parsing and re-serializing without spaces
             let compactSchema: String
             if let data = tool.schema.data(using: .utf8),

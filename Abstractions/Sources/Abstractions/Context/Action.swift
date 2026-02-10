@@ -11,15 +11,6 @@ public enum Action: Hashable, Sendable {
         }
     }
 
-    public var isReasoning: Bool {
-        switch self {
-        case .textGeneration(let tools):
-            return tools.contains(.reasoning)
-        default:
-            return false
-        }
-    }
-
     public var isVisual: Bool {
         switch self {
         case .imageGeneration:

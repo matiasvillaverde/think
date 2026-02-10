@@ -82,7 +82,7 @@ public actor ToolManager: Tooling {
         case .memory:
             await registerMemoryStrategy()
 
-        case .reasoning, .imageGeneration, .cron, .canvas, .nodes:
+        case .imageGeneration, .cron, .canvas, .nodes:
             break
 
         case .browser, .python, .functions, .healthKit, .weather, .duckduckgo, .braveSearch:
@@ -113,7 +113,7 @@ public actor ToolManager: Tooling {
         case .braveSearch:
             return BraveSearchStrategy()
 
-        case .subAgent, .workspace, .reasoning, .imageGeneration, .memory:
+        case .subAgent, .workspace, .imageGeneration, .memory:
             return nil
 
         case .cron, .canvas, .nodes:
@@ -138,7 +138,7 @@ public actor ToolManager: Tooling {
             return NodesStrategy(database: database)
 
         case .browser, .python, .functions, .healthKit, .weather, .duckduckgo, .braveSearch,
-            .subAgent, .workspace, .reasoning, .imageGeneration, .memory:
+            .subAgent, .workspace, .imageGeneration, .memory:
             return nil
         }
     }

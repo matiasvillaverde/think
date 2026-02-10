@@ -150,14 +150,12 @@ public actor ContextBuilder: ContextBuilding {
 
             Action Details:
             - Type: \(actionType)
-            - Is Reasoning: \(parameters.action.isReasoning)
             - Tools Requested: \(toolsList)
 
             Context Configuration:
             - Max Prompt Tokens: \(parameters.contextConfiguration.maxPrompt)
             - System Instruction: \(parameters.contextConfiguration.systemInstruction.count) chars
             - Message Count: \(parameters.contextConfiguration.contextMessages.count)
-            - Reasoning Level: \(parameters.contextConfiguration.reasoningLevel ?? "none")
             - Include Current Date: \(includeDate)
             - Knowledge Cutoff: \(parameters.contextConfiguration.knowledgeCutoffDate ?? "N/A")
 

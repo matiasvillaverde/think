@@ -2,7 +2,6 @@
 Knowledge cutoff: 2024-06
 Current date: 2025-06-28
 
-Reasoning: medium
 
 # Tools
 

@@ -417,7 +417,6 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             systemInstruction: base.systemInstruction,
             contextMessages: base.contextMessages,
             maxPrompt: base.maxPrompt,
-            reasoningLevel: base.reasoningLevel,
             includeCurrentDate: base.includeCurrentDate,
             knowledgeCutoffDate: base.knowledgeCutoffDate,
             currentDateOverride: base.currentDateOverride,
@@ -487,7 +486,6 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
                 in: contextConfig.contextMessages
             ),
             maxPrompt: contextConfig.maxPrompt,
-            reasoningLevel: contextConfig.reasoningLevel,
             includeCurrentDate: contextConfig.includeCurrentDate,
             knowledgeCutoffDate: contextConfig.knowledgeCutoffDate,
             currentDateOverride: contextConfig.currentDateOverride,

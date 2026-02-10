@@ -80,14 +80,6 @@ internal actor EventEmitter {
         continuation?.yield(event)
     }
 
-    /// Emit a reasoning delta during extended thinking
-    /// - Parameter text: The reasoning text chunk
-    internal func emitReasoningDelta(text: String) {
-        let event: AgentEvent = .reasoningDelta(text: text)
-        Self.logger.debug("Reasoning delta: \(text.prefix(Self.logPrefixLength))...")
-        continuation?.yield(event)
-    }
-
     // MARK: - Tool Events
 
     /// Emit that a tool execution has started

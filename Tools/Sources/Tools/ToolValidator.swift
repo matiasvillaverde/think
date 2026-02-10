@@ -35,7 +35,7 @@ public actor ToolValidator: ToolValidating {
         case .healthKit:
             return validateHealthKit()
 
-        case .browser, .python, .functions, .weather, .duckduckgo, .braveSearch, .memory, .reasoning,
+        case .browser, .python, .functions, .weather, .duckduckgo, .braveSearch, .memory,
             .subAgent, .workspace, .cron, .canvas, .nodes:
             return .available
         }

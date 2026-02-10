@@ -128,7 +128,6 @@ extension SubAgentCoordinator {
             systemInstruction: systemInstruction,
             contextMessages: [],
             maxPrompt: baseConfig.maxPrompt,
-            reasoningLevel: baseConfig.reasoningLevel,
             includeCurrentDate: baseConfig.includeCurrentDate,
             knowledgeCutoffDate: baseConfig.knowledgeCutoffDate,
             currentDateOverride: baseConfig.currentDateOverride,

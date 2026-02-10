@@ -26,7 +26,7 @@ Explain your reasoning for using the tool here
 - Wait for function results before providing your final answer
 - If you don't need any functions to answer the query, respond normally<|im_end|>
 <|im_start|>user
-What's the weather in Berlin? /no_think<|im_end|>
+What's the weather in Berlin?<|im_end|>
 <|im_start|>assistant
 <commentary>
 I'll check the weather in Berlin for you.

@@ -10,7 +10,6 @@ extension HarmonyContextFormatter {
         allToolDefinitions: [ToolDefinition],
         hasToolResponses: Bool = false,
         knowledgeCutoff: String? = nil,
-        reasoningLevel: String? = nil,
         includeDate: Bool = true,
         hasConversationHistory: Bool = false
     ) -> String {
@@ -26,14 +25,12 @@ extension HarmonyContextFormatter {
         }
 
         components.append("\n")
-        components.append(formatReasoningSection(action: action, reasoningLevel: reasoningLevel))
         components.append(formatToolsSection(toolDefinitions))
 
         components.append(
             formatChannelInstructions(
                 toolDefinitions: allToolDefinitions,
                 action: action,
-                reasoningLevel: reasoningLevel,
                 hasDeveloperSection: content.contains("DEVELOPER:"),
                 hasConversationHistory: hasConversationHistory
             )
@@ -88,27 +85,16 @@ extension HarmonyContextFormatter {
         return ""
     }
 
-    private func formatReasoningSection(action: Action, reasoningLevel: String?) -> String {
-        if let level = reasoningLevel {
-            return "\nReasoning: \(level)\n"
-        }
-        if action.isReasoning {
-            return "\nReasoning: medium\n"
-        }
-        return ""
-    }
-
     private func formatToolsSection(_ toolDefinitions: [ToolDefinition]) -> String {
-        let nonReasoningTools: [ToolDefinition] = toolDefinitions.filter { $0.name != "reasoning" }
-        guard !nonReasoningTools.isEmpty else {
+        guard !toolDefinitions.isEmpty else {
             return ""
         }
 
         var components: [String] = []
-        components.reserveCapacity(nonReasoningTools.count * Self.toolMult + 1)
+        components.reserveCapacity(toolDefinitions.count * Self.toolMult + 1)
         components.append("# Tools\n\n")
 
-        for tool in nonReasoningTools {
+        for tool in toolDefinitions {
             let toolDefinition: String = formatToolDefinition(tool)
             let displayName: String = getToolDisplayName(tool.name)
             components.append("## \(displayName)\n\n")
@@ -122,11 +108,9 @@ extension HarmonyContextFormatter {
     private func formatChannelInstructions(
         toolDefinitions: [ToolDefinition],
         action _: Action,
-        reasoningLevel _: String?,
         hasDeveloperSection _: Bool,
         hasConversationHistory _: Bool
     ) -> String {
-        let nonReasoningTools: [ToolDefinition] = toolDefinitions.filter { $0.name != "reasoning" }
         let channels: String = "analysis, commentary, final"
 
         var components: [String] = []
@@ -135,7 +119,7 @@ extension HarmonyContextFormatter {
             "\n# Valid channels: \(channels). Channel must be included for every message."
         )
 
-        if nonReasoningTools.contains(where: { $0.name == "functions" }) {
+        if toolDefinitions.contains(where: { $0.name == "functions" }) {
             components.append(
                 "\nCalls to these tools must go to the commentary channel: 'functions'."
             )
@@ -146,9 +130,6 @@ extension HarmonyContextFormatter {
 
     private func formatToolDefinition(_ tool: ToolDefinition) -> String {
         switch tool.name {
-        case "reasoning":
-            return formatReasoningToolDefinition()
-
         case "browser_search", "browser", "functions", "python_execution", "python":
             if !tool.description.isEmpty {
                 return tool.description

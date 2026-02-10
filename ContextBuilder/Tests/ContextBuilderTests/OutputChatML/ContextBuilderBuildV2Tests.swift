@@ -72,7 +72,6 @@ internal struct ContextBuilderBuildV2Tests {
             systemInstruction: "You are a helpful AI assistant.",
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "basic",
             includeCurrentDate: false
         )
 

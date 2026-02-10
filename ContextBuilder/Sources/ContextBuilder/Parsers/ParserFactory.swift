@@ -34,7 +34,7 @@ internal enum ParserFactory {
         let labels: any StopSequenceLabels = try LabelFactory.createLabels(for: model.architecture)
 
         switch model.architecture {
-        case .harmony, .gpt:
+        case .harmony, .gpt, .unknown:
             guard let harmonyLabels = labels as? HarmonyLabels else {
                 throw LabelError.unsupportedArchitecture(model.architecture)
             }

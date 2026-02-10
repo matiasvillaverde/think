@@ -38,7 +38,6 @@ internal struct HarmonyReasoningWithDates {
             systemInstruction: "You are ChatGPT, a large language model trained by OpenAI.",
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "medium",
             includeCurrentDate: true,
             knowledgeCutoffDate: "2021-01",
             currentDateOverride: "2021-01-01"

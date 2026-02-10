@@ -28,7 +28,6 @@ internal struct HarmonyInputTestBrowserToolOnly {
             systemInstruction: "You are ChatGPT, a large language model trained by OpenAI.",
             contextMessages: [],
             maxPrompt: 4_096,
-            reasoningLevel: "medium",
             includeCurrentDate: true,
             knowledgeCutoffDate: "2024-06",
             currentDateOverride: "2025-06-28"

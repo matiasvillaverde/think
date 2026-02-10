@@ -10,7 +10,7 @@ internal enum LabelFactory {
         ChatMLLabels()
     }
 
-    /// Creates Harmony labels for Harmony and GPT architectures
+    /// Creates Harmony labels for Harmony, GPT, and unknown architectures
     /// Includes channel-based formatting with special tokens
     internal static func createHarmonyLabels() -> HarmonyLabels {
         HarmonyLabels()
@@ -38,7 +38,9 @@ internal enum LabelFactory {
         for architecture: Architecture
     ) throws -> any StopSequenceLabels {
         switch architecture {
-        case .harmony, .gpt:
+        case .harmony, .gpt, .unknown:
+            // Unknown architectures are treated as chat-capable by default. This avoids breaking
+            // remote models where we don't always know the underlying template.
             return createHarmonyLabels()
 
         case .qwen:
@@ -57,7 +59,7 @@ internal enum LabelFactory {
             // These use simpler formats but can work with ChatML structure
             return createChatMLLabels()
 
-        case .bert, .t5, .stableDiffusion, .flux, .whisper, .unknown:
+        case .bert, .t5, .stableDiffusion, .flux, .whisper:
             // Non-conversational models are not supported
             throw LabelError.unsupportedArchitecture(architecture)
         }

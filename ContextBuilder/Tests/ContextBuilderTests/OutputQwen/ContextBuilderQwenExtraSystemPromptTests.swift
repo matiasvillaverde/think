@@ -5,7 +5,7 @@ import Testing
 
 @Suite("ContextBuilder Qwen Extra System Prompt Tests")
 internal struct ContextBuilderQwenExtraSystemPromptTests {
-    @Test("ContextBuilder produces expected Qwen output with extra system prompt and /no_think")
+    @Test("Qwen output with extra system prompt (no /think directives)")
     func testQwenSimpleConversationExtraSystemPrompt() async throws {
         let tooling = MockTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
@@ -44,14 +44,13 @@ internal struct ContextBuilderQwenExtraSystemPromptTests {
             systemInstruction: "You are a helpful assistant.",
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "basic",
             includeCurrentDate: true,
             knowledgeCutoffDate: "2024-06",
             currentDateOverride: "2025-08-21"
         )
 
         return BuildParameters(
-            action: .textGeneration([]),  // No reasoning, so should add /no_think
+            action: .textGeneration([]),
             contextConfiguration: contextConfig,
             toolResponses: [],
             model: model

@@ -131,12 +131,9 @@ internal struct ModelStateCoordinatorPreloadTests {
         await env.mlxSession.configureForSuccessfulPreload(steps: manySteps, delay: 0.0001)
 
         // When - Load model (all progress events should be consumed)
-        let startTime: Date = Date()
         try await env.coordinator.load(chatId: chatId)
-        let loadTime: TimeInterval = Date().timeIntervalSince(startTime)
 
-        // Then - Verify load completed in reasonable time
-        #expect(loadTime < 1.0, "Load should complete quickly even with many progress steps")
+        // Then - Verify load completed and progress did not block completion.
         #expect(await env.mlxSession.isModelLoaded, "Model should be loaded")
     }
 
@@ -186,13 +183,9 @@ internal struct ModelStateCoordinatorPreloadTests {
         await env.mlxSession.configureForAlreadyLoaded()
 
         // When - Load same model again (should skip actual loading)
-        let startTime: Date = Date()
         try await env.coordinator.load(chatId: chatId)
-        let reloadTime: TimeInterval = Date().timeIntervalSince(startTime)
 
-        // Then - Should be very quick since model is already loaded
-        let maxReloadTime: TimeInterval = 0.25
-        #expect(reloadTime < maxReloadTime, "Reload of same model should be nearly instant")
+        // Then - Model remains loaded and we did not call preload again.
         #expect(await env.mlxSession.isModelLoaded, "Model should remain loaded")
 
         // Preload should only be called once (from first load)

@@ -222,7 +222,7 @@ enum CLIChatService {
             ToolPolicyCommands.ResolveForChat(chatId: sessionId)
         )
         let allowedTools = policy.allowedTools
-        let unsupported: Set<ToolIdentifier> = [.reasoning, .imageGeneration]
+        let unsupported: Set<ToolIdentifier> = [.imageGeneration]
         return allowedTools.subtracting(unsupported)
     }
 }

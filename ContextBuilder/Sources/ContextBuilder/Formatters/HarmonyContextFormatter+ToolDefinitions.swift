@@ -158,10 +158,6 @@ Internet access for this session is UNKNOWN. Depends on the cluster.
 """
     }
 
-    internal func formatReasoningToolDefinition() -> String {
-        "Internal reasoning"
-    }
-
     internal func formatDefaultToolDefinition(_ tool: ToolDefinition) -> String {
         """
 \(tool.description)

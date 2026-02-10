@@ -57,7 +57,6 @@ internal struct ContextBuilderBuildV3Tests {
             systemInstruction: "You are a helpful assistant.",
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "basic",
             includeCurrentDate: true,
             knowledgeCutoffDate: "2024-06",
             currentDateOverride: "2025-08-21"

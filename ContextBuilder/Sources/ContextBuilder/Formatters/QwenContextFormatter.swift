@@ -32,7 +32,6 @@ internal struct QwenContextFormatter:
 
         result += buildConversationHistory(
             context: context,
-            isReasoning: context.action.isReasoning,
             hasToolResponses: !context.toolResponses.isEmpty
         )
 
@@ -74,7 +73,6 @@ internal struct QwenContextFormatter:
 
     private func buildConversationHistory(
         context: BuildContext,
-        isReasoning: Bool,
         hasToolResponses: Bool
     ) -> String {
         var result: String = ""
@@ -84,12 +82,7 @@ internal struct QwenContextFormatter:
             let isLastMessage: Bool = index == messages.count - 1
 
             if let userInput = message.userInput {
-                let modifiedUserInput: String = addThinkingCommandIfNeeded(
-                    to: userInput,
-                    isLastMessage: isLastMessage,
-                    isReasoning: isReasoning
-                )
-                result += formatUserMessage(modifiedUserInput)
+                result += formatUserMessage(userInput)
             }
 
             if !message.channels.isEmpty {
@@ -129,32 +122,6 @@ internal struct QwenContextFormatter:
         }
         // If no messages, start assistant response
         return true
-    }
-
-    private func addThinkingCommandIfNeeded(
-        to userInput: String,
-        isLastMessage: Bool,
-        isReasoning: Bool
-    ) -> String {
-        guard isLastMessage else {
-            return userInput
-        }
-
-        if isReasoning {
-            // Add /think command if reasoning is enabled
-            if let thinkCommand = labels.thinkCommand,
-                !userInput.contains(thinkCommand) {
-                return userInput + " " + thinkCommand
-            }
-        } else {
-            // Add /no_think command if reasoning is NOT enabled
-            if let noThinkCommand = labels.noThinkCommand,
-                !userInput.contains(noThinkCommand) {
-                return userInput + " " + noThinkCommand
-            }
-        }
-
-        return userInput
     }
 
     // MARK: - MessageFormatting
@@ -209,10 +176,9 @@ internal struct QwenContextFormatter:
             message += "\n"
         }
 
-        // Add tool definitions if present (excluding reasoning which is handled via /think command)
-        let nonReasoningTools: [ToolDefinition] = toolDefinitions.filter { $0.name != "reasoning" }
-        if !nonReasoningTools.isEmpty {
-            let toolDefs: String = formatTools(nonReasoningTools)
+        // Add tool definitions if present
+        if !toolDefinitions.isEmpty {
+            let toolDefs: String = formatTools(toolDefinitions)
             if !toolDefs.isEmpty {
                 message += "\n\n"
                 message += toolDefs

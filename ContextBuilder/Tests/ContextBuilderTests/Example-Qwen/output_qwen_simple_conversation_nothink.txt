@@ -5,5 +5,5 @@ What is 2 + 2?<|im_end|>
 <|im_start|>assistant
 2 + 2 = 4<|im_end|>
 <|im_start|>user
-And 3 + 3? /no_think<|im_end|>
+And 3 + 3?<|im_end|>
 <|im_start|>assistant

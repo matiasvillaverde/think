@@ -10,5 +10,5 @@ What is 15% of 80?<|im_end|>
 
 To calculate: 80 × 0.15 = 12<|im_end|>
 <|im_start|>user
-Now add 25 to that result /think<|im_end|>
+Now add 25 to that result<|im_end|>
 <|im_start|>assistant

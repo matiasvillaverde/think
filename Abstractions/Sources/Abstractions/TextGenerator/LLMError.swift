@@ -23,3 +23,30 @@ public enum LLMError: Error, Sendable {
     /// Provider-specific errors that don't fit standard categories.
     case providerError(code: String, message: String)
 }
+
+extension LLMError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .authenticationFailed(let message):
+            return message
+
+        case .rateLimitExceeded(let retryAfter):
+            if let retryAfter {
+                return "Rate limit exceeded. Try again in \(retryAfter)."
+            }
+            return "Rate limit exceeded. Try again later."
+
+        case .modelNotFound(let message):
+            return message
+
+        case .invalidConfiguration(let message):
+            return message
+
+        case .networkError(let error):
+            return error.localizedDescription
+
+        case .providerError(_, let message):
+            return message
+        }
+    }
+}

@@ -10,5 +10,5 @@ To calculate this:
 - 25 * 7 = 175
 - 750 + 175 = 925<|im_end|>
 <|im_start|>user
-Great! Now divide that by 5 /think<|im_end|>
+Great! Now divide that by 5<|im_end|>
 <|im_start|>assistant

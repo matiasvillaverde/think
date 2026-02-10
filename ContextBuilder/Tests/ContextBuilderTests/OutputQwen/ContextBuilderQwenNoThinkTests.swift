@@ -5,7 +5,7 @@ import Testing
 
 @Suite("ContextBuilder Qwen NoThink Tests")
 internal struct ContextBuilderQwenNoThinkTests {
-    @Test("ContextBuilder produces expected Qwen output with /no_think command")
+    @Test("ContextBuilder produces expected Qwen output (no /think directives)")
     func testQwenSimpleConversationWithNoThink() async throws {
         let tooling = MockTooling()
         let contextBuilder = ContextBuilder(tooling: tooling)
@@ -53,7 +53,6 @@ internal struct ContextBuilderQwenNoThinkTests {
             systemInstruction: "You are a helpful assistant with thinking capabilities.",
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "basic",
             includeCurrentDate: false
         )
 

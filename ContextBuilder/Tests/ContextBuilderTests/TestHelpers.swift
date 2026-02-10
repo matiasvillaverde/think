@@ -76,7 +76,6 @@ internal enum TestHelpers {
         systemPrompt: String,
         history: [MessageData] = [],
         date: Date = Date(),
-        reasoningLevel: String? = nil,
         knowledgeCutoff: String? = nil
     ) -> ContextConfiguration {
         let defaultMaxPrompt: Int = 4_096
@@ -84,7 +83,6 @@ internal enum TestHelpers {
             systemInstruction: systemPrompt,
             contextMessages: history,
             maxPrompt: defaultMaxPrompt,
-            reasoningLevel: reasoningLevel,
             includeCurrentDate: true,
             knowledgeCutoffDate: knowledgeCutoff,
             currentDateOverride: ISO8601DateFormatter().string(from: date)

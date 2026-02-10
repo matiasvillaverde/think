@@ -65,7 +65,6 @@ internal struct ContextBuilderBuildTests {
             systemInstruction: "You are a helpful assistant with thinking capabilities.",
             contextMessages: messages,
             maxPrompt: 4_096,
-            reasoningLevel: "basic",
             includeCurrentDate: false
         )
 
