@@ -177,7 +177,7 @@ struct LanguageModelConfigurationTests {
         func copyWithNilPersonality() {
             // Given
             let original = LLMConfiguration(
-                systemInstruction: .englishAssistant,
+                systemInstruction: .empatheticFriend,
                 contextStrategy: .allMessages,
                 stepSize: 512,
                 temperature: 0.7,
@@ -381,7 +381,7 @@ struct LanguageModelConfigurationTests {
             #expect(copiedConfig.id != llmConfig.id) // Different instances
 
             // Verify default values are applied
-            #expect(llmConfig.systemInstruction == SystemInstruction.englishAssistant)
+            #expect(llmConfig.systemInstruction == SystemInstruction.empatheticFriend)
 
             // Test 3: Create a configuration with personality and verify copy preserves it
             let personality = Personality(

@@ -247,20 +247,17 @@ extension ChatCommands {
         public typealias Result = UUID
 
         private let chatId: UUID
-        private let reasoningLevel: String?
         private let includeCurrentDate: Bool? // swiftlint:disable:this discouraged_optional_boolean
         private let knowledgeCutoffDate: String?
         private let currentDateOverride: String?
 
         public init(
             chatId: UUID,
-            reasoningLevel: String? = nil,
             includeCurrentDate: Bool? = nil, // swiftlint:disable:this discouraged_optional_boolean
             knowledgeCutoffDate: String? = nil,
             currentDateOverride: String? = nil
         ) {
             self.chatId = chatId
-            self.reasoningLevel = reasoningLevel
             self.includeCurrentDate = includeCurrentDate
             self.knowledgeCutoffDate = knowledgeCutoffDate
             self.currentDateOverride = currentDateOverride
@@ -277,9 +274,6 @@ extension ChatCommands {
             let chat = try ChatCommands.Read(chatId: chatId).execute(in: context, userId: userId, rag: rag)
 
             // Update the LLM configuration fields
-            if let reasoningLevel = reasoningLevel {
-                chat.languageModelConfig.reasoningLevel = reasoningLevel
-            }
             if let includeCurrentDate = includeCurrentDate {
                 chat.languageModelConfig.includeCurrentDate = includeCurrentDate
             }

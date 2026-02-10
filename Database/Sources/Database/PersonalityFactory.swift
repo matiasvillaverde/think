@@ -11,14 +11,14 @@ internal class PersonalityFactory {
     static func createSystemPersonalities() -> [Personality] {
         let personalities = [
             // Ordered roughly by expected popularity.
-            createSupportiveFriend(),
-            createGeneralAssistant(),
-            createWorkCoach(),
+            createBuddy(),
+            createGirlfriend(),
             createLifeCoach(),
+            createButler(),
+            createWorkCoach(),
             createSupportivePsychologist(),
             createTeacher(),
             createNutritionist(),
-            createButler(),
             createMother(),
             createFather()
         ]
@@ -98,8 +98,8 @@ internal class PersonalityFactory {
     private static func createPersonalityForInstruction(_ instruction: SystemInstruction) throws -> Personality {
         // Use lookup table to reduce complexity
         let personalityMap: [SystemInstruction: () -> Personality] = [
-            .englishAssistant: createGeneralAssistant,
-            .empatheticFriend: createSupportiveFriend,
+            .empatheticFriend: createBuddy,
+            .relationshipAdvisor: createGirlfriend,
             .lifeCoach: createLifeCoach,
             .supportivePsychologist: createSupportivePsychologist,
             .dietitian: createNutritionist,

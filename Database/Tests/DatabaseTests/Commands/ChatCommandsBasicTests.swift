@@ -70,7 +70,7 @@ struct ChatCommandsBasicTests {
 
         // Then
         let chat = try await database.read(ChatCommands.Read(chatId: id))
-        #expect(chat.languageModelConfig.systemInstruction == SystemInstruction.englishAssistant)
+        #expect(chat.languageModelConfig.systemInstruction == SystemInstruction.empatheticFriend)
     }
 
     @Test("Create chat reuses models from most recent chat")

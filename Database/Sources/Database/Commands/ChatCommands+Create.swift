@@ -67,12 +67,8 @@ extension ChatCommands {
                 personality = existingDefault
             } else {
                 Logger.database.info("No existing personality found, creating safe default personality")
-                // SAFE: Use factory method to get or create default personality
                 do {
-                    personality = try PersonalityFactory.getOrCreateSystemPersonality(
-                        systemInstruction: .englishAssistant,
-                        in: context
-                    )
+                    personality = try getOrCreateDefaultPersonality(in: context)
                     Logger.database.info("Created/found default personality with id: \(personality.id)")
                 } catch {
                     Logger.database.error("Failed to get/create default personality: \(error)")
@@ -114,6 +110,26 @@ extension ChatCommands {
         }
 
         // MARK: - Helper Methods
+
+        private func getOrCreateDefaultPersonality(in context: ModelContext) throws -> Personality {
+            let descriptor = FetchDescriptor<Personality>(
+                predicate: #Predicate<Personality> { $0.isDefault == true }
+            )
+            if let existing = try context.fetch(descriptor).first {
+                return existing
+            }
+
+            let created = Personality(
+                systemInstruction: .empatheticFriend,
+                name: "Buddy",
+                description: "A good buddy: upbeat, loyal, and real with you",
+                imageName: "friend-icon",
+                category: .personal,
+                isDefault: true
+            )
+            context.insert(created)
+            return created
+        }
 
         private func findModelsForNewChat(for user: User) throws -> RequiredModels {
             Logger.database.info("Finding models for new chat")
@@ -161,8 +177,10 @@ extension ChatCommands {
                 throw DatabaseError.modelNotFound
             }
 
-            guard let imgModel = imageModel else {
-                Logger.database.error("No image generation model found")
+            // If the user has no image models yet, seed a sensible default so chat creation
+            // never hard-fails (the user can download/configure later).
+            guard let imgModel = imageModel ?? seedDefaultImageModelIfNeeded(for: user, availableModels: availableModels) else {
+                Logger.database.error("No image generation model found and default seeding failed")
                 throw DatabaseError.modelNotFound
             }
 
@@ -171,6 +189,68 @@ extension ChatCommands {
                 language: langModel,
                 imageGeneration: imgModel
             )
+        }
+
+        private func seedDefaultImageModelIfNeeded(for user: User, availableModels: [Model]) -> Model? {
+            _ = user
+            // If an image model exists, don't create anything.
+            if let existing = availableModels.first(where: { $0.type.isImageCapable }) {
+                return existing
+            }
+
+            // Use DataAssets recommended defaults as a stable seed.
+            guard let imagesRepoId: String = RecommendedModels.defaultImageModels.first else {
+                return nil
+            }
+
+            let modelType: SendableModel.ModelType = inferImageModelType(from: imagesRepoId)
+
+            do {
+                // Minimal model entry; download happens later via ModelDownloader.
+                let seeded = try Model(
+                    type: modelType,
+                    backend: .coreml,
+                    name: imagesRepoId,
+                    displayName: "Image Generator",
+                    displayDescription: "Recommended image model (download to enable image generation).",
+                    author: "coreml-community",
+                    license: nil,
+                    licenseUrl: nil,
+                    tags: ["image", "recommended"],
+                    downloads: 0,
+                    likes: 0,
+                    lastModified: nil,
+                    skills: [],
+                    parameters: 1,
+                    ramNeeded: 1,
+                    size: 1,
+                    locationHuggingface: imagesRepoId,
+                    locationKind: .huggingFace,
+                    locationLocal: nil,
+                    locationBookmark: nil,
+                    version: 2,
+                    architecture: .stableDiffusion
+                )
+
+                // SwiftData: append to relationship so it shows up for the user.
+                if user.models.isEmpty {
+                    user.models = [seeded]
+                } else {
+                    user.models.append(seeded)
+                }
+                return seeded
+            } catch {
+                Logger.database.error("Failed seeding default image model: \(error.localizedDescription)")
+                return nil
+            }
+        }
+
+        private func inferImageModelType(from location: String) -> SendableModel.ModelType {
+            let lowercased = location.lowercased()
+            if lowercased.contains("sdxl") || lowercased.contains("xl") {
+                return .diffusionXL
+            }
+            return .diffusion
         }
 
         private struct RequiredModels {
@@ -262,10 +342,24 @@ extension ChatCommands {
                 return existing
             }
 
-            return try PersonalityFactory.getOrCreateSystemPersonality(
-                systemInstruction: .englishAssistant,
-                in: context
+            // Fall back to default personality rather than creating an unsupported system personality.
+            let defaultDescriptor = FetchDescriptor<Personality>(
+                predicate: #Predicate<Personality> { $0.isDefault == true }
             )
+            if let existingDefault = try context.fetch(defaultDescriptor).first {
+                return existingDefault
+            }
+
+            let created = Personality(
+                systemInstruction: .empatheticFriend,
+                name: "Buddy",
+                description: "A good buddy: upbeat, loyal, and real with you",
+                imageName: "friend-icon",
+                category: .personal,
+                isDefault: true
+            )
+            context.insert(created)
+            return created
         }
 
         private func updateExistingChat(
@@ -366,9 +460,35 @@ extension ChatCommands {
 
             // Create a new default chat
             Logger.database.info("Creating new default chat")
-            // Create a new default chat with the provided systemInstruction
-            let personalityId = Personality.default.id  // Using default personality for now
-            let chatId = try Create(personality: personalityId).execute(
+            let personality: Personality
+            do {
+                personality = try PersonalityFactory.getOrCreateSystemPersonality(
+                    systemInstruction: systemInstruction,
+                    in: context
+                )
+            } catch {
+                // Be resilient: if a requested instruction isn't supported as a system personality,
+                // fall back to whatever the app considers the default.
+                let descriptor = FetchDescriptor<Personality>(
+                    predicate: #Predicate<Personality> { $0.isDefault == true }
+                )
+                if let existingDefault = try context.fetch(descriptor).first {
+                    personality = existingDefault
+                } else {
+                    let created = Personality(
+                        systemInstruction: .empatheticFriend,
+                        name: "Buddy",
+                        description: "A good buddy: upbeat, loyal, and real with you",
+                        imageName: "friend-icon",
+                        category: .personal,
+                        isDefault: true
+                    )
+                    context.insert(created)
+                    personality = created
+                }
+            }
+
+            let chatId = try Create(personality: personality.id).execute(
                 in: context,
                 userId: userId,
                 rag: rag

@@ -153,11 +153,12 @@ public final class Personality: Identifiable, Equatable, ObservableObject {
     /// Default system personality
     public static var `default`: Personality {
         Personality(
-            systemInstruction: .englishAssistant,
-            name: "Generic Assistant",
-            description: "A helpful and knowledgeable assistant",
-            imageName: "think",
-            category: .productivity
+            systemInstruction: .empatheticFriend,
+            name: "Buddy",
+            description: "A good buddy: upbeat, loyal, and real with you",
+            imageName: "friend-icon",
+            category: .personal,
+            isDefault: true
         )
     }
     

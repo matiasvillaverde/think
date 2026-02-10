@@ -26,7 +26,7 @@ struct ChatCommandsResetTests {
         #expect(initialChatCount == 0)
 
         // When - Reset all chats (should create a new one)
-        let newChatId = try await database.write(ChatCommands.ResetAllChats(systemInstruction: .englishAssistant))
+        let newChatId = try await database.write(ChatCommands.ResetAllChats(systemInstruction: .empatheticFriend))
 
         // Then - Verify exactly 1 chat exists
         let finalChatCount = try await database.read(ValidateChatCountCommand())
@@ -35,7 +35,7 @@ struct ChatCommandsResetTests {
         // Verify the new chat was created correctly
         let newChat = try await database.read(ChatCommands.Read(chatId: newChatId))
         #expect(newChat.id == newChatId)
-        #expect(newChat.languageModelConfig.systemInstruction == SystemInstruction.englishAssistant)
+        #expect(newChat.languageModelConfig.systemInstruction == SystemInstruction.empatheticFriend)
     }
 
     @Test("Reset all chats clears messages and resets to clean state")
@@ -69,7 +69,7 @@ struct ChatCommandsResetTests {
         // When - Reset all chats
         let start = ProcessInfo.processInfo.systemUptime
         let newChatId = try await database.write(
-            ChatCommands.ResetAllChats(systemInstruction: .englishAssistant)
+            ChatCommands.ResetAllChats(systemInstruction: .empatheticFriend)
         )
         let duration = ProcessInfo.processInfo.systemUptime - start
 
@@ -80,7 +80,7 @@ struct ChatCommandsResetTests {
         // Verify the new chat exists and has correct system instruction
         let newChat = try await database.read(ChatCommands.Read(chatId: newChatId))
         #expect(newChat.id == newChatId)
-        #expect(newChat.languageModelConfig.systemInstruction == SystemInstruction.englishAssistant)
+        #expect(newChat.languageModelConfig.systemInstruction == SystemInstruction.empatheticFriend)
 
         // Performance check - should complete within reasonable time
         #expect(duration < 2.0, "Reset operation should complete quickly")
@@ -101,7 +101,7 @@ struct ChatCommandsResetTests {
 
         // When/Then - Should fail due to missing models
         await #expect(throws: DatabaseError.invalidInput("Cannot reset chats without both language and image models available")) {
-            try await database.write(ChatCommands.ResetAllChats(systemInstruction: .englishAssistant))
+            try await database.write(ChatCommands.ResetAllChats(systemInstruction: .empatheticFriend))
         }
     }
 }

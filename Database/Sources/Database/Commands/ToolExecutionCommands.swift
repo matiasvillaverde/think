@@ -66,6 +66,9 @@ extension ToolExecutionCommands {
             
             // Update the channel to link to the tool execution
             channel?.toolExecution = execution
+
+            // Persist so fetch-based reads reflect the new execution immediately.
+            try context.save()
             
             return execution.id
         }
@@ -99,6 +102,9 @@ extension ToolExecutionCommands {
             }
             
             try execution.transitionTo(.executing)
+
+            // Persist so UI (and fetch-based reads) observe the state transition.
+            try context.save()
             
             return execution.id
         }
@@ -132,6 +138,9 @@ extension ToolExecutionCommands {
 
             execution.updateProgress(progress, status: status)
 
+            // Persist progress/status so observers and fetches see updates.
+            try context.save()
+
             return execution.id
         }
     }
@@ -161,6 +170,9 @@ extension ToolExecutionCommands {
             }
             
             try execution.complete(with: response)
+
+            // Persist completion state and response payload.
+            try context.save()
             
             return execution.id
         }
@@ -191,6 +203,9 @@ extension ToolExecutionCommands {
             }
             
             try execution.fail(with: error)
+
+            // Persist failure state and error details.
+            try context.save()
             
             return execution.id
         }

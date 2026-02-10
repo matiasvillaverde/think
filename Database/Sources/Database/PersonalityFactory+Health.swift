@@ -9,7 +9,7 @@ extension PersonalityFactory {
             description: String(localized: "Healthy eating guidance and meal planning", bundle: .module),
             imageName: "nutritionist-icon",
             category: .health,
-            isFeature: true
+            isFeature: false
         )
 
         personality.prompts = createHealthPrompts(for: personality)

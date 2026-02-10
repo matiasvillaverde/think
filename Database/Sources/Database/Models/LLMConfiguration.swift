@@ -20,7 +20,7 @@ public final class LLMConfiguration: Identifiable, Equatable {
 
     /// Instruction given to the LLM to guide its answers (system prompt).
     @Attribute()
-    public private(set) var systemInstruction: SystemInstruction = SystemInstruction.englishAssistant
+    public private(set) var systemInstruction: SystemInstruction = SystemInstruction.empatheticFriend
 
     @Relationship(deleteRule: .nullify)
     public internal(set) var personality: Personality?
@@ -60,10 +60,6 @@ public final class LLMConfiguration: Identifiable, Equatable {
     @Attribute()
     public private(set) var prefillStepSize: Int
 
-    /// Reasoning level for Harmony format models (low, medium, high, automatic)
-    @Attribute()
-    public var reasoningLevel: String?
-
     /// Whether to include current date in context (nil = automatic)
     @Attribute()
     public var includeCurrentDate: Bool? // swiftlint:disable:this discouraged_optional_boolean
@@ -90,7 +86,6 @@ public final class LLMConfiguration: Identifiable, Equatable {
         maxPrompt: Int,
         prefillStepSize: Int,
         personality: Personality? = nil,
-        reasoningLevel: String? = nil,
         includeCurrentDate: Bool? = true, // swiftlint:disable:this discouraged_optional_boolean
         knowledgeCutoffDate: String? = nil,
         currentDateOverride: String? = nil
@@ -106,7 +101,6 @@ public final class LLMConfiguration: Identifiable, Equatable {
         self.maxPrompt = maxPrompt
         self.prefillStepSize = prefillStepSize
         self.personality = personality
-        self.reasoningLevel = reasoningLevel
         self.includeCurrentDate = includeCurrentDate
         self.knowledgeCutoffDate = knowledgeCutoffDate
         self.currentDateOverride = currentDateOverride
@@ -131,7 +125,7 @@ public final class LLMConfiguration: Identifiable, Equatable {
     /// A convenience default configuration for quick creation.
     public static var `default`: LLMConfiguration {
         LLMConfiguration(
-            systemInstruction: SystemInstruction.englishAssistant,
+            systemInstruction: SystemInstruction.empatheticFriend,
             contextStrategy: ContextStrategy.allMessages,
             stepSize: 512,
             temperature: 0.7,
@@ -157,7 +151,6 @@ public final class LLMConfiguration: Identifiable, Equatable {
             maxPrompt: maxPrompt,
             prefillStepSize: prefillStepSize,
             personality: personality,
-            reasoningLevel: reasoningLevel,
             includeCurrentDate: includeCurrentDate,
             knowledgeCutoffDate: knowledgeCutoffDate,
             currentDateOverride: currentDateOverride
@@ -192,7 +185,7 @@ extension LLMConfiguration {
 
     @MainActor public static var preview: LLMConfiguration = {
         LLMConfiguration(
-            systemInstruction: .englishAssistant,
+            systemInstruction: .empatheticFriend,
             contextStrategy: .allMessages,
             stepSize: 10,
             temperature: 0.4,

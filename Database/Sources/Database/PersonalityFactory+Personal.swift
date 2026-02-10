@@ -2,12 +2,27 @@ import SwiftData
 
 // MARK: - Personal Personalities
 extension PersonalityFactory {
-    static func createSupportiveFriend() -> Personality {
+    static func createBuddy() -> Personality {
         let personality = Personality(
             systemInstruction: .empatheticFriend,
-            name: String(localized: "Supportive Friend", bundle: .module),
-            description: String(localized: "Empathetic listener and emotional support", bundle: .module),
+            name: String(localized: "Buddy", bundle: .module),
+            description: String(localized: "A good buddy: upbeat, loyal, and real with you", bundle: .module),
             imageName: "friend-icon",
+            category: .personal,
+            isFeature: true,
+            isDefault: true
+        )
+
+        personality.prompts = createPersonalPrompts(for: personality)
+        return personality
+    }
+
+    static func createGirlfriend() -> Personality {
+        let personality = Personality(
+            systemInstruction: .relationshipAdvisor,
+            name: String(localized: "Girlfriend", bundle: .module),
+            description: String(localized: "Playful, affectionate support with honest feedback", bundle: .module),
+            imageName: "girlfriend-icon",
             category: .personal,
             isFeature: true
         )
@@ -76,7 +91,7 @@ extension PersonalityFactory {
             description: String(localized: "Gentle, evidence-informed mental health support", bundle: .module),
             imageName: "psychologist-icon",
             category: .personal,
-            isFeature: true
+            isFeature: false
         )
 
         personality.prompts = createPersonalPrompts(for: personality)

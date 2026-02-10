@@ -17,9 +17,114 @@ extension PersonalityFactory {
         case .health:
             return createHealthPrompts(for: personality)
         case .personal:
-            return createPersonalPrompts(for: personality)
+            return createPersonalPromptsByInstruction(for: personality)
         case .lifestyle:
             return createLifestylePrompts(for: personality)
+        }
+    }
+
+    private static func createPersonalPromptsByInstruction(for personality: Personality) -> [Prompt] {
+        switch personality.systemInstruction {
+        case .empatheticFriend:
+            return [
+                Prompt(
+                    title: String(localized: "Quick Check-In", bundle: .module),
+                    subtitle: String(localized: "what’s real today", bundle: .module),
+                    prompt: String(localized: "Hey buddy. Ask me 3 quick questions to see how I’m doing, then help me pick one small win for today.", bundle: .module),
+                    personality: personality
+                ),
+                Prompt(
+                    title: String(localized: "Hype Me Up", bundle: .module),
+                    subtitle: String(localized: "confidence boost", bundle: .module),
+                    prompt: String(localized: "I need a confidence boost about __. Give me honest encouragement and one practical next step.", bundle: .module),
+                    personality: personality
+                ),
+                Prompt(
+                    title: String(localized: "Talk It Out", bundle: .module),
+                    subtitle: String(localized: "sort feelings", bundle: .module),
+                    prompt: String(localized: "I’m feeling __ about __. Help me make sense of it and decide what to do next.", bundle: .module),
+                    personality: personality
+                )
+            ]
+
+        case .relationshipAdvisor:
+            return [
+                Prompt(
+                    title: String(localized: "Flirty Pep Talk", bundle: .module),
+                    subtitle: String(localized: "sweet and real", bundle: .module),
+                    prompt: String(localized: "Give me a playful pep talk about __, then help me draft a short message to __.", bundle: .module),
+                    personality: personality
+                ),
+                Prompt(
+                    title: String(localized: "Hard Truth, Soft Landing", bundle: .module),
+                    subtitle: String(localized: "honest feedback", bundle: .module),
+                    prompt: String(localized: "Be kind but direct: what’s the hard truth I might be avoiding about __? Then tell me what to do next.", bundle: .module),
+                    personality: personality
+                ),
+                Prompt(
+                    title: String(localized: "Date Plan", bundle: .module),
+                    subtitle: String(localized: "make it easy", bundle: .module),
+                    prompt: String(localized: "Plan a date night for two with vibe: __. Budget: __. Location: __. Give 3 options.", bundle: .module),
+                    personality: personality
+                )
+            ]
+
+        case .lifeCoach:
+            return [
+                Prompt(
+                    title: String(localized: "3 Next Steps", bundle: .module),
+                    subtitle: String(localized: "momentum", bundle: .module),
+                    prompt: String(localized: "My goal is __. Ask 2 clarifying questions, then give me 3 next steps I can do this week.", bundle: .module),
+                    personality: personality
+                ),
+                Prompt(
+                    title: String(localized: "Weekly Reset", bundle: .module),
+                    subtitle: String(localized: "clean slate", bundle: .module),
+                    prompt: String(localized: "Help me reset my week. What should I stop, start, and continue? My constraints: __.", bundle: .module),
+                    personality: personality
+                ),
+                Prompt(
+                    title: String(localized: "Hard Conversation", bundle: .module),
+                    subtitle: String(localized: "say it well", bundle: .module),
+                    prompt: String(localized: "Help me have a difficult conversation with __ about __. I want to be kind and clear. Draft what I can say.", bundle: .module),
+                    personality: personality
+                )
+            ]
+
+        case .mother:
+            return [
+                Prompt(
+                    title: String(localized: "Gentle Grounding", bundle: .module),
+                    subtitle: String(localized: "calm down", bundle: .module),
+                    prompt: String(localized: "I’m spiraling about __. Talk me down gently, then help me choose one practical thing to do next.", bundle: .module),
+                    personality: personality
+                ),
+                Prompt(
+                    title: String(localized: "Take Care Of Me", bundle: .module),
+                    subtitle: String(localized: "simple care plan", bundle: .module),
+                    prompt: String(localized: "Make me a simple care plan for today (food, water, movement, rest) based on: __.", bundle: .module),
+                    personality: personality
+                )
+            ]
+
+        case .father:
+            return [
+                Prompt(
+                    title: String(localized: "Make A Plan", bundle: .module),
+                    subtitle: String(localized: "clear steps", bundle: .module),
+                    prompt: String(localized: "I’m dealing with __. Give me a clear plan with priorities, risks, and the first action to take.", bundle: .module),
+                    personality: personality
+                ),
+                Prompt(
+                    title: String(localized: "Hold Me Accountable", bundle: .module),
+                    subtitle: String(localized: "follow-through", bundle: .module),
+                    prompt: String(localized: "Help me commit to __ this week. Make it measurable and help me track it daily.", bundle: .module),
+                    personality: personality
+                )
+            ]
+
+        default:
+            return createPersonalPrompts(for: personality)
         }
     }
 

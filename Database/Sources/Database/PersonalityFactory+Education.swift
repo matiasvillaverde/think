@@ -9,7 +9,7 @@ extension PersonalityFactory {
             description: String(localized: "Patient explanations and guided learning", bundle: .module),
             imageName: "teacher-icon",
             category: .education,
-            isFeature: true
+            isFeature: false
         )
 
         personality.prompts = createEducationPrompts(for: personality)

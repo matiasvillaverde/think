@@ -214,9 +214,9 @@ internal struct PersonalityMemoryIntegrationTests {
 
     // MARK: - Featured Personalities Tests
 
-    @Test("Factory creates exactly 7 featured personalities")
+    @Test("Factory creates exactly 4 featured personalities")
     @MainActor
-    func factoryCreatesExactlySevenFeaturedPersonalities() async throws {
+    func factoryCreatesExactlyFourFeaturedPersonalities() async throws {
         // Given
         let database: Database = try createTestDatabase()
 
@@ -227,7 +227,7 @@ internal struct PersonalityMemoryIntegrationTests {
         let personalities: [Personality] = try await database.read(PersonalityCommands.GetAll())
         let featuredPersonalities: [Personality] = personalities.filter { $0.isFeature }
 
-        #expect(featuredPersonalities.count == 7)
+        #expect(featuredPersonalities.count == 4)
     }
 
     @Test("Featured personalities are editable")

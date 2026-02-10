@@ -142,7 +142,6 @@ extension ChatCommands {
                 systemInstruction: systemInstruction,
                 contextMessages: contextMessages,
                 maxPrompt: maxPrompt,
-                reasoningLevel: chat.languageModelConfig.reasoningLevel,
                 includeCurrentDate: chat.languageModelConfig.includeCurrentDate ?? true,
                 knowledgeCutoffDate: chat.languageModelConfig.knowledgeCutoffDate,
                 currentDateOverride: chat.languageModelConfig.currentDateOverride,

@@ -27,10 +27,9 @@ struct FetchContextDataTests {
         let context = try await database.read(ChatCommands.FetchContextData(chatId: chatId))
         
         // Then
-        #expect(context.systemInstruction == SystemInstruction.englishAssistant.rawValue)
+        #expect(context.systemInstruction == SystemInstruction.empatheticFriend.rawValue)
         #expect(context.contextMessages.isEmpty)
         #expect(context.maxPrompt == 10240)
-        #expect(context.reasoningLevel == nil) // Default is nil
         #expect(context.includeCurrentDate == true) // Default is true
         #expect(context.knowledgeCutoffDate == nil) // Default is nil
         #expect(context.currentDateOverride == nil) // Default is nil

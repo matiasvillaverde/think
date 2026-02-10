@@ -7,9 +7,9 @@ import AbstractionsTestUtilities
 
 @Suite("Required Model Not Found Bug Tests")
 struct RequiredModelNotFoundBugTests {
-    @Test("Chat creation fails when required models are missing")
+    @Test("Chat creation seeds an image model when only a language model exists")
     @MainActor
-    func chatCreationFailsWithMissingModels() async throws {
+    func chatCreationSeedsImageModelWhenMissing() async throws {
         // Given
         let config = DatabaseConfiguration(
             isStoredInMemoryOnly: true,
@@ -41,11 +41,16 @@ struct RequiredModelNotFoundBugTests {
             ModelCommands.AddModels(modelDTOs: [textGenerationModel])
         )
 
-        // When/Then - Creating a chat should fail because not all required models are available
-        await #expect(throws: DatabaseError.modelNotFound) {
-            let defaultPersonalityId = try await getDefaultPersonalityId(database)
-            try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
-        }
+        // When - Creating a chat should succeed by seeding a default image model.
+        let defaultPersonalityId = try await getDefaultPersonalityId(database)
+        let chatId = try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
+
+        // Then
+        let chat = try await database.read(ChatCommands.Read(chatId: chatId))
+        #expect(
+            chat.imageModel.type == SendableModel.ModelType.diffusion ||
+                chat.imageModel.type == SendableModel.ModelType.diffusionXL
+        )
     }
 
     @Test("Chat creation fails with no models")
@@ -71,9 +76,9 @@ struct RequiredModelNotFoundBugTests {
         }
     }
 
-    @Test("Chat creation fails with incomplete model types")
+    @Test("Chat creation seeds an image model when only language + deep language models exist")
     @MainActor
-    func chatCreationFailsWithIncompleteModelTypes() async throws {
+    func chatCreationSeedsImageModelForLanguageOnlySet() async throws {
         // Given
         let config = DatabaseConfiguration(
             isStoredInMemoryOnly: true,
@@ -120,11 +125,16 @@ struct RequiredModelNotFoundBugTests {
             ModelCommands.AddModels(modelDTOs: [textGenerationModel, deepTextGenerationModel])
         )
 
-        // When/Then - Creating a chat should fail because the image model is missing
-        await #expect(throws: DatabaseError.modelNotFound) {
-            let defaultPersonalityId = try await getDefaultPersonalityId(database)
-            try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
-        }
+        // When - Creating a chat should succeed by seeding a default image model.
+        let defaultPersonalityId = try await getDefaultPersonalityId(database)
+        let chatId = try await database.write(ChatCommands.Create(personality: defaultPersonalityId))
+
+        // Then
+        let chat = try await database.read(ChatCommands.Read(chatId: chatId))
+        #expect(
+            chat.imageModel.type == SendableModel.ModelType.diffusion ||
+                chat.imageModel.type == SendableModel.ModelType.diffusionXL
+        )
     }
 }
 

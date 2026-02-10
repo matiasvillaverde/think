@@ -2,21 +2,6 @@ import SwiftData
 
 // MARK: - Productivity Personalities
 extension PersonalityFactory {
-    static func createGeneralAssistant() -> Personality {
-        let personality = Personality(
-            systemInstruction: .englishAssistant,
-            name: String(localized: "General Assistant", bundle: .module),
-            description: String(localized: "A helpful and knowledgeable assistant for everyday tasks", bundle: .module),
-            imageName: "think",
-            category: .productivity,
-            isFeature: true,
-            isDefault: true
-        )
-
-        personality.prompts = createProductivityPrompts(for: personality)
-        return personality
-    }
-
     static func createCodeReviewer() -> Personality {
         let personality = Personality(
             systemInstruction: .codeReviewer,
@@ -51,7 +36,7 @@ extension PersonalityFactory {
             description: String(localized: "Turn goals into next steps, plans, and drafts", bundle: .module),
             imageName: "work-coach-icon",
             category: .productivity,
-            isFeature: true
+            isFeature: false
         )
 
         personality.prompts = createProductivityPrompts(for: personality)
@@ -64,7 +49,8 @@ extension PersonalityFactory {
             name: String(localized: "Butler", bundle: .module),
             description: String(localized: "Polished planning, reminders, and tasteful wording", bundle: .module),
             imageName: "butler-icon",
-            category: .productivity
+            category: .productivity,
+            isFeature: true
         )
 
         personality.prompts = createProductivityPrompts(for: personality)

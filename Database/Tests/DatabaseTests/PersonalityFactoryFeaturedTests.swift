@@ -13,8 +13,8 @@ struct PersonalityFactoryFeaturedTests {
         let featuredPersonalities: [Personality] = personalities.filter { $0.isFeature }
 
         // Then
-        #expect(featuredPersonalities.count == 7, """
-            Expected exactly 7 featured personalities, but found \(featuredPersonalities.count).
+        #expect(featuredPersonalities.count == 4, """
+            Expected exactly 4 featured personalities, but found \(featuredPersonalities.count).
             Featured: \(featuredPersonalities.map(\.name))
             """)
     }
@@ -23,13 +23,10 @@ struct PersonalityFactoryFeaturedTests {
     func featuredPersonalitiesIncludeCorrectSet() {
         // Given
         let expectedFeaturedNames: Set<String> = [
-            "General Assistant",
-            "Supportive Friend",
-            "Work Coach",
+            "Buddy",
+            "Girlfriend",
             "Life Coach",
-            "Psychologist",
-            "Teacher",
-            "Nutritionist"
+            "Butler"
         ]
 
         // When
@@ -68,18 +65,18 @@ struct PersonalityFactoryFeaturedTests {
         }
     }
 
-    @Test("General Assistant is featured and is the default")
-    func generalAssistantIsFeaturedAndDefault() {
+    @Test("Buddy is featured and is the default")
+    func buddyIsFeaturedAndDefault() {
         // Given
         let personalities: [Personality] = PersonalityFactory.createSystemPersonalities()
 
         // When
-        let generalAssistant: Personality? = personalities.first { $0.name == "General Assistant" }
+        let buddy: Personality? = personalities.first { $0.name == "Buddy" }
 
         // Then
-        #expect(generalAssistant != nil, "General Assistant should exist")
-        #expect(generalAssistant?.isFeature == true, "General Assistant should be featured")
-        #expect(generalAssistant?.isDefault == true, "General Assistant should be the default")
+        #expect(buddy != nil, "Buddy should exist")
+        #expect(buddy?.isFeature == true, "Buddy should be featured")
+        #expect(buddy?.isDefault == true, "Buddy should be the default")
     }
 
     @Test("All personalities have unique system instructions")
@@ -107,9 +104,9 @@ struct PersonalityFactoryFeaturedTests {
         // When
         let categories: Set<PersonalityCategory> = Set(featuredPersonalities.map(\.category))
 
-        // Then - We expect at least 3 different categories
-        #expect(categories.count >= 3, """
-            Featured personalities should span at least 3 categories.
+        // Then - We expect at least 2 different categories (personal + productivity)
+        #expect(categories.count >= 2, """
+            Featured personalities should span at least 2 categories.
             Categories found: \(categories)
             """)
     }

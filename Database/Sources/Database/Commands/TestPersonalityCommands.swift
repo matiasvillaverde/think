@@ -13,18 +13,15 @@ public enum TestPersonalityCommands {
         public var requiresUser: Bool { false }
         public var requiresRag: Bool { false }
 
-        private let reasoningLevel: String?
         private let includeCurrentDate: Bool
         private let knowledgeCutoffDate: String?
         private let currentDateOverride: String?
 
         public init(
-            reasoningLevel: String? = "medium",
             includeCurrentDate: Bool = true,
             knowledgeCutoffDate: String? = "2024-06",
             currentDateOverride: String? = "2025-06-28"
         ) {
-            self.reasoningLevel = reasoningLevel
             self.includeCurrentDate = includeCurrentDate
             self.knowledgeCutoffDate = knowledgeCutoffDate
             self.currentDateOverride = currentDateOverride
@@ -36,7 +33,7 @@ public enum TestPersonalityCommands {
             rag: Ragging?
         ) throws -> UUID {
             // Create a unique name for this test personality configuration
-            let configHash = "\(reasoningLevel ?? "none")_\(includeCurrentDate)_\(knowledgeCutoffDate ?? "none")_\(currentDateOverride ?? "none")"
+            let configHash = "\(includeCurrentDate)_\(knowledgeCutoffDate ?? "none")_\(currentDateOverride ?? "none")"
             let uniqueName = "ChatGPT Test Assistant \(configHash)"
 
             // Check if this exact configuration already exists
@@ -64,19 +61,9 @@ public enum TestPersonalityCommands {
 
             instructionParts.append("")  // Empty line
 
-            if let reasoning = reasoningLevel {
-                instructionParts.append("Reasoning: \(reasoning)")
-                instructionParts.append("")  // Empty line
-
-                // Different channel configurations based on reasoning level
-                if reasoning == "high" {
-                    instructionParts.append("# Valid channels: analysis, final. Channel must be included for every message.")
-                } else {
-                    instructionParts.append("# Valid channels: analysis, commentary, final. Channel must be included for every message.")
-                }
-            } else {
-                instructionParts.append("# Valid channels: final. Channel is optional.")
-            }
+            instructionParts.append(
+                "# Valid channels: analysis, commentary, final. Channel must be included for every message."
+            )
 
             let harmonySystemInstruction = instructionParts.joined(separator: "\n")
             let testPersonality = Personality(

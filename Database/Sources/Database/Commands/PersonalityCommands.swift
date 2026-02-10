@@ -7,7 +7,7 @@ import DataAssets
 // swiftlint:disable nesting
 
 // MARK: - Personality Commands
-public enum PersonalityCommands {
+    public enum PersonalityCommands {
     /// Creates a new non-default system personality intended to back a single chat session.
     ///
     /// Rationale: `Personality.chat` is a 1:1 relationship. Reusing the default personality would
@@ -44,11 +44,11 @@ public enum PersonalityCommands {
             }
 
             let personality = Personality(
-                systemInstruction: .englishAssistant,
+                systemInstruction: .empatheticFriend,
                 name: name,
                 description: "Ephemeral session assistant",
-                imageName: "think",
-                category: .productivity,
+                imageName: "friend-icon",
+                category: .personal,
                 isDefault: false,
                 isCustom: true,
                 user: user
@@ -152,11 +152,11 @@ public enum PersonalityCommands {
 
             // Create the default personality
             let defaultPersonality = Personality(
-                systemInstruction: .englishAssistant,
-                name: "Generic Assistant",
-                description: "A helpful and knowledgeable assistant",
-                imageName: "think",
-                category: .productivity,
+                systemInstruction: .empatheticFriend,
+                name: "Buddy",
+                description: "A good buddy: upbeat, loyal, and real with you",
+                imageName: "friend-icon",
+                category: .personal,
                 isDefault: true
             )
 
