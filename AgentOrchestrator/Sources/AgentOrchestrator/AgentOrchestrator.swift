@@ -662,24 +662,27 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
         lastUpdateTime: ContinuousClock.Instant,
         didInitializeChannels: Bool
     ) async throws {
-        if lastUpdateTime.duration(to: ContinuousClock.now) > .zero {
-            if didInitializeChannels {
-                try await persistor.updateStreamingFinalChannel(
-                    messageId: state.messageId,
-                    content: accumulatedText,
-                    isComplete: false
-                )
-            } else {
-                let partialOutput: ProcessedOutput = try await contextBuilder.process(
-                    output: accumulatedText,
-                    model: state.model
-                )
-                try await persistor.updateMessage(
-                    messageId: state.messageId,
-                    output: partialOutput
-                )
-            }
+        guard lastUpdateTime.duration(to: ContinuousClock.now) > .zero else {
+            return
         }
+
+        if didInitializeChannels {
+            try await persistor.updateStreamingFinalChannel(
+                messageId: state.messageId,
+                content: StreamingFinalChannelExtractor.extract(from: accumulatedText),
+                isComplete: false
+            )
+            return
+        }
+
+        let partialOutput: ProcessedOutput = try await contextBuilder.process(
+            output: accumulatedText,
+            model: state.model
+        )
+        try await persistor.updateMessage(
+            messageId: state.messageId,
+            output: partialOutput
+        )
     }
 
     private func updateStreamingOutput(context: inout StreamChunkContext) async throws {
@@ -699,9 +702,10 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
 
         // Subsequent updates: update only the final channel content (cheap, avoids re-processing
         // accumulated output over and over as it grows).
+        let userFacingText: String = StreamingFinalChannelExtractor.extract(from: context.currentText)
         try await persistor.updateStreamingFinalChannel(
             messageId: context.state.messageId,
-            content: context.currentText,
+            content: userFacingText,
             isComplete: false
         )
     }
