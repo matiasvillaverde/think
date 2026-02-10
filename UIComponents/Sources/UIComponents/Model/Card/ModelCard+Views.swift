@@ -30,10 +30,10 @@ extension ModelCard {
             } label: {
                 Image(systemName: "chart.bar.xaxis")
                     .foregroundStyle(Color.textSecondary)
-                    .accessibilityLabel("View Model Analytics")
+                    .accessibilityLabel(Text("View Model Analytics", bundle: .module))
             }
             .buttonStyle(.plain)
-            .help("View Model Analytics")
+            .help(String(localized: "View Model Analytics", bundle: .module))
         }
     }
 

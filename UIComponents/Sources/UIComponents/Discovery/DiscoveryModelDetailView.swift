@@ -43,7 +43,7 @@ internal struct DiscoveryModelDetailView: View {
             mainContent
                 .padding()
         }
-        .navigationTitle("Model Details")
+        .navigationTitle(Text("Model Details", bundle: .module))
         #if !os(macOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif

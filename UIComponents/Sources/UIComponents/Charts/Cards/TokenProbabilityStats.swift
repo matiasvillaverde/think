@@ -22,7 +22,7 @@ internal struct TokenProbabilityStats: View {
 
     private var averageProbabilityView: some View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
-            Text("Average")
+            Text("Average", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             let avgProb: Double = viewModel.averageProbability(for: filteredProbabilities)
@@ -34,7 +34,7 @@ internal struct TokenProbabilityStats: View {
 
     private var highConfidenceView: some View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
-            Text("High Conf")
+            Text("High Conf", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             let percentage: Double = viewModel.highConfidencePercentage(
@@ -50,7 +50,7 @@ internal struct TokenProbabilityStats: View {
 
     private var uncertaintyScoreView: some View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
-            Text("Uncertainty")
+            Text("Uncertainty", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             let score: Double = viewModel.uncertaintyScore(

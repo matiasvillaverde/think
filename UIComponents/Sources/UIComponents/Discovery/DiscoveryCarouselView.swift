@@ -157,15 +157,22 @@ internal struct DiscoveryCarouselView: View {
         #if os(macOS)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Picker("Model Type", selection: $selectedFilterState) {
+                Picker(selection: $selectedFilterState) {
                     ForEach(ModelTypeFilter.allCases) { filter in
-                        Label(filter.displayName, systemImage: filter.iconName)
+                        Label {
+                            Text(filter.displayName)
+                        } icon: {
+                            Image(systemName: filter.iconName)
+                                .accessibilityHidden(true)
+                        }
                             .tag(filter)
                     }
+                } label: {
+                    Text("Model Type", bundle: .module)
                 }
                 .pickerStyle(.segmented)
                 .frame(width: Constants.pickerWidth)
-                .help("Filter models by type")
+                .help(String(localized: "Filter models by type", bundle: .module))
             }
         }
         #endif

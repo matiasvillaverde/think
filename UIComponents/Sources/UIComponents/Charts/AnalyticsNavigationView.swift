@@ -81,11 +81,20 @@ public struct AnalyticsNavigationView: View {
                 dashboardDetailView
                     .toolbar {
                         ToolbarItem(placement: .principal) {
-                            Picker("Dashboard Type", selection: $selectedDashboard) {
+                            Picker(
+                                selection: $selectedDashboard
+                            ) {
                                 ForEach(DashboardType.allCases) { type in
-                                    Label(type.rawValue, systemImage: type.icon)
+                                    Label {
+                                        Text(type.title)
+                                    } icon: {
+                                        Image(systemName: type.icon)
+                                            .accessibilityHidden(true)
+                                    }
                                         .tag(type)
                                 }
+                            } label: {
+                                Text("Dashboard Type", bundle: .module)
                             }
                             .pickerStyle(.segmented)
                             .frame(width: Constants.pickerWidth)
@@ -105,7 +114,7 @@ public struct AnalyticsNavigationView: View {
                     // iPad: Split view
                     NavigationSplitView {
                         sidebarContent
-                            .navigationTitle("Analytics")
+                            .navigationTitle(Text("Analytics", bundle: .module))
                     } detail: {
                         dashboardDetailView
                     }
@@ -115,7 +124,12 @@ public struct AnalyticsNavigationView: View {
                         ForEach(DashboardType.allCases) { type in
                             dashboardView(for: type)
                                 .tabItem {
-                                    Label(type.rawValue, systemImage: type.icon)
+                                    Label {
+                                        Text(type.title)
+                                    } icon: {
+                                        Image(systemName: type.icon)
+                                            .accessibilityHidden(true)
+                                    }
                                 }
                                 .tag(type)
                         }
@@ -149,7 +163,7 @@ public struct AnalyticsNavigationView: View {
                         .padding()
                     }
                 }
-                .navigationTitle("Analytics Dashboard")
+                .navigationTitle(Text("Analytics Dashboard", bundle: .module))
                 .ornament(attachmentAnchor: .scene(.bottom)) {
                     quickStatsOrnament
                 }
@@ -159,18 +173,18 @@ public struct AnalyticsNavigationView: View {
         private var quickStatsOrnament: some View {
             HStack(spacing: Constants.ornamentSpacing) {
                 StatCard(
-                    title: "Total Metrics",
+                    title: String(localized: "Total Metrics", bundle: .module),
                     value: "\(allMetrics.count)",
                     icon: "chart.bar"
                 )
                 StatCard(
-                    title: "Active Chats",
+                    title: String(localized: "Active Chats", bundle: .module),
                     value: "\(allChats.count)",
                     icon: "bubble.left.and.bubble.right"
                 )
                 if let avgTokens = averageTokens {
                     StatCard(
-                        title: "Avg Tokens",
+                        title: String(localized: "Avg Tokens", bundle: .module),
                         value: "\(Int(avgTokens))",
                         icon: "number"
                     )
@@ -185,14 +199,18 @@ public struct AnalyticsNavigationView: View {
 
     private var sidebarContent: some View {
         List(selection: $selectedChat) {
-            Section("Quick Access") {
+            Section(String(localized: "Quick Access", bundle: .module)) {
                 NavigationLink(value: DashboardType.appWide) {
-                    Label("All Metrics", systemImage: "chart.bar.doc.horizontal")
+                    Label {
+                        Text("All Metrics", bundle: .module)
+                    } icon: {
+                        Image(systemName: "chart.bar.doc.horizontal")
+                    }
                 }
             }
 
             if !allChats.isEmpty {
-                Section("Recent Chats") {
+                Section(String(localized: "Recent Chats", bundle: .module)) {
                     ForEach(allChats.prefix(Constants.maxChatsInSidebar)) { chat in
                         NavigationLink(value: chat) {
                             chatRowView(for: chat)
@@ -201,10 +219,14 @@ public struct AnalyticsNavigationView: View {
                 }
             }
 
-            Section("Models") {
+            Section(String(localized: "Models", bundle: .module)) {
                 ForEach(uniqueModelNames, id: \.self) { modelName in
                     NavigationLink(value: modelName) {
-                        Label(modelName, systemImage: "cpu")
+                        Label {
+                            Text(verbatim: modelName)
+                        } icon: {
+                            Image(systemName: "cpu")
+                        }
                     }
                 }
             }
@@ -263,7 +285,7 @@ private struct StatCard: View {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(Color.textSecondary)
-                .accessibilityLabel("\(title) icon")
+                .accessibilityLabel(Text("\(title) icon", bundle: .module))
             Text(value)
                 .font(.title3.bold())
             Text(title)

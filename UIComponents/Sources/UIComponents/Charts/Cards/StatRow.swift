@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 // MARK: - Supporting Views
@@ -52,7 +53,7 @@ internal struct UtilizationStatsView: View {
         Group {
             if let modelName = metric.modelName {
                 HStack {
-                    Text("Model:")
+                    Text("Model:", bundle: .module)
                         .font(.caption)
                         .foregroundColor(Color.textSecondary)
                     Text(modelName)
@@ -65,14 +66,14 @@ internal struct UtilizationStatsView: View {
     private var tokenStatsView: some View {
         VStack(alignment: .leading, spacing: ChartConstants.Layout.itemSpacing) {
             StatRow(
-                label: "Used Tokens",
+                label: String(localized: "Used Tokens", bundle: .module),
                 value: "\(metric.promptTokens + metric.generatedTokens)",
                 color: .blue
             )
 
             if let remaining = remainingCapacity {
                 StatRow(
-                    label: "Remaining",
+                    label: String(localized: "Remaining", bundle: .module),
                     value: "\(remaining)",
                     color: utilizationPercentage > Constants.criticalThreshold
                         ? .red
@@ -81,7 +82,7 @@ internal struct UtilizationStatsView: View {
             }
 
             StatRow(
-                label: "Utilization",
+                label: String(localized: "Utilization", bundle: .module),
                 value: String(format: "%.1f%%", utilizationPercentage),
                 color: utilizationColor(for: utilizationPercentage)
             )
@@ -124,7 +125,7 @@ internal struct UtilizationTrendChart: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Constants.trendSpacing) {
-            Text("Trend")
+            Text("Trend", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
@@ -164,15 +165,15 @@ internal struct UtilizationStatusView: View {
 
     private var status: (String, Color) {
         if utilizationPercentage < Constants.lowThreshold {
-            return ("Optimal", .green)
+            return (String(localized: "Optimal", bundle: .module), .green)
         }
         if utilizationPercentage < Constants.mediumThreshold {
-            return ("Good", .yellow)
+            return (String(localized: "Good", bundle: .module), .yellow)
         }
         if utilizationPercentage < Constants.highThreshold {
-            return ("Warning", .orange)
+            return (String(localized: "Warning", bundle: .module), .orange)
         }
-        return ("Critical", .red)
+        return (String(localized: "Critical", bundle: .module), .red)
     }
     var body: some View {
         HStack {

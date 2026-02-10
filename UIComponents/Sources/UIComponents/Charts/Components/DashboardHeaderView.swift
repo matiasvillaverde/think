@@ -18,10 +18,10 @@ internal struct DashboardHeaderView: View {
             Image(systemName: "chart.bar.doc.horizontal")
                 .font(.system(size: constants.headerIconSize))
                 .foregroundStyle(.indigo)
-                .accessibilityLabel("App dashboard icon")
+                .accessibilityLabel(Text("App dashboard icon", bundle: .module))
 
             VStack(alignment: .leading, spacing: constants.headerSpacing) {
-                Text("Application Metrics")
+                Text("Application Metrics", bundle: .module)
                     .font(.largeTitle)
                     .fontWeight(.bold)
 
@@ -34,7 +34,7 @@ internal struct DashboardHeaderView: View {
 
     private var headerStatistics: some View {
         HStack {
-            Text("\(allMetricsCount) total metrics")
+            Text("\(allMetricsCount) total metrics", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
@@ -43,7 +43,7 @@ internal struct DashboardHeaderView: View {
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
 
-                Text("\(messagesWithMetricsCount) messages")
+                Text("\(messagesWithMetricsCount) messages", bundle: .module)
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
             }
@@ -53,7 +53,7 @@ internal struct DashboardHeaderView: View {
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
 
-                Text("\(activeModelsCount) models")
+                Text("\(activeModelsCount) models", bundle: .module)
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
             }

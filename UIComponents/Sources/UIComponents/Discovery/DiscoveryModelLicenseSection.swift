@@ -13,7 +13,9 @@ internal struct DiscoveryModelLicenseSection: View {
                 .foregroundColor(.textPrimary)
 
             HStack {
-                Text(model.license ?? "Unknown")
+                Text(
+                    model.license ?? String(localized: "Unknown", bundle: .module)
+                )
                     .font(.body)
                     .foregroundColor(.textPrimary)
 
@@ -25,7 +27,7 @@ internal struct DiscoveryModelLicenseSection: View {
                         Image(systemName: "arrow.up.right.circle")
                             .foregroundColor(.accentColor)
                     }
-                    .accessibilityLabel("View license details")
+                    .accessibilityLabel(Text("View license details", bundle: .module))
                 }
             }
         }

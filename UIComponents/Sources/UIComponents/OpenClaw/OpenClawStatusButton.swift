@@ -44,7 +44,7 @@ public struct OpenClawStatusButton: View {
 
     private func activeMenuContent(activeInstance: OpenClawInstanceRecord) -> some View {
         Group {
-            Text("Active: \(activeInstance.name)")
+            Text("Active: \(activeInstance.name)", bundle: .module)
             Text(activeInstance.urlString)
                 .font(.caption)
                 .foregroundStyle(Color.textSecondary)
@@ -55,22 +55,22 @@ public struct OpenClawStatusButton: View {
                 .font(.caption)
 
             if case .pairingRequired(let requestId) = status {
-                Text("requestId: \(requestId)")
+                Text("requestId: \(requestId)", bundle: .module)
                     .font(.caption2)
                     .foregroundStyle(Color.textSecondary)
             }
 
             Divider()
 
-            Button("Test Connection") {
+            Button(String(localized: "Test Connection", bundle: .module)) {
                 Task { await testActiveConnection() }
             }
 
-            Button("Manage Instances") {
+            Button(String(localized: "Manage Instances", bundle: .module)) {
                 isSettingsPresented = true
             }
 
-            Button("Deactivate") {
+            Button(String(localized: "Deactivate", bundle: .module)) {
                 Task { await deactivate() }
             }
         }
@@ -78,12 +78,12 @@ public struct OpenClawStatusButton: View {
 
     private var inactiveMenuContent: some View {
         Group {
-            Text("No OpenClaw instance selected.")
+            Text("No OpenClaw instance selected.", bundle: .module)
                 .font(.caption)
 
             Divider()
 
-            Button("Manage Instances") {
+            Button(String(localized: "Manage Instances", bundle: .module)) {
                 isSettingsPresented = true
             }
         }

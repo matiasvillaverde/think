@@ -8,7 +8,7 @@ internal struct WelcomeHeaderSection: View {
 
     var body: some View {
         VStack(spacing: WelcomeConstants.spacingMedium) {
-            Image(ImageResource(name: "openclaw-ghost", bundle: .module))
+            Image(ImageResource(name: "think", bundle: .module))
                 .resizable()
                 .scaledToFit()
                 .frame(
@@ -28,8 +28,8 @@ internal struct WelcomeHeaderSection: View {
 
             Text(
                 """
-                Choose how you want to run OpenClaw: fully local, remote APIs,
-                or connect an OpenClaw Gateway.
+                OpenClaw, locally. Choose a self‑hosted model, use remote APIs,
+                or connect an OpenClaw gateway.
                 """,
                 bundle: .module
             )

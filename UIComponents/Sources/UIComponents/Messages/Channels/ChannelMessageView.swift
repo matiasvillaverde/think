@@ -55,7 +55,6 @@ internal struct ChannelMessageView: View {
 
     // Optional properties for context menu support
     @Binding var showingSelectionView: Bool
-    @Binding var showingThinkingView: Bool
     @Binding var showingStatsView: Bool
     let copyTextAction: ((String) -> Void)?
     let shareTextAction: ((String) -> Void)?
@@ -65,7 +64,6 @@ internal struct ChannelMessageView: View {
         message: Message,
         associatedToolStatus: ToolExecutionState? = nil,
         showingSelectionView: Binding<Bool> = .constant(false),
-        showingThinkingView: Binding<Bool> = .constant(false),
         showingStatsView: Binding<Bool> = .constant(false),
         copyTextAction: ((String) -> Void)? = nil,
         shareTextAction: ((String) -> Void)? = nil
@@ -74,7 +72,6 @@ internal struct ChannelMessageView: View {
         self.associatedToolStatus = associatedToolStatus
         self.message = message
         self._showingSelectionView = showingSelectionView
-        self._showingThinkingView = showingThinkingView
         self._showingStatsView = showingStatsView
         self.copyTextAction = copyTextAction
         self.shareTextAction = shareTextAction
@@ -194,7 +191,6 @@ internal struct ChannelMessageView: View {
                     textToCopy: channel.content,
                     message: message,
                     showingSelectionView: $showingSelectionView,
-                    showingThinkingView: $showingThinkingView,
                     showingStatsView: $showingStatsView,
                     copyTextAction: copyAction,
                     shareTextAction: shareAction

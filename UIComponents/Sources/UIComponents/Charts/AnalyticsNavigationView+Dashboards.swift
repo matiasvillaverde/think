@@ -19,7 +19,12 @@ extension AnalyticsNavigationView {
                 modelName: modelName
             )
         } else {
-            EmptyStateView(message: "Select a model to view analytics")
+            EmptyStateView(
+                message: String(
+                    localized: "Select a model to view analytics",
+                    bundle: .module
+                )
+            )
         }
     }
 
@@ -31,7 +36,12 @@ extension AnalyticsNavigationView {
                 systemPrompt: nil
             )
         } else {
-            EmptyStateView(message: "No single metric available")
+            EmptyStateView(
+                message: String(
+                    localized: "No single metric available",
+                    bundle: .module
+                )
+            )
         }
     }
 
@@ -57,13 +67,13 @@ extension AnalyticsNavigationView {
         HStack {
             Image(systemName: "bubble.left.and.bubble.right")
                 .foregroundColor(Color.textSecondary)
-                .accessibilityLabel("Chat icon")
+                .accessibilityLabel(Text("Chat icon", bundle: .module))
             VStack(alignment: .leading) {
                 Text(chat.name)
                     .lineLimit(1)
                 if !chat.messages.isEmpty {
                     let messageCount: Int = chat.messages.count
-                    Text("\(messageCount) messages")
+                    Text("\(messageCount) messages", bundle: .module)
                         .font(.caption)
                         .foregroundColor(Color.textSecondary)
                 }
@@ -82,7 +92,7 @@ private struct EmptyStateView: View {
             Image(systemName: "chart.xyaxis.line")
                 .font(.system(size: AnalyticsNavigationView.Constants.emptyStateIconSize))
                 .foregroundColor(Color.textSecondary)
-                .accessibilityLabel("Empty chart icon")
+                .accessibilityLabel(Text("Empty chart icon", bundle: .module))
             Text(message)
                 .font(.headline)
                 .foregroundColor(Color.textSecondary)

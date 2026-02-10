@@ -9,7 +9,6 @@ import SwiftUI
 public struct AssistantBubbleView: View {
     @Bindable var message: Message
     @Binding var showingSelectionView: Bool
-    @Binding var showingThinkingView: Bool
     @Binding var showingStatsView: Bool
     let copyTextAction: (String) -> Void
     let shareTextAction: (String) -> Void
@@ -39,7 +38,6 @@ public struct AssistantBubbleView: View {
                 message: message,
                 toolExecutions: getToolExecutions(),
                 showingSelectionView: $showingSelectionView,
-                showingThinkingView: $showingThinkingView,
                 showingStatsView: $showingStatsView,
                 copyTextAction: copyTextAction,
                 shareTextAction: shareTextAction
@@ -57,7 +55,6 @@ public struct AssistantBubbleView: View {
                 AssistantActionButtonsRow(
                     message: message,
                     showingStatsView: $showingStatsView,
-                    showingThinkingView: $showingThinkingView,
                     copyTextAction: copyTextAction,
                     shareTextAction: shareTextAction
                 )
@@ -81,7 +78,6 @@ public struct AssistantBubbleView: View {
                     textToCopy: message.response ?? "",
                     message: message,
                     showingSelectionView: $showingSelectionView,
-                    showingThinkingView: $showingThinkingView,
                     showingStatsView: $showingStatsView,
                     copyTextAction: copyTextAction,
                     shareTextAction: shareTextAction
@@ -135,7 +131,6 @@ public struct AssistantBubbleView: View {
                     AssistantBubbleView(
                         message: message,
                         showingSelectionView: $isShowing,
-                        showingThinkingView: $isShowing,
                         showingStatsView: $isShowing,
                         copyTextAction: { _ in
                             // no-op

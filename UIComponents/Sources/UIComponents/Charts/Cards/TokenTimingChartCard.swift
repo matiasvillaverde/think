@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Token Timing Bar Chart wrapped in a card container
@@ -39,8 +40,8 @@ public struct TokenTimingChartCard: View {
 
     public var body: some View {
         ChartCard(
-            title: "Token Generation Timing",
-            subtitle: "Breakdown for recent messages",
+            title: String(localized: "Token Generation Timing", bundle: .module),
+            subtitle: String(localized: "Breakdown for recent messages", bundle: .module),
             systemImage: "timer"
         ) {
             chartContent
@@ -63,9 +64,9 @@ public struct TokenTimingChartCard: View {
 
     private var emptyDataView: some View {
         ContentUnavailableView(
-            "No Timing Data",
+            String(localized: "No Timing Data", bundle: .module),
             systemImage: "clock",
-            description: Text("Token timing data will appear here")
+            description: Text("Token timing data will appear here", bundle: .module)
         )
         .frame(height: ChartConstants.Layout.compactChartHeight)
     }
@@ -89,8 +90,8 @@ public struct TokenTimingChartCard: View {
         .chartForegroundStyleScale { (category: String) in
             Constants.categoryColors[category] ?? .gray
         }
-        .chartYAxisLabel("Time (ms)")
-        .chartXAxisLabel("Message")
+        .chartYAxisLabel(String(localized: "Time (ms)", bundle: .module))
+        .chartXAxisLabel(String(localized: "Message", bundle: .module))
         .chartYAxis {
             AxisMarks { value in
                 AxisGridLine()
@@ -140,7 +141,7 @@ public struct TokenTimingChartCard: View {
                         .frame(width: Constants.legendRectWidth, height: Constants.legendRectHeight)
                         .cornerRadius(Constants.legendRectCornerRadius)
 
-                    Text(category)
+                    Text(verbatim: category)
                         .font(.caption)
                         .foregroundColor(Color.textSecondary)
                 }
@@ -154,7 +155,7 @@ public struct TokenTimingChartCard: View {
             // Average TTFT
             if let avgTTFT = calculateAverageTTFT() {
                 VStack(alignment: .leading, spacing: Constants.statSpacing) {
-                    Text("Avg TTFT")
+                    Text("Avg TTFT", bundle: .module)
                         .font(.caption)
                         .foregroundColor(Color.textSecondary)
                     Text(String(format: "%.1f ms", avgTTFT))
@@ -166,7 +167,7 @@ public struct TokenTimingChartCard: View {
             // Average token time
             if let avgTokenTime = calculateAverageTokenTime() {
                 VStack(alignment: .leading, spacing: Constants.statSpacing) {
-                    Text("Avg Token")
+                    Text("Avg Token", bundle: .module)
                         .font(.caption)
                         .foregroundColor(Color.textSecondary)
                     Text(String(format: "%.1f ms", avgTokenTime))
@@ -177,10 +178,10 @@ public struct TokenTimingChartCard: View {
 
             // Total messages
             VStack(alignment: .leading, spacing: Constants.statSpacing) {
-                Text("Messages")
+                Text("Messages", bundle: .module)
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
-                Text("\(min(messageCount, metrics.count))")
+                Text(verbatim: "\(min(messageCount, metrics.count))")
                     .font(.subheadline.weight(.bold))
                     .foregroundColor(.orange)
             }
@@ -193,22 +194,24 @@ public struct TokenTimingChartCard: View {
         VStack(spacing: ChartConstants.Layout.cardSpacing) {
             // Message count stepper
             HStack {
-                Text("Messages to show:")
+                Text("Messages to show:", bundle: .module)
                     .font(.subheadline)
                     .foregroundColor(Color.textSecondary)
 
                 Spacer()
 
                 Stepper(value: $messageCount, in: 1 ... Constants.maxMessages) {
-                    Text("\(messageCount)")
+                    Text(verbatim: "\(messageCount)")
                         .font(.subheadline.weight(.bold))
                         .frame(minWidth: Constants.stepperMinWidth)
                 }
             }
 
             // Breakdown toggle
-            Toggle("Show breakdown by category", isOn: $showBreakdown)
-                .font(.subheadline)
+            Toggle(isOn: $showBreakdown) {
+                Text("Show breakdown by category", bundle: .module)
+            }
+            .font(.subheadline)
         }
     }
 

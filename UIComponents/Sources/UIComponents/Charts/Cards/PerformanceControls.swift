@@ -24,17 +24,19 @@ internal struct PerformanceControls: View {
 
     private var compactControls: some View {
         HStack {
-            Picker("Range", selection: $timeRange) {
+            Picker(selection: $timeRange) {
                 ForEach(PerformanceLineChart.TimeRange.allCases, id: \.self) { range in
                     Text(range.rawValue).tag(range)
                 }
+            } label: {
+                Text("Range", bundle: .module)
             }
             .pickerStyle(.segmented)
             .frame(maxWidth: Constants.maxPickerWidth)
 
             Spacer()
 
-            Toggle("Auto", isOn: $autoRefresh)
+            Toggle(String(localized: "Auto", bundle: .module), isOn: $autoRefresh)
                 .toggleStyle(.switch)
                 .fixedSize()
 
@@ -45,7 +47,9 @@ internal struct PerformanceControls: View {
             } label: {
                 Image(systemName: showCustomization ? "gearshape.fill" : "gearshape")
                     .foregroundColor(.accentColor)
-                    .accessibilityLabel("Customization settings")
+                    .accessibilityLabel(
+                        Text("Customization settings", bundle: .module)
+                    )
             }
             .buttonStyle(.plain)
         }
@@ -53,7 +57,7 @@ internal struct PerformanceControls: View {
 
     private var expandedControls: some View {
         VStack(alignment: .leading, spacing: ChartConstants.Layout.itemSpacing) {
-            Text("Visible Metrics")
+            Text("Visible Metrics", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 

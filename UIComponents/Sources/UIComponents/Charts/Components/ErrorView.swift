@@ -20,9 +20,9 @@ public struct ErrorView: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: ErrorViewConstants.iconSize))
                 .foregroundColor(.orange)
-                .accessibilityLabel("Error icon")
+                .accessibilityLabel(Text("Error icon", bundle: .module))
 
-            Text("Failed to Load Metrics")
+            Text("Failed to Load Metrics", bundle: .module)
                 .font(.headline)
 
             Text(error.localizedDescription)
@@ -32,7 +32,12 @@ public struct ErrorView: View {
                 .padding(.horizontal)
 
             Button(action: retry) {
-                Label("Retry", systemImage: "arrow.clockwise")
+                Label {
+                    Text("Retry", bundle: .module)
+                } icon: {
+                    Image(systemName: "arrow.clockwise")
+                        .accessibilityHidden(true)
+                }
             }
             .buttonStyle(.borderedProminent)
         }

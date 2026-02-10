@@ -13,23 +13,27 @@ internal struct PerplexityHeatMapControls: View {
 
     private var colorSchemePicker: some View {
         HStack {
-            Text("Color Scheme:")
+            Text("Color Scheme:", bundle: .module)
                 .font(.subheadline)
                 .foregroundColor(Color.textSecondary)
 
             Spacer()
 
-            Picker("Color Scheme", selection: $colorScheme) {
+            Picker(selection: $colorScheme) {
                 ForEach(HeatMapColorScheme.allCases, id: \.self) { scheme in
-                    Text(scheme.rawValue).tag(scheme)
+                    Text(scheme.displayName).tag(scheme)
                 }
+            } label: {
+                Text("Color Scheme", bundle: .module)
             }
             .pickerStyle(.menu)
         }
     }
 
     private var showLabelsToggle: some View {
-        Toggle("Show values", isOn: $showLabels)
-            .font(.subheadline)
+        Toggle(isOn: $showLabels) {
+            Text("Show values", bundle: .module)
+        }
+        .font(.subheadline)
     }
 }

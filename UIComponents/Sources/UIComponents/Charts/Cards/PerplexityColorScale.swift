@@ -19,19 +19,19 @@ internal struct PerplexityColorScale: View {
 
     private var colorScaleLabels: some View {
         HStack {
-            Text("0.0")
+            Text(verbatim: "0.0")
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
             Spacer()
 
-            Text("Perplexity")
+            Text("Perplexity", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
             Spacer()
 
-            Text("1.0")
+            Text(verbatim: "1.0")
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
         }

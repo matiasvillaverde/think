@@ -53,15 +53,15 @@ internal struct DiscoverySearchBar: View {
 // MARK: - Preview
 
 #if DEBUG
-    #Preview {
-        VStack(spacing: DesignConstants.Spacing.large) {
-            DiscoverySearchBar()
-                .padding()
+#Preview {
+    VStack(spacing: DesignConstants.Spacing.large) {
+        DiscoverySearchBar()
+            .padding()
 
-            Text("Search functionality coming soon")
-                .font(.caption)
-                .foregroundColor(.textSecondary)
-        }
-        .background(Color.backgroundPrimary)
+        Text("Search functionality coming soon", bundle: .module)
+            .font(.caption)
+            .foregroundColor(.textSecondary)
     }
+    .background(Color.backgroundPrimary)
+}
 #endif

@@ -36,16 +36,13 @@ internal struct MessageInputView: View {
     init(
         chat: Chat,
         overrideCanSend: Bool = false,
-        overrideShouldReason: Bool = false,
         overrideShouldDraw: Bool = false
     ) {
         self.chat = chat
         self.overrideCanSend = overrideCanSend
 
         // Handle override parameters for backward compatibility
-        if overrideShouldReason {
-            _selectedAction = .init(initialValue: .textGeneration([.reasoning]))
-        } else if overrideShouldDraw {
+        if overrideShouldDraw {
             _selectedAction = .init(initialValue: .imageGeneration([]))
         }
     }

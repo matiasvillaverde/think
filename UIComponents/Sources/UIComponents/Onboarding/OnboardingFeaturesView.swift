@@ -103,11 +103,11 @@ internal struct OnboardingFeaturesView: View {
         #if os(iOS) || os(visionOS)
             NavigationView {
                 TermsOfUseView()
-                    .navigationTitle("Terms of Service")
+                    .navigationTitle(Text("Terms of Service", bundle: .module))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") {
+                            Button(String(localized: "Done", bundle: .module)) {
                                 showTermsOfService = false
                             }
                         }
@@ -121,7 +121,7 @@ internal struct OnboardingFeaturesView: View {
                 )
                 .toolbar {
                     ToolbarItem(placement: .automatic) {
-                        Button("Done") {
+                        Button(String(localized: "Done", bundle: .module)) {
                             showTermsOfService = false
                         }
                     }
@@ -134,11 +134,11 @@ internal struct OnboardingFeaturesView: View {
         #if os(iOS) || os(visionOS)
             NavigationView {
                 PrivacyPolicyView()
-                    .navigationTitle("Privacy Policy")
+                    .navigationTitle(Text("Privacy Policy", bundle: .module))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") {
+                            Button(String(localized: "Done", bundle: .module)) {
                                 showPrivacyPolicy = false
                             }
                         }
@@ -152,7 +152,7 @@ internal struct OnboardingFeaturesView: View {
                 )
                 .toolbar {
                     ToolbarItem(placement: .automatic) {
-                        Button("Done") {
+                        Button(String(localized: "Done", bundle: .module)) {
                             showPrivacyPolicy = false
                         }
                     }
@@ -206,8 +206,8 @@ internal struct OnboardingFeaturesView: View {
 
             Text(
                 """
-                Create many assistants: a friend, a butler, a coach, a teacher, and more.
-                Each chat can have its own personality.
+                Run OpenClaw locally out of the box. Use MLX or Llama.cpp models, or connect to a
+                remote OpenClaw. Hosted models: one click, coming soon.
                 """,
                 bundle: .module
             )
@@ -283,37 +283,37 @@ internal struct OnboardingFeaturesView: View {
 private enum OnboardingFeatures {
     static let all: [Feature] = [
         Feature(
-            icon: "cpu",
-            title: String(localized: "On-Device Processing", bundle: .module),
+            icon: "bolt.fill",
+            title: String(localized: "Local OpenClaw (Ready now)", bundle: .module),
             description: String(
-                localized: "All AI processing happens locally on your device for complete privacy",
+                localized: "Start instantly with a built-in OpenClaw on your device.",
                 bundle: .module
             ),
             color: .blue
         ),
         Feature(
-            icon: "bolt.fill",
-            title: String(localized: "Lightning Fast", bundle: .module),
+            icon: "cpu",
+            title: String(localized: "Local models (MLX or Llama.cpp)", bundle: .module),
             description: String(
-                localized: "Optimized for Apple Silicon with incredible speed and efficiency",
-                bundle: .module
-            ),
-            color: .orange
-        ),
-        Feature(
-            icon: "lock.shield.fill",
-            title: String(localized: "Private & Secure", bundle: .module),
-            description: String(
-                localized: "Your data never leaves your device. No cloud, no tracking, just AI",
+                localized: "Fast, private inference on-device with MLX or llama.cpp.",
                 bundle: .module
             ),
             color: .green
         ),
         Feature(
-            icon: "sparkles",
-            title: String(localized: "Multiple Models", bundle: .module),
+            icon: "link",
+            title: String(localized: "Connect to OpenClaw", bundle: .module),
             description: String(
-                localized: "Choose from various AI models for different tasks and capabilities",
+                localized: "Link to a remote OpenClaw instance to use its models and capabilities.",
+                bundle: .module
+            ),
+            color: .orange
+        ),
+        Feature(
+            icon: "cloud.fill",
+            title: String(localized: "Hosted models (Coming soon)", bundle: .module),
+            description: String(
+                localized: "One-click hosted models, no setup.",
                 bundle: .module
             ),
             color: .purple

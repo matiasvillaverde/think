@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Entropy Area Chart wrapped in a card container
@@ -34,11 +35,25 @@ public struct EntropyChartCard: View {
         static let borderWidth: CGFloat = 0.5
     }
 
+    enum EntropyTrend: String {
+        case increasing = "Increasing"
+        case decreasing = "Decreasing"
+        case stable = "Stable"
+
+        var displayName: String {
+            rawValue
+        }
+    }
+
     public enum TimeRange: String, CaseIterable {
         case lastHour = "Last Hour"
         case lastDay = "Last Day"
         case lastWeek = "Last Week"
         case all = "All Time"
+
+        var displayName: String {
+            rawValue
+        }
 
         func filter(_ metrics: [Metrics]) -> [Metrics] {
             let now: Date = Date()
@@ -80,8 +95,8 @@ public struct EntropyChartCard: View {
 
     public var body: some View {
         ChartCard(
-            title: "Entropy Analysis",
-            subtitle: "Randomness over time",
+            title: String(localized: "Entropy Analysis", bundle: .module),
+            subtitle: String(localized: "Randomness over time", bundle: .module),
             systemImage: "waveform.path.ecg"
         ) {
             chartContent
@@ -94,9 +109,9 @@ public struct EntropyChartCard: View {
         VStack(spacing: ChartConstants.Layout.cardSpacing) {
             if entropyData.isEmpty {
                 ContentUnavailableView(
-                    "No Entropy Data",
+                    String(localized: "No Entropy Data", bundle: .module),
                     systemImage: "waveform",
-                    description: Text("Entropy data will appear here")
+                    description: Text("Entropy data will appear here", bundle: .module)
                 )
                 .frame(height: Constants.chartHeight)
             } else {
@@ -116,7 +131,7 @@ public struct EntropyChartCard: View {
                 AxisGridLine()
             }
         }
-        .chartYAxisLabel("Entropy")
+        .chartYAxisLabel(String(localized: "Entropy", bundle: .module))
         .chartPlotStyle { plotArea in
             plotArea
                 .background(Color.paletteGray.opacity(Constants.backgroundOpacity))
@@ -146,23 +161,27 @@ public struct EntropyChartCard: View {
         VStack(spacing: ChartConstants.Layout.cardSpacing) {
             // Time range picker
             HStack {
-                Text("Time Range:")
+                Text("Time Range:", bundle: .module)
                     .font(.subheadline)
                     .foregroundColor(Color.textSecondary)
 
                 Spacer()
 
-                Picker("Range", selection: $timeRange) {
+                Picker(selection: $timeRange) {
                     ForEach(TimeRange.allCases, id: \.self) { range in
-                        Text(range.rawValue).tag(range)
+                        Text(range.displayName).tag(range)
                     }
+                } label: {
+                    Text("Range", bundle: .module)
                 }
                 .pickerStyle(.segmented)
             }
 
             // Threshold toggle
-            Toggle("Show threshold lines", isOn: $showThresholdLines)
-                .font(.subheadline)
+            Toggle(isOn: $showThresholdLines) {
+                Text("Show threshold lines", bundle: .module)
+            }
+            .font(.subheadline)
         }
     }
 
@@ -198,30 +217,30 @@ public struct EntropyChartCard: View {
         return entropyData.map(\.entropy).reduce(0, +) / Double(entropyData.count)
     }
 
-    var entropyTrend: String {
+    var entropyTrend: EntropyTrend {
         guard entropyData.count > 1 else {
-            return "Stable"
+            return .stable
         }
         let first: Double = entropyData.first?.entropy ?? 0
         let last: Double = entropyData.last?.entropy ?? 0
         if last > first {
-            return "Increasing"
+            return .increasing
         }
         if last < first {
-            return "Decreasing"
+            return .decreasing
         }
-        return "Stable"
+        return .stable
     }
 
     var trendColor: Color {
         switch entropyTrend {
-        case "Increasing":
+        case .increasing:
             .orange
 
-        case "Decreasing":
+        case .decreasing:
             .blue
 
-        default:
+        case .stable:
             .gray
         }
     }

@@ -15,28 +15,34 @@ internal struct TokenProbabilityControls: View {
 
     private var tokenTypePicker: some View {
         HStack {
-            Text("Token Type:")
+            Text("Token Type:", bundle: .module)
                 .font(.subheadline)
                 .foregroundColor(Color.textSecondary)
 
             Spacer()
 
-            Picker("Token Type", selection: $selectedTokenType) {
+            Picker(selection: $selectedTokenType) {
                 ForEach(TokenType.allCases, id: \.self) { type in
-                    Text(type.rawValue).tag(type)
+                    Text(type.displayName).tag(type)
                 }
+            } label: {
+                Text("Token Type", bundle: .module)
             }
             .pickerStyle(.menu)
         }
     }
 
     private var trendLineToggle: some View {
-        Toggle("Show trend line", isOn: $showTrendLine)
-            .font(.subheadline)
+        Toggle(isOn: $showTrendLine) {
+            Text("Show trend line", bundle: .module)
+        }
+        .font(.subheadline)
     }
 
     private var confidenceBandsToggle: some View {
-        Toggle("Show confidence bands", isOn: $showConfidenceBands)
-            .font(.subheadline)
+        Toggle(isOn: $showConfidenceBands) {
+            Text("Show confidence bands", bundle: .module)
+        }
+        .font(.subheadline)
     }
 }

@@ -125,7 +125,7 @@ internal struct DownloadProgressView: View {
 
     private var centerContent: some View {
         VStack(spacing: Layout.spacingSmall) {
-            Text("\(Int(progress * Double(Layout.percentageMultiplier)))%")
+            Text(verbatim: "\(Int(progress * Double(Layout.percentageMultiplier)))%")
                 .font(.largeTitle)
                 .bold()
                 .foregroundColor(.textPrimary)

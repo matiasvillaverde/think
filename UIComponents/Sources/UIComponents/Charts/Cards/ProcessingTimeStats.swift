@@ -16,7 +16,7 @@ internal struct ProcessingTimeStats: View {
 
     private var totalTimeView: some View {
         VStack(alignment: .leading, spacing: verticalSpacing) {
-            Text("Total")
+            Text("Total", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             Text(viewModel.formatTime(
@@ -29,7 +29,7 @@ internal struct ProcessingTimeStats: View {
 
     private var averageTimeView: some View {
         VStack(alignment: .leading, spacing: verticalSpacing) {
-            Text("Average")
+            Text("Average", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             Text(viewModel.formatTime(
@@ -43,7 +43,7 @@ internal struct ProcessingTimeStats: View {
     @ViewBuilder private var slowestTimeView: some View {
         if let slowest = processingData.max(by: { $0.total < $1.total }) {
             VStack(alignment: .leading, spacing: verticalSpacing) {
-                Text("Slowest")
+                Text("Slowest", bundle: .module)
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
                 Text(viewModel.formatTime(slowest.total))

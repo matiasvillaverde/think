@@ -155,7 +155,7 @@ internal struct ChannelView: View {
                 .foregroundColor(typeColor)
 
             if let recipient = channel.recipient {
-                Text("→ \(recipient)")
+                Text(verbatim: "→ \(recipient)")
                     .font(.caption2)
                     .foregroundColor(Color.textSecondary)
             }

@@ -13,14 +13,14 @@ extension ToolExecutionView {
             }
             withAnimation(
                 .spring(
-                    response: Constants.animationResponse,
-                    dampingFraction: Constants.animationDamping
+                    response: ToolExecutionViewConstants.animationResponse,
+                    dampingFraction: ToolExecutionViewConstants.animationDamping
                 )
             ) {
                 toggleExpanded()
             }
         } label: {
-            HStack(spacing: Constants.headerSpacing) {
+            HStack(spacing: ToolExecutionViewConstants.headerSpacing) {
                 statusIconView
                 toolNameView
                 statusSeparatorView
@@ -35,17 +35,24 @@ extension ToolExecutionView {
         .buttonStyle(.plain)
         .accessibilityIdentifier("toolExecution.header.\(toolExecution.id.uuidString)")
         .accessibilityAddTraits(.isButton)
-        .accessibilityLabel("\(toolDisplayName), \(statusText)")
+        .accessibilityLabel(
+            Text("\(toolDisplayName), \(statusText)", bundle: .module)
+        )
         .accessibilityHint(
-            hasContent ? "Tap to \(isExpandedValue ? "collapse" : "expand") details" : ""
+            hasContent
+                ? Text(
+                    "Tap to \(isExpandedValue ? "collapse" : "expand") details",
+                    bundle: .module
+                )
+                : Text(verbatim: "")
         )
     }
 
     var statusIconView: some View {
         Image(systemName: statusIcon)
-            .font(.system(size: Constants.iconSize, weight: .medium))
+            .font(.system(size: ToolExecutionViewConstants.iconSize, weight: .medium))
             .foregroundColor(statusColor)
-            .opacity(Constants.iconOpacity)
+            .opacity(ToolExecutionViewConstants.iconOpacity)
             .accessibilityHidden(true)
     }
 
@@ -57,8 +64,8 @@ extension ToolExecutionView {
     }
 
     var statusSeparatorView: some View {
-        Text(".")
-            .foregroundColor(.secondary.opacity(Constants.secondaryOpacity))
+        Text(verbatim: ".")
+            .foregroundColor(.secondary.opacity(ToolExecutionViewConstants.secondaryOpacity))
     }
 
     var statusTextView: some View {
@@ -78,18 +85,18 @@ extension ToolExecutionView {
     @ViewBuilder var progressIndicator: some View {
         if let progress = toolExecution.progress {
             ProgressView(value: progress)
-                .scaleEffect(Constants.progressScale)
-                .accessibilityLabel("Executing")
+                .scaleEffect(ToolExecutionViewConstants.progressScale)
+                .accessibilityLabel(Text("Executing", bundle: .module))
         } else {
             ProgressView()
-                .scaleEffect(Constants.progressScale)
-                .accessibilityLabel("Executing")
+                .scaleEffect(ToolExecutionViewConstants.progressScale)
+                .accessibilityLabel(Text("Executing", bundle: .module))
         }
     }
 
     var chevronIndicator: some View {
         Image(systemName: isExpandedValue ? "chevron.up" : "chevron.down")
-            .font(.system(size: Constants.chevronSize, weight: .medium))
+            .font(.system(size: ToolExecutionViewConstants.chevronSize, weight: .medium))
             .foregroundColor(Color.textSecondary)
             .accessibilityHidden(true)
     }

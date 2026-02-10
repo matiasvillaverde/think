@@ -58,7 +58,7 @@ extension EntropyChartCard {
                 )
             )
             .annotation(position: .trailing, alignment: .leading) {
-                Text("Low")
+                Text("Low", bundle: .module)
                     .font(.caption2)
                     .foregroundColor(.green)
             }
@@ -72,7 +72,7 @@ extension EntropyChartCard {
                 )
             )
             .annotation(position: .trailing, alignment: .leading) {
-                Text("High")
+                Text("High", bundle: .module)
                     .font(.caption2)
                     .foregroundColor(.red)
             }

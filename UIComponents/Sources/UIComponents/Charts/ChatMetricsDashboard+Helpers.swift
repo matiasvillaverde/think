@@ -10,16 +10,16 @@ extension ChatMetricsDashboard {
     var adaptivePadding: CGFloat {
         #if os(iOS)
             if UIDevice.current.userInterfaceIdiom == .phone {
-                return Constants.iPhonePadding
+                return ChatMetricsDashboardConstants.iPhonePadding
             }
         #endif
-        return Constants.defaultPadding
+        return ChatMetricsDashboardConstants.defaultPadding
     }
 
     // MARK: - Filter Properties
 
     var hasMultipleMessages: Bool {
-        metrics.count >= Constants.messageCountThreshold
+        metrics.count >= ChatMetricsDashboardConstants.messageCountThreshold
     }
 
     // MARK: - Computed Properties

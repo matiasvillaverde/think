@@ -13,20 +13,18 @@ internal struct AssistantBubbleViewTests {
         let message: Message = Message.previewWithResponse
 
         let showingSelection: Binding<Bool> = .constant(false)
-        let showingThinking: Binding<Bool> = .constant(false)
         let showingStats: Binding<Bool> = .constant(false)
 
         let view: AssistantBubbleView = AssistantBubbleView(
             message: message,
             showingSelectionView: showingSelection,
-            showingThinkingView: showingThinking,
             showingStatsView: showingStats,
             copyTextAction: { _ in /* No-op for test */ },
             shareTextAction: { _ in /* No-op for test */ }
         )
 
         // Verify the view is created with the correct message
-        #expect(view.message.response != nil)
+        #expect(view.message.channels?.contains { $0.type == .final } == true)
     }
 
     @Test("AssistantBubbleView handles thinking message")
@@ -35,21 +33,19 @@ internal struct AssistantBubbleViewTests {
         let message: Message = Message.previewWithThinking
 
         let showingSelection: Binding<Bool> = .constant(false)
-        let showingThinking: Binding<Bool> = .constant(false)
         let showingStats: Binding<Bool> = .constant(false)
 
         let view: AssistantBubbleView = AssistantBubbleView(
             message: message,
             showingSelectionView: showingSelection,
-            showingThinkingView: showingThinking,
             showingStatsView: showingStats,
             copyTextAction: { _ in /* No-op for test */ },
             shareTextAction: { _ in /* No-op for test */ }
         )
 
-        // Verify the message has thinking content
-        #expect(view.message.thinking != nil)
-        #expect(view.message.response != nil)
+        // Verify the message has analysis + final channels
+        #expect(view.message.channels?.contains { $0.type == .analysis } == true)
+        #expect(view.message.channels?.contains { $0.type == .final } == true)
     }
 
     @Test("AssistantBubbleView handles complex conversation")
@@ -58,13 +54,11 @@ internal struct AssistantBubbleViewTests {
         let message: Message = Message.previewComplexConversation
 
         let showingSelection: Binding<Bool> = .constant(false)
-        let showingThinking: Binding<Bool> = .constant(false)
         let showingStats: Binding<Bool> = .constant(false)
 
         let view: AssistantBubbleView = AssistantBubbleView(
             message: message,
             showingSelectionView: showingSelection,
-            showingThinkingView: showingThinking,
             showingStatsView: showingStats,
             copyTextAction: { _ in /* No-op for test */ },
             shareTextAction: { _ in /* No-op for test */ }
@@ -72,8 +66,8 @@ internal struct AssistantBubbleViewTests {
 
         // Verify the message has all expected content
         #expect(view.message.userInput != nil)
-        #expect(view.message.response != nil)
-        #expect(view.message.thinking != nil)
+        #expect(view.message.channels?.contains { $0.type == .analysis } == true)
+        #expect(view.message.channels?.contains { $0.type == .final } == true)
     }
 
     @Test("AssistantBubbleView handles code messages")
@@ -82,21 +76,20 @@ internal struct AssistantBubbleViewTests {
         let message: Message = Message.codeMessages
 
         let showingSelection: Binding<Bool> = .constant(false)
-        let showingThinking: Binding<Bool> = .constant(false)
         let showingStats: Binding<Bool> = .constant(false)
 
         let view: AssistantBubbleView = AssistantBubbleView(
             message: message,
             showingSelectionView: showingSelection,
-            showingThinkingView: showingThinking,
             showingStatsView: showingStats,
             copyTextAction: { _ in /* No-op for test */ },
             shareTextAction: { _ in /* No-op for test */ }
         )
 
         // Verify code message content
-        #expect(view.message.response != nil)
-        #expect(view.message.response?.contains("```") == true)
+        let finalText: String? = view.message.channels?.first { $0.type == .final }?.content
+        #expect(finalText != nil)
+        #expect(finalText?.contains("```") == true)
     }
 
     @Test("AssistantBubbleView handles image messages")
@@ -105,13 +98,11 @@ internal struct AssistantBubbleViewTests {
         let message: Message = Message.imageMessages
 
         let showingSelection: Binding<Bool> = .constant(false)
-        let showingThinking: Binding<Bool> = .constant(false)
         let showingStats: Binding<Bool> = .constant(false)
 
         let view: AssistantBubbleView = AssistantBubbleView(
             message: message,
             showingSelectionView: showingSelection,
-            showingThinkingView: showingThinking,
             showingStatsView: showingStats,
             copyTextAction: { _ in /* No-op for test */ },
             shareTextAction: { _ in /* No-op for test */ }
@@ -119,7 +110,7 @@ internal struct AssistantBubbleViewTests {
 
         // Verify image message has response image
         #expect(view.message.responseImage != nil)
-        #expect(view.message.response != nil)
+        #expect(view.message.channels?.contains { $0.type == .final } == true)
     }
 
     @Test("AssistantBubbleView handles all preview types")
@@ -128,14 +119,12 @@ internal struct AssistantBubbleViewTests {
         let messages: [Message] = Message.allPreviews
 
         let showingSelection: Binding<Bool> = .constant(false)
-        let showingThinking: Binding<Bool> = .constant(false)
         let showingStats: Binding<Bool> = .constant(false)
 
         for message in messages {
             let view: AssistantBubbleView = AssistantBubbleView(
                 message: message,
                 showingSelectionView: showingSelection,
-                showingThinkingView: showingThinking,
                 showingStatsView: showingStats,
                 copyTextAction: { _ in /* No-op for test */ },
                 shareTextAction: { _ in /* No-op for test */ }
@@ -149,7 +138,6 @@ internal struct AssistantBubbleViewTests {
         let message: Message = Message.previewWithResponse
 
         let showingSelection: Binding<Bool> = .constant(false)
-        let showingThinking: Binding<Bool> = .constant(false)
         let showingStats: Binding<Bool> = .constant(false)
 
         var copiedText: String = ""
@@ -158,7 +146,6 @@ internal struct AssistantBubbleViewTests {
         let view: AssistantBubbleView = AssistantBubbleView(
             message: message,
             showingSelectionView: showingSelection,
-            showingThinkingView: showingThinking,
             showingStatsView: showingStats,
             copyTextAction: { text in copiedText = text },
             shareTextAction: { text in sharedText = text }

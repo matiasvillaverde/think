@@ -17,6 +17,11 @@ public struct PersonalitySidebarItemView: View {
                     .font(.headline)
                     .lineLimit(PersonalitySidebarLayout.lineLimit)
 
+                Text(personality.displayDescription)
+                    .font(.caption)
+                    .foregroundStyle(Color.textSecondary)
+                    .lineLimit(1)
+
                 if personality.hasConversation, let lastDate = personality.lastMessageDate {
                     Text(lastDate, style: .relative)
                         .font(.caption)
@@ -41,6 +46,7 @@ public struct PersonalitySidebarItemView: View {
             if let imageName = personality.imageName {
                 Image(imageName, bundle: .module)
                     .resizable()
+                    .interpolation(.high)
                     .scaledToFill()
                     .frame(
                         width: PersonalitySidebarLayout.iconSize,
@@ -66,8 +72,8 @@ public struct PersonalitySidebarItemView: View {
 // MARK: - Layout Constants
 
 private enum PersonalitySidebarLayout {
-    static let iconSize: CGFloat = 32
-    static let iconImageSize: CGFloat = 16
+    static let iconSize: CGFloat = 54
+    static let iconImageSize: CGFloat = 20
     static let rowSpacing: CGFloat = 12
     static let verticalSpacing: CGFloat = 2
     static let verticalPadding: CGFloat = 4

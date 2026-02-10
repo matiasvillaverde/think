@@ -6,9 +6,13 @@ internal struct ResumeButton: View {
 
     var body: some View {
         Button(action: action) {
-            Label("Resume", systemImage: "play.fill")
-                .font(.caption)
-                .fixedSize(horizontal: true, vertical: false)
+            Label {
+                Text("Resume", bundle: .module)
+            } icon: {
+                Image(systemName: "play.fill")
+            }
+            .font(.caption)
+            .fixedSize(horizontal: true, vertical: false)
         }
         .buttonStyle(.borderedProminent)
         .accessibilityLabel(

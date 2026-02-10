@@ -67,11 +67,6 @@ internal struct ToolSelectionSheet: View {
             }
         #endif
 
-        // Add Think Longer tool only if device has enough memory
-        if ProcessInfo.processInfo.physicalMemory > ToolConstants.minimumMemoryToReason {
-            tools.append(.reasoning)
-        }
-
         // Search Web is always available
         tools.append(.browser)
 

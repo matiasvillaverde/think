@@ -22,8 +22,11 @@ internal struct WelcomeSelectionContent: View {
         case .remote:
             remoteSelectionContent
 
-        case .openClaw:
+        case .openClawInstance:
             openClawSelectionContent
+
+        case .oneClick:
+            oneClickSelectionContent
         }
     }
 
@@ -64,6 +67,16 @@ internal struct WelcomeSelectionContent: View {
     private var openClawSelectionContent: some View {
         VStack(spacing: WelcomeConstants.spacingLarge) {
             WelcomeOpenClawSection(
+                onPickLocal: { selectedSource = .local },
+                onPickRemote: { selectedSource = .remote }
+            )
+        }
+        .animation(.smooth(duration: WelcomeConstants.animationDuration), value: selectedSource)
+    }
+
+    private var oneClickSelectionContent: some View {
+        VStack(spacing: WelcomeConstants.spacingLarge) {
+            WelcomeOneClickSetupSection(
                 onPickLocal: { selectedSource = .local },
                 onPickRemote: { selectedSource = .remote }
             )

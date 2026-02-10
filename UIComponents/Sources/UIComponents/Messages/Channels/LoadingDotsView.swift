@@ -71,23 +71,23 @@ internal struct PulsingAnimationModifier: ViewModifier {
 // MARK: - Preview
 
 #if DEBUG
-    #Preview("Loading Dots Animation") {
-        HStack(spacing: 20) {
-            Text("Loading")
-                .font(.caption)
-            LoadingDotsView()
-        }
-        .padding()
+#Preview("Loading Dots Animation") {
+    HStack(spacing: 20) {
+        Text("Loading", bundle: .module)
+            .font(.caption)
+        LoadingDotsView()
     }
+    .padding()
+}
 
-    #Preview("Pulsing Animation") {
-        HStack(spacing: 40) {
-            Image(systemName: "brain")
-                .modifier(PulsingAnimationModifier(isActive: true))
-            Image(systemName: "brain")
-                .modifier(PulsingAnimationModifier(isActive: false))
-        }
-        .font(.largeTitle)
-        .padding()
+#Preview("Pulsing Animation") {
+    HStack(spacing: 40) {
+        Image(systemName: "brain")
+            .modifier(PulsingAnimationModifier(isActive: true))
+        Image(systemName: "brain")
+            .modifier(PulsingAnimationModifier(isActive: false))
     }
+    .font(.largeTitle)
+    .padding()
+}
 #endif

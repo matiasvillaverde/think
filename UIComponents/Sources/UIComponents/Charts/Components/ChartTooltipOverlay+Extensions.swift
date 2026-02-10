@@ -30,7 +30,7 @@ extension ChartTooltipOverlay {
                     height: ChartDataPointOverlay.Constants.circleSize
                 )
 
-            Text("\(tooltipValue.label):")
+            Text(verbatim: "\(tooltipValue.label):")
                 .font(.caption2)
                 .foregroundColor(Color.textSecondary)
 

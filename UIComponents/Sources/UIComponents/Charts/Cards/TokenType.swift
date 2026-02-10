@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 // MARK: - Token Probability Supporting Types
@@ -7,6 +8,10 @@ public enum TokenType: String, CaseIterable {
     case highProb = "High Probability"
     case lowProb = "Low Probability"
     case uncertain = "Uncertain"
+
+    var displayName: String {
+        rawValue
+    }
 
     func filter(_ probability: Double, highThreshold: Double, lowThreshold: Double) -> Bool {
         switch self {

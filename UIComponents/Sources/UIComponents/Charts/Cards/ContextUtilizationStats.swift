@@ -19,7 +19,7 @@ internal struct ContextUtilizationStats: View {
 
     private var averageUtilizationView: some View {
         VStack(alignment: .leading, spacing: Constants.verticalSpacing) {
-            Text("Average")
+            Text("Average", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             Text(String(format: "%.1f%%", viewModel.averageUtilization(for: contextData)))
@@ -30,7 +30,7 @@ internal struct ContextUtilizationStats: View {
 
     private var peakUtilizationView: some View {
         VStack(alignment: .leading, spacing: Constants.verticalSpacing) {
-            Text("Peak")
+            Text("Peak", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             Text(String(format: "%.1f%%", viewModel.peakUtilization(for: contextData)))
@@ -43,7 +43,7 @@ internal struct ContextUtilizationStats: View {
 
     private var trendDirectionView: some View {
         VStack(alignment: .leading, spacing: Constants.verticalSpacing) {
-            Text("Trend")
+            Text("Trend", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
@@ -52,7 +52,9 @@ internal struct ContextUtilizationStats: View {
             HStack(spacing: Constants.verticalSpacing) {
                 Image(systemName: trend.icon)
                     .font(.caption.weight(.bold))
-                    .accessibilityLabel("Trend: \(trendText(for: trend))")
+                    .accessibilityLabel(
+                        Text("Trend: \(trendText(for: trend))", bundle: .module)
+                    )
                 Text(trendText(for: trend))
                     .font(.caption.weight(.medium))
             }
@@ -63,13 +65,13 @@ internal struct ContextUtilizationStats: View {
     private func trendText(for trend: ContextUtilizationViewModel.TrendDirection) -> String {
         switch trend {
         case .increasing:
-            "Rising"
+            return String(localized: "Rising", bundle: .module)
 
         case .decreasing:
-            "Falling"
+            return String(localized: "Falling", bundle: .module)
 
         case .stable:
-            "Stable"
+            return String(localized: "Stable", bundle: .module)
         }
     }
 }

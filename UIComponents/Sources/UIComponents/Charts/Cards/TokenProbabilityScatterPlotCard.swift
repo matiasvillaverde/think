@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Token Probability Scatter Plot wrapped in a card container
@@ -35,8 +36,8 @@ internal struct TokenProbabilityScatterPlotCard: View {
 
     var body: some View {
         ChartCard(
-            title: "Token Probability Distribution",
-            subtitle: "Confidence levels across tokens",
+            title: String(localized: "Token Probability Distribution", bundle: .module),
+            subtitle: String(localized: "Confidence levels across tokens", bundle: .module),
             systemImage: "chart.scatter"
         ) {
             chartContent
@@ -62,9 +63,9 @@ internal struct TokenProbabilityScatterPlotCard: View {
 
     private var emptyStateView: some View {
         ContentUnavailableView(
-            "No Probability Data",
+            String(localized: "No Probability Data", bundle: .module),
             systemImage: "chart.scatter",
-            description: Text("Token probabilities will appear here")
+            description: Text("Token probabilities will appear here", bundle: .module)
         )
         .frame(height: Constants.chartHeight)
     }

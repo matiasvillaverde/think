@@ -7,7 +7,6 @@ public struct AssistantContextMenu: View {
     let textToCopy: String
     @Bindable var message: Message
     @Binding var showingSelectionView: Bool
-    @Binding var showingThinkingView: Bool
     @Binding var showingStatsView: Bool
     let copyTextAction: (String) -> Void
     let shareTextAction: (String) -> Void
@@ -34,7 +33,6 @@ public struct AssistantContextMenu: View {
 
             copyButton
             selectionButtonIfApplicable
-            thinkingButtonIfAvailable
             statisticsButtonIfAvailable
             voiceButtonIfAvailable
         }
@@ -76,28 +74,6 @@ public struct AssistantContextMenu: View {
                     }
                 )
             #endif
-        }
-    }
-
-    private var thinkingButtonIfAvailable: some View {
-        Group {
-            if message.thinking != nil {
-                Button(
-                    action: {
-                        showingThinkingView.toggle()
-                    },
-                    label: {
-                        Label(
-                            String(
-                                localized: "Thinking process",
-                                bundle: .module,
-                                comment: "Button label to view the thinking process"
-                            ),
-                            systemImage: "brain.filled.head.profile"
-                        )
-                    }
-                )
-            }
         }
     }
 

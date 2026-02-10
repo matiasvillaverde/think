@@ -6,12 +6,32 @@ import SwiftUI
 
 /// Represents different types of dashboard views available
 public enum DashboardType: String, CaseIterable, Identifiable {
-    case appWide = "All Metrics"
-    case chatMetrics = "Chat Metrics"
-    case modelMetrics = "Model Analytics"
-    case singleMetric = "Single Metric"
+    case appWide = "app_wide"
+    case chatMetrics = "chat_metrics"
+    case modelMetrics = "model_metrics"
+    case singleMetric = "single_metric"
 
     public var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .appWide:
+            return String(localized: "All Metrics", bundle: .module)
+
+        case .chatMetrics:
+            return String(localized: "Chat Metrics", bundle: .module)
+
+        case .modelMetrics:
+            return String(localized: "Model Analytics", bundle: .module)
+
+        case .singleMetric:
+            return String(localized: "Single Metric", bundle: .module)
+        }
+    }
+
+    var accessibilityLabel: String {
+        String(localized: "Dashboard type: \(title)", bundle: .module)
+    }
 
     var icon: String {
         switch self {
@@ -32,16 +52,28 @@ public enum DashboardType: String, CaseIterable, Identifiable {
     var description: String {
         switch self {
         case .appWide:
-            "Global metrics across all interactions"
+            return String(
+                localized: "Global metrics across all interactions",
+                bundle: .module
+            )
 
         case .chatMetrics:
-            "Analyze metrics across a conversation"
+            return String(
+                localized: "Analyze metrics across a conversation",
+                bundle: .module
+            )
 
         case .modelMetrics:
-            "Compare performance across model usage"
+            return String(
+                localized: "Compare performance across model usage",
+                bundle: .module
+            )
 
         case .singleMetric:
-            "View metrics for a single message"
+            return String(
+                localized: "View metrics for a single message",
+                bundle: .module
+            )
         }
     }
 }
@@ -118,10 +150,12 @@ public struct DashboardSelector: View {
                     .font(.system(size: Constants.iconSize))
                     .foregroundStyle(Color.textSecondary)
                     .frame(width: Constants.iconSize, height: Constants.iconSize)
-                    .accessibilityLabel("Dashboard type: \(selectedType.rawValue)")
+                    .accessibilityLabel(
+                        Text("Dashboard type: \(selectedType.title)", bundle: .module)
+                    )
 
                 VStack(alignment: .leading, spacing: Constants.captionSpacing) {
-                    Text(selectedType.rawValue)
+                    Text(selectedType.title)
                         .font(.headline)
                         .foregroundColor(Color.textPrimary)
 
@@ -136,7 +170,11 @@ public struct DashboardSelector: View {
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
                     .rotationEffect(.degrees(isExpanded ? 0 : 0))
-                    .accessibilityLabel(isExpanded ? "Collapse" : "Expand")
+                    .accessibilityLabel(
+                        isExpanded
+                            ? Text("Collapse", bundle: .module)
+                            : Text("Expand", bundle: .module)
+                    )
             }
             .padding(Constants.padding)
         }
@@ -170,10 +208,12 @@ public struct DashboardSelector: View {
                     .font(.system(size: Constants.iconSize))
                     .foregroundStyle(Color.textSecondary)
                     .frame(width: Constants.iconSize, height: Constants.iconSize)
-                    .accessibilityLabel("Dashboard type: \(type.rawValue)")
+                    .accessibilityLabel(
+                        Text("Dashboard type: \(type.title)", bundle: .module)
+                    )
 
                 VStack(alignment: .leading, spacing: Constants.captionSpacing) {
-                    Text(type.rawValue)
+                    Text(type.title)
                         .font(.subheadline)
                         .foregroundColor(Color.textPrimary)
 
@@ -185,7 +225,7 @@ public struct DashboardSelector: View {
                 Spacer()
 
                 if !isAvailable(type) {
-                    Text("Not Available")
+                    Text("Not Available", bundle: .module)
                         .font(.caption2)
                         .foregroundColor(Color.textSecondary)
                         .padding(.horizontal, Constants.badgePaddingHorizontal)

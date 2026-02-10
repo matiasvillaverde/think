@@ -5,7 +5,7 @@ import SwiftUI
 extension ModelDashboard {
     @ViewBuilder var selectedMetricSection: some View {
         VStack(alignment: .leading, spacing: Constants.spacing) {
-            Text("\(currentSelectedMetric.rawValue) Analysis")
+            Text("\(currentSelectedMetric.rawValue) Analysis", bundle: .module)
                 .font(.headline)
                 .padding(.bottom, Constants.headerSpacing)
 
@@ -61,9 +61,12 @@ extension ModelDashboard {
                 PerplexityHeatMapCard(metrics: filteredMetrics)
             } else {
                 ContentUnavailableView(
-                    "No Quality Metrics",
+                    String(localized: "No Quality Metrics", bundle: .module),
                     systemImage: "star",
-                    description: Text("Quality metrics not available for this model")
+                    description: Text(
+                        "Quality metrics not available for this model",
+                        bundle: .module
+                    )
                 )
                 .frame(minHeight: Constants.minHeight)
             }
@@ -112,7 +115,7 @@ extension ModelDashboard {
 
     var tokenTrendChart: some View {
         VStack(alignment: .leading, spacing: Constants.headerSpacing) {
-            Text("Token Generation Trend")
+            Text("Token Generation Trend", bundle: .module)
                 .font(.headline)
 
             Chart(Array(filteredMetrics.enumerated()), id: \.offset) { index, metric in
@@ -138,7 +141,7 @@ extension ModelDashboard {
 
     var conversationBreakdownSection: some View {
         VStack(alignment: .leading, spacing: Constants.spacing) {
-            Text("Top Conversations")
+            Text("Top Conversations", bundle: .module)
                 .font(.headline)
                 .padding(.bottom, Constants.headerSpacing)
 
@@ -151,31 +154,31 @@ extension ModelDashboard {
     func conversationCard(chatId: String, metrics: [Metrics]) -> some View {
         VStack(alignment: .leading, spacing: Constants.headerSpacing) {
             HStack {
-                Text("Chat: \(chatId)")
+                Text("Chat: \(chatId)", bundle: .module)
                     .font(.subheadline)
                     .fontWeight(.medium)
 
                 Spacer()
 
-                Text("\(metrics.count) messages")
+                Text("\(metrics.count) messages", bundle: .module)
                     .font(.caption)
                     .foregroundStyle(Color.textSecondary)
             }
 
             HStack(spacing: Constants.spacing) {
                 statLabel(
-                    "Avg Speed",
+                    String(localized: "Avg Speed", bundle: .module),
                     value: String(format: "%.1f tok/s", calculateAverageSpeed(metrics))
                 )
 
                 statLabel(
-                    "Total Tokens",
+                    String(localized: "Total Tokens", bundle: .module),
                     value: "\(calculateTotalTokens(metrics))"
                 )
 
                 if let avgQuality = calculateAverageQuality(metrics) {
                     statLabel(
-                        "Avg Quality",
+                        String(localized: "Avg Quality", bundle: .module),
                         value: String(format: "%.1f", avgQuality)
                     )
                 }

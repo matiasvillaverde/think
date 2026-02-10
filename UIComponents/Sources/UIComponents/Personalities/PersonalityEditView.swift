@@ -1,87 +1,74 @@
 import Abstractions
 import Database
-import PhotosUI
+import RemoteSession
+import SwiftData
 import SwiftUI
+import ViewModels
 
-// MARK: - Constants
-
-private enum Constants {
-    static let minInstructionLength: Int = 10
-    static let maxInstructionLength: Int = 5_000
-    static let minTextEditorHeight: CGFloat = 100
-    static let maxTextEditorHeight: CGFloat = 200
+private enum PersonalityEditLayout {
+    static let overlayOpacity: Double = 0.3
     static let progressViewScale: CGFloat = 1.5
-    static let overlayOpacity: CGFloat = 0.3
-    static let imageSizeLimitMB: Int = 5
+    static let soulEditorMinHeight: CGFloat = 120
+    static let openClawIconSize: CGFloat = 24
 }
 
-/// View for editing existing personalities
+/// View for editing an existing personality.
 internal struct PersonalityEditView: View {
-    // MARK: - Properties
-
     @Binding var isPresented: Bool
-    @StateObject private var viewModel: PersonalityEditStubViewModel
+    @StateObject private var viewModel: ViewModels.PersonalityEditViewModel
 
-    // MARK: - Initialization
+    private let personalityId: UUID
+    private let database: DatabaseProtocol
+
+    @Environment(\.apiKeyManager)
+    private var apiKeyManager: APIKeyManaging
+
+    @Query private var allModels: [Model]
+
+    @State private var selectedModelId: UUID?
+    @State private var selectedModelSource: PersonalityModelSource = .local
+    @State private var providerKeyStatus: [RemoteProviderType: Bool] = [:]
+    @State private var remoteKeyEntryRequest: RemoteProviderType?
+    @State private var modelErrorMessage: String?
 
     internal init(
         isPresented: Binding<Bool>,
         personality: Personality,
-        chatViewModel: ChatViewModeling
+        database: DatabaseProtocol
     ) {
         _isPresented = isPresented
+        self.personalityId = personality.id
+        self.database = database
         _viewModel = StateObject(
-            wrappedValue: PersonalityEditStubViewModel(
-                personality: personality,
-                chatViewModel: chatViewModel
+            wrappedValue: ViewModels.PersonalityEditViewModel(
+                database: database,
+                personalityId: personality.id
             )
         )
     }
 
-    // MARK: - Body
-
     internal var body: some View {
-        NavigationStack {
-            navigationContent
-        }
-        .task {
-            await viewModel.loadPersonality()
-        }
+        rootView
+    }
+
+    private var rootView: some View {
+        NavigationStack { navigationContent }
+            .task {
+                await viewModel.loadPersonality()
+                await refreshProviderKeyStatus()
+                await loadCurrentChatModel()
+            }
     }
 
     private var navigationContent: some View {
         formContent
             .navigationTitle(String(localized: "Edit Personality", bundle: .module))
-        #if !os(macOS)
+            #if !os(macOS)
             .navigationBarTitleDisplayMode(.inline)
-        #endif
-            .toolbar {
-                #if os(macOS)
-                    ToolbarItem(placement: .automatic) {
-                        Button(String(localized: "Cancel", bundle: .module)) {
-                            isPresented = false
-                        }
-                    }
-                    ToolbarItem(placement: .automatic) {
-                        saveButton
-                    }
-                #else
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(String(localized: "Cancel", bundle: .module)) {
-                            isPresented = false
-                        }
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        saveButton
-                    }
-                #endif
-            }
+            #endif
+            .toolbar { toolbarContent }
             .disabled(viewModel.isUpdating || viewModel.isLoading)
-            .overlay {
-                if viewModel.isUpdating || viewModel.isLoading {
-                    loadingOverlay
-                }
-            }
+            .overlay { if viewModel.isUpdating || viewModel.isLoading { loadingOverlay } }
             .alert(
                 String(localized: "Error", bundle: .module),
                 isPresented: .constant(viewModel.validationError != nil)
@@ -92,288 +79,205 @@ internal struct PersonalityEditView: View {
             } message: {
                 Text(viewModel.validationError ?? "")
             }
-            .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
-                if shouldDismiss {
-                    isPresented = false
-                }
-            }
+            .background(
+                RemoteAPIKeyCoordinator(
+                    providerKeyStatus: $providerKeyStatus,
+                    keyEntryRequest: $remoteKeyEntryRequest
+                )
+            )
     }
 
     private var formContent: some View {
         Form {
-            nameSection
-            descriptionSection
+            basicsSection
             soulSection
-            categorySection
-            imageSection
+            modelSection
+            openClawSection
+            deleteSection
         }
     }
 
-    // MARK: - Form Sections
-
-    private var nameSection: some View {
-        Section {
-            TextField(
-                String(localized: "Personality Name", bundle: .module),
-                text: $viewModel.name
-            )
-            .textFieldStyle(.roundedBorder)
-        } header: {
-            Text("Name", bundle: .module)
-        } footer: {
-            Text("The display name for this personality", bundle: .module)
-                .font(.caption)
-                .foregroundColor(Color.textSecondary)
+    @ToolbarContentBuilder private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button(String(localized: "Cancel", bundle: .module)) {
+                isPresented = false
+            }
         }
+        ToolbarItem(placement: .confirmationAction) { saveButton }
     }
 
-    private var descriptionSection: some View {
+    private var basicsSection: some View {
         Section {
+            TextField(String(localized: "Name", bundle: .module), text: $viewModel.name)
             TextField(
-                String(localized: "Brief Description", bundle: .module),
+                String(localized: "Description", bundle: .module),
                 text: $viewModel.description
             )
-            .textFieldStyle(.roundedBorder)
+
+            Picker(
+                String(localized: "Category", bundle: .module),
+                selection: $viewModel.selectedCategory
+            ) {
+                ForEach(PersonalityCategory.sortedCases, id: \.self) { category in
+                    Text(category.displayName).tag(category)
+                }
+            }
         } header: {
-            Text("Description", bundle: .module)
-        } footer: {
-            Text("A short description of what this personality does", bundle: .module)
-                .font(.caption)
-                .foregroundColor(Color.textSecondary)
+            Text("Details", bundle: .module)
         }
     }
 
     private var soulSection: some View {
         Section {
             TextEditor(text: $viewModel.soul)
-                .frame(
-                    minHeight: Constants.minTextEditorHeight,
-                    maxHeight: Constants.maxTextEditorHeight
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignConstants.Radius.small)
-                        .stroke(
-                            Color.paletteGray.opacity(DesignConstants.Opacity.trackBackground),
-                            lineWidth: 1
-                        )
-                )
+                .frame(minHeight: PersonalityEditLayout.soulEditorMinHeight)
         } header: {
             Text("Soul (Identity)", bundle: .module)
-        } footer: {
-            soulFooter
         }
     }
 
-    private var categorySection: some View {
-        Section {
-            Picker(
-                String(localized: "Category", bundle: .module),
-                selection: $viewModel.selectedCategory
-            ) {
-                ForEach(PersonalityCategory.allCases, id: \.self) { category in
-                    Text(category.displayName)
-                        .tag(category as PersonalityCategory)
-                }
-            }
-            .pickerStyle(.menu)
-        } header: {
-            Text("Category", bundle: .module)
-        }
+    private var modelSection: some View {
+        PersonalityModelSelectionSection(
+            allModels: allModels,
+            selectedSource: $selectedModelSource,
+            selectedModelId: $selectedModelId,
+            providerKeyStatus: $providerKeyStatus,
+            remoteKeyEntryRequest: $remoteKeyEntryRequest,
+            modelErrorMessage: $modelErrorMessage
+        )
     }
 
-    private var imageSection: some View {
+    private var openClawSection: some View {
         Section {
-            HStack {
-                imagePickerButton
-                Spacer()
-                if viewModel.selectedImage != nil {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+            NavigationLink {
+                OpenClawSetupView()
+            } label: {
+                Label {
+                    Text("Connect OpenClaw Gateway", bundle: .module)
+                } icon: {
+                    Image(ImageResource(name: "openclaw-claw", bundle: .module))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(
+                            width: PersonalityEditLayout.openClawIconSize,
+                            height: PersonalityEditLayout.openClawIconSize
+                        )
                         .accessibilityHidden(true)
                 }
             }
+        }
+    }
 
-            if viewModel.selectedImage != nil {
-                Button(String(localized: "Remove New Image", bundle: .module)) {
-                    viewModel.selectedImage = nil
+    private var deleteSection: some View {
+        Group {
+            if viewModel.isDeletable {
+                Section {
+                    Button(role: .destructive) {
+                        Task { await delete() }
+                    } label: {
+                        Text("Delete Personality", bundle: .module)
+                    }
                 }
-                .foregroundColor(.red)
             }
-        } header: {
-            Text("Image (Optional)", bundle: .module)
-        } footer: {
-            Text("Select a new image (max \(Constants.imageSizeLimitMB)MB)", bundle: .module)
-                .font(.caption)
-                .foregroundColor(Color.textSecondary)
         }
     }
-
-    private var imagePickerButton: some View {
-        PhotosPicker(
-            selection: $viewModel.selectedImage,
-            matching: .images
-        ) {
-            Label(
-                String(localized: "Select Image", bundle: .module),
-                systemImage: "photo"
-            )
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var soulFooter: some View {
-        VStack(alignment: .leading, spacing: DesignConstants.Spacing.xSmall) {
-            Text(
-                "Define this personality's core identity, values, and communication style.",
-                bundle: .module
-            )
-            Text(
-                "Example: \"I am a thoughtful assistant who values clarity.\"",
-                bundle: .module
-            )
-            .italic()
-        }
-        .font(.caption)
-        .foregroundColor(Color.textSecondary)
-    }
-
-    // MARK: - Components
 
     private var saveButton: some View {
         Button(String(localized: "Save", bundle: .module)) {
-            Task {
-                await viewModel.updatePersonality()
-            }
+            Task { await save() }
         }
-        .fontWeight(.semibold)
-        .disabled(viewModel.isUpdating)
+        .disabled(viewModel.isUpdating || viewModel.isLoading)
     }
 
     private var loadingOverlay: some View {
         ZStack {
-            Color.paletteBlack.opacity(Constants.overlayOpacity)
+            Color.paletteBlack.opacity(PersonalityEditLayout.overlayOpacity)
                 .ignoresSafeArea()
+            ProgressView()
+                .scaleEffect(PersonalityEditLayout.progressViewScale)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(String(localized: "Saving personality", bundle: .module)))
+    }
 
-            VStack(spacing: DesignConstants.Spacing.medium) {
-                ProgressView()
-                    .progressViewStyle(.circular)
-                    .scaleEffect(Constants.progressViewScale)
+    @MainActor
+    private func save() async {
+        let isSuccessful: Bool = await viewModel.updatePersonality()
+        guard isSuccessful else {
+            return
+        }
+        await applyModelSelectionIfNeeded()
+        isPresented = false
+    }
 
-                Text(
-                    viewModel.isLoading ? "Loading..." : "Saving...",
-                    bundle: .module
-                )
-                .font(.headline)
-                .foregroundColor(Color.textPrimary)
+    @MainActor
+    private func delete() async {
+        let isSuccessful: Bool = await viewModel.deletePersonality()
+        guard isSuccessful else {
+            return
+        }
+        isPresented = false
+    }
+
+    @MainActor
+    private func applyModelSelectionIfNeeded() async {
+        guard let selectedModelId else {
+            return
+        }
+
+        do {
+            let chatId: UUID = try await database.write(
+                PersonalityCommands.GetChat(personalityId: personalityId)
+            )
+            try await database.write(
+                ChatCommands.UpdateChatModel(chatId: chatId, modelId: selectedModelId)
+            )
+        } catch {
+            modelErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func refreshProviderKeyStatus() async {
+        var status: [RemoteProviderType: Bool] = [:]
+        for provider in RemoteProviderType.allCases {
+            status[provider] = await apiKeyManager.hasKey(for: provider)
+        }
+        providerKeyStatus = status
+    }
+
+    private func loadCurrentChatModel() async {
+        do {
+            let personality: Personality = try await database.read(
+                PersonalityCommands.Read(personalityId: personalityId)
+            )
+            if let current = personality.chat?.languageModel {
+                selectedModelId = current.id
+                selectedModelSource = current.locationKind == .remote ? .remote : .local
             }
-            .padding(DesignConstants.Spacing.large)
-            .background(.regularMaterial)
-            .cornerRadius(DesignConstants.Radius.standard)
+        } catch {
+            // Ignore; user can still edit other fields.
         }
     }
 }
-
-// MARK: - Stub ViewModel
-
-/// Stub implementation for PersonalityEditViewModel within UIComponents
-/// This is a placeholder that handles basic UI state for previews and testing
-@MainActor
-internal final class PersonalityEditStubViewModel: ObservableObject {
-    // MARK: - Constants
-
-    private enum Constants {
-        static let sleepDuration: UInt64 = 500_000_000
-        static let shortSleepDuration: UInt64 = 100_000_000
-    }
-
-    // MARK: - Published Properties
-
-    @Published var name: String = ""
-    @Published var description: String = ""
-    @Published var soul: String = ""
-    @Published var systemInstruction: String = ""
-    @Published var selectedCategory: PersonalityCategory = .productivity
-    @Published var selectedImage: PhotosPickerItem?
-    @Published var isLoading: Bool = false
-    @Published var isUpdating: Bool = false
-    @Published var validationError: String?
-    @Published var shouldDismiss: Bool = false
-
-    // MARK: - Private Properties
-
-    private let personality: Personality
-    private let chatViewModel: ChatViewModeling
-
-    // MARK: - Initialization
-
-    init(personality: Personality, chatViewModel: ChatViewModeling) {
-        self.personality = personality
-        self.chatViewModel = chatViewModel
-    }
-
-    deinit {
-        // Required by linter
-    }
-
-    // MARK: - Methods
-
-    func loadPersonality() async {
-        isLoading = true
-        defer { isLoading = false }
-
-        // Brief delay for UI feedback
-        try? await Task.sleep(nanoseconds: Constants.shortSleepDuration)
-
-        // Load data from the personality
-        name = personality.name
-        description = personality.displayDescription
-        selectedCategory = personality.category
-
-        // Load system instruction if custom
-        if case .custom(let instruction) = personality.systemInstruction {
-            systemInstruction = instruction
-        }
-
-        // Load soul from memory
-        if let soul: Memory = personality.soul {
-            self.soul = soul.content
-        }
-    }
-
-    func updatePersonality() async {
-        // Clear previous error
-        validationError = nil
-
-        // Basic validation
-        guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            validationError = String(localized: "Name cannot be empty", bundle: .module)
-            return
-        }
-
-        guard !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            validationError = String(localized: "Description cannot be empty", bundle: .module)
-            return
-        }
-
-        isUpdating = true
-        defer { isUpdating = false }
-
-        // Stub implementation - just dismiss after a short delay
-        // Real implementation will be wired through Factories
-        try? await Task.sleep(nanoseconds: Constants.sleepDuration)
-        shouldDismiss = true
-    }
-}
-
-// MARK: - Preview
 
 #if DEBUG
-    #Preview(traits: .modifier(PreviewDatabase())) {
-        @Previewable @State var isPresented: Bool = true
+#Preview {
+    PreviewPersonalityEditView()
+        .withDatabase()
+}
+
+private struct PreviewPersonalityEditView: View {
+    @Environment(\.database)
+    private var database: DatabaseProtocol
+
+    @State private var isPresented: Bool = true
+
+    var body: some View {
         PersonalityEditView(
             isPresented: $isPresented,
-            personality: Personality.preview,
-            chatViewModel: PreviewChatViewModel()
+            personality: .preview,
+            database: database
         )
     }
+}
 #endif

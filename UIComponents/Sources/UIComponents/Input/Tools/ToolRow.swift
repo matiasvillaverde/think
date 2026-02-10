@@ -95,9 +95,6 @@ internal struct ToolRow: View {
         case .imageGeneration:
             "photo"
 
-        case .reasoning:
-            "lightbulb"
-
         case .browser:
             "globe"
 
@@ -240,15 +237,6 @@ internal struct ToolRow: View {
         VStack(spacing: 0) {
             ToolRow(
                 tool: .imageGeneration,
-                chat: .preview
-            ) { _ in
-                // no-op
-            }
-
-            Divider()
-
-            ToolRow(
-                tool: .reasoning,
                 chat: .preview
             ) { _ in
                 // no-op

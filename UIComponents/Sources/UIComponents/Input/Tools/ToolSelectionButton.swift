@@ -17,7 +17,6 @@ internal struct ToolSelectionButton: View {
 
     private static let toolActionMap: [ToolIdentifier: Action] = [
         .imageGeneration: .imageGeneration([.imageGeneration]),
-        .reasoning: .textGeneration([.reasoning]),
         .browser: .textGeneration([.browser]),
         .python: .textGeneration([.python]),
         .functions: .textGeneration([.functions]),

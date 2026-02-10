@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Perplexity Heat Map wrapped in a card container
@@ -28,8 +29,8 @@ public struct PerplexityHeatMapCard: View {
 
     public var body: some View {
         ChartCard(
-            title: "Perplexity Heat Map",
-            subtitle: "Token-level complexity visualization",
+            title: String(localized: "Perplexity Heat Map", bundle: .module),
+            subtitle: String(localized: "Token-level complexity visualization", bundle: .module),
             systemImage: "square.grid.3x3"
         ) {
             chartContent
@@ -50,9 +51,9 @@ public struct PerplexityHeatMapCard: View {
 
     private var emptyStateView: some View {
         ContentUnavailableView(
-            "No Perplexity Data",
+            String(localized: "No Perplexity Data", bundle: .module),
             systemImage: "square.grid.3x3",
-            description: Text("Perplexity heat map will appear here")
+            description: Text("Perplexity heat map will appear here", bundle: .module)
         )
         .frame(height: Constants.chartHeight)
     }

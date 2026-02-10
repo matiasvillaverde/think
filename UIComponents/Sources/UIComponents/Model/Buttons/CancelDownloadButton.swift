@@ -6,9 +6,13 @@ internal struct CancelDownloadButton: View {
 
     var body: some View {
         Button(role: .destructive, action: action) {
-            Label("Cancel", systemImage: "xmark")
-                .font(.caption)
-                .fixedSize(horizontal: true, vertical: false)
+            Label {
+                Text("Cancel", bundle: .module)
+            } icon: {
+                Image(systemName: "xmark")
+            }
+            .font(.caption)
+            .fixedSize(horizontal: true, vertical: false)
         }
         .buttonStyle(.bordered)
         .accessibilityLabel(

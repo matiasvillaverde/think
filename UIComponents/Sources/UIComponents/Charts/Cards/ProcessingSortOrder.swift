@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 // MARK: - Processing Time Supporting Types
@@ -7,6 +8,12 @@ public enum ProcessingSortOrder: String, CaseIterable {
     case byPostProcessing = "Post-Processing"
     case byTokenization = "Tokenization"
     case byTotal = "Total Time"
+
+    public var displayName: String {
+        // Raw values are user-facing English strings for sort order.
+        // If/when we localize them, switch to explicit localization keys.
+        rawValue
+    }
 }
 
 internal struct ProcessingStage: Identifiable {

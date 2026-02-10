@@ -10,27 +10,33 @@ internal struct ContextUtilizationControls: View {
         VStack(spacing: ChartConstants.Layout.cardSpacing) {
             // Capacity selector
             HStack {
-                Text("Capacity:")
+                Text("Capacity:", bundle: .module)
                     .font(.subheadline)
                     .foregroundColor(Color.textSecondary)
 
                 Spacer()
 
-                Picker("Context Capacity", selection: $contextCapacity) {
+                Picker(selection: $contextCapacity) {
                     ForEach(capacityOptions, id: \.self) { capacity in
-                        Text("\(capacity) tokens").tag(capacity)
+                        Text("\(capacity) tokens", bundle: .module).tag(capacity)
                     }
+                } label: {
+                    Text("Context Capacity", bundle: .module)
                 }
                 .pickerStyle(.menu)
             }
 
             // View options
             VStack(spacing: ChartConstants.Layout.itemSpacing) {
-                Toggle("Show fill area", isOn: $showFillArea)
-                    .font(.subheadline)
+                Toggle(isOn: $showFillArea) {
+                    Text("Show fill area", bundle: .module)
+                }
+                .font(.subheadline)
 
-                Toggle("Show data points", isOn: $showDataPoints)
-                    .font(.subheadline)
+                Toggle(isOn: $showDataPoints) {
+                    Text("Show data points", bundle: .module)
+                }
+                .font(.subheadline)
             }
         }
     }

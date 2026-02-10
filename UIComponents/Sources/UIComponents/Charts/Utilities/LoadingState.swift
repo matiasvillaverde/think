@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 // MARK: - Loading State
@@ -53,8 +54,11 @@ public struct DashboardLoadingView: View {
     let message: String
     let progress: Double?
 
-    public init(message: String = "Loading metrics...", progress: Double? = nil) {
-        self.message = message
+    public init(
+        message: String? = nil,
+        progress: Double? = nil
+    ) {
+        self.message = message ?? String(localized: "Loading metrics...", bundle: .module)
         self.progress = progress
     }
 
@@ -67,7 +71,10 @@ public struct DashboardLoadingView: View {
                         .progressViewStyle(.linear)
                         .frame(width: LoadingConstants.progressWidth)
 
-                    Text("\(Int(progress * Double(LoadingConstants.progressPercentMultiplier)))%")
+                    let percent: Int = Int(
+                        progress * Double(LoadingConstants.progressPercentMultiplier)
+                    )
+                    Text(verbatim: "\(percent)%")
                         .font(.caption)
                         .foregroundColor(Color.textSecondary)
                 }

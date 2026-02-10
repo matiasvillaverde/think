@@ -5,9 +5,10 @@ import SwiftUI
 // MARK: - Layout Constants
 
 internal enum PersonalityLayout {
-    static let iconSize: CGFloat = 40
+    static let iconSize: CGFloat = 48
     static let iconImageSize: CGFloat = 13
     static let exploreIconImageSize: CGFloat = 16
+    static let titleStackSpacing: CGFloat = 2
     static let rowSpacing: CGFloat = 12
     static let rowVerticalPadding: CGFloat = 6
     static let cornerRadius: CGFloat = 8
@@ -29,41 +30,59 @@ internal struct PersonalityRowView: View {
     let personality: Personality
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: PersonalityLayout.rowSpacing) {
-                ZStack {
-                    Circle()
-                        .fill(personality.tintColor.opacity(PersonalityLayout.backgroundOpacity))
-                        .frame(
-                            width: PersonalityLayout.iconSize,
-                            height: PersonalityLayout.iconSize
-                        )
-
-                    Image(personality.imageName ?? "think", bundle: .module)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(
-                            width: PersonalityLayout.iconSize,
-                            height: PersonalityLayout.iconSize
-                        )
-                        .clipShape(Circle())
-                        .font(.system(size: PersonalityLayout.iconImageSize, weight: .medium))
-                        .foregroundStyle(personality.tintColor)
-                }
-
-                Text(personality.name)
-                    .font(.body)
-                    .foregroundStyle(Color.textPrimary)
-
-                Spacer()
-            }
-            .contentShape(Rectangle())
-            .padding(.vertical, PersonalityLayout.rowVerticalPadding)
-        }
+        Button(action: action) { rowContent }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(String(localized: "\(personality.name) personality", bundle: .module))
         .accessibilityAddTraits(.isButton)
+    }
+
+    private var rowContent: some View {
+        HStack(spacing: PersonalityLayout.rowSpacing) {
+            avatar
+            titleStack
+            Spacer()
+        }
+        .contentShape(Rectangle())
+        .padding(.vertical, PersonalityLayout.rowVerticalPadding)
+    }
+
+    private var avatar: some View {
+        ZStack {
+            Circle()
+                .fill(personality.tintColor.opacity(PersonalityLayout.backgroundOpacity))
+                .frame(
+                    width: PersonalityLayout.iconSize,
+                    height: PersonalityLayout.iconSize
+                )
+
+            Image(personality.imageName ?? "think", bundle: .module)
+                .resizable()
+                .interpolation(.high)
+                .scaledToFill()
+                .accessibilityHidden(true)
+                .frame(
+                    width: PersonalityLayout.iconSize,
+                    height: PersonalityLayout.iconSize
+                )
+                .clipShape(Circle())
+                .font(.system(size: PersonalityLayout.iconImageSize, weight: .medium))
+                .foregroundStyle(personality.tintColor)
+        }
+    }
+
+    private var titleStack: some View {
+        VStack(alignment: .leading, spacing: PersonalityLayout.titleStackSpacing) {
+            Text(personality.name)
+                .font(.headline)
+                .foregroundStyle(Color.textPrimary)
+                .lineLimit(1)
+
+            Text(personality.displayDescription)
+                .font(.caption)
+                .foregroundStyle(Color.textSecondary)
+                .lineLimit(1)
+        }
     }
 
     private func action() {

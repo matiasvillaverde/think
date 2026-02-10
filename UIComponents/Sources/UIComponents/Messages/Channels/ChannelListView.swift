@@ -68,7 +68,7 @@ internal struct ChannelListView: View {
                 .foregroundColor(Color.textSecondary)
                 .accessibilityHidden(true)
 
-            Text("No channels to display")
+            Text("No channels to display", bundle: .module)
                 .font(.headline)
                 .foregroundColor(Color.textSecondary)
         }

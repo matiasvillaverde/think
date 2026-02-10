@@ -107,7 +107,7 @@ public struct CanvasView: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
-                    .accessibilityLabel("Close")
+                    .accessibilityLabel(Text("Close", bundle: .module))
             }
             .buttonStyle(.borderless)
         }
@@ -186,7 +186,11 @@ private struct CanvasEditor: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: CanvasConstants.editorSpacing) {
-            TextField("Title", text: $title)
+            TextField(
+                "",
+                text: $title,
+                prompt: Text("Title", bundle: .module)
+            )
                 .font(.headline)
                 .textFieldStyle(.roundedBorder)
 

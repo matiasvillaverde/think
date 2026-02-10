@@ -20,7 +20,7 @@ public struct EmptyChartView: View {
             Image(systemName: "chart.line.uptrend.xyaxis")
                 .font(.system(size: Constants.iconSize))
                 .foregroundColor(Color.textSecondary)
-                .accessibilityLabel("Empty chart icon")
+                .accessibilityLabel(Text("Empty chart icon", bundle: .module))
 
             Text(message)
                 .font(.headline)

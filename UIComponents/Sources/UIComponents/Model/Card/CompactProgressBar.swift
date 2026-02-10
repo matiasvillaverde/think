@@ -64,7 +64,7 @@ internal struct CompactProgressBar: View {
 
                 Spacer()
 
-                Text("\(Int(progress * Double(Constants.percentMultiplier)))%")
+                Text(verbatim: "\(Int(progress * Double(Constants.percentMultiplier)))%")
                     .font(.caption2)
                     .foregroundColor(Color.textSecondary)
                     .monospacedDigit()

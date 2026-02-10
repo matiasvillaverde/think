@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Memory Usage Chart wrapped in a card container
@@ -25,8 +26,8 @@ public struct MemoryUsageCard: View {
 
     public var body: some View {
         ChartCard(
-            title: "Memory Usage",
-            subtitle: "Active and peak memory",
+            title: String(localized: "Memory Usage", bundle: .module),
+            subtitle: String(localized: "Active and peak memory", bundle: .module),
             systemImage: "memorychip"
         ) {
             chartContent
@@ -52,9 +53,9 @@ public struct MemoryUsageCard: View {
 
     private var emptyStateView: some View {
         ContentUnavailableView(
-            "No Memory Data",
+            String(localized: "No Memory Data", bundle: .module),
             systemImage: "memorychip",
-            description: Text("Memory usage will appear here")
+            description: Text("Memory usage will appear here", bundle: .module)
         )
         .frame(height: Constants.chartHeight)
     }

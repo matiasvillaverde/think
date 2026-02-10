@@ -64,7 +64,7 @@ public struct OpenClawSetupView: View {
 
     private var heroContent: some View {
         HStack(spacing: Layout.heroHStackSpacing) {
-            Image(ImageResource(name: "openclaw-ghost", bundle: .module))
+            Image(ImageResource(name: "openclaw-claw", bundle: .module))
                 .resizable()
                 .scaledToFit()
                 .frame(width: Layout.heroImageSize, height: Layout.heroImageSize)

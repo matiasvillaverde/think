@@ -115,7 +115,7 @@ internal struct ContextUtilizationChart: View {
 
             AxisValueLabel {
                 if let intValue = value.as(Int.self) {
-                    Text("\(intValue)%")
+                    Text(verbatim: "\(intValue)%")
                         .font(.caption)
                 }
             }

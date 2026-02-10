@@ -25,6 +25,9 @@ internal struct PersonalityDetailView: View {
     let personality: Personality
     private let chatViewModel: ChatViewModeling
 
+    @Environment(\.database)
+    private var database: DatabaseProtocol
+
     // MARK: - Initialization
 
     internal init(
@@ -68,7 +71,7 @@ internal struct PersonalityDetailView: View {
                 PersonalityEditView(
                     isPresented: $showingEditSheet,
                     personality: personality,
-                    chatViewModel: chatViewModel
+                    database: database
                 )
             }
             .confirmationDialog(

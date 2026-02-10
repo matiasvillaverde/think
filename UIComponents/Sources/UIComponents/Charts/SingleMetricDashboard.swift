@@ -72,14 +72,14 @@ internal struct SingleMetricDashboard: View {
             Image(systemName: "chart.bar.xaxis")
                 .font(.system(size: Constants.headerIconSize))
                 .foregroundStyle(.blue)
-                .accessibilityLabel("Dashboard icon")
+                .accessibilityLabel(Text("Dashboard icon", bundle: .module))
 
             VStack(alignment: .leading, spacing: Constants.headerSpacing) {
-                Text("Message Metrics")
+                Text("Message Metrics", bundle: .module)
                     .font(.largeTitle)
                     .fontWeight(.bold)
 
-                Text("Created: \(metric.createdAt.formatted())")
+                Text("Created: \(metric.createdAt.formatted())", bundle: .module)
                     .font(.caption)
                     .foregroundStyle(Color.textSecondary)
             }
@@ -91,9 +91,14 @@ internal struct SingleMetricDashboard: View {
     @ViewBuilder private var modelInfoView: some View {
         if let modelInfo = modelInfo ?? metric.modelName {
             HStack {
-                Label("Model", systemImage: "cpu")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.textSecondary)
+                Label {
+                    Text("Model", bundle: .module)
+                } icon: {
+                    Image(systemName: "cpu")
+                        .accessibilityHidden(true)
+                }
+                .font(.subheadline)
+                .foregroundStyle(Color.textSecondary)
                 Spacer()
                 Text(modelInfo)
                     .font(.subheadline)
@@ -109,9 +114,14 @@ internal struct SingleMetricDashboard: View {
     @ViewBuilder private var systemPromptView: some View {
         if let systemPrompt {
             VStack(alignment: .leading, spacing: Constants.headerSpacing) {
-                Label("System Prompt", systemImage: "text.alignleft")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                Label {
+                    Text("System Prompt", bundle: .module)
+                } icon: {
+                    Image(systemName: "text.alignleft")
+                        .accessibilityHidden(true)
+                }
+                .font(.subheadline)
+                .fontWeight(.semibold)
 
                 Text(systemPrompt)
                     .font(.caption)

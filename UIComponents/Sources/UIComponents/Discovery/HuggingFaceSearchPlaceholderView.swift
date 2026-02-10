@@ -11,7 +11,7 @@ internal struct HuggingFaceSearchPlaceholderView: View {
             Image(systemName: "sparkles")
                 .font(.system(size: Constants.iconSize))
                 .foregroundStyle(Color.textSecondary)
-                .accessibilityLabel("Sparkles icon")
+                .accessibilityLabel(Text("Sparkles icon", bundle: .module))
 
             Text("Search HuggingFace", bundle: .module)
                 .font(.headline)

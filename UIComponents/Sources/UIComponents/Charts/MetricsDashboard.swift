@@ -1,4 +1,5 @@
 import Database
+import Foundation
 import SwiftUI
 
 internal struct MetricsDashboard: View {
@@ -20,6 +21,12 @@ internal struct MetricsDashboard: View {
         case performance = "Performance"
         case quality = "Quality"
         case resources = "Resources"
+
+        var title: String {
+            // Raw values are user-facing English strings for the dashboard tabs.
+            // If/when we localize them, switch to explicit localization keys.
+            rawValue
+        }
 
         var icon: String {
             switch self {
@@ -71,16 +78,16 @@ internal struct MetricsDashboard: View {
             Image(systemName: "chart.xyaxis.line")
                 .font(.system(size: Constants.headerIconSize))
                 .foregroundStyle(.blue)
-                .accessibilityLabel("Dashboard icon")
+                .accessibilityLabel(Text("Dashboard icon", bundle: .module))
 
-            Text("Metrics Dashboard")
+            Text("Metrics Dashboard", bundle: .module)
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
             Spacer()
 
             if !metrics.isEmpty {
-                Text("\(metrics.count) Messages")
+                Text("\(metrics.count) Messages", bundle: .module)
                     .font(.caption)
                     .foregroundStyle(Color.textSecondary)
             }
@@ -88,11 +95,18 @@ internal struct MetricsDashboard: View {
     }
 
     private var tabSelector: some View {
-        Picker("Dashboard Tab", selection: $selectedTab) {
+        Picker(selection: $selectedTab) {
             ForEach(DashboardTab.allCases, id: \.self) { tab in
-                Label(tab.rawValue, systemImage: tab.icon)
+                Label {
+                    Text(tab.title)
+                } icon: {
+                    Image(systemName: tab.icon)
+                        .accessibilityHidden(true)
+                }
                     .tag(tab)
             }
+        } label: {
+            Text("Dashboard Tab", bundle: .module)
         }
         .pickerStyle(.segmented)
     }

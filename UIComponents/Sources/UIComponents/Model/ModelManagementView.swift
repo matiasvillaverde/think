@@ -49,16 +49,23 @@ import SwiftUI
         private var localTab: some View {
             NavigationStack {
                 LocalModelsHubView(chat: chat)
-                    .navigationTitle("Local Models")
+                    .navigationTitle(Text("Local Models", bundle: .module))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            Button("Done") { isPresented = false }
+                            Button(String(localized: "Done", bundle: .module)) {
+                                isPresented = false
+                            }
                         }
                     }
             }
             .tabItem {
-                Label("Local", systemImage: "laptopcomputer")
+                Label {
+                    Text("Local", bundle: .module)
+                } icon: {
+                    Image(systemName: "laptopcomputer")
+                        .accessibilityHidden(true)
+                }
             }
             .tag(Tab.local)
         }
@@ -66,18 +73,23 @@ import SwiftUI
         private var remoteModelsTab: some View {
             NavigationStack {
                 RemoteModelsView(chat: chat)
-                    .navigationTitle("Remote Models")
+                    .navigationTitle(Text("Remote Models", bundle: .module))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            Button("Done") {
+                            Button(String(localized: "Done", bundle: .module)) {
                                 isPresented = false
                             }
                         }
                     }
             }
             .tabItem {
-                Label("Remote", systemImage: "globe")
+                Label {
+                    Text("Remote", bundle: .module)
+                } icon: {
+                    Image(systemName: "globe")
+                        .accessibilityHidden(true)
+                }
             }
             .tag(Tab.remote)
         }
@@ -85,16 +97,23 @@ import SwiftUI
         private var openClawTab: some View {
             NavigationStack {
                 OpenClawSetupView()
-                    .navigationTitle("OpenClaw")
+                    .navigationTitle(Text("OpenClaw", bundle: .module))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            Button("Done") { isPresented = false }
+                            Button(String(localized: "Done", bundle: .module)) {
+                                isPresented = false
+                            }
                         }
                     }
             }
             .tabItem {
-                Label("OpenClaw", systemImage: "link")
+                Label {
+                    Text("OpenClaw", bundle: .module)
+                } icon: {
+                    Image(systemName: "link")
+                        .accessibilityHidden(true)
+                }
             }
             .tag(Tab.openClaw)
         }
@@ -102,16 +121,23 @@ import SwiftUI
         private var oneClickTab: some View {
             NavigationStack {
                 OneClickSetupView()
-                    .navigationTitle("One-Click")
+                    .navigationTitle(Text("One-Click", bundle: .module))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            Button("Done") { isPresented = false }
+                            Button(String(localized: "Done", bundle: .module)) {
+                                isPresented = false
+                            }
                         }
                     }
             }
             .tabItem {
-                Label("One-Click", systemImage: "wand.and.stars")
+                Label {
+                    Text("One-Click", bundle: .module)
+                } icon: {
+                    Image(systemName: "wand.and.stars")
+                        .accessibilityHidden(true)
+                }
             }
             .tag(Tab.oneClick)
         }

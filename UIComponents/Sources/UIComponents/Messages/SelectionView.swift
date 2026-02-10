@@ -54,7 +54,7 @@ public struct SelectionView: View {
                     }, label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(Color.iconPrimary)
-                            .accessibilityLabel("Close window")
+                            .accessibilityLabel(Text("Close window", bundle: .module))
                     })
                 }
             }

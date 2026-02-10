@@ -32,7 +32,11 @@ internal struct HuggingFaceSearchHeader: View {
                 .foregroundColor(.textSecondary)
                 .accessibilityHidden(true)
 
-            TextField("Search models...", text: $searchQuery)
+            TextField(
+                "",
+                text: $searchQuery,
+                prompt: Text("Search models...", bundle: .module)
+            )
                 .textFieldStyle(.plain)
                 .font(.body)
                 .submitLabel(.search)
@@ -46,7 +50,7 @@ internal struct HuggingFaceSearchHeader: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.textSecondary)
-                        .accessibilityLabel("Clear search")
+                        .accessibilityLabel(Text("Clear search", bundle: .module))
                 }
                 .buttonStyle(.plain)
             }
@@ -60,35 +64,47 @@ internal struct HuggingFaceSearchHeader: View {
 
     private var sortOptions: some View {
         HStack(spacing: DesignConstants.Spacing.medium) {
-            Picker("Sort by", selection: $selectedSort) {
-                ForEach(SortOption.allCases, id: \.self) { option in
-                    Text(option.displayName).tag(option)
-                }
-            }
-            .pickerStyle(.menu)
-            .onChange(of: selectedSort) { _, _ in
-                if !searchQuery.isEmpty {
-                    onSearch()
-                }
-            }
-
-            Picker("Direction", selection: $selectedDirection) {
-                Image(systemName: "arrow.down")
-                    .accessibilityLabel("Descending")
-                    .tag(SortDirection.descending)
-                Image(systemName: "arrow.up")
-                    .accessibilityLabel("Ascending")
-                    .tag(SortDirection.ascending)
-            }
-            .pickerStyle(.segmented)
-            .frame(width: 100)
-            .onChange(of: selectedDirection) { _, _ in
-                if !searchQuery.isEmpty {
-                    onSearch()
-                }
-            }
+            sortByPicker
+            directionPicker
 
             Spacer()
+        }
+    }
+
+    private var sortByPicker: some View {
+        Picker(selection: $selectedSort) {
+            ForEach(SortOption.allCases, id: \.self) { option in
+                Text(option.displayName).tag(option)
+            }
+        } label: {
+            Text("Sort by", bundle: .module)
+        }
+        .pickerStyle(.menu)
+        .onChange(of: selectedSort) { _, _ in
+            if !searchQuery.isEmpty {
+                onSearch()
+            }
+        }
+    }
+
+    private var directionPicker: some View {
+        Picker(selection: $selectedDirection) {
+            Image(systemName: "arrow.down")
+                .accessibilityLabel(Text("Descending", bundle: .module))
+                .tag(SortDirection.descending)
+            Image(systemName: "arrow.up")
+                .accessibilityLabel(Text("Ascending", bundle: .module))
+                .tag(SortDirection.ascending)
+        }
+        label: {
+            Text("Direction", bundle: .module)
+        }
+        .pickerStyle(.segmented)
+        .frame(width: 100)
+        .onChange(of: selectedDirection) { _, _ in
+            if !searchQuery.isEmpty {
+                onSearch()
+            }
         }
     }
 }

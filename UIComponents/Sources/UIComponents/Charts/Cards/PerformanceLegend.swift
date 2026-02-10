@@ -30,7 +30,7 @@ internal struct PerformanceLegend: View {
                                         : Constants.deselectedOpacity
                                 )
 
-                            Text("\(metric.rawValue) (\(metric.unit))")
+                            Text(verbatim: "\(metric.displayName) (\(metric.unit))")
                                 .font(.caption)
                                 .foregroundColor(
                                     selectedMetrics.contains(metric) ? .primary : .secondary

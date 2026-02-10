@@ -167,13 +167,13 @@ internal struct ModelCard: View {
                         ),
                         initialType: .modelMetrics
                     )
-                    .navigationTitle("Model Analytics")
+                    .navigationTitle(Text("Model Analytics", bundle: .module))
                     #if !os(macOS)
                         .navigationBarTitleDisplayMode(.inline)
                     #endif
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
-                                Button("Done") {
+                                Button(String(localized: "Done", bundle: .module)) {
                                     isMetricsDashboardPresented = false
                                 }
                             }

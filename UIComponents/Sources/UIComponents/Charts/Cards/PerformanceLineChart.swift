@@ -13,6 +13,10 @@ public enum PerformanceLineChart {
 
         public var id: String { rawValue }
 
+        public var displayName: String {
+            rawValue
+        }
+
         public var unit: String {
             switch self {
             case .totalTime:

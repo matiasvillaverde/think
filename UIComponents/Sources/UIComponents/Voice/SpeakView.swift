@@ -50,7 +50,9 @@ public struct SpeakView: View {
                     width: LayoutVoice.Size.circleView,
                     height: LayoutVoice.Size.circleView
                 )
-                .accessibilityLabel("Animated fluid visualization")
+                .accessibilityLabel(
+                    Text("Animated fluid visualization", bundle: .module)
+                )
                 BetaBadge()
 
                 Spacer()

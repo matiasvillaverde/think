@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Context Utilization Chart wrapped in a card container
@@ -28,8 +29,8 @@ public struct ContextUtilizationCard: View {
 
     public var body: some View {
         ChartCard(
-            title: "Context Window Utilization",
-            subtitle: "Token usage over time",
+            title: String(localized: "Context Window Utilization", bundle: .module),
+            subtitle: String(localized: "Token usage over time", bundle: .module),
             systemImage: "doc.text.fill"
         ) {
             chartContent
@@ -54,9 +55,9 @@ public struct ContextUtilizationCard: View {
 
     private var emptyStateView: some View {
         ContentUnavailableView(
-            "No Context Data",
+            String(localized: "No Context Data", bundle: .module),
             systemImage: "doc.badge.ellipsis",
-            description: Text("Context utilization will appear here")
+            description: Text("Context utilization will appear here", bundle: .module)
         )
         .frame(height: Constants.chartHeight)
     }

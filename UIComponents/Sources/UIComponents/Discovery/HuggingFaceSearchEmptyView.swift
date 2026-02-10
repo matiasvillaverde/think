@@ -11,7 +11,7 @@ internal struct HuggingFaceSearchEmptyView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: Constants.iconSize))
                 .foregroundStyle(Color.textSecondary)
-                .accessibilityLabel("Search icon")
+                .accessibilityLabel(Text("Search icon", bundle: .module))
 
             Text("No models found", bundle: .module)
                 .font(.headline)

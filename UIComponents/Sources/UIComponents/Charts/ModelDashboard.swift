@@ -131,20 +131,20 @@ internal struct ModelDashboard: View {
             Image(systemName: "cpu")
                 .font(.system(size: Constants.headerIconSize))
                 .foregroundStyle(.purple)
-                .accessibilityLabel("Model icon")
+                .accessibilityLabel(Text("Model icon", bundle: .module))
 
             VStack(alignment: .leading, spacing: Constants.headerSpacing) {
-                Text("\(modelName) Dashboard")
+                Text("\(modelName) Dashboard", bundle: .module)
                     .font(.largeTitle)
                     .fontWeight(.bold)
 
                 HStack {
-                    Text("\(metrics.count) total messages")
+                    Text("\(metrics.count) total messages", bundle: .module)
                         .font(.caption)
                         .foregroundStyle(Color.textSecondary)
 
                     if let dateRange = getDateRange() {
-                        Text("• \(dateRange)")
+                        Text("• \(dateRange)", bundle: .module)
                             .font(.caption)
                             .foregroundStyle(Color.textSecondary)
                     }
@@ -156,11 +156,18 @@ internal struct ModelDashboard: View {
     }
 
     private var metricTypeSelector: some View {
-        Picker("Metric Type", selection: $selectedMetric) {
+        Picker(selection: $selectedMetric) {
             ForEach(MetricType.allCases, id: \.self) { type in
-                Label(type.rawValue, systemImage: type.icon)
+                Label {
+                    Text(verbatim: type.rawValue)
+                } icon: {
+                    Image(systemName: type.icon)
+                        .accessibilityHidden(true)
+                }
                     .tag(type)
             }
+        } label: {
+            Text("Metric Type", bundle: .module)
         }
         .pickerStyle(.segmented)
         .padding(.horizontal)
@@ -168,16 +175,16 @@ internal struct ModelDashboard: View {
 
     private var emptyStateView: some View {
         ContentUnavailableView(
-            "No Model Data",
+            String(localized: "No Model Data", bundle: .module),
             systemImage: "cpu",
-            description: Text("Metrics for \(modelName) will appear here")
+            description: Text("Metrics for \(modelName) will appear here", bundle: .module)
         )
         .frame(minHeight: Constants.minHeight)
     }
 
     private var overviewSection: some View {
         VStack(alignment: .leading, spacing: Constants.spacing) {
-            Text("Model Overview")
+            Text("Model Overview", bundle: .module)
                 .font(.headline)
                 .padding(.bottom, Constants.headerSpacing)
 
@@ -209,28 +216,28 @@ internal struct ModelDashboard: View {
 
     @ViewBuilder private var overviewCards: some View {
         overviewCard(
-            title: "Avg Tokens/Second",
+            title: String(localized: "Avg Tokens/Second", bundle: .module),
             value: String(format: "%.1f", averageTokensPerSecond),
             icon: "speedometer"
         )
         overviewCard(
-            title: "Total Tokens Generated",
+            title: String(localized: "Total Tokens Generated", bundle: .module),
             value: "\(totalGeneratedTokens)",
             icon: "number"
         )
         overviewCard(
-            title: "Avg Response Time",
+            title: String(localized: "Avg Response Time", bundle: .module),
             value: String(format: "%.2fs", averageResponseTime),
             icon: "timer"
         )
         overviewCard(
-            title: "Conversations",
+            title: String(localized: "Conversations", bundle: .module),
             value: "\(uniqueChats)",
             icon: "bubble.left.and.bubble.right"
         )
         if let avgPerplexity = averagePerplexity {
             overviewCard(
-                title: "Avg Perplexity",
+                title: String(localized: "Avg Perplexity", bundle: .module),
                 value: String(format: "%.1f", avgPerplexity),
                 icon: "chart.line.uptrend.xyaxis"
             )
@@ -238,7 +245,7 @@ internal struct ModelDashboard: View {
         if let avgContextUsage = averageContextUsage {
             let percentage: Double = avgContextUsage * Constants.percentMultiplier
             overviewCard(
-                title: "Avg Context Usage",
+                title: String(localized: "Avg Context Usage", bundle: .module),
                 value: String(format: "%.0f%%", percentage),
                 icon: "chart.pie"
             )
@@ -251,7 +258,7 @@ internal struct ModelDashboard: View {
                 .font(.title2)
                 .foregroundStyle(.purple)
                 .frame(width: Constants.iconWidth)
-                .accessibilityLabel("\(title) icon")
+                .accessibilityLabel(Text("\(title) icon", bundle: .module))
 
             VStack(alignment: .leading) {
                 Text(title)

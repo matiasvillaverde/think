@@ -12,7 +12,7 @@ extension SettingsView {
             ),
             systemImage: "hand.tap"
         )
-        .accessibility(label: Text("Actions tab"))
+        .accessibility(label: Text("Actions tab", bundle: .module))
     }
 
     var modelsTabLabel: some View {
@@ -24,7 +24,7 @@ extension SettingsView {
             ),
             systemImage: "cloud"
         )
-        .accessibility(label: Text("Models tab"))
+        .accessibility(label: Text("Models tab", bundle: .module))
     }
 
     var openClawTabLabel: some View {
@@ -36,7 +36,7 @@ extension SettingsView {
             ),
             systemImage: "bolt.horizontal.circle"
         )
-        .accessibility(label: Text("OpenClaw tab"))
+        .accessibility(label: Text("OpenClaw tab", bundle: .module))
     }
 
     var voiceTabLabel: some View {
@@ -48,7 +48,7 @@ extension SettingsView {
             ),
             systemImage: "waveform"
         )
-        .accessibility(label: Text("Voice tab"))
+        .accessibility(label: Text("Voice tab", bundle: .module))
     }
 
     var automationTabLabel: some View {
@@ -60,7 +60,7 @@ extension SettingsView {
             ),
             systemImage: "clock"
         )
-        .accessibility(label: Text("Automation tab"))
+        .accessibility(label: Text("Automation tab", bundle: .module))
     }
 
     var nodeModeTabLabel: some View {
@@ -72,7 +72,7 @@ extension SettingsView {
             ),
             systemImage: "server.rack"
         )
-        .accessibility(label: Text("Node Mode tab"))
+        .accessibility(label: Text("Node Mode tab", bundle: .module))
     }
 
     var pluginsTabLabel: some View {
@@ -84,7 +84,7 @@ extension SettingsView {
             ),
             systemImage: "puzzlepiece.extension"
         )
-        .accessibility(label: Text("Plugins tab"))
+        .accessibility(label: Text("Plugins tab", bundle: .module))
     }
 
     var legalTabLabel: some View {
@@ -96,7 +96,7 @@ extension SettingsView {
             ),
             systemImage: "doc.text"
         )
-        .accessibility(label: Text("Legal tab"))
+        .accessibility(label: Text("Legal tab", bundle: .module))
     }
 
     var aboutTabLabel: some View {
@@ -108,7 +108,7 @@ extension SettingsView {
             ),
             systemImage: "info.circle"
         )
-        .accessibility(label: Text("About tab"))
+        .accessibility(label: Text("About tab", bundle: .module))
     }
 
     var reviewTabLabel: some View {
@@ -120,7 +120,7 @@ extension SettingsView {
             ),
             systemImage: "star"
         )
-        .accessibility(label: Text("Review settings tab"))
+        .accessibility(label: Text("Review settings tab", bundle: .module))
     }
 
     // MARK: - Models View

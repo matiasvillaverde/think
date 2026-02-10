@@ -18,16 +18,18 @@ internal struct MemoryUsageControls: View {
 
     private var timeRangePicker: some View {
         HStack {
-            Text("Time Range:")
+            Text("Time Range:", bundle: .module)
                 .font(.subheadline)
                 .foregroundColor(Color.textSecondary)
 
             Spacer()
 
-            Picker("Time Range", selection: $timeRange) {
+            Picker(selection: $timeRange) {
                 ForEach(MemoryTimeRange.allCases, id: \.self) { range in
-                    Text(range.rawValue).tag(range)
+                    Text(range.displayName).tag(range)
                 }
+            } label: {
+                Text("Time Range", bundle: .module)
             }
             .pickerStyle(.segmented)
         }
@@ -35,11 +37,15 @@ internal struct MemoryUsageControls: View {
 
     private var memoryToggles: some View {
         VStack(spacing: Constants.toggleSpacing) {
-            Toggle("Show peak memory", isOn: $showPeakMemory)
-                .font(.subheadline)
+            Toggle(isOn: $showPeakMemory) {
+                Text("Show peak memory", bundle: .module)
+            }
+            .font(.subheadline)
 
-            Toggle("Show active memory", isOn: $showActiveMemory)
-                .font(.subheadline)
+            Toggle(isOn: $showActiveMemory) {
+                Text("Show active memory", bundle: .module)
+            }
+            .font(.subheadline)
         }
     }
 }

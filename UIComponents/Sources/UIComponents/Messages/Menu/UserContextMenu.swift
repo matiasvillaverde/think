@@ -6,7 +6,6 @@ public struct UserContextMenu: View {
     let textToCopy: String
     @Bindable var message: Message
     @Binding var showingSelectionView: Bool
-    @Binding var showingThinkingView: Bool
     @Binding var showingStatsView: Bool
 
     public var body: some View {
@@ -39,24 +38,7 @@ public struct UserContextMenu: View {
                 })
             #endif
 
-            thinkingButtonIfAvailable
             statisticsButtonIfAvailable
-        }
-    }
-
-    private var thinkingButtonIfAvailable: some View {
-        Group {
-            if message.thinking != nil {
-                Button(action: {
-                    showingThinkingView.toggle()
-                }, label: {
-                    Label(String(
-                        localized: "Thinking process",
-                        bundle: .module,
-                        comment: "Button label to view the thinking process"
-                    ), systemImage: "brain.filled.head.profile")
-                })
-            }
         }
     }
 

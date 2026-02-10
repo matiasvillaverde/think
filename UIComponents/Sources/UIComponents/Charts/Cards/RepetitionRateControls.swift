@@ -18,16 +18,18 @@ internal struct RepetitionRateControls: View {
 
     private var nGramSelector: some View {
         HStack {
-            Text("N-gram level:")
+            Text("N-gram level:", bundle: .module)
                 .font(.subheadline)
                 .foregroundColor(Color.textSecondary)
 
             Spacer()
 
-            Picker("N-gram", selection: $selectedNGram) {
+            Picker(selection: $selectedNGram) {
                 ForEach(NGramLevel.allCases, id: \.self) { level in
-                    Text(level.rawValue).tag(level)
+                    Text(verbatim: level.rawValue).tag(level)
                 }
+            } label: {
+                Text("N-gram", bundle: .module)
             }
             .pickerStyle(.segmented)
         }
@@ -35,11 +37,15 @@ internal struct RepetitionRateControls: View {
 
     private var viewToggles: some View {
         VStack(spacing: Constants.controlSpacing) {
-            Toggle("Show trend area", isOn: $showTrend)
-                .font(.subheadline)
+            Toggle(isOn: $showTrend) {
+                Text("Show trend area", bundle: .module)
+            }
+            .font(.subheadline)
 
-            Toggle("Show baselines", isOn: $showBaseline)
-                .font(.subheadline)
+            Toggle(isOn: $showBaseline) {
+                Text("Show baselines", bundle: .module)
+            }
+            .font(.subheadline)
         }
     }
 }

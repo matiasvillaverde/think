@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Repetition Rate Trend Line Chart wrapped in a card container
@@ -26,8 +27,8 @@ public struct RepetitionRateTrendLineCard: View {
 
     public var body: some View {
         ChartCard(
-            title: "Repetition Rate Trend",
-            subtitle: "N-gram repetition patterns",
+            title: String(localized: "Repetition Rate Trend", bundle: .module),
+            subtitle: String(localized: "N-gram repetition patterns", bundle: .module),
             systemImage: "repeat"
         ) {
             chartContent
@@ -52,9 +53,9 @@ public struct RepetitionRateTrendLineCard: View {
 
     private var emptyStateView: some View {
         ContentUnavailableView(
-            "No Repetition Data",
+            String(localized: "No Repetition Data", bundle: .module),
             systemImage: "repeat",
-            description: Text("Repetition rate trends will appear here")
+            description: Text("Repetition rate trends will appear here", bundle: .module)
         )
         .frame(height: Constants.chartHeight)
     }

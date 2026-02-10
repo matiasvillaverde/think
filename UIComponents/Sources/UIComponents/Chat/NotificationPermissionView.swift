@@ -60,7 +60,7 @@ public struct NotificationPermissionView: View {
 
     private var notificationIcon: some View {
         Image(systemName: "bell.badge")
-            .accessibilityLabel("Notification icon")
+            .accessibilityLabel(Text("Notification icon", bundle: .module))
             .font(.system(size: Layout.iconSize))
             .foregroundColor(.accentColor)
     }
@@ -102,7 +102,12 @@ public struct NotificationPermissionView: View {
                 }
             #endif
         } label: {
-            Label("Open Settings", systemImage: "gear")
+            Label {
+                Text("Open Settings", bundle: .module)
+            } icon: {
+                Image(systemName: "gear")
+                    .accessibilityHidden(true)
+            }
         }
         .buttonStyle(.borderedProminent)
         .controlSize(.large)
@@ -112,7 +117,12 @@ public struct NotificationPermissionView: View {
         Button {
             requestNotificationPermission()
         } label: {
-            Label("Enable Notifications", systemImage: "bell")
+            Label {
+                Text("Enable Notifications", bundle: .module)
+            } icon: {
+                Image(systemName: "bell")
+                    .accessibilityHidden(true)
+            }
         }
         .buttonStyle(.borderedProminent)
         .controlSize(.large)

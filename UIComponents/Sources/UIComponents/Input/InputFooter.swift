@@ -33,16 +33,10 @@ internal struct InputFooter: View {
                 .padding(Constants.attachmentPadding)
             VoiceButton(chat: chat)
 
-            // Show tools button only when no tool is selected
-            if selectedAction.tools.isEmpty, selectedAction.isTextual {
-                ToolSelectionButton(
-                    chat: chat,
-                    selectedAction: $selectedAction
-                )
-            }
-
-            // Show selected tool chips if any
-            if !selectedAction.tools.isEmpty {
+            if selectedAction.isTextual {
+                ImageGenerationModeButton(chat: chat, selectedAction: $selectedAction)
+                CapabilitiesButton(chat: chat, selectedAction: $selectedAction)
+            } else {
                 ToolChipsContainer(tools: selectedAction.tools) { tool in
                     removeTool(tool)
                 }

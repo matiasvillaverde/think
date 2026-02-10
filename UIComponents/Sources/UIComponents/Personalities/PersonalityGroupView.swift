@@ -23,13 +23,13 @@ internal struct PersonalityGroupView: View {
 
     private static let popularityOrder: [Instruction] = [
         .empatheticFriend,
-        .englishAssistant,
-        .workCoach,
+        .relationshipAdvisor,
         .lifeCoach,
+        .butler,
+        .workCoach,
         .supportivePsychologist,
         .teacher,
         .dietitian,
-        .butler,
         .mother,
         .father
     ]

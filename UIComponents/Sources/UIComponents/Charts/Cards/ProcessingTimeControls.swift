@@ -17,16 +17,18 @@ internal struct ProcessingTimeControls: View {
 
     private var sortOrderPicker: some View {
         HStack {
-            Text("Sort:")
+            Text("Sort:", bundle: .module)
                 .font(.subheadline)
                 .foregroundColor(Color.textSecondary)
 
             Spacer()
 
-            Picker("Sort Order", selection: $sortOrder) {
+            Picker(selection: $sortOrder) {
                 ForEach(ProcessingSortOrder.allCases, id: \.self) { order in
-                    Text(order.rawValue).tag(order)
+                    Text(order.displayName).tag(order)
                 }
+            } label: {
+                Text("Sort Order", bundle: .module)
             }
             .pickerStyle(.menu)
         }
@@ -35,11 +37,11 @@ internal struct ProcessingTimeControls: View {
     private var maxItemsSlider: some View {
         VStack(alignment: .leading, spacing: ChartConstants.Layout.itemSpacing) {
             HStack {
-                Text("Show:")
+                Text("Show:", bundle: .module)
                     .font(.subheadline)
                     .foregroundColor(Color.textSecondary)
 
-                Text("\(maxItems) metrics")
+                Text("\(maxItems) metrics", bundle: .module)
                     .font(.subheadline.weight(.medium))
                     .foregroundColor(Color.textPrimary)
 
@@ -58,7 +60,9 @@ internal struct ProcessingTimeControls: View {
     }
 
     private var showPercentagesToggle: some View {
-        Toggle("Show percentages", isOn: $showPercentages)
-            .font(.subheadline)
+        Toggle(isOn: $showPercentages) {
+            Text("Show percentages", bundle: .module)
+        }
+        .font(.subheadline)
     }
 }

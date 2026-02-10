@@ -40,7 +40,8 @@ public struct WelcomeView: View {
     enum ModelSource: String, CaseIterable, Identifiable {
         case local = "localModels"
         case remote = "remoteModels"
-        case openClaw = "openClaw"
+        case openClawInstance = "openClawInstance"
+        case oneClick = "oneClickSetup"
 
         var id: String { rawValue }
 
@@ -52,8 +53,11 @@ public struct WelcomeView: View {
             case .remote:
                 return String(localized: "Remote Models", bundle: .module)
 
-            case .openClaw:
-                return String(localized: "OpenClaw Gateway", bundle: .module)
+            case .openClawInstance:
+                return String(localized: "OpenClaw", bundle: .module)
+
+            case .oneClick:
+                return String(localized: "One Click", bundle: .module)
             }
         }
     }
@@ -93,8 +97,7 @@ public struct WelcomeView: View {
         case .remote:
             return selectedRemoteModel != nil
 
-        case .openClaw:
-            // OpenClaw is optional setup; model selection continues via Local/Remote.
+        case .openClawInstance, .oneClick:
             return false
         }
     }
@@ -120,8 +123,6 @@ public struct WelcomeView: View {
                 onRetry: loadRecommendedModels,
                 onContinue: handleContinue
             )
-
-            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.backgroundPrimary)
@@ -136,7 +137,7 @@ public struct WelcomeView: View {
             case .remote:
                 selectedModelId = nil
 
-            case .openClaw:
+            case .openClawInstance, .oneClick:
                 selectedModelId = nil
                 selectedRemoteModel = nil
             }
@@ -177,8 +178,7 @@ public struct WelcomeView: View {
         case .remote:
             await handleRemoteContinue()
 
-        case .openClaw:
-            // No-op: OpenClaw is configured in its own panel.
+        case .openClawInstance, .oneClick:
             break
         }
     }

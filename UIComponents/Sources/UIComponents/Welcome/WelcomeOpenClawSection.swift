@@ -65,7 +65,7 @@ internal struct WelcomeOpenClawSection: View {
 
     private var connectCardLabel: some View {
         HStack(alignment: .center, spacing: Layout.cardSpacing) {
-            Image(ImageResource(name: "openclaw-ghost", bundle: .module))
+            Image(ImageResource(name: "openclaw-claw", bundle: .module))
                 .resizable()
                 .scaledToFit()
                 .frame(width: Layout.imageSize, height: Layout.imageSize)

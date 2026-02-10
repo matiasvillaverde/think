@@ -1,4 +1,5 @@
 import Abstractions
+import DataAssets
 import Database
 import SwiftData
 import SwiftUI
@@ -12,14 +13,20 @@ internal struct PersonalitiesListView: View {
 
     @Query(
         filter: #Predicate<Personality> { $0.isFeature == true },
-        sort: \Personality.name,
         animation: .easeInOut
     )
     private var featured: [Personality]
 
+    private static let featuredOrder: [SystemInstruction] = [
+        .empatheticFriend,       // Buddy
+        .relationshipAdvisor,    // Girlfriend
+        .lifeCoach,              // Life Coach
+        .butler                  // Butler
+    ]
+
     var body: some View {
         VStack {
-            ForEach(featured) { personality in
+            ForEach(orderedFeatured) { personality in
                 PersonalityRowView(
                     personality: personality
                 )
@@ -36,6 +43,19 @@ internal struct PersonalitiesListView: View {
 
     private func onExploreAgents() {
         showExploreAgents = true
+    }
+
+    private var orderedFeatured: [Personality] {
+        featured.sorted { left, right in
+            rank(for: left) < rank(for: right)
+        }
+    }
+
+    private func rank(for personality: Personality) -> Int {
+        guard let idx = Self.featuredOrder.firstIndex(of: personality.systemInstruction) else {
+            return Int.max
+        }
+        return idx
     }
 
     private func onSelectPersonality(_ personality: Personality) {

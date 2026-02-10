@@ -172,7 +172,7 @@ internal struct DownloadStateView: View {
 
     @MainActor private var notDownloadedPreview: some View {
         VStack {
-            Text("Not Downloaded")
+            Text(verbatim: "Not Downloaded")
                 .font(.headline)
             DownloadButton(
                 model: Model.preview,
@@ -184,7 +184,7 @@ internal struct DownloadStateView: View {
     @MainActor private var downloadingPreviews: some View {
         Group {
             VStack {
-                Text("Downloading (25%)")
+                Text(verbatim: "Downloading (25%)")
                     .font(.headline)
                 CompactProgressBar(
                     progress: PreviewConstants.downloadProgress25,
@@ -196,7 +196,7 @@ internal struct DownloadStateView: View {
             }
 
             VStack {
-                Text("Downloading (75%)")
+                Text(verbatim: "Downloading (75%)")
                     .font(.headline)
                 CompactProgressBar(
                     progress: PreviewConstants.downloadProgress75,
@@ -211,7 +211,7 @@ internal struct DownloadStateView: View {
 
     @MainActor private var pausedPreview: some View {
         VStack {
-            Text("Paused (50%)")
+            Text(verbatim: "Paused (50%)")
                 .font(.headline)
             CompactProgressBar(
                 progress: PreviewConstants.downloadProgress50,
@@ -225,12 +225,16 @@ internal struct DownloadStateView: View {
 
     @MainActor private var downloadedPreview: some View {
         VStack {
-            Text("Downloaded")
+            Text(verbatim: "Downloaded")
                 .font(.headline)
             Button(role: .destructive) {
                 // no-op
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label {
+                    Text(verbatim: "Delete")
+                } icon: {
+                    Image(systemName: "trash")
+                }
             }
             .buttonStyle(.borderless)
         }
@@ -238,11 +242,11 @@ internal struct DownloadStateView: View {
 
     private var errorPreview: some View {
         VStack {
-            Text("Error State")
+            Text(verbatim: "Error State")
                 .font(.headline)
             StateIndicator(
                 icon: "exclamationmark.circle.fill",
-                text: "Download failed",
+                text: String(localized: "Download failed", bundle: .module),
                 color: Color.iconAlert
             )
         }

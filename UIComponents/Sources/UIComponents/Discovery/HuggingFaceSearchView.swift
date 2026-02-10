@@ -41,13 +41,13 @@ internal struct HuggingFaceSearchView: View {
     internal var body: some View {
         NavigationStack {
             contentView
-                .navigationTitle("Search HuggingFace")
+                .navigationTitle(Text("Search HuggingFace", bundle: .module))
                 #if !os(macOS)
                 .navigationBarTitleDisplayMode(.inline)
                 #endif
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
+                        Button(String(localized: "Cancel", bundle: .module)) {
                             dismiss()
                         }
                     }
@@ -132,7 +132,12 @@ internal struct HuggingFaceSearchView: View {
                 ProgressView()
                     .progressViewStyle(.circular)
             } else {
-                Label("Load More", systemImage: "arrow.down.circle")
+                Label {
+                    Text("Load More", bundle: .module)
+                } icon: {
+                    Image(systemName: "arrow.down.circle")
+                        .accessibilityHidden(true)
+                }
                     .font(.subheadline)
             }
         }

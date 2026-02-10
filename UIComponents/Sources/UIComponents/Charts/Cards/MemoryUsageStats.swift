@@ -19,7 +19,7 @@ internal struct MemoryUsageStats: View {
 
     private var averageMemoryView: some View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
-            Text("Average")
+            Text("Average", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
@@ -32,7 +32,7 @@ internal struct MemoryUsageStats: View {
 
     private var peakMemoryView: some View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
-            Text("Peak")
+            Text("Peak", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
@@ -45,7 +45,7 @@ internal struct MemoryUsageStats: View {
 
     private var efficiencyView: some View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
-            Text("Efficiency")
+            Text("Efficiency", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 

@@ -32,7 +32,6 @@ public struct MessageView: View {
     private var notificationViewModel: ViewModelNotifying
 
     @State private var showingSelectionView: Bool = false
-    @State private var showingThinkingView: Bool = false
     @State private var showingStatsView: Bool = false
     @State private var showingAlert: Bool = false
     @Namespace private var botMessageID: Namespace.ID
@@ -63,7 +62,6 @@ public struct MessageView: View {
                 message: message,
                 showingSelectionView: $showingSelectionView,
                 showingStatsView: $showingStatsView,
-                showingThinkingView: $showingThinkingView,
                 showAlert: showAlertWithDelay
             )
             .onTapGesture(count: MessageLayout.tapCount) {
@@ -79,7 +77,6 @@ public struct MessageView: View {
         AssistantBubbleView(
             message: message,
             showingSelectionView: $showingSelectionView,
-            showingThinkingView: $showingThinkingView,
             showingStatsView: $showingStatsView,
             copyTextAction: copyTextToClipboard,
             shareTextAction: shareText

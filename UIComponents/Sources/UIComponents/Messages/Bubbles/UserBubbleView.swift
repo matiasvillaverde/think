@@ -8,7 +8,6 @@ public struct UserBubbleView: View {
     @Bindable var message: Message
     @Binding var showingSelectionView: Bool
     @Binding var showingStatsView: Bool
-    @Binding var showingThinkingView: Bool
     let showAlert: () -> Void
     private let imageScaleFactor: CGFloat = 1
 
@@ -31,17 +30,14 @@ public struct UserBubbleView: View {
                     ),
                     initialType: .singleMetric
                 )
-                .navigationTitle("Message Metrics")
+                .navigationTitle(Text("Message Metrics", bundle: .module))
                 #if !os(macOS)
                     .navigationBarTitleDisplayMode(.inline)
                 #endif
             } else {
-                Text("No metrics available for this message")
+                Text("No metrics available for this message", bundle: .module)
                     .padding()
             }
-        }
-        .sheet(isPresented: $showingThinkingView) {
-            presentThinkingView()
         }
     }
 
@@ -70,7 +66,6 @@ public struct UserBubbleView: View {
                     textToCopy: message.userInput ?? "",
                     message: message,
                     showingSelectionView: $showingSelectionView,
-                    showingThinkingView: $showingThinkingView,
                     showingStatsView: $showingStatsView
                 )
             }
@@ -98,13 +93,6 @@ public struct UserBubbleView: View {
             }
         }
     }
-
-    private func presentThinkingView() -> some View {
-        FullReasoningView(
-            message: message,
-            showingFullThinkingView: $showingThinkingView
-        )
-    }
 }
 
 // MARK: - Preview
@@ -118,7 +106,6 @@ public struct UserBubbleView: View {
                 message: message,
                 showingSelectionView: $isShowing,
                 showingStatsView: $isShowing,
-                showingThinkingView: $isShowing
             ) {
                 // no-op
             }

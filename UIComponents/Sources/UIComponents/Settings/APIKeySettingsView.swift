@@ -120,6 +120,7 @@ public struct APIKeySettingsView: View {
 
         do {
             try await apiKeyManager.setKey(apiKeyInput, for: provider)
+            NotificationCenter.default.post(name: .remoteAPIKeysDidChange, object: nil)
             if let index = providerStates.firstIndex(where: { $0.provider == provider }) {
                 providerStates[index] = ProviderState(provider: provider, isConfigured: true)
             }
@@ -137,6 +138,7 @@ public struct APIKeySettingsView: View {
     private func removeAPIKey(for provider: RemoteProviderType) async {
         do {
             try await apiKeyManager.deleteKey(for: provider)
+            NotificationCenter.default.post(name: .remoteAPIKeysDidChange, object: nil)
             if let index = providerStates.firstIndex(where: { $0.provider == provider }) {
                 providerStates[index] = ProviderState(provider: provider, isConfigured: false)
             }

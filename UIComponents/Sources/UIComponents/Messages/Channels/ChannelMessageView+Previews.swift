@@ -21,14 +21,12 @@ import SwiftUI
         )
         @Previewable @State var message: Message = Message.previewWithResponse
         @Previewable @State var showingSelection: Bool = false
-        @Previewable @State var showingThinking: Bool = false
         @Previewable @State var showingStats: Bool = false
 
         ChannelMessageView(
             channel: channel,
             message: message,
             showingSelectionView: $showingSelection,
-            showingThinkingView: $showingThinking,
             showingStatsView: $showingStats,
             copyTextAction: { _ in
                 // no-op

@@ -88,7 +88,7 @@ public struct SourceRowView: View {
 }
 
 #if DEBUG
-    #Preview {
-        Text("Source Preview")
-    }
+#Preview {
+    Text("Source Preview", bundle: .module)
+}
 #endif

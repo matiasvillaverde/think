@@ -53,14 +53,12 @@ internal struct ChannelMessageViewTests {
 
         let message: Message = Message.previewWithResponse
         let showingSelection: Binding<Bool> = Binding<Bool>.constant(false)
-        let showingThinking: Binding<Bool> = Binding<Bool>.constant(false)
         let showingStats: Binding<Bool> = Binding<Bool>.constant(false)
 
         let view: ChannelMessageView = ChannelMessageView(
             channel: channel,
             message: message,
             showingSelectionView: showingSelection,
-            showingThinkingView: showingThinking,
             showingStatsView: showingStats,
             copyTextAction: { _ in /* No-op */ },
             shareTextAction: { _ in /* No-op */ }

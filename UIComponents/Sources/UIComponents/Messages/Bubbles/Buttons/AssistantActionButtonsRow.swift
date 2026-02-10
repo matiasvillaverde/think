@@ -26,9 +26,6 @@ public struct AssistantActionButtonsRow: View {
     /// Binding to control the display of the statistics view
     @Binding var showingStatsView: Bool
 
-    /// Binding to control the display of the thinking process view
-    @Binding var showingThinkingView: Bool
-
     /// Action to perform when copying text
     let copyTextAction: (String) -> Void
 
@@ -85,7 +82,6 @@ public struct AssistantActionButtonsRow: View {
     private func createUtilityButtons() -> some View {
         Group {
             createStatsButton()
-            createThinkingButtonIfNeeded()
             createShareButton()
         }
     }
@@ -103,26 +99,6 @@ public struct AssistantActionButtonsRow: View {
             confirmationColor: Color.iconInfo
         ) {
             showingStatsView = true
-        }
-    }
-
-    /// Creates the thinking process button if thinking data is available
-    private func createThinkingButtonIfNeeded() -> some View {
-        Group {
-            if let thinking = message.thinking, !thinking.isEmpty {
-                HoverableActionButton(
-                    systemName: "brain",
-                    filledSystemName: "brain.fill",
-                    accessibilityLabel: String(
-                        localized: "Thinking process",
-                        bundle: .module,
-                        comment: "Accessibility label for the thinking process button"
-                    ),
-                    confirmationColor: Color.iconInfo
-                ) {
-                    showingThinkingView = true
-                }
-            }
         }
     }
 
@@ -229,7 +205,6 @@ public struct AssistantActionButtonsRow: View {
         AssistantActionButtonsRow(
             message: message,
             showingStatsView: $showingStatsView,
-            showingThinkingView: $showingStatsView,
             copyTextAction: { _ in
                 // no-op
             },

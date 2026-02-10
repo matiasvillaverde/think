@@ -1,6 +1,89 @@
 import Database
 import SwiftUI
 
+internal enum ChatMetricsDashboardConstants {
+    static let spacing: CGFloat = 16
+    static let minColumnWidth: CGFloat = 300
+    static let maxColumnWidth: CGFloat = 500
+    static let cornerRadius: CGFloat = 12
+    static let shadowRadius: CGFloat = 2
+    static let headerIconSize: CGFloat = 30
+    static let dividerPadding: CGFloat = 8
+    static let headerSpacing: CGFloat = 8
+    static let statisticsCardPadding: CGFloat = 12
+    static let messageCountThreshold: Int = 2
+    static let recentMessageCount: Int = 10
+    static let lastMessageCount: Int = 5
+    static let minHeight: CGFloat = 300
+    static let iconWidth: CGFloat = 40
+    static let percentMultiplier: Double = 100
+    static let halfDivisor: CGFloat = 2
+    static let modelModulo: Int = 3
+    static let conversationInterval: Double = 300
+    static let messageIndexStart: Int = 0
+    static let messageIndexEnd: Int = 15
+    static let contextWindow4k: Int = 4_096
+    static let minPromptTokens: Int = 100
+    static let maxPromptTokens: Int = 500
+    static let minGeneratedTokens: Int = 500
+    static let maxGeneratedTokens: Int = 2_000
+    static let minContextTokens: Int = 500
+    static let maxContextTokens: Int = 3_000
+    static let minPeakMemory: UInt64 = 10_000_000
+    static let maxPeakMemory: UInt64 = 100_000_000
+    static let minPerplexity: Double = 5
+    static let maxPerplexity: Double = 20
+    static let minEntropy: Double = 2
+    static let maxEntropy: Double = 8
+    static let minRepetition: Double = 0.05
+    static let maxRepetition: Double = 0.3
+    static let minTotalTime: Double = 1.0
+    static let maxTotalTime: Double = 3.0
+    static let minTimeToFirst: Double = 0.1
+    static let maxTimeToFirst: Double = 0.3
+    static let minWidth: CGFloat = 600
+    // Adaptive column counts
+    static let iPhoneColumns: Int = 1
+    static let iPadPortraitColumns: Int = 2
+    static let iPadLandscapeColumns: Int = 3
+    static let macOSColumns: Int = 2
+    static let visionOSColumns: Int = 3
+    static let iPhonePadding: CGFloat = 16
+    static let defaultPadding: CGFloat = 20
+}
+
+private enum ChatMetricsTimeRange: String, CaseIterable {
+    case all = "all_messages"
+    case last = "last_5"
+    case recent = "recent_10"
+
+    var title: String {
+        switch self {
+        case .all:
+            return String(localized: "All Messages", bundle: .module)
+
+        case .recent:
+            return String(localized: "Recent (10)", bundle: .module)
+
+        case .last:
+            return String(localized: "Last 5", bundle: .module)
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .all:
+            "clock"
+
+        case .recent:
+            "clock.badge.checkmark"
+
+        case .last:
+            "clock.badge.exclamationmark"
+        }
+    }
+}
+
 public struct ChatMetricsDashboard: View {
     let metrics: [Metrics]
     let chatId: String?
@@ -11,58 +94,7 @@ public struct ChatMetricsDashboard: View {
     @Environment(\.verticalSizeClass)
     private var verticalSizeClass: UserInterfaceSizeClass?
 
-    enum Constants {
-        static let spacing: CGFloat = 16
-        static let minColumnWidth: CGFloat = 300
-        static let maxColumnWidth: CGFloat = 500
-        static let cornerRadius: CGFloat = 12
-        static let shadowRadius: CGFloat = 2
-        static let headerIconSize: CGFloat = 30
-        static let dividerPadding: CGFloat = 8
-        static let headerSpacing: CGFloat = 8
-        static let statisticsCardPadding: CGFloat = 12
-        static let messageCountThreshold: Int = 2
-        static let recentMessageCount: Int = 10
-        static let lastMessageCount: Int = 5
-        static let minHeight: CGFloat = 300
-        static let iconWidth: CGFloat = 40
-        static let percentMultiplier: Double = 100
-        static let halfDivisor: CGFloat = 2
-        static let modelModulo: Int = 3
-        static let conversationInterval: Double = 300
-        static let messageIndexStart: Int = 0
-        static let messageIndexEnd: Int = 15
-        static let contextWindow4k: Int = 4_096
-        static let minPromptTokens: Int = 100
-        static let maxPromptTokens: Int = 500
-        static let minGeneratedTokens: Int = 500
-        static let maxGeneratedTokens: Int = 2_000
-        static let minContextTokens: Int = 500
-        static let maxContextTokens: Int = 3_000
-        static let minPeakMemory: UInt64 = 10_000_000
-        static let maxPeakMemory: UInt64 = 100_000_000
-        static let minPerplexity: Double = 5
-        static let maxPerplexity: Double = 20
-        static let minEntropy: Double = 2
-        static let maxEntropy: Double = 8
-        static let minRepetition: Double = 0.05
-        static let maxRepetition: Double = 0.3
-        static let minTotalTime: Double = 1.0
-        static let maxTotalTime: Double = 3.0
-        static let minTimeToFirst: Double = 0.1
-        static let maxTimeToFirst: Double = 0.3
-        static let minWidth: CGFloat = 600
-        // Adaptive column counts
-        static let iPhoneColumns: Int = 1
-        static let iPadPortraitColumns: Int = 2
-        static let iPadLandscapeColumns: Int = 3
-        static let macOSColumns: Int = 2
-        static let visionOSColumns: Int = 3
-        static let iPhonePadding: CGFloat = 16
-        static let defaultPadding: CGFloat = 20
-    }
-
-    @State private var selectedTimeRange: TimeRange = .all
+    @State private var selectedTimeRange: ChatMetricsTimeRange = .all
 
     var filteredMetrics: [Metrics] {
         switch selectedTimeRange {
@@ -70,29 +102,10 @@ public struct ChatMetricsDashboard: View {
             metrics
 
         case .recent:
-            Array(metrics.suffix(Constants.recentMessageCount))
+            Array(metrics.suffix(ChatMetricsDashboardConstants.recentMessageCount))
 
         case .last:
-            Array(metrics.suffix(Constants.lastMessageCount))
-        }
-    }
-
-    enum TimeRange: String, CaseIterable {
-        case all = "All Messages"
-        case recent = "Recent (10)"
-        case last = "Last 5"
-
-        var icon: String {
-            switch self {
-            case .all:
-                "clock"
-
-            case .recent:
-                "clock.badge.checkmark"
-
-            case .last:
-                "clock.badge.exclamationmark"
-            }
+            Array(metrics.suffix(ChatMetricsDashboardConstants.lastMessageCount))
         }
     }
 
@@ -108,7 +121,7 @@ public struct ChatMetricsDashboard: View {
 
     public var body: some View {
         AdaptiveScrollContainer {
-            VStack(spacing: Constants.spacing) {
+            VStack(spacing: ChatMetricsDashboardConstants.spacing) {
                 headerView
 
                 if hasMultipleMessages {
@@ -116,7 +129,7 @@ public struct ChatMetricsDashboard: View {
                 }
 
                 Divider()
-                    .padding(.vertical, Constants.dividerPadding)
+                    .padding(.vertical, ChatMetricsDashboardConstants.dividerPadding)
 
                 if !filteredMetrics.isEmpty {
                     statisticsSection
@@ -132,22 +145,22 @@ public struct ChatMetricsDashboard: View {
     private var headerView: some View {
         HStack {
             Image(systemName: "bubble.left.and.bubble.right")
-                .font(.system(size: Constants.headerIconSize))
+                .font(.system(size: ChatMetricsDashboardConstants.headerIconSize))
                 .foregroundStyle(.blue)
-                .accessibilityLabel("Chat icon")
+                .accessibilityLabel(Text("Chat icon", bundle: .module))
 
-            VStack(alignment: .leading, spacing: Constants.headerSpacing) {
-                Text(chatTitle ?? "Chat Metrics")
+            VStack(alignment: .leading, spacing: ChatMetricsDashboardConstants.headerSpacing) {
+                Text(chatTitle ?? String(localized: "Chat Metrics", bundle: .module))
                     .font(.largeTitle)
                     .fontWeight(.bold)
 
                 HStack {
                     if let chatId {
-                        Text("ID: \(chatId)")
+                        Text("ID: \(chatId)", bundle: .module)
                             .font(.caption)
                             .foregroundStyle(Color.textSecondary)
                     }
-                    Text("\(metrics.count) messages")
+                    Text("\(metrics.count) messages", bundle: .module)
                         .font(.caption)
                         .foregroundStyle(Color.textSecondary)
                 }
@@ -158,29 +171,39 @@ public struct ChatMetricsDashboard: View {
     }
 
     private var timeRangeSelector: some View {
-        Picker("Time Range", selection: $selectedTimeRange) {
-            ForEach(TimeRange.allCases, id: \.self) { range in
-                Label(range.rawValue, systemImage: range.icon)
+        Picker(selection: $selectedTimeRange) {
+            ForEach(ChatMetricsTimeRange.allCases, id: \.self) { range in
+                Label {
+                    Text(range.title)
+                } icon: {
+                    Image(systemName: range.icon)
+                        .accessibilityHidden(true)
+                }
                     .tag(range)
             }
+        } label: {
+            Text("Time Range", bundle: .module)
         }
         .pickerStyle(.segmented)
     }
 
     private var emptyStateView: some View {
         ContentUnavailableView(
-            "No Metrics Data",
+            String(localized: "No Metrics Data", bundle: .module),
             systemImage: "chart.bar",
-            description: Text("Chat metrics will appear here as messages are sent")
+            description: Text(
+                "Chat metrics will appear here as messages are sent",
+                bundle: .module
+            )
         )
-        .frame(minHeight: Constants.minHeight)
+        .frame(minHeight: ChatMetricsDashboardConstants.minHeight)
     }
 
     private var statisticsSection: some View {
-        VStack(alignment: .leading, spacing: Constants.spacing) {
-            Text("Conversation Statistics")
+        VStack(alignment: .leading, spacing: ChatMetricsDashboardConstants.spacing) {
+            Text("Conversation Statistics", bundle: .module)
                 .font(.headline)
-                .padding(.bottom, Constants.headerSpacing)
+                .padding(.bottom, ChatMetricsDashboardConstants.headerSpacing)
 
             statisticsGrid
         }
@@ -191,37 +214,44 @@ public struct ChatMetricsDashboard: View {
             columns: [
                 GridItem(
                     .flexible(
-                        minimum: Constants.minColumnWidth / Constants.halfDivisor,
-                        maximum: Constants.maxColumnWidth / Constants.halfDivisor
+                        minimum: ChatMetricsDashboardConstants.minColumnWidth
+                            / ChatMetricsDashboardConstants.halfDivisor,
+                        maximum: ChatMetricsDashboardConstants.maxColumnWidth
+                            / ChatMetricsDashboardConstants.halfDivisor
                     )
                 ),
                 GridItem(
                     .flexible(
-                        minimum: Constants.minColumnWidth / Constants.halfDivisor,
-                        maximum: Constants.maxColumnWidth / Constants.halfDivisor
+                        minimum: ChatMetricsDashboardConstants.minColumnWidth
+                            / ChatMetricsDashboardConstants.halfDivisor,
+                        maximum: ChatMetricsDashboardConstants.maxColumnWidth
+                            / ChatMetricsDashboardConstants.halfDivisor
                     )
                 )
             ],
-            spacing: Constants.spacing
+            spacing: ChatMetricsDashboardConstants.spacing
         ) {
             statisticsCard(
-                title: "Avg Tokens/Second",
+                title: String(localized: "Avg Tokens/Second", bundle: .module),
                 value: averageTokensPerSecond,
                 icon: "speedometer"
             )
             statisticsCard(
-                title: "Total Tokens",
+                title: String(localized: "Total Tokens", bundle: .module),
                 value: "\(totalTokens)",
                 icon: "number"
             )
             statisticsCard(
-                title: "Avg Response Time",
+                title: String(localized: "Avg Response Time", bundle: .module),
                 value: String(format: "%.1fs", averageResponseTime),
                 icon: "timer"
             )
             statisticsCard(
-                title: "Context Usage",
-                value: String(format: "%.0f%%", averageContextUsage * Constants.percentMultiplier),
+                title: String(localized: "Context Usage", bundle: .module),
+                value: String(
+                    format: "%.0f%%",
+                    averageContextUsage * ChatMetricsDashboardConstants.percentMultiplier
+                ),
                 icon: "chart.pie"
             )
         }
@@ -232,8 +262,8 @@ public struct ChatMetricsDashboard: View {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundStyle(.blue)
-                .frame(width: Constants.iconWidth)
-                .accessibilityLabel("\(title) icon")
+                .frame(width: ChatMetricsDashboardConstants.iconWidth)
+                .accessibilityLabel(Text("\(title) icon", bundle: .module))
 
             VStack(alignment: .leading) {
                 Text(title)
@@ -246,10 +276,10 @@ public struct ChatMetricsDashboard: View {
 
             Spacer()
         }
-        .padding(Constants.statisticsCardPadding)
+        .padding(ChatMetricsDashboardConstants.statisticsCardPadding)
         .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
-        .shadow(radius: Constants.shadowRadius)
+        .clipShape(RoundedRectangle(cornerRadius: ChatMetricsDashboardConstants.cornerRadius))
+        .shadow(radius: ChatMetricsDashboardConstants.shadowRadius)
     }
 
     private var conversationChartsSection: some View {
@@ -257,12 +287,12 @@ public struct ChatMetricsDashboard: View {
             columns: [
                 GridItem(
                     .flexible(
-                        minimum: Constants.minColumnWidth,
-                        maximum: Constants.maxColumnWidth
+                        minimum: ChatMetricsDashboardConstants.minColumnWidth,
+                        maximum: ChatMetricsDashboardConstants.maxColumnWidth
                     )
                 )
             ],
-            spacing: Constants.spacing
+            spacing: ChatMetricsDashboardConstants.spacing
         ) {
             // Performance over time
             PerformanceChartCard(metrics: filteredMetrics)
@@ -297,7 +327,7 @@ public struct ChatMetricsDashboard: View {
 
 #if DEBUG
     private func createPreviewMetric(index: Int) -> Metrics {
-        typealias Const = ChatMetricsDashboard.Constants
+        typealias Const = ChatMetricsDashboardConstants
 
         let modelName: String = index.isMultiple(of: Const.modelModulo) ? "GPT-4" : "Claude-3"
 
@@ -329,8 +359,8 @@ public struct ChatMetricsDashboard: View {
     }
 
     private func createPreviewMetrics() -> [Metrics] {
-        let startIndex: Int = ChatMetricsDashboard.Constants.messageIndexStart
-        let endIndex: Int = ChatMetricsDashboard.Constants.messageIndexEnd
+        let startIndex: Int = ChatMetricsDashboardConstants.messageIndexStart
+        let endIndex: Int = ChatMetricsDashboardConstants.messageIndexEnd
         return (startIndex ..< endIndex).map { index in
             createPreviewMetric(index: index)
         }
@@ -342,7 +372,7 @@ public struct ChatMetricsDashboard: View {
             chatId: "chat_123",
             chatTitle: "Technical Discussion"
         )
-        .frame(minWidth: ChatMetricsDashboard.Constants.minWidth)
+        .frame(minWidth: ChatMetricsDashboardConstants.minWidth)
     }
 
     #Preview("Chat Dashboard - Empty") {
@@ -350,6 +380,6 @@ public struct ChatMetricsDashboard: View {
             metrics: [],
             chatTitle: "New Chat"
         )
-        .frame(minWidth: ChatMetricsDashboard.Constants.minWidth)
+        .frame(minWidth: ChatMetricsDashboardConstants.minWidth)
     }
 #endif

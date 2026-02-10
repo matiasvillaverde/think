@@ -123,7 +123,7 @@ internal struct LogoImage: View {
                 color: .marketingPrimary.opacity(OnboardingConstants.shadowOpacity),
                 radius: OnboardingConstants.shadowRadius
             )
-            .accessibilityLabel("OpenClaw ghost")
+            .accessibilityLabel(Text("OpenClaw ghost", bundle: .module))
     }
 }
 

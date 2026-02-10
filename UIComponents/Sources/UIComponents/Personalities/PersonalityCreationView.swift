@@ -1,28 +1,37 @@
 import Abstractions
 import Database
 import PhotosUI
+import RemoteSession
+import SwiftData
 import SwiftUI
+import ViewModels
 
-// MARK: - Constants
-
-private enum Constants {
-    static let minInstructionLength: Int = 10
-    static let maxInstructionLength: Int = 5_000
-    static let minTextEditorHeight: CGFloat = 100
-    static let maxTextEditorHeight: CGFloat = 200
+private enum PersonalityCreationLayout {
+    static let overlayOpacity: Double = 0.3
     static let progressViewScale: CGFloat = 1.5
-    static let overlayOpacity: CGFloat = 0.3
-    static let imageSizeLimitMB: Int = 5
+    static let soulEditorMinHeight: CGFloat = 120
+    static let openClawIconSize: CGFloat = 24
 }
 
-/// View for creating custom personalities
+/// View for creating custom personalities.
 internal struct PersonalityCreationView: View {
-    // MARK: - Properties
-
     @Binding var isPresented: Bool
-    @StateObject private var viewModel: PersonalityCreationViewModel
+    @StateObject private var viewModel: ViewModels.PersonalityCreationViewModel
 
-    // MARK: - Initialization
+    @Environment(\.database)
+    private var database: DatabaseProtocol
+
+    @Environment(\.apiKeyManager)
+    private var apiKeyManager: APIKeyManaging
+
+    @Query private var allModels: [Model]
+
+    @State private var selectedModelId: UUID?
+    @State private var selectedModelSource: PersonalityModelSource = .local
+    @State private var providerKeyStatus: [RemoteProviderType: Bool] = [:]
+    @State private var remoteKeyEntryRequest: RemoteProviderType?
+    @State private var soul: String = ""
+    @State private var modelErrorMessage: String?
 
     internal init(
         isPresented: Binding<Bool>,
@@ -30,51 +39,30 @@ internal struct PersonalityCreationView: View {
     ) {
         _isPresented = isPresented
         _viewModel = StateObject(
-            wrappedValue: PersonalityCreationViewModel(chatViewModel: chatViewModel)
+            wrappedValue: ViewModels.PersonalityCreationViewModel(chatViewModel: chatViewModel)
         )
     }
 
-    // MARK: - Body
-
     internal var body: some View {
-        NavigationStack {
-            navigationContent
-        }
+        rootView
+    }
+
+    private var rootView: some View {
+        NavigationStack { navigationContent }
+            .task {
+                await refreshProviderKeyStatus()
+            }
     }
 
     private var navigationContent: some View {
         formContent
             .navigationTitle(String(localized: "Create Personality", bundle: .module))
-        #if !os(macOS)
+            #if !os(macOS)
             .navigationBarTitleDisplayMode(.inline)
-        #endif
-            .toolbar {
-                #if os(macOS)
-                    ToolbarItem(placement: .automatic) {
-                        Button(String(localized: "Cancel", bundle: .module)) {
-                            isPresented = false
-                        }
-                    }
-                    ToolbarItem(placement: .automatic) {
-                        createButton
-                    }
-                #else
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(String(localized: "Cancel", bundle: .module)) {
-                            isPresented = false
-                        }
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        createButton
-                    }
-                #endif
-            }
+            #endif
+            .toolbar { toolbarContent }
             .disabled(viewModel.isCreating)
-            .overlay {
-                if viewModel.isCreating {
-                    loadingOverlay
-                }
-            }
+            .overlay { if viewModel.isCreating { loadingOverlay } }
             .alert(
                 String(localized: "Error", bundle: .module),
                 isPresented: .constant(viewModel.validationError != nil)
@@ -85,190 +73,205 @@ internal struct PersonalityCreationView: View {
             } message: {
                 Text(viewModel.validationError ?? "")
             }
-            .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
-                if shouldDismiss {
-                    isPresented = false
-                }
-            }
+            .background(
+                RemoteAPIKeyCoordinator(
+                    providerKeyStatus: $providerKeyStatus,
+                    keyEntryRequest: $remoteKeyEntryRequest
+                )
+            )
     }
 
     private var formContent: some View {
         Form {
-            nameSection
-            descriptionSection
-            instructionSection
-            categorySection
-            imageSection
+            basicsSection
+            soulSection
+            modelSection
+            openClawSection
         }
     }
 
-    // MARK: - Form Sections
-
-    private var nameSection: some View {
-        Section {
-            TextField(
-                String(localized: "Personality Name", bundle: .module),
-                text: $viewModel.name
-            )
-            .textFieldStyle(.roundedBorder)
-        } header: {
-            Text("Name", bundle: .module)
-        } footer: {
-            Text("Give your personality a unique name", bundle: .module)
-                .font(.caption)
-                .foregroundColor(Color.textSecondary)
+    @ToolbarContentBuilder private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button(String(localized: "Cancel", bundle: .module)) {
+                isPresented = false
+            }
         }
+        ToolbarItem(placement: .confirmationAction) { createButton }
     }
 
-    private var descriptionSection: some View {
+    private var basicsSection: some View {
         Section {
+            TextField(String(localized: "Name", bundle: .module), text: $viewModel.name)
             TextField(
-                String(localized: "Brief Description", bundle: .module),
+                String(localized: "Description", bundle: .module),
                 text: $viewModel.description
             )
-            .textFieldStyle(.roundedBorder)
-        } header: {
-            Text("Description", bundle: .module)
-        } footer: {
-            Text("Describe what makes this personality unique", bundle: .module)
-                .font(.caption)
-                .foregroundColor(Color.textSecondary)
-        }
-    }
 
-    private var instructionSection: some View {
-        Section {
-            TextEditor(text: $viewModel.systemInstruction)
-                .frame(
-                    minHeight: Constants.minTextEditorHeight,
-                    maxHeight: Constants.maxTextEditorHeight
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignConstants.Radius.small)
-                        .stroke(
-                            Color.paletteGray.opacity(DesignConstants.Opacity.trackBackground),
-                            lineWidth: 1
-                        )
-                )
-        } header: {
-            HStack {
-                Text("System Instruction", bundle: .module)
-                Spacer()
-                Text("\(viewModel.systemInstruction.count)/\(Constants.maxInstructionLength)")
-                    .font(.caption)
-                    .foregroundColor(
-                        viewModel.systemInstruction.count > Constants.maxInstructionLength
-                            ? .red : .secondary
-                    )
-            }
-        } footer: {
-            Text("Define how this personality should behave (10-5000 characters)", bundle: .module)
-                .font(.caption)
-                .foregroundColor(Color.textSecondary)
-        }
-    }
-
-    private var categorySection: some View {
-        Section {
             Picker(
                 String(localized: "Category", bundle: .module),
                 selection: $viewModel.selectedCategory
             ) {
-                ForEach(PersonalityCategory.allCases, id: \.self) { category in
-                    Text(category.displayName)
-                        .tag(category as PersonalityCategory)
+                ForEach(PersonalityCategory.sortedCases, id: \.self) { category in
+                    Text(category.displayName).tag(category)
                 }
             }
-            .pickerStyle(.menu)
-        } header: {
-            Text("Category", bundle: .module)
-        }
-    }
 
-    private var imageSection: some View {
-        Section {
-            HStack {
-                imagePickerButton
-                Spacer()
-                if viewModel.selectedImage != nil {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+            PhotosPicker(
+                selection: $viewModel.selectedImage,
+                matching: .images,
+                photoLibrary: .shared()
+            ) {
+                Label {
+                    Text("Choose Image", bundle: .module)
+                } icon: {
+                    Image(systemName: "photo")
                         .accessibilityHidden(true)
                 }
             }
-
-            if viewModel.selectedImage != nil {
-                Button(String(localized: "Remove Image", bundle: .module)) {
-                    viewModel.selectedImage = nil
-                }
-                .foregroundColor(.red)
-            }
         } header: {
-            Text("Image (Optional)", bundle: .module)
+            Text("Details", bundle: .module)
         } footer: {
             Text(
-                "Add a custom image for your personality (max \(Constants.imageSizeLimitMB)MB)",
-                bundle: .module
+                String(
+                    localized: "Your personality image appears in the sidebar and chat.",
+                    bundle: .module
+                )
             )
-            .font(.caption)
-            .foregroundColor(Color.textSecondary)
         }
     }
 
-    private var imagePickerButton: some View {
-        PhotosPicker(
-            selection: $viewModel.selectedImage,
-            matching: .images
-        ) {
-            Label(
-                String(localized: "Select Image", bundle: .module),
-                systemImage: "photo"
+    private var soulSection: some View {
+        Section {
+            TextEditor(text: $soul)
+                .frame(minHeight: PersonalityCreationLayout.soulEditorMinHeight)
+        } header: {
+            Text("Soul (Identity)", bundle: .module)
+        } footer: {
+            Text(
+                String(
+                    localized: """
+                    A short identity note. It is stored locally and used as long‑term context
+                    for this personality.
+                    """,
+                    bundle: .module
+                )
             )
         }
-        .buttonStyle(.plain)
     }
 
-    // MARK: - Components
+    private var modelSection: some View {
+        PersonalityModelSelectionSection(
+            allModels: allModels,
+            selectedSource: $selectedModelSource,
+            selectedModelId: $selectedModelId,
+            providerKeyStatus: $providerKeyStatus,
+            remoteKeyEntryRequest: $remoteKeyEntryRequest,
+            modelErrorMessage: $modelErrorMessage
+        )
+    }
+
+    private var openClawSection: some View {
+        Section {
+            NavigationLink {
+                OpenClawSetupView()
+            } label: {
+                Label {
+                    Text("Connect OpenClaw Gateway", bundle: .module)
+                } icon: {
+                    Image(ImageResource(name: "openclaw-claw", bundle: .module))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(
+                            width: PersonalityCreationLayout.openClawIconSize,
+                            height: PersonalityCreationLayout.openClawIconSize
+                        )
+                        .accessibilityHidden(true)
+                }
+            }
+        } footer: {
+            Text(
+                String(
+                    localized: """
+                    Use an OpenClaw instance to route requests through your own gateway.
+                    """,
+                    bundle: .module
+                )
+            )
+        }
+    }
 
     private var createButton: some View {
         Button(String(localized: "Create", bundle: .module)) {
             Task {
-                await viewModel.createPersonality()
+                await create()
             }
         }
-        .fontWeight(.semibold)
         .disabled(viewModel.isCreating)
     }
 
     private var loadingOverlay: some View {
         ZStack {
-            Color.paletteBlack.opacity(Constants.overlayOpacity)
+            Color.paletteBlack.opacity(PersonalityCreationLayout.overlayOpacity)
                 .ignoresSafeArea()
-
-            VStack(spacing: DesignConstants.Spacing.medium) {
-                ProgressView()
-                    .progressViewStyle(.circular)
-                    .scaleEffect(Constants.progressViewScale)
-
-                Text("Creating personality...", bundle: .module)
-                    .font(.headline)
-                    .foregroundColor(Color.textPrimary)
-            }
-            .padding(DesignConstants.Spacing.large)
-            .background(.regularMaterial)
-            .cornerRadius(DesignConstants.Radius.standard)
+            ProgressView()
+                .scaleEffect(PersonalityCreationLayout.progressViewScale)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(String(localized: "Creating personality", bundle: .module)))
+    }
+
+    @MainActor
+    private func create() async {
+        let created: Bool = await viewModel.createPersonality()
+        guard created, let personalityId = viewModel.createdPersonalityId else {
+            return
+        }
+
+        await postCreate(personalityId: personalityId)
+        isPresented = false
+    }
+
+    @MainActor
+    private func postCreate(personalityId: UUID) async {
+        do {
+            if let selectedModelId {
+                let chatId: UUID = try await database.write(
+                    PersonalityCommands.GetChat(personalityId: personalityId)
+                )
+                try await database.write(
+                    ChatCommands.UpdateChatModel(chatId: chatId, modelId: selectedModelId)
+                )
+            }
+
+            let trimmedSoul: String = soul.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmedSoul.isEmpty {
+                try await database.write(
+                    MemoryCommands.UpsertPersonalitySoul(
+                        personalityId: personalityId,
+                        content: trimmedSoul
+                    )
+                )
+            }
+        } catch {
+            modelErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func refreshProviderKeyStatus() async {
+        var status: [RemoteProviderType: Bool] = [:]
+        for provider in RemoteProviderType.allCases {
+            status[provider] = await apiKeyManager.hasKey(for: provider)
+        }
+        providerKeyStatus = status
     }
 }
 
-// MARK: - Preview
-
 #if DEBUG
-    #Preview(traits: .modifier(PreviewDatabase())) {
-        @Previewable @State var isPresented: Bool = true
-        PersonalityCreationView(
-            isPresented: $isPresented,
-            chatViewModel: PreviewChatViewModel()
-        )
-    }
+#Preview {
+    PersonalityCreationView(
+        isPresented: .constant(true),
+        chatViewModel: PreviewChatViewModel()
+    )
+    .withDatabase()
+}
 #endif

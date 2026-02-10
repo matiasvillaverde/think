@@ -32,7 +32,7 @@ internal struct RatingView: View {
     private var ratingWithLaurels: some View {
         HStack(spacing: spacing) {
             Image(systemName: "laurel.leading")
-                .accessibilityLabel("Leading laurel")
+                .accessibilityLabel(Text("Leading laurel", bundle: .module))
 
             Text(rating.formatted(
                 .number.precision(.fractionLength(1))
@@ -40,7 +40,7 @@ internal struct RatingView: View {
             .monospaced()
 
             Image(systemName: "laurel.trailing")
-                .accessibilityLabel("Trailing laurel")
+                .accessibilityLabel(Text("Trailing laurel", bundle: .module))
         }
     }
 
@@ -57,7 +57,7 @@ internal struct RatingView: View {
             .symbolVariant(.fill)
             .imageScale(.small)
             .foregroundStyle(starGradient(for: position))
-            .accessibilityLabel("Star \(position)")
+            .accessibilityLabel(Text("Star \(position)", bundle: .module))
     }
 
     private func starGradient(for position: Int) -> LinearGradient {

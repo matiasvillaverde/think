@@ -105,9 +105,11 @@ public struct ChartDataPointOverlay: View {
             }
         }
         .accessibilityElement()
-        .accessibilityLabel("\(dataPoint.label): \(dataPoint.value)")
+        .accessibilityLabel(
+            Text("\(dataPoint.label): \(dataPoint.value)", bundle: .module)
+        )
         .accessibilityAddTraits(.isButton)
-        .accessibilityHint("Double tap to select")
+        .accessibilityHint(Text("Double tap to select", bundle: .module))
     }
 
     private var tooltipView: some View {
@@ -275,7 +277,7 @@ public struct ChartAnnotationOverlay: View {
                     Image(systemName: icon)
                         .font(.caption)
                         .foregroundColor(annotation.color)
-                        .accessibilityLabel("Annotation icon")
+                        .accessibilityLabel(Text("Annotation icon", bundle: .module))
                 }
 
                 Text(annotation.text)

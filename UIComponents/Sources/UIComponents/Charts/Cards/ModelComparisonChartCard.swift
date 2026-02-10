@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Model Comparison Chart wrapped in a card container
@@ -33,6 +34,10 @@ public struct ModelComparisonChartCard: View {
         case latency = "Latency"
         case memory = "Memory"
 
+        var displayName: String {
+            rawValue
+        }
+
         var unit: String {
             switch self {
             case .speed:
@@ -64,6 +69,10 @@ public struct ModelComparisonChartCard: View {
                 "Memory (MB)"
             }
         }
+
+        var localizedFullName: String {
+            fullName
+        }
     }
 
     private struct ModelData: Identifiable {
@@ -79,8 +88,8 @@ public struct ModelComparisonChartCard: View {
 
     public var body: some View {
         ChartCard(
-            title: "Model Comparison",
-            subtitle: "\(uniqueModelNames.count) models",
+            title: String(localized: "Model Comparison", bundle: .module),
+            subtitle: String(localized: "\(uniqueModelNames.count) models", bundle: .module),
             systemImage: "chart.line.uptrend.xyaxis.circle"
         ) {
             chartContent
@@ -93,9 +102,9 @@ public struct ModelComparisonChartCard: View {
         VStack(spacing: ChartConstants.Layout.cardSpacing) {
             if modelData.isEmpty {
                 ContentUnavailableView(
-                    "No Comparison Data",
+                    String(localized: "No Comparison Data", bundle: .module),
                     systemImage: "chart.xyaxis.line",
-                    description: Text("Model comparison data will appear here")
+                    description: Text("Model comparison data will appear here", bundle: .module)
                 )
                 .frame(height: Constants.chartHeight)
             } else {
@@ -109,7 +118,7 @@ public struct ModelComparisonChartCard: View {
         Chart(dataHasAppeared ? modelData : []) { data in
             LineMark(
                 x: .value("Date", data.date),
-                y: .value(selectedMetric.fullName, data.value),
+                y: .value(selectedMetric.localizedFullName, data.value),
                 series: .value("Model", data.modelName)
             )
             .foregroundStyle(by: .value("Model", data.modelName))
@@ -118,7 +127,7 @@ public struct ModelComparisonChartCard: View {
 
             PointMark(
                 x: .value("Date", data.date),
-                y: .value(selectedMetric.fullName, data.value)
+                y: .value(selectedMetric.localizedFullName, data.value)
             )
             .foregroundStyle(by: .value("Model", data.modelName))
             .symbolSize(Constants.symbolSize)
@@ -130,7 +139,7 @@ public struct ModelComparisonChartCard: View {
                 AxisGridLine()
             }
         }
-        .chartYAxisLabel("\(selectedMetric.rawValue) (\(selectedMetric.unit))")
+        .chartYAxisLabel("\(selectedMetric.displayName) (\(selectedMetric.unit))")
         .chartLegend(.hidden)
         .chartPlotStyle { plotArea in
             plotArea
@@ -176,7 +185,7 @@ public struct ModelComparisonChartCard: View {
 
                         // Show latest value
                         if let latestValue = getLatestValue(for: modelName) {
-                            Text("(\(formatValue(latestValue)))")
+                            Text(verbatim: "(\(formatValue(latestValue)))")
                                 .font(.caption)
                                 .foregroundColor(Color.textSecondary)
                         }
@@ -189,19 +198,20 @@ public struct ModelComparisonChartCard: View {
     private var controlsContent: some View {
         VStack(spacing: ChartConstants.Layout.cardSpacing) {
             // Metric selector
-            Picker("Metric", selection: $selectedMetric) {
+            Picker(selection: $selectedMetric) {
                 ForEach(MetricType.allCases, id: \.self) { metric in
-                    Text(metric.rawValue).tag(metric)
+                    Text(metric.displayName).tag(metric)
                 }
+            } label: {
+                Text("Metric", bundle: .module)
             }
             .pickerStyle(.segmented)
 
             // Show all models toggle
             if uniqueModelNames.count > Constants.maxModelsToShow {
-                Toggle(
-                    "Show all \(uniqueModelNames.count) models",
-                    isOn: $showAllModels
-                )
+                Toggle(isOn: $showAllModels) {
+                    Text("Show all \(uniqueModelNames.count) models", bundle: .module)
+                }
                 .font(.subheadline)
             }
         }

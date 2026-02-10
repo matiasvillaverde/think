@@ -80,7 +80,9 @@ internal struct DiscoveryModelDetailImageGallery: View {
                     )
                     .background(Color.backgroundSecondary)
                     .cornerRadius(DesignConstants.Radius.standard)
-                    .accessibilityLabel("Image \(index + 1) of \(imageUrls.count)")
+                    .accessibilityLabel(
+                        Text("Image \(index + 1) of \(imageUrls.count)", bundle: .module)
+                    )
                 }
             }
             .padding(.horizontal, DesignConstants.Spacing.large)

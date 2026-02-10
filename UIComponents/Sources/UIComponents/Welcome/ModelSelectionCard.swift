@@ -49,7 +49,7 @@ internal struct ModelSelectionCard: View {
                     }
                 }
 
-                Text("by \(model.author)")
+                Text("by \(model.author)", bundle: .module)
                     .font(.caption)
                     .foregroundColor(.textSecondary)
             }

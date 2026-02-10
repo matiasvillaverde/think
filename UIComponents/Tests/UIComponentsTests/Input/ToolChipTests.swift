@@ -11,7 +11,6 @@ internal struct ToolChipTests {
         // Test that each ToolIdentifier has the correct icon
         let testCases: [(ToolIdentifier, String)] = [
             (.imageGeneration, "photo"),
-            (.reasoning, "lightbulb"),
             (.browser, "globe"),
             (.functions, "hammer.fill"),
             (.python, "laptopcomputer"),
@@ -44,11 +43,11 @@ internal struct ToolChipTests {
     @Test("ToolChip has correct accessibility label")
     @MainActor
     internal func testAccessibilityLabel() {
-        _ = ToolChip(tool: .reasoning) {
+        _ = ToolChip(tool: .browser) {
             // Remove action
         }
         // The accessibility label should include the tool's raw value
-        // Expected: "Reason selected"
+        // Expected: "<tool> selected"
         #expect(Bool(true)) // Placeholder for SwiftUI accessibility testing
     }
 }

@@ -43,13 +43,13 @@ internal struct PersonalityListContentView: View {
         .toolbar {
             #if os(macOS)
                 ToolbarItem(placement: .automatic) {
-                    Button("Close") {
+                    Button(String(localized: "Close", bundle: .module)) {
                         isShowing = false
                     }
                 }
             #else
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Close") {
+                    Button(String(localized: "Close", bundle: .module)) {
                         isShowing = false
                     }
                 }

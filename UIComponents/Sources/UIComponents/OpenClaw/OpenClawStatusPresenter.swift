@@ -1,4 +1,5 @@
 import Abstractions
+import Foundation
 
 internal enum OpenClawStatusLevel: Sendable, Equatable {
     case error
@@ -21,7 +22,7 @@ internal enum OpenClawStatusPresenter {
         if !hasActiveInstance {
             return OpenClawStatusStyle(
                 symbolName: "antenna.radiowaves.left.and.right.slash",
-                label: "OpenClaw: Off",
+                label: String(localized: "OpenClaw: Off", bundle: .module),
                 level: .neutral
             )
         }
@@ -30,35 +31,38 @@ internal enum OpenClawStatusPresenter {
         case .idle:
             return OpenClawStatusStyle(
                 symbolName: "antenna.radiowaves.left.and.right",
-                label: "OpenClaw: Idle",
+                label: String(localized: "OpenClaw: Idle", bundle: .module),
                 level: .neutral
             )
 
         case .connecting:
             return OpenClawStatusStyle(
                 symbolName: "antenna.radiowaves.left.and.right",
-                label: "OpenClaw: Connecting",
+                label: String(localized: "OpenClaw: Connecting", bundle: .module),
                 level: .warning
             )
 
         case .connected:
             return OpenClawStatusStyle(
                 symbolName: "antenna.radiowaves.left.and.right",
-                label: "OpenClaw: Connected",
+                label: String(localized: "OpenClaw: Connected", bundle: .module),
                 level: .success
             )
 
         case .pairingRequired:
             return OpenClawStatusStyle(
                 symbolName: "exclamationmark.triangle.fill",
-                label: "OpenClaw: Pairing Required",
+                label: String(
+                    localized: "OpenClaw: Pairing Required",
+                    bundle: .module
+                ),
                 level: .warning
             )
 
         case .failed:
             return OpenClawStatusStyle(
                 symbolName: "xmark.octagon.fill",
-                label: "OpenClaw: Failed",
+                label: String(localized: "OpenClaw: Failed", bundle: .module),
                 level: .error
             )
         }

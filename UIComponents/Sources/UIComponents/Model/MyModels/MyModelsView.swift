@@ -29,10 +29,16 @@ internal struct MyModelsView: View {
     @Environment(\.modelActionsViewModel)
     private var modelActions: ModelDownloaderViewModeling
 
+    @Environment(\.generator)
+    private var generator: ViewModelGenerating
+
     @State private var showImportOptions: Bool = false
     @State private var showGGUFImporter: Bool = false
     @State private var showMLXImporter: Bool = false
     @State private var importErrorMessage: String?
+
+    @State private var providerKeyStatus: [RemoteProviderType: Bool] = [:]
+    @State private var remoteKeyEntryRequest: RemoteProviderType?
 
     #if os(macOS)
         @Environment(\.openWindow)
@@ -44,15 +50,23 @@ internal struct MyModelsView: View {
     // MARK: - Computed Properties
 
     private var downloadingModels: [Model] {
-        models.filter { $0.state?.isDownloading == true }
+        models.filter { $0.locationKind != .remote && $0.state?.isDownloading == true }
     }
 
     private var downloadedModels: [Model] {
-        models.filter { $0.state?.isDownloaded == true && $0.state?.isDownloading != true }
+        models.filter { model in
+            model.locationKind != .remote &&
+                model.state?.isDownloaded == true &&
+                model.state?.isDownloading != true
+        }
+    }
+
+    private var remoteModels: [Model] {
+        models.filter { $0.locationKind == .remote }
     }
 
     private var hasModels: Bool {
-        !downloadingModels.isEmpty || !downloadedModels.isEmpty
+        !downloadingModels.isEmpty || !downloadedModels.isEmpty || !remoteModels.isEmpty
     }
 
     // MARK: - Body
@@ -68,6 +82,12 @@ internal struct MyModelsView: View {
             }
         }
         .background(Color.backgroundPrimary)
+        .background(
+            RemoteAPIKeyCoordinator(
+                providerKeyStatus: $providerKeyStatus,
+                keyEntryRequest: $remoteKeyEntryRequest
+            )
+        )
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -137,6 +157,10 @@ internal struct MyModelsView: View {
     private var modelsContent: some View {
         ScrollView {
             VStack(spacing: DesignConstants.Spacing.large) {
+                if !remoteModels.isEmpty {
+                    remoteModelsSection
+                }
+
                 if !downloadingModels.isEmpty {
                     downloadingSection
                 }
@@ -148,6 +172,27 @@ internal struct MyModelsView: View {
             .padding(.horizontal, DesignConstants.Spacing.large)
             .padding(.vertical, DesignConstants.Spacing.large)
         }
+    }
+
+    private var remoteModelsSection: some View {
+        RemoteConfiguredModelsSection(
+            models: remoteModels,
+            chat: chat,
+            providerKeyStatus: providerKeyStatus,
+            onSelect: { model in
+                Task {
+                    await generator.modify(chatId: chat.id, modelId: model.id)
+                }
+            },
+            onDelete: { model in
+                Task {
+                    await modelActions.delete(modelId: model.id)
+                }
+            },
+            onAddKey: { provider in
+                remoteKeyEntryRequest = provider
+            }
+        )
     }
 
     private var emptyStateContent: some View {
@@ -174,7 +219,7 @@ internal struct MyModelsView: View {
                 Image(systemName: "arrow.down.circle.fill")
                     .foregroundColor(.accentColor)
                     .font(.title2)
-                    .accessibilityLabel("Downloading")
+                    .accessibilityLabel(Text("Downloading", bundle: .module))
 
                 Text("Downloading", bundle: .module)
                     .font(.title2)

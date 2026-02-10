@@ -67,7 +67,9 @@ public struct DashboardContainer: View {
                     modelName: modelName
                 )
             } else {
-                emptyStateView("No model selected")
+                emptyStateView(
+                    String(localized: "No model selected", bundle: .module)
+                )
             }
 
         case .singleMetric:
@@ -78,7 +80,9 @@ public struct DashboardContainer: View {
                     systemPrompt: nil
                 )
             } else {
-                emptyStateView("No single metric available")
+                emptyStateView(
+                    String(localized: "No single metric available", bundle: .module)
+                )
             }
         }
     }
@@ -88,7 +92,7 @@ public struct DashboardContainer: View {
             Image(systemName: "chart.xyaxis.line")
                 .font(.system(size: Constants.emptyStateIconSize))
                 .foregroundColor(Color.textSecondary)
-                .accessibilityLabel("Empty chart")
+                .accessibilityLabel(Text("Empty chart", bundle: .module))
 
             Text(message)
                 .font(.headline)

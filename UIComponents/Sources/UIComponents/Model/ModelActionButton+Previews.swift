@@ -33,7 +33,7 @@ import SwiftUI
         )
 
         HStack {
-            Text("Test Model")
+            Text(verbatim: "Test Model")
                 .frame(maxWidth: .infinity, alignment: .leading)
             ModelActionButton(discoveredModel: discoveredModel)
         }

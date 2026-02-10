@@ -16,7 +16,7 @@ extension EntropyChartCard {
 
     private var averageStatView: some View {
         VStack(alignment: .leading, spacing: Constants.statSpacing) {
-            Text("Average")
+            Text("Average", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             Text(String(format: "%.2f", averageEntropy))
@@ -27,10 +27,10 @@ extension EntropyChartCard {
 
     private var trendStatView: some View {
         VStack(alignment: .leading, spacing: Constants.statSpacing) {
-            Text("Trend")
+            Text("Trend", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
-            Text(entropyTrend)
+            Text(entropyTrend.displayName)
                 .font(.subheadline.weight(.bold))
                 .foregroundColor(trendColor)
         }
@@ -39,7 +39,7 @@ extension EntropyChartCard {
     @ViewBuilder private var minStatView: some View {
         if let min = entropyData.map(\.entropy).min() {
             VStack(alignment: .leading, spacing: Constants.statSpacing) {
-                Text("Min")
+                Text("Min", bundle: .module)
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
                 Text(String(format: "%.2f", min))
@@ -52,7 +52,7 @@ extension EntropyChartCard {
     @ViewBuilder private var maxStatView: some View {
         if let max = entropyData.map(\.entropy).max() {
             VStack(alignment: .leading, spacing: Constants.statSpacing) {
-                Text("Max")
+                Text("Max", bundle: .module)
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
                 Text(String(format: "%.2f", max))

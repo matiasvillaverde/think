@@ -1,6 +1,15 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
+
+private struct TokenDistributionTokenData: Identifiable {
+    let id: UUID = .init()
+    let category: String
+    let count: Int
+    let percentage: Double
+    let color: Color
+}
 
 /// Token Distribution Donut Chart wrapped in a card container
 public struct TokenDistributionCard: View {
@@ -37,22 +46,14 @@ public struct TokenDistributionCard: View {
         static let legendStatsSpacing: CGFloat = 4
     }
 
-    private struct TokenData: Identifiable {
-        let id: UUID = .init()
-        let category: String
-        let count: Int
-        let percentage: Double
-        let color: Color
-    }
-
     public init(metrics: [Metrics]) {
         self.metrics = metrics
     }
 
     public var body: some View {
         ChartCard(
-            title: "Token Distribution",
-            subtitle: "Prompt vs Generated tokens",
+            title: String(localized: "Token Distribution", bundle: .module),
+            subtitle: String(localized: "Prompt vs Generated tokens", bundle: .module),
             systemImage: "chart.pie"
         ) {
             chartContent
@@ -65,9 +66,9 @@ public struct TokenDistributionCard: View {
         VStack(spacing: ChartConstants.Layout.cardSpacing) {
             if tokenData.isEmpty {
                 ContentUnavailableView(
-                    "No Token Data",
+                    String(localized: "No Token Data", bundle: .module),
                     systemImage: "chart.pie",
-                    description: Text("Token distribution will appear here")
+                    description: Text("Token distribution will appear here", bundle: .module)
                 )
                 .frame(height: Constants.chartSize)
             } else {
@@ -129,11 +130,11 @@ public struct TokenDistributionCard: View {
 
     private var centerLabel: some View {
         VStack(spacing: Constants.centerLabelSpacing) {
-            Text("\(totalTokens)")
+            Text(verbatim: "\(totalTokens)")
                 .font(.title2.weight(.bold))
                 .foregroundColor(Color.textPrimary)
 
-            Text("Total")
+            Text("Total", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
         }
@@ -157,7 +158,7 @@ public struct TokenDistributionCard: View {
     }
 
     @ViewBuilder
-    private func tokenLegendItem(for data: TokenData) -> some View {
+    private func tokenLegendItem(for data: TokenDistributionTokenData) -> some View {
         Button {
             withAnimation(.spring()) {
                 if selectedCategory == data.category {
@@ -188,18 +189,18 @@ public struct TokenDistributionCard: View {
         .buttonStyle(.plain)
     }
 
-    private func tokenLegendItemText(for data: TokenData) -> some View {
+    private func tokenLegendItemText(for data: TokenDistributionTokenData) -> some View {
         VStack(alignment: .leading, spacing: Constants.legendItemsSpacing) {
-            Text(data.category)
+            Text(verbatim: data.category)
                 .font(.subheadline)
                 .foregroundColor(Color.textPrimary)
 
             HStack(spacing: Constants.legendStatsSpacing) {
-                Text("\(data.count)")
+                Text(verbatim: "\(data.count)")
                     .font(.caption.weight(.bold))
                     .foregroundColor(Color.textPrimary)
 
-                Text("(\(String(format: "%.1f%%", data.percentage)))")
+                Text(verbatim: "(\(String(format: "%.1f%%", data.percentage)))")
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
             }
@@ -213,23 +214,27 @@ public struct TokenDistributionCard: View {
         ) {
             // Average tokens per message
             if !metrics.isEmpty {
+                let averageTokens: Int = totalTokens / metrics.count
                 TokenStatRow(
-                    label: "Avg per message",
-                    value: "\(totalTokens / metrics.count) tokens"
+                    label: String(localized: "Avg per message", bundle: .module),
+                    value: String(
+                        localized: "\(averageTokens) tokens",
+                        bundle: .module
+                    )
                 )
             }
 
             // Token efficiency
             if let efficiency = tokenEfficiency {
                 TokenStatRow(
-                    label: "Efficiency",
+                    label: String(localized: "Efficiency", bundle: .module),
                     value: String(format: "%.1f%%", efficiency)
                 )
             }
 
             // Messages analyzed
             StatRow(
-                label: "Messages",
+                label: String(localized: "Messages", bundle: .module),
                 value: "\(metrics.count)"
             )
         }
@@ -237,14 +242,16 @@ public struct TokenDistributionCard: View {
 
     private var controlsContent: some View {
         VStack(spacing: ChartConstants.Layout.cardSpacing) {
-            Toggle("Show detailed statistics", isOn: $showDetails)
-                .font(.subheadline)
+            Toggle(isOn: $showDetails) {
+                Text("Show detailed statistics", bundle: .module)
+            }
+            .font(.subheadline)
         }
     }
 
     // MARK: - Data Processing
 
-    private var tokenData: [TokenData] {
+    private var tokenData: [TokenDistributionTokenData] {
         let totalPrompt: Int = metrics.reduce(0) { $0 + $1.promptTokens }
         let totalGenerated: Int = metrics.reduce(0) { $0 + $1.generatedTokens }
         let grandTotal: Int = totalPrompt + totalGenerated
@@ -254,14 +261,14 @@ public struct TokenDistributionCard: View {
         }
 
         return [
-            TokenData(
+            TokenDistributionTokenData(
                 category: "Prompt",
                 count: totalPrompt,
                 percentage: Double(totalPrompt) / Double(grandTotal) * Constants
                     .percentageMultiplier,
                 color: .blue
             ),
-            TokenData(
+            TokenDistributionTokenData(
                 category: "Generated",
                 count: totalGenerated,
                 percentage: Double(totalGenerated) / Double(grandTotal) * Constants

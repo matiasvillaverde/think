@@ -50,7 +50,7 @@ public struct OpenClawSettingsView: View {
 
     private var header: some View {
         HStack(spacing: Constants.headerHStackSpacing) {
-            Image(ImageResource(name: "openclaw-ghost", bundle: .module))
+            Image(ImageResource(name: "openclaw-claw", bundle: .module))
                 .resizable()
                 .scaledToFit()
                 .frame(width: Constants.headerImageSize, height: Constants.headerImageSize)
@@ -341,7 +341,6 @@ private struct OpenClawAddInstanceFormView: View {
             buttonsRow
         }
     }
-
     private var nameRow: some View {
         VStack(alignment: .leading, spacing: Constants.fieldSpacing) {
             Text(String(localized: "Name", bundle: .module))
@@ -351,21 +350,26 @@ private struct OpenClawAddInstanceFormView: View {
                 .textFieldStyle(.roundedBorder)
         }
     }
-
     private var urlRow: some View {
         VStack(alignment: .leading, spacing: Constants.fieldSpacing) {
             Text(String(localized: "URL", bundle: .module))
                 .font(.caption)
                 .foregroundStyle(Color.textSecondary)
-            TextField("wss://host.example/gateway", text: $urlString)
-                .textFieldStyle(.roundedBorder)
-                #if os(iOS)
+            TextField(
+                "",
+                text: $urlString,
+                prompt: Text(
+                    "wss://host.example/gateway",
+                    bundle: .module
+                )
+            )
+            .textFieldStyle(.roundedBorder)
+            #if os(iOS)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
-                #endif
+            #endif
         }
     }
-
     private var tokenRow: some View {
         VStack(alignment: .leading, spacing: Constants.fieldSpacing) {
             Text(String(localized: "Token", bundle: .module))
@@ -373,10 +377,10 @@ private struct OpenClawAddInstanceFormView: View {
                 .foregroundStyle(Color.textSecondary)
             SecureField(String(localized: "Optional", bundle: .module), text: $authToken)
                 .textFieldStyle(.roundedBorder)
-                #if os(iOS)
+            #if os(iOS)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
-                #endif
+            #endif
         }
     }
 

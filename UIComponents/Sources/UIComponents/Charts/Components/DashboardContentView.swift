@@ -84,13 +84,13 @@ private struct DashboardEmptyStateView: View {
             Image(systemName: "chart.bar.xaxis")
                 .font(.system(size: constants.iconWidth))
                 .foregroundColor(Color.textSecondary)
-                .accessibilityLabel("Empty chart icon")
+                .accessibilityLabel(Text("Empty chart icon", bundle: .module))
 
-            Text("No Metrics Available")
+            Text("No Metrics Available", bundle: .module)
                 .font(.headline)
                 .foregroundColor(Color.textSecondary)
 
-            Text("Start using the app to generate metrics")
+            Text("Start using the app to generate metrics", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
         }

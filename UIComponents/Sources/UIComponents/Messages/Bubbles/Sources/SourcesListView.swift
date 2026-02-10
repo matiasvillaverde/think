@@ -19,7 +19,7 @@ public struct SourcesListView: View {
                 }
             }
         }
-        .navigationTitle("Sources")
+        .navigationTitle(Text("Sources", bundle: .module))
     }
 }
 

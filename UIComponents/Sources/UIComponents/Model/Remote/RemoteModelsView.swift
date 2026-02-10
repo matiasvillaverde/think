@@ -3,8 +3,6 @@ import Database
 import RemoteSession
 import SwiftUI
 
-// MARK: - Remote Models View
-
 internal enum RemoteModelsViewConstants {
     static let freeBadgeHorizontalPadding: CGFloat = 6
     static let freeBadgeVerticalPadding: CGFloat = 2
@@ -28,6 +26,7 @@ internal struct RemoteModelsView: View {
     @State private var errorMessage: String?
     @State private var searchText: String = ""
     @State private var isKeyConfigured: Bool = false
+    @State private var lastSuccessfulModels: [RemoteModel] = []
 
     @State private var showingKeyEntry: Bool = false
     @State private var apiKeyInput: String = ""
@@ -37,13 +36,17 @@ internal struct RemoteModelsView: View {
     @State private var isSelectingModel: Bool = false
 
     var body: some View {
-        VStack(spacing: DesignConstants.Spacing.large) {
-            headerSection
-            providerPicker
-            keyStatusSection
-            contentSection
+        List {
+            providerSection
+            modelsSection
         }
-        .padding(DesignConstants.Spacing.large)
+        #if os(macOS)
+        .listStyle(.inset)
+        .searchable(text: $searchText, placement: .toolbar)
+        #else
+        .listStyle(.insetGrouped)
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic))
+        #endif
         .task(id: selectedProvider) {
             await refreshState()
             await loadModels()
@@ -53,114 +56,39 @@ internal struct RemoteModelsView: View {
         }
     }
 
-    // MARK: - Header
-
-    private var headerSection: some View {
-        VStack(alignment: .leading, spacing: DesignConstants.Spacing.small) {
-            Text("Remote Models", bundle: .module)
-                .font(.title2)
-                .fontWeight(.semibold)
-            Text(
-                "Use your provider API key to run models in the cloud.",
-                bundle: .module
-            )
-            .font(.subheadline)
-            .foregroundStyle(Color.textSecondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    // MARK: - Provider Picker
-
-    private var providerPicker: some View {
-        Picker("Provider", selection: $selectedProvider) {
-            ForEach(RemoteProviderType.allCases, id: \.self) { provider in
-                Text(provider.displayName).tag(provider)
-            }
-        }
-        #if os(macOS)
-        .pickerStyle(.segmented)
-        #else
-        .pickerStyle(.segmented)
-        #endif
-    }
-
-    // MARK: - API Key Status
-
-    private var keyStatusSection: some View {
-        HStack(spacing: DesignConstants.Spacing.standard) {
-            if isKeyConfigured {
-                Label {
-                    Text("API key configured", bundle: .module)
-                } icon: {
-                    Image(systemName: "checkmark.seal.fill")
-                        .foregroundStyle(.green)
-                        .accessibilityHidden(true)
-                }
-            } else {
-                Label {
-                    Text("API key required", bundle: .module)
-                } icon: {
-                    Image(systemName: "key")
-                        .foregroundStyle(.orange)
-                        .accessibilityHidden(true)
-                }
-            }
-
-            Spacer()
-
-            Button {
-                apiKeyInput = ""
-                keyErrorMessage = nil
-                showingKeyEntry = true
-            } label: {
-                Text(isKeyConfigured ? "Update Key" : "Add Key", bundle: .module)
-            }
-            .buttonStyle(.bordered)
+    private var providerSection: some View {
+        RemoteModelsProviderSection(
+            selectedProvider: $selectedProvider,
+            isKeyConfigured: isKeyConfigured
+        ) {
+            apiKeyInput = ""
+            keyErrorMessage = nil
+            showingKeyEntry = true
         }
     }
 
-    // MARK: - Content
-
-    @ViewBuilder private var contentSection: some View {
-        if !isKeyConfigured {
-            RemoteModelsKeyRequiredView(
-                providerName: selectedProvider.displayName
-            ) {
+    private var modelsSection: some View {
+        RemoteModelsModelsSection(
+            providerName: selectedProvider.displayName,
+            isKeyConfigured: isKeyConfigured,
+            isLoading: isLoading,
+            errorMessage: errorMessage,
+            searchText: searchText,
+            models: filteredModels,
+            freeModels: freeModels,
+            paidModels: paidModels,
+            otherModels: otherModels,
+            isSelectingModel: isSelectingModel,
+            isSelected: { isSelected($0) },
+            onSelect: { select($0) },
+            onRetry: { Task { await loadModels() } },
+            onShowKeyEntry: {
                 apiKeyInput = ""
                 keyErrorMessage = nil
                 showingKeyEntry = true
             }
-        } else if isLoading {
-            ProgressView()
-                .frame(maxWidth: .infinity, alignment: .center)
-        } else if let errorMessage {
-            ContentUnavailableView(
-                "Unable to Load Models",
-                systemImage: "exclamationmark.triangle.fill",
-                description: Text(errorMessage)
-            )
-        } else if filteredModels.isEmpty {
-            ContentUnavailableView(
-                "No Models Found",
-                systemImage: "sparkles",
-                description: Text(
-                    "Try a different provider or adjust your search.",
-                    bundle: .module
-                )
-            )
-        } else {
-            RemoteModelsListView(
-                models: filteredModels,
-                searchText: $searchText,
-                isSelectingModel: isSelectingModel,
-                isSelected: isSelected,
-                onSelect: select
-            )
-        }
+        )
     }
-
-    // MARK: - Key Entry Sheet
 
     @ViewBuilder private var keyEntrySheet: some View {
         APIKeyEntrySheet(
@@ -173,13 +101,15 @@ internal struct RemoteModelsView: View {
         )
     }
 
-    // MARK: - Actions
-
     private func refreshState() async {
         models = await remoteModelsViewModel.models
         isLoading = await remoteModelsViewModel.isLoading
         errorMessage = await remoteModelsViewModel.errorMessage
         isKeyConfigured = await remoteModelsViewModel.hasAPIKey(for: selectedProvider)
+
+        if errorMessage == nil, !models.isEmpty {
+            lastSuccessfulModels = models
+        }
     }
 
     private func loadModels() async {
@@ -198,6 +128,7 @@ internal struct RemoteModelsView: View {
 
         do {
             try await remoteModelsViewModel.saveAPIKey(apiKeyInput, for: selectedProvider)
+            NotificationCenter.default.post(name: .remoteAPIKeysDidChange, object: nil)
             dismissKeyEntry()
             await refreshState()
             await loadModels()
@@ -240,7 +171,10 @@ internal struct RemoteModelsView: View {
     }
 
     private var filteredModels: [RemoteModel] {
-        let languageOnly: [RemoteModel] = models.filter { model in
+        // If we hit an error, prefer showing the last good list instead of an empty state.
+        let base: [RemoteModel] = models.isEmpty ? lastSuccessfulModels : models
+
+        let languageOnly: [RemoteModel] = base.filter { model in
             switch model.type {
             case .language, .deepLanguage, .flexibleThinker:
                 return true
@@ -259,92 +193,8 @@ internal struct RemoteModelsView: View {
                 model.modelId.localizedCaseInsensitiveContains(searchText)
         }
     }
-}
 
-// MARK: - Remote Model Row
-
-internal struct RemoteModelRow: View {
-    let model: RemoteModel
-    let isSelected: Bool
-    let isSelecting: Bool
-    let onSelect: () -> Void
-
-    var body: some View {
-        HStack(alignment: .top, spacing: DesignConstants.Spacing.standard) {
-            detailsSection
-            Spacer()
-            actionSection
-        }
-        .padding(.vertical, DesignConstants.Spacing.small)
-    }
-
-    private var detailsSection: some View {
-        VStack(alignment: .leading, spacing: DesignConstants.Spacing.small) {
-            titleRow
-            modelIdRow
-            descriptionRow
-            contextRow
-        }
-    }
-
-    private var titleRow: some View {
-        HStack(spacing: DesignConstants.Spacing.small) {
-            Text(model.displayName)
-                .font(.headline)
-
-            if model.pricing == .free {
-                Text("Free", bundle: .module)
-                    .font(.caption2)
-                    .padding(.horizontal, RemoteModelsViewConstants.freeBadgeHorizontalPadding)
-                    .padding(.vertical, RemoteModelsViewConstants.freeBadgeVerticalPadding)
-                    .background(
-                        Color.paletteGreen.opacity(RemoteModelsViewConstants.freeBadgeOpacity)
-                    )
-                    .clipShape(Capsule())
-            }
-        }
-    }
-
-    private var modelIdRow: some View {
-        Text(model.modelId)
-            .font(.caption)
-            .foregroundStyle(Color.textSecondary)
-    }
-
-    @ViewBuilder private var descriptionRow: some View {
-        if let description = model.description, !description.isEmpty {
-            Text(description)
-                .font(.footnote)
-                .foregroundStyle(Color.textSecondary)
-                .lineLimit(RemoteModelsViewConstants.descriptionLineLimit)
-        }
-    }
-
-    @ViewBuilder private var contextRow: some View {
-        if let contextLength = model.contextLength {
-            Text("Context: \(contextLength) tokens", bundle: .module)
-                .font(.caption)
-                .foregroundStyle(Color.textSecondary)
-        }
-    }
-
-    @ViewBuilder private var actionSection: some View {
-        if isSelected {
-            Label("Selected", systemImage: "checkmark.circle.fill")
-                .labelStyle(.titleAndIcon)
-                .foregroundStyle(.green)
-        } else {
-            Button {
-                onSelect()
-            } label: {
-                if isSelecting {
-                    ProgressView()
-                } else {
-                    Text("Use", bundle: .module)
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(isSelecting)
-        }
-    }
+    private var freeModels: [RemoteModel] { filteredModels.filter { $0.pricing == .free } }
+    private var paidModels: [RemoteModel] { filteredModels.filter { $0.pricing == .paid } }
+    private var otherModels: [RemoteModel] { filteredModels.filter { $0.pricing == .unknown } }
 }

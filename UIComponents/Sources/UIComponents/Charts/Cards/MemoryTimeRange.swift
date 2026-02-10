@@ -9,6 +9,10 @@ public enum MemoryTimeRange: String, CaseIterable {
     case last20 = "Last 20"
     case last5 = "Last 5"
 
+    var displayName: String {
+        rawValue
+    }
+
     private enum Constants {
         static let last5Count: Int = 5
         static let last10Count: Int = 10

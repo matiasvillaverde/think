@@ -42,6 +42,6 @@ extension SettingsView {
             ),
             systemImage: "chart.line.uptrend.xyaxis"
         )
-        .accessibility(label: Text("Analytics tab"))
+        .accessibility(label: Text("Analytics tab", bundle: .module))
     }
 }

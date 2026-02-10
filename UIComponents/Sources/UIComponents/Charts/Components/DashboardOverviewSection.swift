@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Overview statistics section of the dashboard
@@ -9,7 +10,7 @@ internal struct DashboardOverviewSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppWideDashboard.Constants.spacing) {
-            Text("Overview Statistics")
+            Text("Overview Statistics", bundle: .module)
                 .font(.headline)
                 .padding(.bottom, AppWideDashboard.Constants.headerSpacing)
 
@@ -40,25 +41,25 @@ internal struct DashboardOverviewSection: View {
             spacing: AppWideDashboard.Constants.spacing
         ) {
             StatCard(
-                title: "Avg Tokens/Second",
+                title: String(localized: "Avg Tokens/Second", bundle: .module),
                 value: String(format: "%.1f", processor.cachedStatistics.averageTokensPerSecond),
                 icon: "speedometer",
                 color: .blue
             )
             StatCard(
-                title: "Total Tokens",
+                title: String(localized: "Total Tokens", bundle: .module),
                 value: formatNumber(processor.cachedStatistics.totalTokens),
                 icon: "number",
                 color: .green
             )
             StatCard(
-                title: "Avg Response Time",
+                title: String(localized: "Avg Response Time", bundle: .module),
                 value: String(format: "%.2fs", processor.cachedStatistics.averageResponseTime),
                 icon: "timer",
                 color: .orange
             )
             StatCard(
-                title: "Active Models",
+                title: String(localized: "Active Models", bundle: .module),
                 value: "\(processor.cachedStatistics.uniqueModelsCount)",
                 icon: "cpu",
                 color: .purple
@@ -96,7 +97,7 @@ private struct StatCard: View {
                 .font(.title2)
                 .foregroundStyle(color)
                 .frame(width: AppWideDashboard.Constants.iconWidth)
-                .accessibilityLabel("\(title) icon")
+                .accessibilityLabel(Text("\(title) icon", bundle: .module))
 
             VStack(alignment: .leading) {
                 Text(title)

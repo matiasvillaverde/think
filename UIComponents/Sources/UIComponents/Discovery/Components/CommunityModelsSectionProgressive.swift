@@ -146,7 +146,9 @@ internal struct CommunityModelsSectionProgressive: View {
             if loadingStates[community] == true {
                 ProgressView()
                     .scaleEffect(Constants.scaleLoadingProgress)
-                    .accessibilityLabel("Loading \(community.displayName) models")
+                    .accessibilityLabel(
+                        Text("Loading \(community.displayName) models", bundle: .module)
+                    )
             }
         }
     }

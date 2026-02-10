@@ -17,6 +17,10 @@ internal enum HeatMapColorScheme: String, CaseIterable {
     case inferno = "Inferno"
     case plasma = "Plasma"
     case viridis = "Viridis"
+
+    var displayName: String {
+        rawValue
+    }
 }
 
 // MARK: - View Model

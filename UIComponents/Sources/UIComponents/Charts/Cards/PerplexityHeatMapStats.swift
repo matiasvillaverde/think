@@ -27,7 +27,7 @@ internal struct PerplexityHeatMapStats: View {
 
     private var averagePerplexityView: some View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
-            Text("Average")
+            Text("Average", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             Text(String(format: "%.3f", viewModel.averagePerplexity(for: heatMapData)))
@@ -38,7 +38,7 @@ internal struct PerplexityHeatMapStats: View {
 
     private var rangeView: some View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
-            Text("Range")
+            Text("Range", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
             Text(String(
@@ -57,11 +57,11 @@ internal struct PerplexityHeatMapStats: View {
                 .frame(height: Constants.dividerHeight)
 
             VStack(alignment: .leading, spacing: Constants.selectedInfoSpacing) {
-                Text("Selected")
+                Text("Selected", bundle: .module)
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
                 HStack(spacing: Constants.selectedInfoSpacing) {
-                    Text("[\(cell.row), \(cell.column)]")
+                    Text(verbatim: "[\(cell.row), \(cell.column)]")
                         .font(.caption.weight(.medium))
                     Text(String(format: "%.3f", cell.value))
                         .font(.caption.weight(.bold))

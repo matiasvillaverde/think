@@ -26,14 +26,15 @@ internal struct PerformanceStats: View {
                 .fill(metric.color)
                 .frame(width: Constants.legendCircleSize, height: Constants.legendCircleSize)
 
-            Text(metric.rawValue)
+            Text(metric.displayName)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
             Spacer()
 
             if let latestValue = viewModel.getLatestValue(for: metric, timeRange: timeRange) {
-                Text("\(viewModel.formatValue(latestValue, unit: metric.unit)) \(metric.unit)")
+                let value: String = viewModel.formatValue(latestValue, unit: metric.unit)
+                Text(verbatim: "\(value) \(metric.unit)")
                     .font(.caption.weight(.medium))
                     .foregroundColor(Color.textPrimary)
             }

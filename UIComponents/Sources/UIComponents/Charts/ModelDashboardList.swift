@@ -29,7 +29,7 @@ public struct ModelDashboardList: View {
                 dashboardContent
             }
         }
-        .navigationTitle("Model Analytics")
+        .navigationTitle(Text("Model Analytics", bundle: .module))
         #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
         #endif
@@ -37,44 +37,55 @@ public struct ModelDashboardList: View {
 
     private var dashboardContent: some View {
         Group {
-            // Overview Section
-            ChartSection(title: "Overview") {
-                overviewCards
-            }
-
-            // Performance Section
-            ChartSection(
-                title: "Performance",
-                expandable: true
-            ) {
-                performanceCards
-            }
-
-            // Token Analysis Section
-            ChartSection(
-                title: "Token Analysis",
-                expandable: true
-            ) {
-                tokenCards
-            }
-
-            // Quality Metrics Section (if available)
+            overviewSection
+            performanceSection
+            tokenAnalysisSection
             if hasQualityMetrics {
-                ChartSection(
-                    title: "Quality Metrics",
-                    expandable: true
-                ) {
-                    qualityCards
-                }
+                qualityMetricsSection
             }
+            resourceUsageSection
+        }
+    }
 
-            // Resource Usage Section
-            ChartSection(
-                title: "Resource Usage",
-                expandable: true
-            ) {
-                resourceCards
-            }
+    private var overviewSection: some View {
+        ChartSection(title: String(localized: "Overview", bundle: .module)) {
+            overviewCards
+        }
+    }
+
+    private var performanceSection: some View {
+        ChartSection(
+            title: String(localized: "Performance", bundle: .module),
+            expandable: true
+        ) {
+            performanceCards
+        }
+    }
+
+    private var tokenAnalysisSection: some View {
+        ChartSection(
+            title: String(localized: "Token Analysis", bundle: .module),
+            expandable: true
+        ) {
+            tokenCards
+        }
+    }
+
+    private var qualityMetricsSection: some View {
+        ChartSection(
+            title: String(localized: "Quality Metrics", bundle: .module),
+            expandable: true
+        ) {
+            qualityCards
+        }
+    }
+
+    private var resourceUsageSection: some View {
+        ChartSection(
+            title: String(localized: "Resource Usage", bundle: .module),
+            expandable: true
+        ) {
+            resourceCards
         }
     }
 
@@ -208,13 +219,13 @@ public struct ModelDashboardList: View {
 
     private var emptyStateView: some View {
         ChartCard(
-            title: "No Data Available",
+            title: String(localized: "No Data Available", bundle: .module),
             systemImage: "chart.bar.xaxis"
         ) {
             ContentUnavailableView(
-                "No Metrics Yet",
+                String(localized: "No Metrics Yet", bundle: .module),
                 systemImage: "chart.line.uptrend.xyaxis",
-                description: Text("Start a conversation to see analytics")
+                description: Text("Start a conversation to see analytics", bundle: .module)
             )
             .frame(height: ChartConstants.Layout.chartHeight)
         }

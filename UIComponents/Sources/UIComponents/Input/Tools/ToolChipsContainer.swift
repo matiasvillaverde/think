@@ -28,13 +28,13 @@ internal struct ToolChipsContainer: View {
             }
 
             ToolChipsContainer(
-                tools: [.reasoning, .browser]
+                tools: [.browser]
             ) { _ in
                 // no-op
             }
 
             ToolChipsContainer(
-                tools: [.imageGeneration, .reasoning, .browser]
+                tools: [.imageGeneration, .browser]
             ) { _ in
                 // no-op
             }

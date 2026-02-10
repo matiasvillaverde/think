@@ -24,7 +24,6 @@ internal struct ChannelContainerView: View {
     // Properties for context menu support
     @Bindable var message: Message
     @Binding var showingSelectionView: Bool
-    @Binding var showingThinkingView: Bool
     @Binding var showingStatsView: Bool
     let copyTextAction: ((String) -> Void)?
     let shareTextAction: ((String) -> Void)?
@@ -39,7 +38,6 @@ internal struct ChannelContainerView: View {
         message: Message,
         toolExecutions: [ToolExecution] = [],
         showingSelectionView: Binding<Bool> = .constant(false),
-        showingThinkingView: Binding<Bool> = .constant(false),
         showingStatsView: Binding<Bool> = .constant(false),
         copyTextAction: ((String) -> Void)? = nil,
         shareTextAction: ((String) -> Void)? = nil
@@ -47,7 +45,6 @@ internal struct ChannelContainerView: View {
         self.toolExecutions = toolExecutions
         self.message = message
         self._showingSelectionView = showingSelectionView
-        self._showingThinkingView = showingThinkingView
         self._showingStatsView = showingStatsView
         self.copyTextAction = copyTextAction
         self.shareTextAction = shareTextAction
@@ -129,7 +126,6 @@ internal struct ChannelContainerView: View {
                 message: message,
                 associatedToolStatus: getToolStatus(for: channel),
                 showingSelectionView: $showingSelectionView,
-                showingThinkingView: $showingThinkingView,
                 showingStatsView: $showingStatsView,
                 copyTextAction: copyTextAction,
                 shareTextAction: shareTextAction
@@ -141,7 +137,6 @@ internal struct ChannelContainerView: View {
                 message: message,
                 associatedToolStatus: getToolStatus(for: channel),
                 showingSelectionView: $showingSelectionView,
-                showingThinkingView: $showingThinkingView,
                 showingStatsView: $showingStatsView,
                 copyTextAction: copyTextAction,
                 shareTextAction: shareTextAction
@@ -162,14 +157,12 @@ internal struct ChannelContainerView: View {
     #Preview("Channels Container") {
         @Previewable @State var message: Message = Message.previewComplexConversation
         @Previewable @State var showingSelection: Bool = false
-        @Previewable @State var showingThinking: Bool = false
         @Previewable @State var showingStats: Bool = false
 
         ChannelContainerView(
             message: message,
             toolExecutions: [],
             showingSelectionView: $showingSelection,
-            showingThinkingView: $showingThinking,
             showingStatsView: $showingStats,
             copyTextAction: { _ in
                 // no-op

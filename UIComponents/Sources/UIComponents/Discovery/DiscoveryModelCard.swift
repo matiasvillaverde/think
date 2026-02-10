@@ -149,7 +149,7 @@ internal struct DiscoveryModelCard: View {
                     value: model.name
                 )
 
-            Text("by \(model.author)")
+            Text("by \(model.author)", bundle: .module)
                 .font(.system(
                     size: DiscoveryConstants.FontSize.cardAuthor,
                     weight: .regular,

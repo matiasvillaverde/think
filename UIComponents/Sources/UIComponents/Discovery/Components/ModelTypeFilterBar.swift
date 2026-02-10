@@ -59,11 +59,11 @@ internal struct ModelTypeFilterBar: View {
         })
         .buttonStyle(.plain)
         .accessibilityAddTraits(selection == filter ? [.isSelected] : [])
-        .accessibilityLabel("\(filter.displayName) filter")
+        .accessibilityLabel(Text("\(filter.displayName) filter", bundle: .module))
         .accessibilityHint(
             selection == filter
-                ? "Currently selected"
-                : "Tap to filter by \(filter.displayName)"
+                ? Text("Currently selected", bundle: .module)
+                : Text("Tap to filter by \(filter.displayName)", bundle: .module)
         )
     }
 }
@@ -77,7 +77,7 @@ internal struct ModelTypeFilterBar: View {
         VStack(spacing: DesignConstants.Spacing.large) {
             ModelTypeFilterBar(selection: $selection)
 
-            Text("Selected: \(selection.displayName)")
+            Text("Selected: \(selection.displayName)", bundle: .module)
                 .font(.caption)
                 .foregroundColor(.textSecondary)
                 .padding()
@@ -91,7 +91,7 @@ internal struct ModelTypeFilterBar: View {
         VStack(spacing: DesignConstants.Spacing.huge) {
             ForEach(ModelTypeFilter.allCases) { filter in
                 VStack(alignment: .leading) {
-                    Text("Selection: \(filter.displayName)")
+                    Text("Selection: \(filter.displayName)", bundle: .module)
                         .font(.caption)
                         .foregroundColor(.textSecondary)
                         .padding(.horizontal)

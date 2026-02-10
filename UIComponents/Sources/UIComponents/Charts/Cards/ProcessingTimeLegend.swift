@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 internal struct ProcessingTimeLegend: View {
@@ -13,9 +14,9 @@ internal struct ProcessingTimeLegend: View {
         HStack(spacing: ChartConstants.Layout.sectionSpacing) {
             // Legend items
             ForEach([
-                ("Inference", Color.paletteBlue),
-                ("Tokenization", Color.paletteGreen),
-                ("Post-processing", Color.paletteOrange)
+                (String(localized: "Inference", bundle: .module), Color.paletteBlue),
+                (String(localized: "Tokenization", bundle: .module), Color.paletteGreen),
+                (String(localized: "Post-processing", bundle: .module), Color.paletteOrange)
             ], id: \.0) { label, color in
                 HStack(spacing: legendItemSpacing) {
                     RoundedRectangle(cornerRadius: Constants.legendCornerRadius)
@@ -31,7 +32,7 @@ internal struct ProcessingTimeLegend: View {
             Spacer()
 
             // Data point count
-            Text("\(processingData.count) metrics")
+            Text("\(processingData.count) metrics", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
         }

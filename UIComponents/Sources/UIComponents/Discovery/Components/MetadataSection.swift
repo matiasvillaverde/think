@@ -134,7 +134,7 @@ internal struct MetadataSection: View {
             Spacer()
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(item.label): \(item.value)")
+        .accessibilityLabel(Text("\(item.label): \(item.value)", bundle: .module))
     }
 
     private func interactiveRow(_ item: MetadataItem, url: URL) -> some View {
@@ -172,7 +172,7 @@ internal struct MetadataSection: View {
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("\(item.label): \(item.value)")
+        .accessibilityLabel(Text("\(item.label): \(item.value)", bundle: .module))
         .accessibilityHint(String(localized: "Tap to open link", bundle: .module))
         .accessibilityAddTraits(.isLink)
     }

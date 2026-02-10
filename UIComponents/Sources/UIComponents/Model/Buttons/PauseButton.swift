@@ -6,9 +6,13 @@ internal struct PauseButton: View {
 
     var body: some View {
         Button(action: action) {
-            Label("Pause", systemImage: "pause.fill")
-                .font(.caption)
-                .fixedSize(horizontal: true, vertical: false)
+            Label {
+                Text("Pause", bundle: .module)
+            } icon: {
+                Image(systemName: "pause.fill")
+            }
+            .font(.caption)
+            .fixedSize(horizontal: true, vertical: false)
         }
         .buttonStyle(.bordered)
         .accessibilityLabel(

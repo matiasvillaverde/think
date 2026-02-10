@@ -81,8 +81,8 @@ public struct MetricsSummaryCard: View {
             Image(systemName: "chart.bar.doc.horizontal")
                 .font(.system(size: Constants.iconSize))
                 .foregroundStyle(.blue)
-                .accessibilityLabel("Chart icon")
-            Text("Metrics Summary")
+                .accessibilityLabel(Text("Chart icon", bundle: .module))
+            Text("Metrics Summary", bundle: .module)
                 .font(.headline)
                 .foregroundStyle(Color.textPrimary)
             Spacer()
@@ -91,32 +91,37 @@ public struct MetricsSummaryCard: View {
 
     private var emptyStateView: some View {
         ContentUnavailableView(
-            "No Metrics Data",
+            String(localized: "No Metrics Data", bundle: .module),
             systemImage: "chart.bar",
-            description: Text("Metrics will appear here")
+            description: Text("Metrics will appear here", bundle: .module)
         )
         .frame(maxWidth: .infinity)
     }
 
     private func performanceSection(_ metrics: Metrics) -> some View {
         VStack(alignment: .leading, spacing: Constants.spacing / Constants.halfDivider) {
-            Label("Performance", systemImage: "speedometer")
+            Label {
+                Text("Performance", bundle: .module)
+            } icon: {
+                Image(systemName: "speedometer")
+                    .accessibilityHidden(true)
+            }
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
             metricRow(
-                label: "Tokens/Second",
+                label: String(localized: "Tokens/Second", bundle: .module),
                 value: String(format: Constants.decimalFormat, metrics.tokensPerSecond)
             )
             metricRow(
-                label: "Time to First Token",
+                label: String(localized: "Time to First Token", bundle: .module),
                 value: String(
                     format: Constants.intFormat,
                     (metrics.timeToFirstToken ?? 0) * Constants.millisecondsMultiplier
                 ) + " ms"
             )
             metricRow(
-                label: "Total Generation Time",
+                label: String(localized: "Total Generation Time", bundle: .module),
                 value: String(
                     format: Constants.intFormat,
                     metrics.totalTime * Constants.millisecondsMultiplier
@@ -127,13 +132,18 @@ public struct MetricsSummaryCard: View {
 
     private func qualitySection(_: Metrics) -> some View {
         VStack(alignment: .leading, spacing: Constants.spacing / Constants.halfDivider) {
-            Label("Quality", systemImage: "star")
+            Label {
+                Text("Quality", bundle: .module)
+            } icon: {
+                Image(systemName: "star")
+                    .accessibilityHidden(true)
+            }
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
             // Quality metrics are not available in current Metrics model
             // Showing placeholder message
-            Text("Quality metrics coming soon")
+            Text("Quality metrics coming soon", bundle: .module)
                 .font(.caption)
                 .foregroundStyle(Color.textSecondary)
                 .italic()
@@ -142,12 +152,17 @@ public struct MetricsSummaryCard: View {
 
     private func resourceSection(_ metrics: Metrics) -> some View {
         VStack(alignment: .leading, spacing: Constants.spacing / Constants.halfDivider) {
-            Label("Resources", systemImage: "cpu")
+            Label {
+                Text("Resources", bundle: .module)
+            } icon: {
+                Image(systemName: "cpu")
+                    .accessibilityHidden(true)
+            }
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
             metricRow(
-                label: "Peak Memory",
+                label: String(localized: "Peak Memory", bundle: .module),
                 value: formatMemory(Int(metrics.peakMemory))
             )
             if let contextTokensUsed = metrics.contextTokensUsed,
@@ -155,7 +170,7 @@ public struct MetricsSummaryCard: View {
                 contextWindowSize > 0 {
                 let utilization: Double = Double(contextTokensUsed) / Double(contextWindowSize)
                 metricRow(
-                    label: "Context Usage",
+                    label: String(localized: "Context Usage", bundle: .module),
                     value: String(
                         format: Constants.percentFormat,
                         utilization * Constants.percentMultiplier
@@ -163,7 +178,7 @@ public struct MetricsSummaryCard: View {
                 )
             }
             metricRow(
-                label: "Total Tokens",
+                label: String(localized: "Total Tokens", bundle: .module),
                 value: "\(metrics.promptTokens + metrics.generatedTokens)"
             )
         }

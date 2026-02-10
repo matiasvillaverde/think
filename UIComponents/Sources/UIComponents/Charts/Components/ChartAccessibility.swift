@@ -49,19 +49,19 @@ public enum ChartAccessibility {
     public static func interactionHint(for action: ChartAction) -> String {
         switch action {
         case .adjustTimeRange:
-            "Swipe to adjust time range"
+            String(localized: "Swipe to adjust time range", bundle: .module)
 
         case .collapse:
-            "Double tap to collapse chart"
+            String(localized: "Double tap to collapse chart", bundle: .module)
 
         case .expand:
-            "Double tap to expand chart"
+            String(localized: "Double tap to expand chart", bundle: .module)
 
         case .selectMetric:
-            "Double tap to change metric"
+            String(localized: "Double tap to change metric", bundle: .module)
 
         case .toggleOption:
-            "Double tap to toggle option"
+            String(localized: "Double tap to toggle option", bundle: .module)
         }
     }
 
@@ -174,7 +174,7 @@ public struct AccessibleChartLegend: View {
                         .font(.caption)
 
                     if let value = item.value {
-                        Text("(\(value))")
+                        Text(verbatim: "(\(value))")
                             .font(.caption)
                             .foregroundColor(Color.textSecondary)
                     }
@@ -207,11 +207,11 @@ public struct ChartVoiceOverDescription: View {
     }
 
     public var body: some View {
-        Text("")
+        Text(verbatim: "")
             .frame(width: 0, height: 0)
             .accessibilityElement()
             .accessibilityLabel(title)
             .accessibilityValue(summary + ". " + details.joined(separator: ". "))
-            .accessibilityHint("Chart data summary")
+            .accessibilityHint(Text("Chart data summary", bundle: .module))
     }
 }

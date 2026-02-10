@@ -179,9 +179,9 @@ public struct ChatView: View {
                 openWindow(id: "analytics")
             } label: {
                 Image(systemName: "chart.bar.xaxis")
-                    .accessibilityLabel("View Chat Metrics")
+                    .accessibilityLabel(Text("View Chat Metrics", bundle: .module))
             }
-            .help("View Chat Metrics")
+            .help(String(localized: "View Chat Metrics", bundle: .module))
         #else
             NavigationLink {
                 DashboardContainer(
@@ -194,11 +194,11 @@ public struct ChatView: View {
                     ),
                     initialType: .chatMetrics
                 )
-                .navigationTitle("Analytics Dashboard")
+                .navigationTitle(Text("Analytics Dashboard", bundle: .module))
                 .navigationBarTitleDisplayMode(.inline)
             } label: {
                 Image(systemName: "chart.bar.xaxis")
-                    .accessibilityLabel("View Chat Metrics")
+                    .accessibilityLabel(Text("View Chat Metrics", bundle: .module))
             }
         #endif
     }
@@ -208,9 +208,9 @@ public struct ChatView: View {
             isCanvasPresented = true
         } label: {
             Image(systemName: "square.and.pencil")
-                .accessibilityLabel("Open Canvas")
+                .accessibilityLabel(Text("Open Canvas", bundle: .module))
         }
-        .help("Open Canvas")
+        .help(String(localized: "Open Canvas", bundle: .module))
     }
 }
 

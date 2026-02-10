@@ -1,5 +1,6 @@
 import Charts
 import Database
+import Foundation
 import SwiftUI
 
 /// Processing Time Breakdown Chart wrapped in a card container
@@ -31,8 +32,8 @@ public struct ProcessingTimeBreakdownCard: View {
 
     public var body: some View {
         ChartCard(
-            title: "Processing Time Breakdown",
-            subtitle: "Time spent in each stage",
+            title: String(localized: "Processing Time Breakdown", bundle: .module),
+            subtitle: String(localized: "Time spent in each stage", bundle: .module),
             systemImage: "clock.arrow.circlepath"
         ) {
             chartContent
@@ -63,9 +64,9 @@ public struct ProcessingTimeBreakdownCard: View {
 
     private var emptyStateView: some View {
         ContentUnavailableView(
-            "No Processing Data",
+            String(localized: "No Processing Data", bundle: .module),
             systemImage: "clock.badge.xmark",
-            description: Text("Processing time data will appear here")
+            description: Text("Processing time data will appear here", bundle: .module)
         )
         .frame(height: Constants.chartHeight)
     }

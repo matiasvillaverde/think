@@ -14,7 +14,7 @@ internal struct HuggingFaceSearchErrorView: View {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: Constants.iconSize))
                 .foregroundColor(.iconAlert)
-                .accessibilityLabel("Error icon")
+                .accessibilityLabel(Text("Error icon", bundle: .module))
 
             Text("Search failed", bundle: .module)
                 .font(.headline)
@@ -28,7 +28,12 @@ internal struct HuggingFaceSearchErrorView: View {
             Button {
                 onRetry()
             } label: {
-                Label("Retry", systemImage: "arrow.clockwise")
+                Label {
+                    Text("Retry", bundle: .module)
+                } icon: {
+                    Image(systemName: "arrow.clockwise")
+                        .accessibilityHidden(true)
+                }
             }
             .buttonStyle(.bordered)
         }

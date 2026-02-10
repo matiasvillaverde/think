@@ -21,7 +21,7 @@ internal struct RepetitionRateStats: View {
 
     private var averageRateStat: some View {
         VStack(alignment: .leading, spacing: Constants.spacingConstant) {
-            Text("Average")
+            Text("Average", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
@@ -34,7 +34,7 @@ internal struct RepetitionRateStats: View {
 
     private var peakRateStat: some View {
         VStack(alignment: .leading, spacing: Constants.spacingConstant) {
-            Text("Peak")
+            Text("Peak", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
@@ -47,7 +47,7 @@ internal struct RepetitionRateStats: View {
 
     private var trendIndicatorStat: some View {
         VStack(alignment: .leading, spacing: Constants.statsSpacing) {
-            Text("Trend")
+            Text("Trend", bundle: .module)
                 .font(.caption)
                 .foregroundColor(Color.textSecondary)
 
@@ -56,7 +56,7 @@ internal struct RepetitionRateStats: View {
                 Image(systemName: trend.icon)
                     .font(.caption.weight(.bold))
                     .foregroundColor(trend.color)
-                    .accessibilityLabel("Trend direction")
+                    .accessibilityLabel(Text("Trend direction", bundle: .module))
                 Text(trend.text)
                     .font(.caption.weight(.bold))
                     .foregroundColor(trend.color)

@@ -260,7 +260,11 @@ extension SettingsView {
                 bundle: .module,
                 comment: "Port label"
             ))
-            TextField("9876", text: nodeModePortBinding)
+            TextField(
+                "",
+                text: nodeModePortBinding,
+                prompt: Text(verbatim: "9876")
+            )
                 .textFieldStyle(.roundedBorder)
                 .frame(width: Constants.portFieldWidth)
                 .onSubmit {
@@ -276,7 +280,10 @@ extension SettingsView {
                 bundle: .module,
                 comment: "Auth token label"
             ))
-            SecureField("Optional", text: nodeModeAuthTokenBinding)
+            SecureField(
+                String(localized: "Optional", bundle: .module),
+                text: nodeModeAuthTokenBinding
+            )
                 .textFieldStyle(.roundedBorder)
                 .onSubmit {
                     handleAuthTokenSubmitted()

@@ -80,7 +80,7 @@ internal struct ToolSourcesListView: View {
                 .foregroundColor(Color.textSecondary)
                 .accessibilityHidden(true)
 
-            Text("Sources (\(sources.count))")
+            Text("Sources (\(sources.count))", bundle: .module)
                 .font(.system(size: Constants.headerFontSize, weight: .semibold))
                 .foregroundColor(Color.textSecondary)
         }
@@ -120,7 +120,9 @@ internal struct ToolSourcesListView: View {
             openURL(source.url)
         }
         .accessibilityAddTraits(.isLink)
-        .accessibilityLabel("\(source.displayName), opens in browser")
+        .accessibilityLabel(
+            Text("\(source.displayName), opens in browser", bundle: .module)
+        )
     }
 
     private var showMoreButton: some View {
@@ -135,7 +137,10 @@ internal struct ToolSourcesListView: View {
             }
         } label: {
             HStack(spacing: Constants.headerSpacing) {
-                Text("Show \(sources.count - Constants.maxSourcesShown) more")
+                Text(
+                    "Show \(sources.count - Constants.maxSourcesShown) more",
+                    bundle: .module
+                )
                     .font(.caption2)
                     .foregroundColor(.blue)
 

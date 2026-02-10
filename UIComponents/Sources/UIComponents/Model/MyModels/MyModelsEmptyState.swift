@@ -68,7 +68,7 @@ internal struct MyModelsEmptyState: View {
                 .font(.system(size: Layout.iconSize, weight: .light))
                 .foregroundColor(.accentColor)
                 .symbolRenderingMode(.hierarchical)
-                .accessibilityLabel("No models icon")
+                .accessibilityLabel(Text("No models icon", bundle: .module))
         }
     }
 
@@ -99,14 +99,14 @@ internal struct MyModelsEmptyState: View {
                 Image(systemName: "lightbulb.fill")
                     .font(.footnote)
                     .foregroundColor(.orange)
-                    .accessibilityLabel("Tip")
+                    .accessibilityLabel(Text("Tip", bundle: .module))
 
                 Text("Tip: Explore new models to enhance your experience!", bundle: .module)
                     .font(.footnote)
                     .foregroundColor(.textSecondary)
 
                 Image(systemName: "arrow.right")
-                    .accessibilityLabel("Go to discover")
+                    .accessibilityLabel(Text("Go to discover", bundle: .module))
                     .font(.caption2)
                     .foregroundColor(.orange)
             }

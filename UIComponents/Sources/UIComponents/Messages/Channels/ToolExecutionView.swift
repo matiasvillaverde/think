@@ -4,36 +4,36 @@ import Foundation
 import MarkdownUI
 import SwiftUI
 
+internal enum ToolExecutionViewConstants {
+    static let cornerRadius: CGFloat = 8
+    static let padding: CGFloat = 12
+    static let spacing: CGFloat = 8
+    static let headerSpacing: CGFloat = 6
+    static let iconSize: CGFloat = 14
+    static let animationDuration: Double = 0.2
+    static let borderWidth: CGFloat = 1
+    static let borderOpacity: Double = 0.2
+    static let backgroundOpacity: Double = 0.03
+    static let progressScale: CGFloat = 0.8
+    static let resultMaxHeight: CGFloat = 300
+    static let iconOpacity: Double = 0.7
+    static let chevronSize: CGFloat = 12
+    static let resultPadding: CGFloat = 8
+    static let resultCornerRadius: CGFloat = 6
+    static let resultBackgroundOpacity: Double = 0.05
+    static let secondaryOpacity: Double = 0.5
+    static let animationResponse: Double = 0.3
+    static let animationDamping: Double = 0.8
+    static let resultSpacing: CGFloat = 4
+    static let errorSpacing: CGFloat = 6
+    static let iconSizeReduction: CGFloat = 2
+    static let statusLineLimit: Int = 2
+    static let requestMaxHeightDivisor: CGFloat = 2
+}
+
 /// Enhanced tool execution view with expandable results and source display
 internal struct ToolExecutionView: View {
     // MARK: - Constants
-
-    enum Constants {
-        static let cornerRadius: CGFloat = 8
-        static let padding: CGFloat = 12
-        static let spacing: CGFloat = 8
-        static let headerSpacing: CGFloat = 6
-        static let iconSize: CGFloat = 14
-        static let animationDuration: Double = 0.2
-        static let borderWidth: CGFloat = 1
-        static let borderOpacity: Double = 0.2
-        static let backgroundOpacity: Double = 0.03
-        static let progressScale: CGFloat = 0.8
-        static let resultMaxHeight: CGFloat = 300
-        static let iconOpacity: Double = 0.7
-        static let chevronSize: CGFloat = 12
-        static let resultPadding: CGFloat = 8
-        static let resultCornerRadius: CGFloat = 6
-        static let resultBackgroundOpacity: Double = 0.05
-        static let secondaryOpacity: Double = 0.5
-        static let animationResponse: Double = 0.3
-        static let animationDamping: Double = 0.8
-        static let resultSpacing: CGFloat = 4
-        static let errorSpacing: CGFloat = 6
-        static let iconSizeReduction: CGFloat = 2
-        static let statusLineLimit: Int = 2
-        static let requestMaxHeightDivisor: CGFloat = 2
-    }
 
     // MARK: - Properties
 
@@ -115,22 +115,34 @@ internal struct ToolExecutionView: View {
         isExpanded
     }
 
+    private var requestArgumentsText: String {
+        ToolExecutionViewHelpers.requestArgumentsText(toolExecution)
+    }
+
+    private var statusMessage: String {
+        toolExecution.statusMessage ?? ""
+    }
+
+    private var shouldShowStatusMessage: Bool {
+        toolExecution.state == .executing && toolExecution.statusMessage?.isEmpty == false
+    }
+
     // MARK: - Body
 
     internal var body: some View {
-        VStack(alignment: .leading, spacing: Constants.spacing) {
+        VStack(alignment: .leading, spacing: ToolExecutionViewConstants.spacing) {
             toolHeader
 
             if shouldShowStatusMessage {
                 Text(statusMessage)
                     .font(.caption)
                     .foregroundColor(Color.textSecondary)
-                    .lineLimit(Constants.statusLineLimit)
+                    .lineLimit(ToolExecutionViewConstants.statusLineLimit)
             }
 
             if isExpanded,
                 hasContent {
-                VStack(alignment: .leading, spacing: Constants.spacing) {
+                VStack(alignment: .leading, spacing: ToolExecutionViewConstants.spacing) {
                     if !requestArgumentsText.isEmpty {
                         toolRequestView(requestArgumentsText)
                     }
@@ -150,15 +162,15 @@ internal struct ToolExecutionView: View {
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding(Constants.padding)
+        .padding(ToolExecutionViewConstants.padding)
         .background(backgroundView)
         .overlay(borderOverlay)
         .animation(
-            .easeInOut(duration: Constants.animationDuration),
+            .easeInOut(duration: ToolExecutionViewConstants.animationDuration),
             value: isExpanded
         )
         .animation(
-            .easeInOut(duration: Constants.animationDuration),
+            .easeInOut(duration: ToolExecutionViewConstants.animationDuration),
             value: toolExecution.state
         )
     }
@@ -167,9 +179,9 @@ internal struct ToolExecutionView: View {
 
     @ViewBuilder
     private func toolRequestView(_ argumentsText: String) -> some View {
-        VStack(alignment: .leading, spacing: Constants.resultSpacing) {
+        VStack(alignment: .leading, spacing: ToolExecutionViewConstants.resultSpacing) {
             HStack {
-                Text("Request")
+                Text("Request", bundle: .module)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(Color.textSecondary)
@@ -182,45 +194,31 @@ internal struct ToolExecutionView: View {
                     .foregroundColor(Color.textPrimary)
                     .textSelection(.enabled)
             }
-            .frame(maxHeight: Constants.resultMaxHeight / Constants.requestMaxHeightDivisor)
+            .frame(
+                maxHeight: ToolExecutionViewConstants.resultMaxHeight
+                    / ToolExecutionViewConstants.requestMaxHeightDivisor
+            )
         }
-        .padding(Constants.resultPadding)
-        .background(Color.paletteGray.opacity(Constants.resultBackgroundOpacity))
-        .cornerRadius(Constants.resultCornerRadius)
+        .padding(ToolExecutionViewConstants.resultPadding)
+        .background(Color.paletteGray.opacity(ToolExecutionViewConstants.resultBackgroundOpacity))
+        .cornerRadius(ToolExecutionViewConstants.resultCornerRadius)
         // Collapse this block into a single accessible element so UI tests can reliably query it
         // and VoiceOver users get a meaningful summary.
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Request")
+        .accessibilityLabel(Text("Request", bundle: .module))
         .accessibilityValue(argumentsText)
         .accessibilityIdentifier("toolExecution.request.\(toolExecution.id.uuidString)")
     }
 
-    private var requestArgumentsText: String {
-        if let request = toolExecution.request {
-            return request.arguments
-        }
-
-        guard let data = toolExecution.requestJSON.data(using: .utf8) else {
-            return toolExecution.requestJSON
-        }
-        guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            return toolExecution.requestJSON
-        }
-        if let arguments = object["arguments"] as? String {
-            return arguments
-        }
-        return toolExecution.requestJSON
-    }
-
     @ViewBuilder
     private func toolResultView(_ response: ToolResponse) -> some View {
-        VStack(alignment: .leading, spacing: Constants.resultSpacing) {
+        VStack(alignment: .leading, spacing: ToolExecutionViewConstants.resultSpacing) {
             resultHeader(response: response)
             resultContent(response: response)
         }
-        .padding(Constants.resultPadding)
-        .background(Color.paletteGray.opacity(Constants.resultBackgroundOpacity))
-        .cornerRadius(Constants.resultCornerRadius)
+        .padding(ToolExecutionViewConstants.resultPadding)
+        .background(Color.paletteGray.opacity(ToolExecutionViewConstants.resultBackgroundOpacity))
+        .cornerRadius(ToolExecutionViewConstants.resultCornerRadius)
         // Ensure nested controls (e.g. Raw/Formatted toggle) remain individually accessible
         // for UI testing.
         .accessibilityElement(children: .contain)
@@ -230,7 +228,7 @@ internal struct ToolExecutionView: View {
     @ViewBuilder
     private func resultHeader(response: ToolResponse) -> some View {
         HStack {
-            Text("Result")
+            Text("Result", bundle: .module)
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundColor(Color.textSecondary)
@@ -241,7 +239,11 @@ internal struct ToolExecutionView: View {
                 Button {
                     showRawJSON.toggle()
                 } label: {
-                    Text(showRawJSON ? "Formatted" : "Raw")
+                    Text(
+                        showRawJSON
+                            ? String(localized: "Formatted", bundle: .module)
+                            : String(localized: "Raw", bundle: .module)
+                    )
                         .font(.caption2)
                         .foregroundColor(.blue)
                 }
@@ -249,14 +251,6 @@ internal struct ToolExecutionView: View {
                 .accessibilityIdentifier("toolExecution.rawToggle.\(toolExecution.id.uuidString)")
             }
         }
-    }
-
-    private var statusMessage: String {
-        toolExecution.statusMessage ?? ""
-    }
-
-    private var shouldShowStatusMessage: Bool {
-        toolExecution.state == .executing && toolExecution.statusMessage?.isEmpty == false
     }
 
     @ViewBuilder
@@ -275,12 +269,12 @@ internal struct ToolExecutionView: View {
                     .foregroundColor(Color.textPrimary)
             }
         }
-        .frame(maxHeight: Constants.resultMaxHeight)
+        .frame(maxHeight: ToolExecutionViewConstants.resultMaxHeight)
     }
 
     @ViewBuilder
     private func errorView(_ errorMessage: String) -> some View {
-        HStack(spacing: Constants.errorSpacing) {
+        HStack(spacing: ToolExecutionViewConstants.errorSpacing) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.caption)
                 .foregroundColor(.red)
@@ -290,22 +284,44 @@ internal struct ToolExecutionView: View {
                 .font(.caption)
                 .foregroundColor(.red)
         }
-        .padding(Constants.resultPadding)
-        .background(Color.paletteRed.opacity(Constants.resultBackgroundOpacity))
-        .cornerRadius(Constants.resultCornerRadius)
+        .padding(ToolExecutionViewConstants.resultPadding)
+        .background(Color.paletteRed.opacity(ToolExecutionViewConstants.resultBackgroundOpacity))
+        .cornerRadius(ToolExecutionViewConstants.resultCornerRadius)
     }
 
     private var backgroundView: some View {
-        RoundedRectangle(cornerRadius: Constants.cornerRadius)
-            .fill(statusColor.opacity(Constants.backgroundOpacity))
+        RoundedRectangle(cornerRadius: ToolExecutionViewConstants.cornerRadius)
+            .fill(statusColor.opacity(ToolExecutionViewConstants.backgroundOpacity))
     }
 
     private var borderOverlay: some View {
-        RoundedRectangle(cornerRadius: Constants.cornerRadius)
-            .stroke(statusColor.opacity(Constants.borderOpacity), lineWidth: Constants.borderWidth)
+        RoundedRectangle(cornerRadius: ToolExecutionViewConstants.cornerRadius)
+            .stroke(
+                statusColor.opacity(ToolExecutionViewConstants.borderOpacity),
+                lineWidth: ToolExecutionViewConstants.borderWidth
+            )
     }
 
     func toggleExpanded() {
         isExpanded.toggle()
+    }
+}
+
+private enum ToolExecutionViewHelpers {
+    static func requestArgumentsText(_ toolExecution: ToolExecution) -> String {
+        if let request = toolExecution.request {
+            return request.arguments
+        }
+
+        guard let data = toolExecution.requestJSON.data(using: .utf8) else {
+            return toolExecution.requestJSON
+        }
+        guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return toolExecution.requestJSON
+        }
+        if let arguments = object["arguments"] as? String {
+            return arguments
+        }
+        return toolExecution.requestJSON
     }
 }
