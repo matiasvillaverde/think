@@ -216,7 +216,10 @@ extension MessageCommands {
             }
 
             let newChannel = Channel(
-                id: channelMessage.id,
+                // Never persist parser-provided UUIDs. ContextBuilder IDs are only meant to be stable
+                // within a single streaming parse, and can collide across messages (the Channel model
+                // enforces global uniqueness).
+                id: UUID(),
                 type: Channel.ChannelType(rawValue: channelMessage.type.rawValue) ?? .final,
                 content: initialContent,
                 order: channelMessage.order,

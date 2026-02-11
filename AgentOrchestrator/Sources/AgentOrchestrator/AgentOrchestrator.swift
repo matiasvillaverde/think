@@ -237,10 +237,43 @@ internal final actor AgentOrchestrator: AgentOrchestrating {
             // Emit generation completed event
             await eventEmitter.emitGenerationCompleted(runId: request.messageId)
         } catch {
+            // Ensure failures are visible in-chat for any client (CLI, UI, etc), not just via
+            // transient notifications. We append rather than overwrite so partial output is preserved.
+            if !(error is CancellationError) {
+                let errorMessage: String = Self.formatGenerationFailureMessage(error)
+                do {
+                    _ = try await database.write(
+                        MessageCommands.AppendFinalChannelContent(
+                            messageId: request.messageId,
+                            appendedContent: errorMessage,
+                            isComplete: true
+                        )
+                    )
+                } catch {
+                    Self.logger.debug(
+                        "Failed to persist generation failure message: \(error.localizedDescription)"
+                    )
+                }
+            }
+
             // Emit generation failed event
             await eventEmitter.emitGenerationFailed(runId: request.messageId, error: error)
             throw error
         }
+    }
+
+    private static func formatGenerationFailureMessage(_ error: Error) -> String {
+        let description: String = error.localizedDescription.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+        if description.isEmpty {
+            return "**Generation failed**"
+        }
+        return """
+        **Generation failed**
+
+        \(description)
+        """
     }
 
     private func emitStateUpdate(for state: GenerationState, isExecutingTools: Bool) async {
